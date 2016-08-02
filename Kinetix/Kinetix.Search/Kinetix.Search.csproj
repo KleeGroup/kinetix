@@ -1,0 +1,133 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{8FCC1485-2E43-4510-835F-BF6839666091}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Kinetix.Search</RootNamespace>
+    <AssemblyName>Kinetix.Search</AssemblyName>
+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>..\RuleSet.Kinetix.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>..\RuleSet.Fmk.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Elasticsearch.Net, Version=1.0.0.0, Culture=neutral, PublicKeyToken=96c599bbe3e70f5d, processorArchitecture=MSIL">
+      <HintPath>..\packages\Elasticsearch.Net.1.9.0\lib\net45\Elasticsearch.Net.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="log4net, Version=1.2.13.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>..\packages\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Nest, Version=1.0.0.0, Culture=neutral, PublicKeyToken=96c599bbe3e70f5d, processorArchitecture=MSIL">
+      <HintPath>..\packages\NEST.1.9.0\lib\net45\Nest.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Web" />
+    <Reference Include="Microsoft.CSharp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Config\SearchDataSourceCollection.cs" />
+    <Compile Include="Config\SearchDataSourceElement.cs" />
+    <Compile Include="Config\SearchSettings.cs" />
+    <Compile Include="Contract\ISearchLoader.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Contract\ISearchStore.cs" />
+    <Compile Include="Elastic\ElasticException.cs" />
+    <Compile Include="Elastic\ElasticExtensions.cs" />
+    <Compile Include="Elastic\ElasticFacetHandler.cs" />
+    <Compile Include="Elastic\ElasticMappingFactory.cs" />
+    <Compile Include="Elastic\ElasticQueryBuilder.cs" />
+    <Compile Include="Elastic\IIndexConfigurator.cs" />
+    <Compile Include="MetaModel\DocumentDescriptor.cs" />
+    <Compile Include="MetaModel\DocumentDefinition.cs" />
+    <Compile Include="MetaModel\DocumentFieldDescriptor.cs" />
+    <Compile Include="MetaModel\DocumentFieldDescriptorCollection.cs" />
+    <Compile Include="Broker\SearchBrokerManager.cs" />
+    <Compile Include="ComponentModel\SearchDocumentTypeAttribute.cs" />
+    <Compile Include="ComponentModel\SearchFieldAttribute.cs" />
+    <Compile Include="ComponentModel\SearchFieldCategory.cs" />
+    <Compile Include="Elastic\ElasticStore.cs" />
+    <Compile Include="Contract\ISearchBroker.cs" />
+    <Compile Include="Model\AdvancedQueryInput.cs" />
+    <Compile Include="Model\BooleanFacet.cs" />
+    <Compile Include="Model\DateFacet.cs" />
+    <Compile Include="Model\FacetConst.cs" />
+    <Compile Include="Model\FacetQueryDefinition.cs" />
+    <Compile Include="Model\IFacetDefinition.cs" />
+    <Compile Include="Model\TermFacet.cs" />
+    <Compile Include="Model\ReferenceFacet.cs" />
+    <Compile Include="Model\SearchChunk.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Config\SearchConfigSection.cs" />
+    <Compile Include="Elastic\ElasticManager.cs" />
+    <Compile Include="Broker\StandardSearchBroker.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Kinetix.ComponentModel\Kinetix.ComponentModel.csproj">
+      <Project>{a36239cb-de97-47fb-afe4-4ffbf15a97eb}</Project>
+      <Name>Kinetix.ComponentModel</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Kinetix.Monitoring\Kinetix.Monitoring.csproj">
+      <Project>{e5ca12f8-ea8d-45b2-9eed-9592f4833478}</Project>
+      <Name>Kinetix.Monitoring</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Kinetix.ServiceModel\Kinetix.ServiceModel.csproj">
+      <Project>{a7a2c429-2e86-4830-84bd-1477d68f1401}</Project>
+      <Name>Kinetix.ServiceModel</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Analyzer Include="..\packages\StyleCop.Analyzers.1.0.0\analyzers\dotnet\cs\Newtonsoft.Json.dll" />
+    <Analyzer Include="..\packages\StyleCop.Analyzers.1.0.0\analyzers\dotnet\cs\StyleCop.Analyzers.CodeFixes.dll" />
+    <Analyzer Include="..\packages\StyleCop.Analyzers.1.0.0\analyzers\dotnet\cs\StyleCop.Analyzers.dll" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

@@ -1,0 +1,238 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="ErrorConstraintEmail" xml:space="preserve">
+    <value>email must be in the format 'person@example.com'.</value>
+    <comment>Message d'erreur pour les emails.</comment>
+  </data>
+  <data name="ErrorConstraintStringLength" xml:space="preserve">
+    <value>the size must be less than {0} characters.</value>
+    <comment>Message d'erreur pour les tailles maximales de chaine de caractères.</comment>
+  </data>
+  <data name="ErrorConstraintStringLengthAlpha" xml:space="preserve">
+    <value>the size must be less than {0} characters and must not contain any special characters.</value>
+    <comment>Message d'erreur pour les chaines de caractères alpha-numériques.</comment>
+  </data>
+  <data name="ErrorFormatBooleen" xml:space="preserve">
+    <value>the boolean must be either 'True' or 'False'.</value>
+    <comment>Message d'erreur pour les valeurs booléennes.</comment>
+  </data>
+  <data name="ErrorFormatCodePostal" xml:space="preserve">
+    <value>the postcode (or INSEE code) must be comprised of 5 numbers.</value>
+    <comment>Message d'erreur pour les codes postaux.</comment>
+  </data>
+  <data name="ErrorFormatTelephone" xml:space="preserve">
+    <value>the telephone number must be comprised of 10 numbers.</value>
+    <comment>Message d'erreur pour les numéros de téléphone.</comment>
+  </data>
+  <data name="ExceptionICustomTypeDescriptorNotSupported" xml:space="preserve">
+    <value>Type ICustomTypeDescriptor not supported</value>
+    <comment>Message d'erreur sur le support de l'interface ICustomTypeDescriptor.</comment>
+  </data>
+  <data name="ExceptionInvalidValueType" xml:space="preserve">
+    <value>Invalid value type {0}, {1} expected for property {2}.</value>
+    <comment>Message d'erreur pour les types valeurs non supportés.</comment>
+  </data>
+  <data name="ExceptionNotSupportedGeneric" xml:space="preserve">
+    <value>Not supported generic type : {0}.</value>
+    <comment>Message d'erreur pour les types génériques non supportés.</comment>
+  </data>
+  <data name="ExceptionTypeDescription" xml:space="preserve">
+    <value>Type : {0}</value>
+    <comment>Message d'erreur décrivant un type.</comment>
+  </data>
+  <data name="ExceptionTypeInt32Required" xml:space="preserve">
+    <value>Type {0} not supported for property '{1}'. Expected type Int32.</value>
+    <comment>Message d'erreur pour un type entier requis.</comment>
+  </data>
+  <data name="TextBooleanNo" xml:space="preserve">
+    <value>No</value>
+    <comment>Texte associé à la valeur booléenne False.</comment>
+  </data>
+  <data name="TextBooleanUndefined" xml:space="preserve">
+    <value>-</value>
+    <comment>Texte associé à une valeur booléenne non affectée.</comment>
+  </data>
+  <data name="TextBooleanYes" xml:space="preserve">
+    <value>Yes</value>
+    <comment>Texte associé à la valeur booléenne True.</comment>
+  </data>
+  <data name="ErrorFormatDate" xml:space="preserve">
+    <value>the date must be in the format 'dd/mm/yyyy'.</value>
+    <comment>Message d'erreur pour la saisie des dates.</comment>
+  </data>
+  <data name="ErrorFormatDateValue" xml:space="preserve">
+    <value>the date filled in is incorrect.</value>
+    <comment>Message d'erreur pour la saisie des dates.</comment>
+  </data>
+  <data name="ErrorFormatTaux" xml:space="preserve">
+    <value>the rate filled in must be a decimal between 0 and 100 with two numbers after a comma.</value>
+    <comment>Message d'erreur pour les taux.</comment>
+  </data>
+  <data name="ErrorFormatEntier" xml:space="preserve">
+    <value>{0} is not a whole number.</value>
+    <comment>Message d'erreur pour la saisie d'entiers.</comment>
+  </data>
+  <data name="ConstraintIntervalBornes" xml:space="preserve">
+    <value>the value must be between {1} and {2}.</value>
+    <comment>Message d'erreur pour les contraintes d'intervalle.</comment>
+  </data>
+  <data name="ConstraintIntervalError" xml:space="preserve">
+    <value>At least one limit must be defined.</value>
+    <comment>Message d'erreur si intervalle mal saisie.</comment>
+  </data>
+  <data name="ConstraintNotNull" xml:space="preserve">
+    <value>must be filled in</value>
+    <comment>Message d'erreur pour contrainte de nullabilité.</comment>
+  </data>
+  <data name="DateContraintError" xml:space="preserve">
+    <value>The date must be between 01/01/1753 and 31/12/9999.</value>
+    <comment>Message d'erreur pour les dates.</comment>
+  </data>
+  <data name="ReadOnlyProperty" xml:space="preserve">
+    <value>The property {0} is read-only, it is not possible to set this value.</value>
+    <comment>Message d'erreur pour l'affectation d'une propriété en lecture seule.</comment>
+  </data>
+  <data name="ErrorFormatPercentage" xml:space="preserve">
+    <value>{0} is not a valid percentage.</value>
+    <comment>Message d'erreur si la valeur saisie ne correspond pas à un pourcentage.</comment>
+  </data>
+  <data name="ErrorFormatDecimal" xml:space="preserve">
+    <value>is not a valid decimal value.</value>
+  </data>
+  <data name="ErrorRangeDecimalRightOpen" xml:space="preserve">
+    <value>the value must be between {0} inclusive and {1} non-inclusive</value>
+    <comment>Message d'erreur pour un intervalle ouvert à droite.</comment>
+  </data>
+  <data name="ErrorRangeDecimalLeftOpen" xml:space="preserve">
+    <value>the value must be between {0} non-inclusive and {1} inclusive</value>
+    <comment>Message d'erreur pour un intervalle ouvert à gauche.</comment>
+  </data>
+  <data name="ErrorRangeDecimalOpen" xml:space="preserve">
+    <value>the value must be between {0} non-inclusive and {1} non-inclusive</value>
+    <comment>Message d'erreur pour un intervalle ouvert.</comment>
+  </data>
+  <data name="ErrorFormatHeure" xml:space="preserve">
+    <value>The time must be between 00:00 and 23:59</value>
+    <comment>Texte assiocié au message d'erreur pour la saisie d'une heure.</comment>
+  </data>
+  <data name="SiretConstraintError" xml:space="preserve">
+    <value>Invalid format.</value>
+  </data>
+</root>

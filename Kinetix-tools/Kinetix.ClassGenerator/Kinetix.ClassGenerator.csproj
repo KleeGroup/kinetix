@@ -1,0 +1,240 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{618EADA1-FFCA-4F2F-A5F3-F7CA98E30574}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Kinetix.ClassGenerator</RootNamespace>
+    <AssemblyName>Kinetix.ClassGenerator</AssemblyName>
+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SignAssembly>false</SignAssembly>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
+    <IsWebBootstrapper>true</IsWebBootstrapper>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <OldToolsVersion>3.5</OldToolsVersion>
+    <UpgradeBackupLocation />
+    <PublishUrl>http://localhost/ClassGenerator/</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Web</InstallFrom>
+    <UpdateEnabled>true</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+    <TargetFrameworkProfile />
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Debug\Kinetix.ClassGenerator.xml</DocumentationFile>
+    <CodeAnalysisRuleSet>..\..\Kinetix\RuleSet.Kinetix.ruleset</CodeAnalysisRuleSet>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE;SkipPostSharp</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>..\..\Kinetix\RuleSet.Fmk.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="DocumentFormat.OpenXml, Version=2.5.5631.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\Kinetix\packages\DocumentFormat.OpenXml.2.5\lib\DocumentFormat.OpenXml.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Design" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="WindowsBase" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Checker\AbstractModelChecker.cs" />
+    <Compile Include="Checker\CodeChecker.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Checker\InitListChecker.cs" />
+    <Compile Include="Checker\ModelClassChecker.cs" />
+    <Compile Include="Checker\ModelDomainChecker.cs" />
+    <Compile Include="Checker\ModelPropertyChecker.cs" />
+    <Compile Include="Checker\ModelNamespaceChecker.cs" />
+    <Compile Include="Checker\ModelRootChecker.cs" />
+    <Compile Include="Checker\ReferenceListChecker.cs" />
+    <Compile Include="Checker\StaticListChecker.cs" />
+    <Compile Include="CodeGenerator\AbstractCodeGenerator.cs" />
+    <Compile Include="CodeGenerator\AbstractJavascriptGenerator.cs" />
+    <Compile Include="CodeGenerator\CodeUtils.cs" />
+    <Compile Include="CodeGenerator\CSharpCodeGenerator.cs" />
+    <Compile Include="CodeGenerator\JavascriptResourceGenerator.cs" />
+    <Compile Include="CodeGenerator\Utils.cs" />
+    <Compile Include="Configuration\ArgumentParser.cs" />
+    <Compile Include="Configuration\ConfigurationLoader.cs" />
+    <Compile Include="Configuration\ModelConfigurationLoader.cs" />
+    <Compile Include="GeneratorParameters.cs" />
+    <Compile Include="Main\MainGenerator.cs" />
+    <Compile Include="Model\IPersistenceData.cs" />
+    <Compile Include="Model\ModelAnnotation.cs" />
+    <Compile Include="Model\Stereotype.cs" />
+    <Compile Include="Model\IModelObject.cs" />
+    <Compile Include="Model\ModelRoot.cs" />
+    <Compile Include="Model\ModelDataMember.cs" />
+    <Compile Include="Model\ModelDataDescription.cs" />
+    <Compile Include="Model\ModelDataContract.cs" />
+    <Compile Include="Model\ModelDomain.cs" />
+    <Compile Include="Model\ModelProperty.cs" />
+    <Compile Include="Model\ModelClass.cs" />
+    <Compile Include="Model\ModelNamespace.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="CodeGenerator\JavascriptSchemaGenerator.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SchemaGenerator\AbstractSchemaGenerator.cs" />
+    <Compile Include="SchemaGenerator\OracleSchemaGenerator.cs" />
+    <Compile Include="Tfs\TfsJsFileWriter.cs" />
+    <Compile Include="Tfs\TfsManager.cs" />
+    <Compile Include="Tfs\TfsCsharpFileWriter.cs" />
+    <Compile Include="XmlParser\AbstractParser.cs" />
+    <Compile Include="XmlParser\IModelParser.cs" />
+    <Compile Include="XmlParser\ParserHelper.cs" />
+    <Compile Include="XmlParser\EapReader\EapParser.cs" />
+    <Compile Include="XmlParser\OomReader\OomParser.cs" />
+    <Compile Include="SchemaGenerator\SqlServerSchemaGenerator.cs" />
+    <Compile Include="SsdtSchemaGenerator\Contract\ISqlScriptEngine.cs" />
+    <Compile Include="SsdtSchemaGenerator\Contract\ISqlScripter.cs" />
+    <Compile Include="SsdtSchemaGenerator\Contract\ISqlServerSsdtInsertGenerator.cs" />
+    <Compile Include="SsdtSchemaGenerator\Contract\ISqlServerSsdtSchemaGenerator.cs" />
+    <Compile Include="SsdtSchemaGenerator\Dto\ReferenceClass.cs" />
+    <Compile Include="SsdtSchemaGenerator\Dto\ReferenceClassSet.cs" />
+    <Compile Include="SsdtSchemaGenerator\Scripter\InitReferenceListMainScripter.cs" />
+    <Compile Include="SsdtSchemaGenerator\Scripter\InitReferenceListScripter.cs" />
+    <Compile Include="SsdtSchemaGenerator\Scripter\SqlTableScripter.cs" />
+    <Compile Include="SsdtSchemaGenerator\Scripter\SqlTableTypeScripter.cs" />
+    <Compile Include="SsdtSchemaGenerator\ScriptUtils.cs" />
+    <Compile Include="SsdtSchemaGenerator\SqlScriptEngine.cs" />
+    <Compile Include="SsdtSchemaGenerator\SqlServerSsdtInsertGenerator.cs" />
+    <Compile Include="SsdtSchemaGenerator\SqlServerSsdtSchemaGenerator.cs" />
+    <Compile Include="Tfs\AbstractFileWriter.cs" />
+    <Compile Include="Tfs\TfsFileWriter.cs" />
+    <Compile Include="Tfs\TfsSqlFileWriter.cs" />
+    <Compile Include="Tfs\TfsXmlFileWriter.cs" />
+    <Compile Include="Vortex\Category.cs" />
+    <Compile Include="Vortex\NVortexGenerator.cs" />
+    <Compile Include="Vortex\NVortexMessage.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.2.0">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 2.0 %28x86%29</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.0">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.0 %28x86%29</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.VisualBasic.PowerPacks.10.0">
+      <Visible>False</Visible>
+      <ProductName>Microsoft Visual Basic PowerPacks 10.0</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Kinetix\Kinetix.ComponentModel\Kinetix.ComponentModel.csproj">
+      <Project>{A36239CB-DE97-47FB-AFE4-4FFBF15A97EB}</Project>
+      <Name>Kinetix.ComponentModel</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Kinetix\Kinetix.ServiceModel\Kinetix.ServiceModel.csproj">
+      <Project>{a7a2c429-2e86-4830-84bd-1477d68f1401}</Project>
+      <Name>Kinetix.ServiceModel</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Kinetix.Tfs.Tools\Kinetix.Tfs.Tools.csproj">
+      <Project>{723f8cd3-1645-4bdf-95a8-de4f8b2ac9b7}</Project>
+      <Name>Kinetix.Tfs.Tools</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="conf_exemple.xml" />
+    <Content Include="README.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <ItemGroup>
+    <Analyzer Include="..\..\Kinetix\packages\StyleCop.Analyzers.1.0.0\analyzers\dotnet\cs\Newtonsoft.Json.dll" />
+    <Analyzer Include="..\..\Kinetix\packages\StyleCop.Analyzers.1.0.0\analyzers\dotnet\cs\StyleCop.Analyzers.CodeFixes.dll" />
+    <Analyzer Include="..\..\Kinetix\packages\StyleCop.Analyzers.1.0.0\analyzers\dotnet\cs\StyleCop.Analyzers.dll" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>
+    </PreBuildEvent>
+  </PropertyGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

@@ -1,0 +1,201 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{A36239CB-DE97-47FB-AFE4-4FFBF15A97EB}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <NoStandardLibraries>false</NoStandardLibraries>
+    <AssemblyName>Kinetix.ComponentModel</AssemblyName>
+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+    <TargetFrameworkProfile />
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\..\..\UESL_Gimini\Main\Sources\</SolutionDir>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Debug\Kinetix.ComponentModel.xml</DocumentationFile>
+    <Prefer32Bit>false</Prefer32Bit>
+    <CodeAnalysisRuleSet>..\RuleSet.Kinetix.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+    <CodeAnalysisRuleSet>..\RuleSet.Fmk.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup>
+    <RootNamespace>Kinetix.ComponentModel</RootNamespace>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>false</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>Fmk.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="AutoMapper, Version=3.1.1.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
+      <HintPath>..\packages\AutoMapper.3.1.1\lib\net40\AutoMapper.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="AutoMapper.Net4, Version=3.1.1.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
+      <HintPath>..\packages\AutoMapper.3.1.1\lib\net40\AutoMapper.Net4.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="log4net, Version=1.2.13.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>..\packages\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="PresentationFramework" />
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Data.Linq" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AbstractFormatter.shared.cs" />
+    <Compile Include="BeanDefinition.cs" />
+    <Compile Include="BeanDescriptor.cs" />
+    <Compile Include="BeanEngine.cs" />
+    <Compile Include="BeanFactory.cs" />
+    <Compile Include="BeanPropertyDescriptor.cs" />
+    <Compile Include="BeanPropertyDescriptorCollection.cs" />
+    <Compile Include="CollectionConstraintException.cs" />
+    <Compile Include="CompositeConstraintException.cs" />
+    <Compile Include="ConstraintException.cs" />
+    <Compile Include="ContextContainer.cs" />
+    <Compile Include="CustomMetadataTypeAttribute.cs" />
+    <Compile Include="CustomTypeConverterAttribute.shared.cs" />
+    <Compile Include="DataAnnotations\AlignmentAttribute.cs" />
+    <Compile Include="DataAnnotations\DateAttribute.cs" />
+    <Compile Include="DataAnnotations\EmailAttribute.cs" />
+    <Compile Include="DataAnnotations\FlatFileField.cs" />
+    <Compile Include="DataAnnotations\RangeDecimalAttribute.cs" />
+    <Compile Include="DataAnnotations\NumeroSiretAttribute.cs" />
+    <Compile Include="DataAnnotations\TextAreaSizeAttribute.cs" />
+    <Compile Include="DataAnnotations\WidthAttribute.cs" />
+    <Compile Include="Domain.cs" />
+    <Compile Include="DomainAttribute.cs" />
+    <Compile Include="DomainManager.cs" />
+    <Compile Include="DomainMetadataTypeAttribute.cs" />
+    <Compile Include="EntityException.cs" />
+    <Compile Include="FileSystemFile.cs" />
+    <Compile Include="DownloadedFile.cs" />
+    <Compile Include="DTCollection.cs" />
+    <Compile Include="EntityCollectionErrorMessage.cs" />
+    <Compile Include="EntityErrorMessage.cs" />
+    <Compile Include="ErrorMessage.cs" />
+    <Compile Include="ErrorMessageCollection.cs" />
+    <Compile Include="ErrorMessageParameter.cs" />
+    <Compile Include="ExtendedValue.cs" />
+    <Compile Include="Facets\Facet.cs" />
+    <Compile Include="Facets\FacetFilters.cs" />
+    <Compile Include="Facets\FacetMap.cs" />
+    <Compile Include="Facets\Heading.cs" />
+    <Compile Include="Facets\IFacet.cs" />
+    <Compile Include="Facets\IFacetFilters.cs" />
+    <Compile Include="Facets\IFacetMap.cs" />
+    <Compile Include="EntityConstraintException.cs" />
+    <Compile Include="FileFormat.cs" />
+    <Compile Include="Formatters\FormatterBooleen.cs" />
+    <Compile Include="Formatters\FormatterCapitalize.cs" />
+    <Compile Include="Formatters\FormatterDate.cs" />
+    <Compile Include="Formatters\FormatterDecimal.cs" />
+    <Compile Include="Formatters\FormatterHeure.cs" />
+    <Compile Include="Formatters\FormatterJourMois.cs" />
+    <Compile Include="Formatters\FormatterMoisAnnee.cs" />
+    <Compile Include="Formatters\FormatterMontant.cs" />
+    <Compile Include="Formatters\FormatterPercent.cs" />
+    <Compile Include="Formatters\FormatterTelephone.cs" />
+    <Compile Include="Formatters\FormatterUpperCase.cs" />
+    <Compile Include="IActivable.cs" />
+    <Compile Include="IBeanFactory.cs" />
+    <Compile Include="IBeanState.cs" />
+    <Compile Include="IDeltaExportable.cs" />
+    <Compile Include="IDomain.cs" />
+    <Compile Include="IDomainChecker.cs" />
+    <Compile Include="IDtCollection.cs" />
+    <Compile Include="IFormatter.shared.cs" />
+    <Compile Include="IMetadataTypeProvider.cs" />
+    <Compile Include="IOptimisticLocking.cs" />
+    <Compile Include="IReadCommand.cs" />
+    <Compile Include="IReferenceBean.cs" />
+    <Compile Include="IStaticBean.cs" />
+    <Compile Include="LogicalDeleteAttribute.cs" />
+    <Compile Include="MetadataTypeProviderAttribute.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ReferenceAttribute.cs" />
+    <Compile Include="ReferencedTypeAttribute.shared.cs" />
+    <Compile Include="Search\Criteria.cs" />
+    <Compile Include="Search\FacetItem.cs" />
+    <Compile Include="Search\FacetListInput.cs" />
+    <Compile Include="Search\FacetListOutput.cs" />
+    <Compile Include="Search\FacetOutput.cs" />
+    <Compile Include="Search\FacetSelection.cs" />
+    <Compile Include="Search\IOrderedDictionary.cs" />
+    <Compile Include="Search\OrderedDictionary.cs" />
+    <Compile Include="Search\OrderedDictionarySerializer.cs" />
+    <Compile Include="Search\UnscopedGroupResultList.cs" />
+    <Compile Include="Search\GroupResultList.cs" />
+    <Compile Include="Search\QueryInput.cs" />
+    <Compile Include="Search\UnscopedQueryOutput.cs" />
+    <Compile Include="Search\QueryOutput.cs" />
+    <Compile Include="SR.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>SR.resx</DependentUpon>
+    </Compile>
+    <Compile Include="SR.en.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>SR.en.resx</DependentUpon>
+    </Compile>
+    <Compile Include="TranslatableAttribute.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="SR.en.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>SR.en.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SR.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>SR.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+    <None Include="Fmk.snk" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Analyzer Include="..\packages\StyleCop.Analyzers.1.0.0\analyzers\dotnet\cs\Newtonsoft.Json.dll" />
+    <Analyzer Include="..\packages\StyleCop.Analyzers.1.0.0\analyzers\dotnet\cs\StyleCop.Analyzers.CodeFixes.dll" />
+    <Analyzer Include="..\packages\StyleCop.Analyzers.1.0.0\analyzers\dotnet\cs\StyleCop.Analyzers.dll" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSHARP.Targets" />
+  <ProjectExtensions>
+    <VisualStudio AllowExistingFolder="true" />
+  </ProjectExtensions>
+</Project>

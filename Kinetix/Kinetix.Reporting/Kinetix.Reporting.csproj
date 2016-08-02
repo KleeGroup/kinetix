@@ -1,0 +1,173 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{406F6F19-709F-4BD2-A65E-B5098C2F5D97}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <NoStandardLibraries>false</NoStandardLibraries>
+    <AssemblyName>Kinetix.Reporting</AssemblyName>
+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+    <TargetFrameworkProfile />
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Debug\Kinetix.Reporting.xml</DocumentationFile>
+    <Prefer32Bit>false</Prefer32Bit>
+    <CodeAnalysisRuleSet>..\RuleSet.Kinetix.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+    <CodeAnalysisRuleSet>..\RuleSet.Fmk.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup>
+    <RootNamespace>Kinetix.Reporting</RootNamespace>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>false</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>Fmk.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="DocumentFormat.OpenXml, Version=2.5.5631.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\DocumentFormat.OpenXml.2.5\lib\DocumentFormat.OpenXml.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="log4net">
+      <HintPath>..\packages\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Data.Linq" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Mvc, Version=5.2.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Mvc.5.2.2\lib\net45\System.Web.Mvc.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ExcelDocument.cs" />
+    <Compile Include="ExportCache.cs" />
+    <Compile Include="ExportCell.cs" />
+    <Compile Include="ExportColumnLabel.cs" />
+    <Compile Include="ExportConfiguration.cs" />
+    <Compile Include="ExportDataSource.cs" />
+    <Compile Include="ExportEventArgs.cs" />
+    <Compile Include="ExportOrientation.cs" />
+    <Compile Include="ExportPropertyDefinition.cs" />
+    <Compile Include="ExportSheet.cs" />
+    <Compile Include="FileBase64Utils.cs" />
+    <Compile Include="FileNameUtils.cs" />
+    <Compile Include="FileUtils.cs" />
+    <Compile Include="IExcelConverter.cs" />
+    <Compile Include="IExport.cs" />
+    <Compile Include="IExportFile.cs" />
+    <Compile Include="IReportBean.cs" />
+    <Compile Include="IReportGenerator.cs" />
+    <Compile Include="ModelProcessor.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ReportBean.cs" />
+    <Compile Include="ReportDocument.cs" />
+    <Compile Include="ReportException.cs" />
+    <Compile Include="ReportHttpContext.cs" />
+    <Compile Include="ReportPropertyDescriptor.cs" />
+    <Compile Include="ReportToCsv.cs" />
+    <Compile Include="ReportToExcel.cs" />
+    <Compile Include="ReportToFlatFile.cs" />
+    <Compile Include="ReportToXml.cs" />
+    <Compile Include="SR.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>SR.resx</DependentUpon>
+    </Compile>
+    <Compile Include="SRDocType.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>SRDocType.resx</DependentUpon>
+    </Compile>
+    <Compile Include="TagHandlers\AbstractTagHandler.cs" />
+    <Compile Include="TagHandlers\CustomNodeProcessor.cs" />
+    <Compile Include="TagHandlers\FieldCurrencyHandler.cs" />
+    <Compile Include="TagHandlers\FieldHandler.cs" />
+    <Compile Include="TagHandlers\FieldNewLineHandler.cs" />
+    <Compile Include="TagHandlers\ForHandler.cs" />
+    <Compile Include="TagHandlers\IfHandler.cs" />
+    <Compile Include="TagHandlers\ImageHandler.cs" />
+    <Compile Include="TagHandlers\ITagHandler.cs" />
+    <Compile Include="Templating\ExcelCell.cs" />
+    <Compile Include="Templating\ExcelMergeCell.cs" />
+    <Compile Include="Templating\ExcelTemplateBuilder.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="SR.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>SR.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SRDocType.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>SRDocType.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Kinetix.ComponentModel\Kinetix.ComponentModel.csproj">
+      <Project>{A36239CB-DE97-47FB-AFE4-4FFBF15A97EB}</Project>
+      <Name>Kinetix.ComponentModel</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Kinetix.Data.SqlClient\Kinetix.Data.SqlClient.csproj">
+      <Project>{2b935fbb-e159-45cf-8b0f-798fc787768b}</Project>
+      <Name>Kinetix.Data.SqlClient</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Kinetix.Monitoring\Kinetix.Monitoring.csproj">
+      <Project>{E5CA12F8-EA8D-45B2-9EED-9592F4833478}</Project>
+      <Name>Kinetix.Monitoring</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Kinetix.ServiceModel\Kinetix.ServiceModel.csproj">
+      <Project>{A7A2C429-2E86-4830-84BD-1477D68F1401}</Project>
+      <Name>Kinetix.ServiceModel</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="Fmk.snk" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Analyzer Include="..\packages\StyleCop.Analyzers.1.0.0\analyzers\dotnet\cs\Newtonsoft.Json.dll" />
+    <Analyzer Include="..\packages\StyleCop.Analyzers.1.0.0\analyzers\dotnet\cs\StyleCop.Analyzers.CodeFixes.dll" />
+    <Analyzer Include="..\packages\StyleCop.Analyzers.1.0.0\analyzers\dotnet\cs\StyleCop.Analyzers.dll" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSHARP.Targets" />
+  <ProjectExtensions>
+    <VisualStudio AllowExistingFolder="true" />
+  </ProjectExtensions>
+</Project>
