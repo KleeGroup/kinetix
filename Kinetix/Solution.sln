@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kinetix.Broker", "Kinetix.Broker\Kinetix.Broker.csproj", "{8F68D7E6-1A2E-4DC4-90E8-D55A1E3603D4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kinetix.Broker", "Kinetix.Broker\Kinetix.Broker.csproj", "{0C6E80B2-0E45-4922-9895-73B3A3EC160D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kinetix.Caching", "Kinetix.Caching\Kinetix.Caching.csproj", "{5077EC66-237A-4BB7-AF04-F62C9362B0DF}"
 EndProject
@@ -45,10 +45,10 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{8F68D7E6-1A2E-4DC4-90E8-D55A1E3603D4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8F68D7E6-1A2E-4DC4-90E8-D55A1E3603D4}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8F68D7E6-1A2E-4DC4-90E8-D55A1E3603D4}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8F68D7E6-1A2E-4DC4-90E8-D55A1E3603D4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0C6E80B2-0E45-4922-9895-73B3A3EC160D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0C6E80B2-0E45-4922-9895-73B3A3EC160D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0C6E80B2-0E45-4922-9895-73B3A3EC160D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0C6E80B2-0E45-4922-9895-73B3A3EC160D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{5077EC66-237A-4BB7-AF04-F62C9362B0DF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{5077EC66-237A-4BB7-AF04-F62C9362B0DF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5077EC66-237A-4BB7-AF04-F62C9362B0DF}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -110,7 +110,7 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{8F68D7E6-1A2E-4DC4-90E8-D55A1E3603D4} = {E566DC13-2180-4871-80F6-FBE41CF86D63}
+		{0C6E80B2-0E45-4922-9895-73B3A3EC160D} = {E566DC13-2180-4871-80F6-FBE41CF86D63}
 		{5077EC66-237A-4BB7-AF04-F62C9362B0DF} = {E566DC13-2180-4871-80F6-FBE41CF86D63}
 		{A36239CB-DE97-47FB-AFE4-4FFBF15A97EB} = {E566DC13-2180-4871-80F6-FBE41CF86D63}
 		{D2C80C22-8099-4D28-9407-6CD6BA8B725C} = {E566DC13-2180-4871-80F6-FBE41CF86D63}

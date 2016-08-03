@@ -300,6 +300,8 @@ namespace Kinetix.ClassGenerator.Main {
                         _modelList,
                         GeneratorParameters.SsdtTableScriptFolder,
                         GeneratorParameters.SsdtTableTypeScriptFolder);
+
+
                     _ssdtInsertGenerator.GenerateListInitScript(
                         StaticListChecker.Instance.DictionaryItemInit,
                         GeneratorParameters.SsdtInitStaticListScriptFolder,
@@ -321,6 +323,8 @@ namespace Kinetix.ClassGenerator.Main {
                         GeneratorParameters.UKFile,
                         GeneratorParameters.IndexFKFile,
                         GeneratorParameters.TypeFileName);
+
+
                     _schemaGenerator.GenerateListInitScript(
                         StaticListChecker.Instance.DictionaryItemInit,
                         GeneratorParameters.StaticListFile,

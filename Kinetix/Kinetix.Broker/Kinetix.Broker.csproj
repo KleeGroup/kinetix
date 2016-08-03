@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{8F68D7E6-1A2E-4DC4-90E8-D55A1E3603D4}</ProjectGuid>
+    <ProjectGuid>{0C6E80B2-0E45-4922-9895-73B3A3EC160D}</ProjectGuid>
     <OutputType>Library</OutputType>
     <NoStandardLibraries>false</NoStandardLibraries>
     <AssemblyName>Kinetix.Broker</AssemblyName>
@@ -109,6 +109,11 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <Analyzer Include="..\packages\StyleCop.Analyzers.1.0.0\analyzers\dotnet\cs\Newtonsoft.Json.dll" />
+    <Analyzer Include="..\packages\StyleCop.Analyzers.1.0.0\analyzers\dotnet\cs\StyleCop.Analyzers.CodeFixes.dll" />
+    <Analyzer Include="..\packages\StyleCop.Analyzers.1.0.0\analyzers\dotnet\cs\StyleCop.Analyzers.dll" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\Kinetix.ComponentModel\Kinetix.ComponentModel.csproj">
       <Project>{a36239cb-de97-47fb-afe4-4ffbf15a97eb}</Project>
       <Name>Kinetix.ComponentModel</Name>
@@ -122,14 +127,9 @@
       <Name>Kinetix.Security</Name>
     </ProjectReference>
     <ProjectReference Include="..\Kinetix.ServiceModel\Kinetix.ServiceModel.csproj">
-      <Project>{A7A2C429-2E86-4830-84BD-1477D68F1401}</Project>
+      <Project>{a7a2c429-2e86-4830-84bd-1477d68f1401}</Project>
       <Name>Kinetix.ServiceModel</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Analyzer Include="..\packages\StyleCop.Analyzers.1.0.0\analyzers\dotnet\cs\Newtonsoft.Json.dll" />
-    <Analyzer Include="..\packages\StyleCop.Analyzers.1.0.0\analyzers\dotnet\cs\StyleCop.Analyzers.CodeFixes.dll" />
-    <Analyzer Include="..\packages\StyleCop.Analyzers.1.0.0\analyzers\dotnet\cs\StyleCop.Analyzers.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSHARP.Targets" />
   <ProjectExtensions>
