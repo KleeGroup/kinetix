@@ -301,19 +301,23 @@ namespace Kinetix.ClassGenerator.Main {
                         GeneratorParameters.SsdtTableScriptFolder,
                         GeneratorParameters.SsdtTableTypeScriptFolder);
 
-
-                    _ssdtInsertGenerator.GenerateListInitScript(
+                    if (StaticListChecker.Instance.DictionaryItemInit != null) {
+                        _ssdtInsertGenerator.GenerateListInitScript(
                         StaticListChecker.Instance.DictionaryItemInit,
                         GeneratorParameters.SsdtInitStaticListScriptFolder,
                         GeneratorParameters.SsdtInitStaticListMainScriptName,
                         "delta_static_lists.sql",
                         true);
-                    _ssdtInsertGenerator.GenerateListInitScript(
+                    }
+
+                    if (ReferenceListChecker.Instance.DictionaryItemInit != null) {
+                        _ssdtInsertGenerator.GenerateListInitScript(
                         ReferenceListChecker.Instance.DictionaryItemInit,
                         GeneratorParameters.SsdtInitReferenceListScriptFolder,
                         GeneratorParameters.SsdtInitReferenceListMainScriptName,
                         "delta_reference_lists.sql",
                         false);
+                    }
                 }
 
                 if (generateProcedural) {
@@ -324,17 +328,21 @@ namespace Kinetix.ClassGenerator.Main {
                         GeneratorParameters.IndexFKFile,
                         GeneratorParameters.TypeFileName);
 
-
-                    _schemaGenerator.GenerateListInitScript(
+                    if (StaticListChecker.Instance.DictionaryItemInit != null) {
+                        _schemaGenerator.GenerateListInitScript(
                         StaticListChecker.Instance.DictionaryItemInit,
                         GeneratorParameters.StaticListFile,
                         "delta_static_lists.sql",
                         true);
-                    _schemaGenerator.GenerateListInitScript(
+                    }
+
+                    if (ReferenceListChecker.Instance.DictionaryItemInit != null) {
+                        _schemaGenerator.GenerateListInitScript(
                         ReferenceListChecker.Instance.DictionaryItemInit,
                         GeneratorParameters.ReferenceListFile,
                         "delta_reference_lists.sql",
                         false);
+                    }
 
                     var allClassList = _modelList.SelectMany(x => x.Namespaces).SelectMany(x => x.Value.ClassList);
                     var referenceList = allClassList.Where(x => x.IsReference && !x.IsStatique).ToList();
