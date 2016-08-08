@@ -619,7 +619,7 @@ namespace Kinetix.ClassGenerator.XmlParser.OomReader {
                 Name = "UtilisateurIdCreation",
                 Comment = "Identifiant de l'utilisateur ayant créé l'objet.",
                 IsPersistent = true,
-                DataType = "string",
+                DataType = "int",
                 Stereotype = null,
                 Class = classe,
                 ModelFile = modelFile,
