@@ -21,7 +21,7 @@ namespace Kinetix.Broker {
 
         private static readonly BrokerManager _instance = new BrokerManager();
         private static string _defaultDataSourceName;
-        private static IResourceServiceFactory _resourceServiceFactory;
+        private static IResourceServiceFactory _resourceServiceFactory = new DefaultResourceServiceFactory();
         private readonly Dictionary<string, IBroker> _brokerMap = new Dictionary<string, IBroker>();
         private readonly Dictionary<string, Type> _storeMap = new Dictionary<string, Type>();
         private readonly List<IStoreRule> _storeRules = new List<IStoreRule>();
@@ -220,9 +220,7 @@ namespace Kinetix.Broker {
                     if (attrs.Length == 0 || forceStandardBroker) {
                         return new StandardBroker<T>(dsName);
                     } else {
-                        /* SEY : Pas d'internationalisation à gérer sur Chaine. */
-                        ////return new ReferenceBroker<T>(dsName, _resourceServiceFactory.GetLoaderService(), _resourceServiceFactory.GetWriterService());
-                        return new StandardBroker<T>(dsName);
+                        return new ReferenceBroker<T>(dsName, _resourceServiceFactory.GetLoaderService(), _resourceServiceFactory.GetWriterService());
                     }
                 }
 

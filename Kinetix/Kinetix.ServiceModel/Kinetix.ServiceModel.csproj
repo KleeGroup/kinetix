@@ -111,6 +111,7 @@
     <Compile Include="DbContextFactory.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="DefaultResourceServiceFactory.cs" />
     <Compile Include="FileAccessorAttribute.cs" />
     <Compile Include="IR.Designer.cs">
       <AutoGen>True</AutoGen>
