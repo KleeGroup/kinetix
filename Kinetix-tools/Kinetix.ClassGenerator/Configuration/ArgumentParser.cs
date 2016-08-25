@@ -39,6 +39,7 @@ namespace Kinetix.ClassGenerator.Configuration {
             GeneratorParameters.IsPostSharpDisabled = false;
             GeneratorParameters.IsNotifyPropertyChangeEnabled = false;
             GeneratorParameters.GenerateJavascript = false;
+            GeneratorParameters.GenerateJavascriptRedirect = false;
             GeneratorParameters.IsProjetUesl = false;
             GeneratorParameters.IsEntityFrameworkUsed = false;
         }
@@ -84,6 +85,9 @@ namespace Kinetix.ClassGenerator.Configuration {
                             break;
                         case "-J":
                             GeneratorParameters.GenerateJavascript = true;
+                            break;
+                        case "-R":
+                            GeneratorParameters.GenerateJavascriptRedirect = true;
                             break;
                         case "-UESL":
                             GeneratorParameters.IsProjetUesl = true;
@@ -131,6 +135,7 @@ namespace Kinetix.ClassGenerator.Configuration {
             Console.Out.WriteLine(" -A : PostSharp désactivé");
             Console.Out.WriteLine(" -N : si -A et que l'on souhaite gérer la notification de modification de champ");
             Console.Out.WriteLine(" -J : génère les scripts Javascript");
+            Console.Out.WriteLine(" -R : génère les redirect pour la composition Javascript");
             Console.Out.WriteLine(" -UESL : pour gérer les conventions de nommage de l'UESL");
             Console.Out.WriteLine(" -EF : pour générer les attributs utiles à l'utilisation d'Entity Framework");
         }

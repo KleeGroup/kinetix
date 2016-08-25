@@ -18,6 +18,8 @@ namespace Kinetix.ClassGenerator.CodeGenerator {
             writer.WriteLine(TAB + TAB + FormatJsPropertyName(property.Name) + OPEN_BRACKET);
             if (property.DataDescription.Domain != null) {
                 writer.WriteLine(TAB + TAB + TAB + "domain: '" + property.DataDescription.Domain.Code + "'" + COMA);
+            } else if (property.IsFromComposition && GeneratorParameters.GenerateJavascriptRedirect) {
+                writer.WriteLine(TAB + TAB + TAB + "redirect: ['" + FormatJsPropertyName(property.DataDescription.Libelle) + "']" + COMA);
             } else if (property.IsFromComposition) {
                 writer.WriteLine(TAB + TAB + TAB + "domain: 'DO_" + property.Name.ToUpper() + "'" + COMA);
             }

@@ -71,6 +71,14 @@ namespace Kinetix.ClassGenerator {
         }
 
         /// <summary>
+        /// Obtient ou définit si le générateur doit écrire les redirect pour la composition (Focus V3).
+        /// </summary>
+        public static bool GenerateJavascriptRedirect {
+            get;
+            set;
+        }
+
+        /// <summary>
         /// Obtient ou définit si le générateur doit respecter la convention de nommage de l'UESL.
         /// </summary>
         public static bool IsProjetUesl {
