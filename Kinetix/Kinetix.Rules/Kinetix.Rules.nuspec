@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>$id$</id>
+    <version>$version$</version>
+    <title>$title$</title>
+    <authors>Klee Group</authors>
+    <owners>Klee Group</owners>
+    <licenseUrl>http://www.apache.org/licenses/LICENSE-2.0</licenseUrl>
+    <projectUrl>https://github.com/KleeGroup/kinetix</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <releaseNotes></releaseNotes>
+    <description>Kinetix Rules Module</description>
+    <copyright>Copyright 2016</copyright>
+    <tags>Kinetix Rules</tags>
+  </metadata>
+</package>
