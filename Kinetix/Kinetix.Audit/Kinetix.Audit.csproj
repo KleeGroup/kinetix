@@ -42,6 +42,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Audit\AuditTraceBuilder.cs" />
+    <Compile Include="Audit\AuditTraceCriteriaBuilder.cs" />
     <Compile Include="Impl.Audit\AuditManager.cs" />
     <Compile Include="Audit\AuditTrace.cs" />
     <Compile Include="Audit\AuditTraceCriteria.cs" />

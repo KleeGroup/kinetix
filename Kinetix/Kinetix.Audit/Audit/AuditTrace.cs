@@ -13,10 +13,23 @@ namespace Kinetix.Audit
     [Table("AUDIT_TRACE")]
     public class AuditTrace 
     {
+
+        public AuditTrace(long? id, string category, string user, DateTime? businessDate, DateTime? executionDate, long? item, string message, string context)
+        {
+            this.Id = id;
+            this.Category = category;
+            this.User = user;
+            this.BusinessDate = businessDate;
+            this.ExecutionDate = executionDate;
+            this.Item = item;
+            this.Message = message;
+            this.Context = context;
+        }
+
         [Column("ID")]
         [Domain("DO_X_AUDIT_ID")]
         [Key]
-        public int? Id{
+        public long? Id{
             get;
             set;
         }

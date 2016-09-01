@@ -8,7 +8,9 @@ namespace Kinetix.Audit
 {
     public sealed class AuditManager : IAuditManager
     {
+        private static AuditManager _instance;
         private readonly IAuditTraceStore _auditTraceStore;
+
 
         public AuditManager(IAuditTraceStore auditTraceStore)
         {
@@ -28,6 +30,22 @@ namespace Kinetix.Audit
         public AuditTrace GetTrace(long idAuditTrace)
         {
             return _auditTraceStore.ReadTrace(idAuditTrace);
+        }
+
+        /// <summary>
+        /// Retourne un singleton.
+        /// </summary>
+        public static AuditManager Instance
+        {
+            get
+            {
+                if (_instance == null)
+                {
+                    _instance = new AuditManager(new MemoryAuditTraceStorePlugin());
+                }
+
+                return _instance;
+            }
         }
     }
 }

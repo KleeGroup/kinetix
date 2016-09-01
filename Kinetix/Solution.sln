@@ -69,7 +69,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kinetix.ServiceModel.Test",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kinetix.Workflow", "Kinetix.Workflow\Kinetix.Workflow.csproj", "{D85EE99C-8FB5-4347-9EE2-CEC9F334176F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kinetix.Audit.Test", "UnitTestProject1\Kinetix.Audit.Test.csproj", "{84499E7F-1774-450E-B29E-49FDF0D76709}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kinetix.Audit.Test", "Tests\Kinetix.Audit.Test\Kinetix.Audit.Test.csproj", "{84499E7F-1774-450E-B29E-49FDF0D76709}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

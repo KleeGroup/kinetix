@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Kinetix.Audit
 {
-    interface IAuditManager
+    public interface IAuditManager
     {
         /// <summary>
         /// Add an audit trail.
