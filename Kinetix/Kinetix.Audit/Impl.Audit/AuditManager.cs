@@ -6,11 +6,10 @@ using System.Threading.Tasks;
 
 namespace Kinetix.Audit
 {
-    public sealed class AuditManager : IAuditManager
+    public sealed class AuditManager : IAuditManager, IDisposable
     {
         private static AuditManager _instance;
         private readonly IAuditTraceStore _auditTraceStore;
-
 
         public AuditManager(IAuditTraceStore auditTraceStore)
         {
@@ -32,6 +31,8 @@ namespace Kinetix.Audit
             return _auditTraceStore.ReadTrace(idAuditTrace);
         }
 
+
+
         /// <summary>
         /// Retourne un singleton.
         /// </summary>
@@ -47,5 +48,13 @@ namespace Kinetix.Audit
                 return _instance;
             }
         }
+
+
+        public void Dispose()
+        {
+            _instance = null;
+            GC.SuppressFinalize(this);
+        }
+
     }
 }
