@@ -1,4 +1,5 @@
-﻿using System.Collections.Concurrent;
+﻿using Kinetix.Rules;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -6,7 +7,7 @@ using System.Threading;
 
 namespace Kinetix.Rules
 {
-    class MemoryRuleStore : IRuleStore
+    public sealed class MemoryRuleStorePlugin : IRuleStorePlugin
     {
 
         private readonly IDictionary<long, RuleDefinition> inMemoryRuleStore = new ConcurrentDictionary<long, RuleDefinition>();

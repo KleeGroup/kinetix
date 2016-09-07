@@ -5,6 +5,7 @@ do
   cd $dir
   rm *.nupkg
   nuget pack *.csproj -Symbols
+  nuget add *.symbols.nupkg -source ~/nupkg_local/
   popd
 done
 

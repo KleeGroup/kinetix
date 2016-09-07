@@ -1,37 +1,37 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.ServiceModel;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Kinetix.Audit
 {
+    [ServiceBehavior(ConcurrencyMode = ConcurrencyMode.Multiple, InstanceContextMode = InstanceContextMode.PerCall, IncludeExceptionDetailInFaults = true)]
     public sealed class AuditManager : IAuditManager, IDisposable
     {
         private static AuditManager _instance;
-        private readonly IAuditTraceStore _auditTraceStore;
+        private readonly IAuditTraceStorePlugin _auditTraceStorePlugin;
 
-        public AuditManager(IAuditTraceStore auditTraceStore)
+        public AuditManager(IAuditTraceStorePlugin auditTraceStorePlugin)
         {
-            _auditTraceStore = auditTraceStore;
+            _auditTraceStorePlugin = auditTraceStorePlugin;
         }
 
         public void AddTrace(AuditTrace auditTrace)
         {
-            _auditTraceStore.CreateTrace(auditTrace);
+            _auditTraceStorePlugin.CreateTrace(auditTrace);
         }
 
         public IList<AuditTrace> FindTrace(AuditTraceCriteria auditTraceCriteria)
         {
-            return _auditTraceStore.FindTraceByCriteria(auditTraceCriteria);
+            return _auditTraceStorePlugin.FindTraceByCriteria(auditTraceCriteria);
         }
 
         public AuditTrace GetTrace(long idAuditTrace)
         {
-            return _auditTraceStore.ReadTrace(idAuditTrace);
+            return _auditTraceStorePlugin.ReadTrace(idAuditTrace);
         }
-
-
 
         /// <summary>
         /// Retourne un singleton.
@@ -49,12 +49,10 @@ namespace Kinetix.Audit
             }
         }
 
-
         public void Dispose()
         {
             _instance = null;
             GC.SuppressFinalize(this);
         }
-
     }
 }

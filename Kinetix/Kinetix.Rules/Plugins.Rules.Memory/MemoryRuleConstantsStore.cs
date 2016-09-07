@@ -5,7 +5,7 @@ using System.Diagnostics;
 
 namespace Kinetix.Rules
 {
-    class MemoryRuleConstantsStore : IRuleConstantsStorePlugin
+    public sealed class MemoryRuleConstantsStore : IRuleConstantsStorePlugin
     {
 
         private readonly IDictionary<long, RuleConstants> inMemoryRuleStore = new ConcurrentDictionary<long, RuleConstants>();

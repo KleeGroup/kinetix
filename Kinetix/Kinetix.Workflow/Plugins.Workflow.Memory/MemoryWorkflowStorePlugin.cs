@@ -8,7 +8,7 @@ using System.Threading;
 
 namespace Kinetix.Workflow
 {
-    public class MemoryWorkflowStorePlugin : IWorkflowStore
+    public class MemoryWorkflowStorePlugin : IWorkflowStorePlugin
     {
 
         // WorkflowInstance

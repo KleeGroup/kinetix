@@ -1,4 +1,5 @@
 ﻿using Kinetix.Account;
+using Kinetix.Rules;
 using System;
 using System.Collections.Generic;
 
@@ -7,12 +8,12 @@ namespace Kinetix.Rules
 {
     public sealed class RuleManager : IRuleManager
     {
-        private readonly IRuleStore _ruleStorePlugin;
-        private readonly IRuleValidator _ruleValidatorPlugin;
-        private readonly IRuleSelector _ruleSelectorPlugin;
-        private readonly IRuleConstantsStore _ruleConstantsStorePlugin;
+        private readonly IRuleStorePlugin _ruleStorePlugin;
+        private readonly IRuleValidatorPlugin _ruleValidatorPlugin;
+        private readonly IRuleSelectorPlugin _ruleSelectorPlugin;
+        private readonly IRuleConstantsStorePlugin _ruleConstantsStorePlugin;
 
-        public RuleManager(IRuleStore ruleStorePlugin, IRuleSelector ruleSelectorPlugin, IRuleValidator ruleValidatorPlugin, IRuleConstantsStore ruleConstantsStorePlugin)
+        public RuleManager(IRuleStorePlugin ruleStorePlugin, IRuleSelectorPlugin ruleSelectorPlugin, IRuleValidatorPlugin ruleValidatorPlugin, IRuleConstantsStorePlugin ruleConstantsStorePlugin)
         {
             _ruleStorePlugin = ruleStorePlugin;
             _ruleSelectorPlugin = ruleSelectorPlugin;

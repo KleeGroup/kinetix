@@ -27,5 +27,14 @@ namespace Kinetix.Rules
                 }
             }
         }
+
+        public string this[string key]
+        {
+            get
+            {
+                return context[key];
+            }
+        }
+
     }
 }

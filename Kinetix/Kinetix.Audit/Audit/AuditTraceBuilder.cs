@@ -14,7 +14,7 @@ namespace Kinetix.Audit.Audit
 	    private readonly string User;
 	    private DateTime BusinessDate;
         private readonly DateTime ExecutionDate;
-	    private readonly long? Item;
+	    private readonly long Item;
 	    private readonly string Message;
 	    private string Context;
 
@@ -25,9 +25,8 @@ namespace Kinetix.Audit.Audit
         /// <param name="user">user.</param>
         /// <param name="item">item.</param>
         /// <param name="message">message.</param>
-        public AuditTraceBuilder(string category,  string user, long? item, string message)
+        public AuditTraceBuilder(string category,  string user, long item, string message)
         {
-            Debug.Assert(item != null);
             Debug.Assert(!String.IsNullOrEmpty(category));
             Debug.Assert(!String.IsNullOrEmpty(user));
             //---

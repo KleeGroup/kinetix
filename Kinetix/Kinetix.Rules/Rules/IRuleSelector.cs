@@ -17,7 +17,7 @@ namespace Kinetix.Rules
         /// <param name="selectors">Criteria.</param>
         /// <param name="ruleContext">Criteria.</param>
         /// <returns>a list of account.</returns>
-        List<AccountUser> SelectAccounts(long idActivityDefinition, IList<SelectorDefinition> selectors, RuleContext ruleContext);
+        IList<AccountUser> SelectAccounts(long idActivityDefinition, IList<SelectorDefinition> selectors, RuleContext ruleContext);
 
 
     }

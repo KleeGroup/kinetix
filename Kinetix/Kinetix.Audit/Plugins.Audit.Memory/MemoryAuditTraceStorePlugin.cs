@@ -7,7 +7,7 @@ using System.Threading;
 
 namespace Kinetix.Audit
 {
-    class MemoryAuditTraceStorePlugin : IAuditTraceStorePlugin
+    public class MemoryAuditTraceStorePlugin : IAuditTraceStorePlugin
     {
 
         private IDictionary<long?, AuditTrace> inMemoryStore = new ConcurrentDictionary<long?, AuditTrace>();

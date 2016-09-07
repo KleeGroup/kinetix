@@ -33,6 +33,7 @@
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
+    <Reference Include="System.ServiceModel" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -42,6 +43,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Impl.Workflow\IItemStorePlugin.cs" />
+    <Compile Include="Plugins.Workflow.SqlServer\SqlServeurWorkflowStorePlugin.cs" />
     <Compile Include="Workflow\IWorkflowManager.cs" />
     <Compile Include="Impl.Workflow\IWorkflowStorePlugin.cs" />
     <Compile Include="Workflow\WfCodeMultiplicityDefinition.cs" />
@@ -67,6 +69,10 @@
       <Project>{f15fcf81-98cb-4f02-be27-440411684143}</Project>
       <Name>Kinetix.Account</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Kinetix.Broker\Kinetix.Broker.csproj">
+      <Project>{0C6E80B2-0E45-4922-9895-73B3A3EC160D}</Project>
+      <Name>Kinetix.Broker</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Kinetix.ComponentModel\Kinetix.ComponentModel.csproj">
       <Project>{a36239cb-de97-47fb-afe4-4ffbf15a97eb}</Project>
       <Name>Kinetix.ComponentModel</Name>
@@ -77,6 +83,19 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />
+  <ItemGroup>
+    <Content Include="dbo\WF_ACTIVITY.sql" />
+    <Content Include="dbo\WF_ACTIVITY_DEFINITION.sql" />
+    <Content Include="dbo\WF_DECISION.sql" />
+    <Content Include="dbo\WF_MULTIPLICITY_DEFINITION.sql" />
+    <Content Include="dbo\WF_STATUS.sql" />
+    <Content Include="dbo\WF_TRANSITION_DEFINITION.sql" />
+    <Content Include="dbo\WF_WORKFLOW.sql" />
+    <Content Include="dbo\WF_WORKFLOW_DEFINITION.sql" />
+    <Content Include="generated.sql" />
+    <Content Include="Init\WF_MULTIPLICITY.insert.sql" />
+    <Content Include="Init\WF_STATUS.insert.sql" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
