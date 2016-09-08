@@ -31,10 +31,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Kinetix.Account, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Kinetix.Account.1.0.0\lib\net451\Kinetix.Account.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
@@ -70,6 +66,10 @@
     <Compile Include="Plugins.Rules.Validator\SimpleRuleValidatorPlugin.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Kinetix.Account\Kinetix.Account.csproj">
+      <Project>{F15FCF81-98CB-4F02-BE27-440411684143}</Project>
+      <Name>Kinetix.Account</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Kinetix.Broker\Kinetix.Broker.csproj">
       <Project>{0C6E80B2-0E45-4922-9895-73B3A3EC160D}</Project>
       <Name>Kinetix.Broker</Name>
