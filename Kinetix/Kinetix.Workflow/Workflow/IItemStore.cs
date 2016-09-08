@@ -13,15 +13,15 @@ namespace Kinetix.Workflow
         /// Track a new item.
         ///  /!\ No item will be created. It will only be tracked
         /// </summary>
-        /// <param name="auditTraceCriteria">Criteria.</param>
-        /// <returns>The matching audit traces.</returns>
+        /// <param name="itemId">itemId to track.</param>
+        /// <param name="item">item to track.</param>
         void AddItem(long itemId, object item);
 
         /// <summary>
         /// Get an item
         /// </summary>
         /// <param name="itemId">ItemId.</param>
-        /// <returns>The matching audit traces.</returns>
+        /// <returns>the object corresponding to the itemId.</returns>
         object ReadItem(long itemId);
     }
 }

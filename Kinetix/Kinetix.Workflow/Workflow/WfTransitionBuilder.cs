@@ -2,7 +2,6 @@
 using System.Diagnostics;
 
 
-
 namespace Kinetix.Workflow
 {
     public class WfTransitionBuilder
@@ -10,21 +9,21 @@ namespace Kinetix.Workflow
         private readonly static string DEFAULT_VALUE_NAME = "default";
 
         private string myName;
-        private long wfadIdFrom;
-    	private long wfadIdTo;
+        private int wfadIdFrom;
+    	private int wfadIdTo;
 
         /// <summary>
         /// Builder for transitions.
         /// </summary>
         /// <param name="wfadIdFrom">wfadIdFrom.</param>
         /// <param name="wfadIdTo">wfadIdTo.</param>
-        public WfTransitionBuilder(long? wfadIdFrom, long? wfadIdTo)
+        public WfTransitionBuilder(int? wfadIdFrom, int? wfadIdTo)
         {
             Debug.Assert(wfadIdFrom != null);
             Debug.Assert(wfadIdTo != null);
             //---
-            this.wfadIdFrom = (long) wfadIdFrom;
-            this.wfadIdTo = (long) wfadIdTo;
+            this.wfadIdFrom = (int) wfadIdFrom;
+            this.wfadIdTo = (int) wfadIdTo;
         }
 
         /// <summary>

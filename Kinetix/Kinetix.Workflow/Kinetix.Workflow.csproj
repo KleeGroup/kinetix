@@ -46,6 +46,7 @@
     <Compile Include="Plugins.Workflow.SqlServer\SqlServerWorkflowStorePlugin.cs" />
     <Compile Include="Workflow\IWorkflowManager.cs" />
     <Compile Include="Impl.Workflow\IWorkflowStorePlugin.cs" />
+    <Compile Include="Workflow\WfActivityDefinitionBuilder.cs" />
     <Compile Include="Workflow\WfCodeMultiplicityDefinition.cs" />
     <Compile Include="Workflow\IItemStore.cs" />
     <Compile Include="Workflow\Domain\Instance\WfDecision.cs" />
@@ -61,8 +62,10 @@
     <Compile Include="Workflow\Domain\Instance\WfActivity.cs" />
     <Compile Include="Workflow\WfCodeStatusWorkflow.cs" />
     <Compile Include="Workflow\WfCodeTransition.cs" />
+    <Compile Include="Workflow\WfDomainMetadata.cs" />
     <Compile Include="Workflow\WfTransitionBuilder.cs" />
     <Compile Include="Impl.Workflow\WorkflowManager.cs" />
+    <Compile Include="Workflow\WfWorkflowDefinitionBuilder.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Kinetix.Account\Kinetix.Account.csproj">
@@ -77,12 +80,15 @@
       <Project>{a36239cb-de97-47fb-afe4-4ffbf15a97eb}</Project>
       <Name>Kinetix.ComponentModel</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Kinetix.Data.SqlClient\Kinetix.Data.SqlClient.csproj">
+      <Project>{2B935FBB-E159-45CF-8B0F-798FC787768B}</Project>
+      <Name>Kinetix.Data.SqlClient</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Kinetix.Rules\Kinetix.Rules.csproj">
       <Project>{2a53dde2-180d-4653-80e2-055f8ecaf1d3}</Project>
       <Name>Kinetix.Rules</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
     <Content Include="dbo\WF_ACTIVITY.sql" />
     <Content Include="dbo\WF_ACTIVITY_DEFINITION.sql" />
@@ -95,6 +101,9 @@
     <Content Include="generated.sql" />
     <Content Include="Init\WF_MULTIPLICITY.insert.sql" />
     <Content Include="Init\WF_STATUS.insert.sql" />
+    <EmbeddedResource Include="Plugins.Workflow.SqlServer\SQLResources\CountDefaultTransactions.sql" />
+    <EmbeddedResource Include="Plugins.Workflow.SqlServer\SQLResources\FindActivityDefinitionByPosition.sql" />
+    <EmbeddedResource Include="Plugins.Workflow.SqlServer\SQLResources\FindAllDefaultActivityDefinitions.sql" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

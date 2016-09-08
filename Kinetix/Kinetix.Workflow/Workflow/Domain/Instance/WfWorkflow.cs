@@ -1,11 +1,7 @@
 ﻿using Kinetix.ComponentModel;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Kinetix.Workflow.instance
 {
@@ -120,7 +116,7 @@ namespace Kinetix.Workflow.instance
         [Column("WFW_ID")]
         [Domain("DO_X_WORKFLOW_ID")]
         [Key]
-        public long? WfwId
+        public int? WfwId
         {
             get;
             set;
@@ -136,7 +132,7 @@ namespace Kinetix.Workflow.instance
 
         [Column("ITEM_ID")]
         [Domain("DO_X_WORKFLOW_WEAK_ID")]
-        public long? ItemId
+        public int? ItemId
         {
             get;
             set;
@@ -162,7 +158,7 @@ namespace Kinetix.Workflow.instance
         [Column("WFWD_ID")]
         [Domain("DO_X_WORKFLOW_ID")]
         [Required]
-        public long? WfwdId
+        public int? WfwdId
         {
             get;
             set;
@@ -180,7 +176,7 @@ namespace Kinetix.Workflow.instance
 
         [Column("WFA_CURRENT")]
         [Domain("DO_X_WORKFLOW_CODE")]
-        public long? WfaId2
+        public int? WfaId2
         {
             get;
             set;

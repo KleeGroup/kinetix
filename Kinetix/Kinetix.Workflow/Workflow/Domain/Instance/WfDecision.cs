@@ -14,8 +14,89 @@ namespace Kinetix.Workflow.instance
     /// </summary>
     /// 
     [Table("WF_DECISION")]
-    public class WfDecision
+    public partial class WfDecision
     {
+        /// <summary>
+        /// Constructeur.
+        /// </summary>
+        public WfDecision()
+        {
+            this.OnCreated();
+        }
+
+        /// <summary>
+        /// Constructeur par recopie.
+        /// </summary>
+        /// <param name="bean">Source.</param>
+        public WfDecision(WfDecision bean)
+        {
+            if (bean == null)
+            {
+                throw new ArgumentNullException(nameof(bean));
+            }
+
+            this.Id = bean.Id;
+            this.Choice = bean.Choice;
+            this.Comments = bean.Comments;
+            this.DecisionDate = bean.DecisionDate;
+
+            this.OnCreated(bean);
+        }
+
+        #region Meta données
+
+        /// <summary>
+        /// Type énuméré présentant les noms des colonnes en base.
+        /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1034:NestedTypesShouldNotBeVisible", Justification = "A corriger")]
+        public enum Cols
+        {
+            /// <summary>
+            /// Nom de la colonne en base associée à la propriété .
+            /// </summary>
+            [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", Justification = "Correspondance schéma persistence")]
+            [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1707:IdentifiersShouldNotContainUnderscores", Justification = "Correspondance schéma persistence")]
+            WFE_ID,
+
+            /// <summary>
+            /// Nom de la colonne en base associée à la propriété .
+            /// </summary>
+            [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", Justification = "Correspondance schéma persistence")]
+            [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1707:IdentifiersShouldNotContainUnderscores", Justification = "Correspondance schéma persistence")]
+            USER,
+
+            /// <summary>
+            /// Nom de la colonne en base associée à la propriété .
+            /// </summary>
+            [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", Justification = "Correspondance schéma persistence")]
+            [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1707:IdentifiersShouldNotContainUnderscores", Justification = "Correspondance schéma persistence")]
+            CHOICE,
+
+            /// <summary>
+            /// Nom de la colonne en base associée à la propriété .
+            /// </summary>
+            [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", Justification = "Correspondance schéma persistence")]
+            [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1707:IdentifiersShouldNotContainUnderscores", Justification = "Correspondance schéma persistence")]
+            DECISION_DATE,
+
+
+            /// <summary>
+            /// Nom de la colonne en base associée à la propriété .
+            /// </summary>
+            [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", Justification = "Correspondance schéma persistence")]
+            [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1707:IdentifiersShouldNotContainUnderscores", Justification = "Correspondance schéma persistence")]
+            COMMENTS,
+
+            /// <summary>
+            /// Nom de la colonne en base associée à la propriété .
+            /// </summary>
+            [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", Justification = "Correspondance schéma persistence")]
+            [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1707:IdentifiersShouldNotContainUnderscores", Justification = "Correspondance schéma persistence")]
+            WFA_ID,
+
+        }
+
+        #endregion
 
         [Column("WFE_ID")]
         [Domain("DO_X_WORKFLOW_ID")]
@@ -61,21 +142,23 @@ namespace Kinetix.Workflow.instance
 
         [Column("WFA_ID")]
         [Domain("DO_X_WORKFLOW_ID")]
-        public long WfaId
-        {
-            get;
-            set;
-        }
-
-        [Column("WFE_ID")]
-        [Domain("DO_X_WORKFLOW_ID")]
-        public long? WfeId
+        public int WfaId
         {
             get;
             set;
         }
 
 
+        /// <summary>
+        /// Methode d'extensibilité possible pour les constructeurs.
+        /// </summary>
+        partial void OnCreated();
+
+        /// <summary>
+        /// Methode d'extensibilité possible pour les constructeurs par recopie.
+        /// </summary>
+        /// <param name="bean">Source.</param>
+        partial void OnCreated(WfDecision bean);
 
     }
 }

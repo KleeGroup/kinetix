@@ -1,11 +1,6 @@
 ﻿using Kinetix.ComponentModel;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Kinetix.Workflow.model
 {
@@ -25,7 +20,6 @@ namespace Kinetix.Workflow.model
             get;
             set;
         }
-
 
         [Column("LABEL")]
         [Domain("DO_X_WORKFLOW_LABEL")]

@@ -4,8 +4,10 @@ using Kinetix.Workflow.instance;
 using Kinetix.Workflow.model;
 using System.ServiceModel;
 using Kinetix.Broker;
+using Kinetix.Data.SqlClient;
+using System.Collections;
 
-namespace Kinetix.Workflow.Plugins.Workflow.SqlServer
+namespace Kinetix.Workflow
 {
     public class SqlServerWorkflowStorePlugin : IWorkflowStorePlugin
     {
@@ -15,41 +17,68 @@ namespace Kinetix.Workflow.Plugins.Workflow.SqlServer
             BrokerManager.GetBroker<WfTransitionDefinition>().Save(transition);
         }
 
+        /// <summary>
+        /// Retourne la commande SQL Server associée au script.
+        /// </summary>
+        /// <param name="script">Nom du script.</param>
+        /// <param name="dataSource">Datasource.</param>
+        /// <param name="disableCheckTransCtx">Indique si la vérification de la présence d'un contexte transactionnel doit être désactivée.</param>
+        /// <returns>Commande.</returns>
+        public SqlServerCommand GetSqlServerCommand(string script, string dataSource = "default", bool disableCheckTransCtx = false)
+        {
+            if (string.IsNullOrEmpty(script))
+            {
+                throw new ArgumentNullException("script");
+            }
+            if (string.IsNullOrEmpty(dataSource))
+            {
+                throw new ArgumentNullException("dataSource");
+            }
+            return new SqlServerCommand(dataSource, GetType().Assembly, string.Concat(GetType().Namespace + ".SQLResources.", script), false);
+        }
+
         [OperationContract]
         public int CountDefaultTransitions(WfWorkflowDefinition wfWorkflowDefinition)
         {
-            throw new NotImplementedException();
+            var cmd = GetSqlServerCommand("CountDefaultTransactions.sql");
+            cmd.Parameters.AddWithValue(WfWorkflowDefinition.Cols.WFWD_ID, wfWorkflowDefinition.WfwdId);
+            return cmd.ReadScalar<int>();
         }
 
         [OperationContract]
         public void CreateActivity(WfActivity wfActivity)
         {
-            BrokerManager.GetBroker<WfActivity>().Save(wfActivity);
+            int id = (int) BrokerManager.GetBroker<WfActivity>().Save(wfActivity);
+            wfActivity.WfaId = id;
         }
 
         [OperationContract]
         public void CreateActivityDefinition(WfWorkflowDefinition wfWorkflowDefinition, WfActivityDefinition wfActivityDefinition)
         {
-            wfActivityDefinition.WfwdId = (long) wfWorkflowDefinition.WfwdId;
-            BrokerManager.GetBroker<WfActivityDefinition>().Save(wfActivityDefinition);
+            wfActivityDefinition.WfwdId = (int) wfWorkflowDefinition.WfwdId;
+            int id = (int) BrokerManager.GetBroker<WfActivityDefinition>().Save(wfActivityDefinition);
+            wfActivityDefinition.WfadId = id;
         }
 
         [OperationContract]
         public void CreateDecision(WfDecision wfDecision)
         {
-            BrokerManager.GetBroker<WfDecision>().Save(wfDecision);
+            int id = (int) BrokerManager.GetBroker<WfDecision>().Save(wfDecision);
+            wfDecision.Id = id;
         }
 
         [OperationContract]
         public void CreateWorkflowDefinition(WfWorkflowDefinition workflowDefinition)
         {
-            BrokerManager.GetBroker<WfWorkflowDefinition>().Save(workflowDefinition);
+            int id = (int) BrokerManager.GetBroker<WfWorkflowDefinition>().Save(workflowDefinition);
+            workflowDefinition.WfwdId = id;
         }
 
         [OperationContract]
         public void CreateWorkflowInstance(WfWorkflow workflow)
         {
-            BrokerManager.GetBroker<WfWorkflow>().Save(workflow);
+            int id = (int) BrokerManager.GetBroker<WfWorkflow>().Save(workflow);
+            workflow.WfwId = id;
         }
 
         [OperationContract]
@@ -67,7 +96,11 @@ namespace Kinetix.Workflow.Plugins.Workflow.SqlServer
         [OperationContract]
         public WfActivityDefinition FindActivityDefinitionByPosition(WfWorkflowDefinition wfWorkflowDefinition, int position)
         {
-            throw new NotImplementedException();
+            var cmd = GetSqlServerCommand("FindActivityDefinitionByPosition.sql");
+            cmd.Parameters.AddWithValue(WfActivityDefinition.Cols.WFWD_ID, wfWorkflowDefinition.WfwdId);
+            cmd.Parameters.AddWithValue(WfActivityDefinition.Cols.LEVEL, position);
+            WfActivityDefinition activity = cmd.ReadItem<WfActivityDefinition>();
+            return activity;
         }
 
         [OperationContract]
@@ -79,37 +112,55 @@ namespace Kinetix.Workflow.Plugins.Workflow.SqlServer
         [OperationContract]
         public IList<WfDecision> FindAllDecisionByActivity(WfActivity wfActivity)
         {
-            throw new NotImplementedException();
+            IList<WfDecision> ret;
+            FilterCriteria filterCriteria = new FilterCriteria();
+            filterCriteria.Equals(WfDecision.Cols.WFA_ID, wfActivity.WfaId);
+            ret = new List<WfDecision>(BrokerManager.GetBroker<WfDecision>().GetAllByCriteria(filterCriteria));
+            return ret;
         }
 
         [OperationContract]
         public IList<WfActivityDefinition> FindAllDefaultActivityDefinitions(WfWorkflowDefinition wfWorkflowDefinition)
         {
-            throw new NotImplementedException();
+            var cmd = GetSqlServerCommand("FindAllDefaultActivityDefinitions.sql");
+            cmd.Parameters.AddWithValue(WfActivityDefinition.Cols.WFWD_ID, wfWorkflowDefinition.WfwdId);
+            cmd.Parameters.AddWithValue(WfActivityDefinition.Cols.NAME, WfCodeTransition.Default.ToString());
+            IList<WfActivityDefinition> activities = new List<WfActivityDefinition>(cmd.ReadList<WfActivityDefinition>());
+            return activities;
         }
 
         [OperationContract]
         public WfActivityDefinition FindNextActivity(WfActivity activity)
         {
-            throw new NotImplementedException();
+            return FindNextActivity(activity, WfCodeTransition.Default.ToString());
         }
 
         [OperationContract]
         public WfActivityDefinition FindNextActivity(WfActivity activity, string transitionName)
         {
-            throw new NotImplementedException();
+            FilterCriteria filterCriteria = new FilterCriteria();
+            filterCriteria.Equals(WfTransitionDefinition.Cols.WFAD_ID_FROM, activity.WfadId);
+            filterCriteria.Equals(WfTransitionDefinition.Cols.NAME, transitionName);
+            WfTransitionDefinition transition = BrokerManager.GetBroker<WfTransitionDefinition>().GetByCriteria(filterCriteria);
+
+            return BrokerManager.GetBroker<WfActivityDefinition>().Get(transition.WfadIdTo);
         }
 
         [OperationContract]
         public bool HasNextActivity(WfActivity activity)
         {
-            throw new NotImplementedException();
+            return HasNextActivity(activity, WfCodeTransition.Default.ToString());
         }
 
         [OperationContract]
         public bool HasNextActivity(WfActivity activity, string transitionName)
         {
-            throw new NotImplementedException();
+            //TODO: remove this method and use FindNextActivity
+            FilterCriteria filterCriteria = new FilterCriteria();
+            filterCriteria.Equals(WfTransitionDefinition.Cols.WFAD_ID_FROM, activity.WfadId);
+            filterCriteria.Equals(WfTransitionDefinition.Cols.NAME, transitionName);
+            WfTransitionDefinition transition = BrokerManager.GetBroker<WfTransitionDefinition>().GetByCriteria(filterCriteria);
+            return transition != null;
         }
 
         [OperationContract]

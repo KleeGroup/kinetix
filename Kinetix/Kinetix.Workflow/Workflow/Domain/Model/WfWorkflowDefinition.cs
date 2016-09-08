@@ -83,7 +83,7 @@ namespace Kinetix.Workflow.model
         [Column("WFWD_ID")]
         [Domain("DO_X_WORKFLOW_ID")]
         [Key]
-        public long? WfwdId
+        public int? WfwdId
         {
             get;
             set;
@@ -99,15 +99,15 @@ namespace Kinetix.Workflow.model
 
         [Column("CREATION_DATE")]
         [Domain("DO_X_WORKFLOW_DATE")]
-        public string CreationDate
+        public DateTime CreationDate
         {
             get;
             set;
         }
 
-        [Column("WFADID")]
+        [Column("WFAD_ID")]
         [Domain("DO_X_WORKFLOW_ID")]
-        public long? WfadId
+        public int? WfadId
         {
             get;
             set;

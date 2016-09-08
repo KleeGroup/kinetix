@@ -6,7 +6,7 @@
 create table [dbo].[WF_WORKFLOW_DEFINITION] (
 	[WFWD_ID] int identity,
 	[NAME] nvarchar(100),
-	[DATE_CREATION] datetime2,
+	[CREATION_DATE] datetime2,
 	[WFAD_ID] int,
 	constraint [PK_WF_WORKFLOW_DEFINITION] primary key clustered ([WFWD_ID] ASC),
 	constraint [FK_WFWD_WFAD] foreign key ([WFAD_ID]) references [dbo].[WF_ACTIVITY_DEFINITION] ([WFAD_ID]))

@@ -15,12 +15,87 @@ namespace Kinetix.Workflow.model
     /// </summary>
     /// 
     [Table("WF_ACTIVITY_DEFINITION")]
-    public class WfActivityDefinition
+    public partial class WfActivityDefinition
     {
+        /// <summary>
+        /// Constructeur.
+        /// </summary>
+        public WfActivityDefinition()
+        {
+            this.OnCreated();
+        }
+
+        /// <summary>
+        /// Constructeur par recopie.
+        /// </summary>
+        /// <param name="bean">Source.</param>
+        public WfActivityDefinition(WfActivityDefinition bean)
+        {
+            if (bean == null)
+            {
+                throw new ArgumentNullException(nameof(bean));
+            }
+
+            this.WfwdId = bean.WfwdId;
+            this.Name = bean.Name;
+            this.WfmdCode = bean.WfmdCode;
+            this.WfadId = bean.WfadId;
+            this.Level = bean.Level;
+
+            this.OnCreated(bean);
+        }
+
+        #region Meta données
+
+        /// <summary>
+        /// Type énuméré présentant les noms des colonnes en base.
+        /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1034:NestedTypesShouldNotBeVisible", Justification = "A corriger")]
+        public enum Cols
+        {
+            /// <summary>
+            /// Nom de la colonne en base associée à la propriété .
+            /// </summary>
+            [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", Justification = "Correspondance schéma persistence")]
+            [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1707:IdentifiersShouldNotContainUnderscores", Justification = "Correspondance schéma persistence")]
+            WFAD_ID,
+
+            /// <summary>
+            /// Nom de la colonne en base associée à la propriété .
+            /// </summary>
+            [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", Justification = "Correspondance schéma persistence")]
+            [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1707:IdentifiersShouldNotContainUnderscores", Justification = "Correspondance schéma persistence")]
+            NAME,
+
+            /// <summary>
+            /// Nom de la colonne en base associée à la propriété .
+            /// </summary>
+            [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", Justification = "Correspondance schéma persistence")]
+            [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1707:IdentifiersShouldNotContainUnderscores", Justification = "Correspondance schéma persistence")]
+            LEVEL,
+
+            /// <summary>
+            /// Nom de la colonne en base associée à la propriété .
+            /// </summary>
+            [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", Justification = "Correspondance schéma persistence")]
+            [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1707:IdentifiersShouldNotContainUnderscores", Justification = "Correspondance schéma persistence")]
+            WFMD_CODE,
+            
+            /// <summary>
+            /// Nom de la colonne en base associée à la propriété .
+            /// </summary>
+            [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", Justification = "Correspondance schéma persistence")]
+            [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1707:IdentifiersShouldNotContainUnderscores", Justification = "Correspondance schéma persistence")]
+            WFWD_ID,
+
+        }
+
+        #endregion
+
         [Column("WFAD_ID")]
         [Domain("DO_X_WORKFLOW_ID")]
         [Key]
-        public long? WfadId
+        public int? WfadId
         {
             get;
             set;
@@ -36,7 +111,7 @@ namespace Kinetix.Workflow.model
 
         [Column("LEVEL")]
         [Domain("DO_X_WORKFLOW_LEVEL")]
-        public int Level
+        public int? Level
         {
             get;
             set;
@@ -52,11 +127,21 @@ namespace Kinetix.Workflow.model
 
         [Column("WFWD_ID")]
         [Domain("DO_X_WORKFLOW_ID")]
-        public long WfwdId
+        public int WfwdId
         {
             get;
             set;
         }
 
+        /// <summary>
+        /// Methode d'extensibilité possible pour les constructeurs.
+        /// </summary>
+        partial void OnCreated();
+
+        /// <summary>
+        /// Methode d'extensibilité possible pour les constructeurs par recopie.
+        /// </summary>
+        /// <param name="bean">Source.</param>
+        partial void OnCreated(WfActivityDefinition bean);
     }
 }

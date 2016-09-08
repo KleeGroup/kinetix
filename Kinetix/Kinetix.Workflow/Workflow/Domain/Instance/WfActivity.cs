@@ -17,7 +17,7 @@ namespace Kinetix.Workflow
         [Column("WFA_ID")]
         [Domain("DO_X_WORKFLOW_ID")]
         [Key]
-        public long? WfaId
+        public int? WfaId
         {
             get;
             set;
@@ -33,7 +33,7 @@ namespace Kinetix.Workflow
 
         [Column("WFW_ID")]
         [Domain("DO_X_WORKFLOW_ID")]
-        public long WfwId
+        public int WfwId
         {
             get;
             set;
@@ -41,7 +41,7 @@ namespace Kinetix.Workflow
 
         [Column("WFAD_ID")]
         [Domain("DO_X_WORKFLOW_ID")]
-        public long WfadId
+        public int WfadId
         {
             get;
             set;

@@ -17,14 +17,14 @@ namespace Kinetix.Workflow
         /// <param name="userLogic">userLogic</param>
         /// <param name="item">item</param>
         /// <returns>a new workflow instance</returns>
-        WfWorkflow CreateWorkflowInstance(string definitionName, string user, bool userLogic, long item);
+        WfWorkflow CreateWorkflowInstance(string definitionName, string user, bool userLogic, int item);
 
         /// <summary>
         /// Get a workflow instance by its Id. 
         /// </summary>
         /// <param name="wfwId">wfwId</param>
         /// <return>the workflow instance</return>
-        WfWorkflow GetWorkflowInstance(long wfwId);
+        WfWorkflow GetWorkflowInstance(int wfwId);
 
 
         /// <summary>
@@ -80,7 +80,7 @@ namespace Kinetix.Workflow
         /// </summary>
         /// <param name="wfWorkflow">wfWorkflow</param>
         /// <param name="wfActivityDefinitionId">wfActivityDefinitionId</param>
-        void AutoValidateNextActivities(WfWorkflow wfWorkflow, long wfActivityDefinitionId);
+        void AutoValidateNextActivities(WfWorkflow wfWorkflow, int wfActivityDefinitionId);
 
         /// <summary>
         /// Does the provided activity can be autovalidated.

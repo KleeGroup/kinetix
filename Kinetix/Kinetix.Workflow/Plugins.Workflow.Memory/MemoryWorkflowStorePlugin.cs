@@ -86,28 +86,28 @@ namespace Kinetix.Workflow
 
         public void CreateActivityDefinition(WfWorkflowDefinition wfWorkflowDefinition, WfActivityDefinition wfActivityDefinition)
         {
-            long generatedId = Interlocked.Increment(ref memoryActivityDefinitionSequenceGenerator);
+            int generatedId = Interlocked.Increment(ref memoryActivityDefinitionSequenceGenerator);
             wfActivityDefinition.WfadId = generatedId;
             inMemoryActivityDefinitionStore[generatedId] = wfActivityDefinition;
         }
         
         public void CreateDecision(WfDecision wfDecision)
         {
-            long generatedId = Interlocked.Increment(ref memoryDecisionSequenceGenerator);
-            wfDecision.WfeId = generatedId;
+            int generatedId = Interlocked.Increment(ref memoryDecisionSequenceGenerator);
+            wfDecision.Id = generatedId;
             inMemoryDecisionStore[generatedId] = wfDecision;
         }
 
         public void CreateWorkflowDefinition(WfWorkflowDefinition workflowDefinition)
         {
-            long generatedId = Interlocked.Increment(ref memoryWorkflowDefinitionSequenceGenerator);
+            int generatedId = Interlocked.Increment(ref memoryWorkflowDefinitionSequenceGenerator);
             workflowDefinition.WfwdId = generatedId;
             inMemoryWorkflowDefinitionStore[generatedId] = workflowDefinition;
         }
 
         public void CreateWorkflowInstance(WfWorkflow workflow)
         {
-            long generatedId = Interlocked.Increment(ref memoryWorkflowInstanceSequenceGenerator);
+            int generatedId = Interlocked.Increment(ref memoryWorkflowInstanceSequenceGenerator);
             workflow.WfwId = generatedId;
             inMemoryWorkflowInstanceStore[generatedId] = workflow;
         }
@@ -124,7 +124,7 @@ namespace Kinetix.Workflow
 
         public WfActivityDefinition FindActivityDefinitionByPosition(WfWorkflowDefinition wfWorkflowDefinition, int position)
         {
-            long? idActivity = wfWorkflowDefinition.WfadId;
+            int? idActivity = wfWorkflowDefinition.WfadId;
 
             if (idActivity == null)
             {
