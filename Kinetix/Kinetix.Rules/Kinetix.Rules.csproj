@@ -47,6 +47,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Impl.Rules\IRuleStorePlugin.cs" />
+    <Compile Include="Plugins.Rules.SqlServer\SqlServerRuleStorePlugin.cs" />
     <Compile Include="Rules\IRuleConstantsStore.cs" />
     <Compile Include="Impl.Rules\IRuleConstantsStorePlugin.cs" />
     <Compile Include="Rules\IRuleManager.cs" />
@@ -69,9 +70,17 @@
     <Compile Include="Plugins.Rules.Validator\SimpleRuleValidatorPlugin.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Kinetix.Broker\Kinetix.Broker.csproj">
+      <Project>{0C6E80B2-0E45-4922-9895-73B3A3EC160D}</Project>
+      <Name>Kinetix.Broker</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Kinetix.ComponentModel\Kinetix.ComponentModel.csproj">
       <Project>{a36239cb-de97-47fb-afe4-4ffbf15a97eb}</Project>
       <Name>Kinetix.ComponentModel</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Kinetix.Data.SqlClient\Kinetix.Data.SqlClient.csproj">
+      <Project>{2B935FBB-E159-45CF-8B0F-798FC787768B}</Project>
+      <Name>Kinetix.Data.SqlClient</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

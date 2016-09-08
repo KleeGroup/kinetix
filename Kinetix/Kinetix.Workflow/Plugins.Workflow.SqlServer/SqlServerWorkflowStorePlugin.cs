@@ -7,7 +7,7 @@ using Kinetix.Broker;
 
 namespace Kinetix.Workflow.Plugins.Workflow.SqlServer
 {
-    public class SqlServeurWorkflowStorePlugin : IWorkflowStorePlugin
+    public class SqlServerWorkflowStorePlugin : IWorkflowStorePlugin
     {
         [OperationContract]
         public void AddTransition(WfTransitionDefinition transition)

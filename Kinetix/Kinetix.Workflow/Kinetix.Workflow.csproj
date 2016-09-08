@@ -43,7 +43,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Impl.Workflow\IItemStorePlugin.cs" />
-    <Compile Include="Plugins.Workflow.SqlServer\SqlServeurWorkflowStorePlugin.cs" />
+    <Compile Include="Plugins.Workflow.SqlServer\SqlServerWorkflowStorePlugin.cs" />
     <Compile Include="Workflow\IWorkflowManager.cs" />
     <Compile Include="Impl.Workflow\IWorkflowStorePlugin.cs" />
     <Compile Include="Workflow\WfCodeMultiplicityDefinition.cs" />
