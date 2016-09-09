@@ -1,5 +1,4 @@
-﻿
--- ===========================================================================================
+﻿-- ===========================================================================================
 --   Description		:	Insertion des valeurs de la table WF_STATUS.
 -- ===========================================================================================
 
@@ -12,10 +11,10 @@ BEGIN
 	SET XACT_ABORT ON
 	BEGIN TRANSACTION
 
-	INSERT INTO WF_STATUS(WFS_CODE, LABEL) VALUES (N'CRE', N'Créer');
-	INSERT INTO WF_STATUS(WFS_CODE, LABEL) VALUES (N'STA', N'Démaré');
-	INSERT INTO WF_STATUS(WFS_CODE, LABEL) VALUES (N'PAU', N'Suspendu');
-	INSERT INTO WF_STATUS(WFS_CODE, LABEL) VALUES (N'END', N'Terminé');
+	INSERT INTO WF_STATUS(WFS_CODE, LABEL) VALUES (N'Cre', N'Créer');
+	INSERT INTO WF_STATUS(WFS_CODE, LABEL) VALUES (N'Sta', N'Démaré');
+	INSERT INTO WF_STATUS(WFS_CODE, LABEL) VALUES (N'Pau', N'Suspendu');
+	INSERT INTO WF_STATUS(WFS_CODE, LABEL) VALUES (N'End', N'Terminé');
 
 	COMMIT TRANSACTION
 END

@@ -5,7 +5,6 @@ using Kinetix.Workflow.model;
 using System.ServiceModel;
 using Kinetix.Broker;
 using Kinetix.Data.SqlClient;
-using System.Collections;
 
 namespace Kinetix.Workflow
 {
@@ -99,7 +98,7 @@ namespace Kinetix.Workflow
             var cmd = GetSqlServerCommand("FindActivityDefinitionByPosition.sql");
             cmd.Parameters.AddWithValue(WfActivityDefinition.Cols.WFWD_ID, wfWorkflowDefinition.WfwdId);
             cmd.Parameters.AddWithValue(WfActivityDefinition.Cols.LEVEL, position);
-            WfActivityDefinition activity = cmd.ReadItem<WfActivityDefinition>();
+            WfActivityDefinition activity = cmd.ReadScalar<WfActivityDefinition>();
             return activity;
         }
 

@@ -91,7 +91,7 @@ namespace Kinetix.Rules
 
         [Column("ITEM_ID")]
         [Domain("DO_X_RULES_WEAK_ID")]
-        public long? ItemId
+        public int? ItemId
         {
             get;
             set;

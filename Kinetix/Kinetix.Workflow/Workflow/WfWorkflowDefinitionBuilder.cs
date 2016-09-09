@@ -33,7 +33,7 @@ namespace Kinetix.Workflow.Workflow
         /// </summary>
         /// <param name="wfadId">the Id of the first activity definition.</param>
         /// <returns>The Builder.</returns>
-        public WfWorkflowDefinitionBuilder withFirstActivityDefinitionId(int wfadId)
+        public WfWorkflowDefinitionBuilder WithFirstActivityDefinitionId(int wfadId)
         {
             myWfadId = wfadId;
             return this;

@@ -99,12 +99,22 @@
     <Content Include="dbo\WF_WORKFLOW.sql" />
     <Content Include="dbo\WF_WORKFLOW_DEFINITION.sql" />
     <Content Include="generated.sql" />
-    <Content Include="Init\WF_MULTIPLICITY.insert.sql" />
+    <Content Include="Init\WF_MULTIPLICITY_DEFINITION.insert.sql" />
     <Content Include="Init\WF_STATUS.insert.sql" />
-    <EmbeddedResource Include="Plugins.Workflow.SqlServer\SQLResources\CountDefaultTransactions.sql" />
-    <EmbeddedResource Include="Plugins.Workflow.SqlServer\SQLResources\FindActivityDefinitionByPosition.sql" />
-    <EmbeddedResource Include="Plugins.Workflow.SqlServer\SQLResources\FindAllDefaultActivityDefinitions.sql" />
+    <EmbeddedResource Include="SQLResources\CountDefaultTransactions.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SQLResources\FindActivityDefinitionByPosition.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SQLResources\FindAllDefaultActivityDefinitions.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Kinetix.Workflow.nuspec" />
+  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
