@@ -95,6 +95,7 @@
     <Compile Include="IReportBean.cs" />
     <Compile Include="IReportGenerator.cs" />
     <Compile Include="ModelProcessor.cs" />
+    <Compile Include="PowerpointHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReportBean.cs" />
     <Compile Include="ReportDocument.cs" />
