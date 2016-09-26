@@ -3,21 +3,31 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Kinetix.ComponentModel;
 
-namespace Kinetix.Rules
-{
+namespace Kinetix.Rules {
     /// <summary>
     /// This class defines the Definition of rule condition.
     /// </summary>
     /// 
-    [Table("AUDIT_TRACE")]
-    public partial class RuleConditionDefinition
-    {
+    [Table("RULE_CONDITION_DEFINITION")]
+    public partial class RuleConditionDefinition {
 
         /// <summary>
         /// Constructeur.
         /// </summary>
-        public RuleConditionDefinition()
-        {
+        public RuleConditionDefinition() {
+            this.OnCreated();
+        }
+
+        /// <summary>
+        /// Constructeur.
+        /// </summary>
+        public RuleConditionDefinition(int? id, string field, string operateur, string expression, int? rudId) {
+            this.Id = id;
+            this.Field = field;
+            this.Operator = operateur;
+            this.Expression = expression;
+            this.RudId = rudId;
+
             this.OnCreated();
         }
 
@@ -25,10 +35,8 @@ namespace Kinetix.Rules
         /// Constructeur par recopie.
         /// </summary>
         /// <param name="bean">Source.</param>
-        public RuleConditionDefinition(RuleConditionDefinition bean)
-        {
-            if (bean == null)
-            {
+        public RuleConditionDefinition(RuleConditionDefinition bean) {
+            if (bean == null) {
                 throw new ArgumentNullException(nameof(bean));
             }
 
@@ -47,8 +55,7 @@ namespace Kinetix.Rules
         /// Type énuméré présentant les noms des colonnes en base.
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1034:NestedTypesShouldNotBeVisible", Justification = "A corriger")]
-        public enum Cols
-        {
+        public enum Cols {
             /// <summary>
             /// Nom de la colonne en base associée à la propriété .
             /// </summary>
@@ -90,37 +97,32 @@ namespace Kinetix.Rules
         [Column("ID")]
         [Domain("DO_X_RULES_ID")]
         [Key]
-        public long? Id
-        {
+        public int? Id {
             get;
             set;
         }
 
         [Column("FIELD")]
         [Domain("DO_X_RULES_FIELD")]
-        public string Field
-        {
+        public string Field {
             get;
         }
 
         [Column("OPERATOR")]
         [Domain("DO_X_RULES_OPERATOR")]
-        public string Operator
-        {
+        public string Operator {
             get;
         }
 
         [Column("EXPRESSION")]
         [Domain("DO_X_RULES_EXPRESSION")]
-        public string Expression
-        {
+        public string Expression {
             get;
         }
 
         [Column("RUD_ID")]
-        [Domain("DO_X_RULES_RULES_ID")]
-        public long? RudId
-        {
+        [Domain("DO_X_RULES_ID")]
+        public int? RudId {
             get;
             set;
         }

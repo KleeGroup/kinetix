@@ -1,18 +1,16 @@
-﻿using Kinetix.ComponentModel;
-using Kinetix.ComponentModel.DataAnnotations;
-using System;
+﻿using System;
 using System.ComponentModel.DataAnnotations;
+using Kinetix.ComponentModel;
+using Kinetix.ComponentModel.DataAnnotations;
 
 
-namespace Kinetix.Rules
-{
+namespace Kinetix.Rules {
     /// <summary>
     /// Definit les domaines utilises par les rulse.
     /// Au démarrage de l'application, le type de cette classe doit être enregistré dans le DomainManager.
     /// </summary>
     [DomainMetadataType]
-    public class RuleDomainMetadata
-    {
+    public class RuleDomainMetadata {
         /// <summary>
         /// Domaine DO_X_RULES_ID.
         /// </summary>
@@ -66,7 +64,7 @@ namespace Kinetix.Rules
         /// </summary>
         [StringLength(100)]
         [Domain("DO_X_RULES_EXPRESSION")]
-        public int? Expression { get; set; }
+        public string Expression { get; set; }
 
     }
 }

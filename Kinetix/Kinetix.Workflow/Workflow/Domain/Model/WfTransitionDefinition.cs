@@ -1,24 +1,21 @@
-﻿using Kinetix.ComponentModel;
-using System;
+﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Kinetix.ComponentModel;
 
 
-namespace Kinetix.Workflow.model
-{
+namespace Kinetix.Workflow.model {
     /// <summary>
     /// This class defines the Transition Definition.
     /// </summary>
     /// 
     [Table("WF_TRANSITION_DEFINITION")]
-    public partial class WfTransitionDefinition
-    {
+    public partial class WfTransitionDefinition {
 
         /// <summary>
         /// Constructeur.
         /// </summary>
-        public WfTransitionDefinition()
-        {
+        public WfTransitionDefinition() {
             this.OnCreated();
         }
 
@@ -26,10 +23,8 @@ namespace Kinetix.Workflow.model
         /// Constructeur par recopie.
         /// </summary>
         /// <param name="bean">Source.</param>
-        public WfTransitionDefinition(WfTransitionDefinition bean)
-        {
-            if (bean == null)
-            {
+        public WfTransitionDefinition(WfTransitionDefinition bean) {
+            if (bean == null) {
                 throw new ArgumentNullException(nameof(bean));
             }
 
@@ -47,8 +42,7 @@ namespace Kinetix.Workflow.model
         /// Type énuméré présentant les noms des colonnes en base.
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1034:NestedTypesShouldNotBeVisible", Justification = "A corriger")]
-        public enum Cols
-        {
+        public enum Cols {
             /// <summary>
             /// Nom de la colonne en base associée à la propriété .
             /// </summary>
@@ -91,40 +85,35 @@ namespace Kinetix.Workflow.model
         [Column("WFTD_ID")]
         [Domain("DO_X_WORKFLOW_ID")]
         [Key]
-        public int? Id
-        {
+        public int? Id {
             get;
             set;
         }
 
         [Column("NAME")]
         [Domain("DO_X_WORKFLOW_LABEL")]
-        public string Name
-        {
+        public string Name {
             get;
             set;
         }
 
-        [Column("WFAID_FROM")]
+        [Column("WFAD_ID_FROM")]
         [Domain("DO_X_WORKFLOW_ID")]
-        public int WfadIdFrom
-        {
+        public int WfadIdFrom {
             get;
             set;
         }
 
-        [Column("WFAID_TO")]
+        [Column("WFAD_ID_TO")]
         [Domain("DO_X_WORKFLOW_ID")]
-        public int WfadIdTo
-        {
+        public int WfadIdTo {
             get;
             set;
         }
 
         [Column("WFWD_ID")]
         [Domain("DO_X_WORKFLOW_ID")]
-        public int WfwdId
-        {
+        public int WfwdId {
             get;
             set;
         }

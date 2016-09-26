@@ -1,19 +1,30 @@
-﻿using Kinetix.ComponentModel;
-using System;
+﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Kinetix.ComponentModel;
 
 
-namespace Kinetix.Rules
-{
-    public partial class SelectorDefinition
-    {
+namespace Kinetix.Rules {
+    public partial class SelectorDefinition {
 
         /// <summary>
         /// Constructeur.
         /// </summary>
-        public SelectorDefinition()
-        {
+        public SelectorDefinition() {
+            this.OnCreated();
+        }
+
+        /// <summary>
+        /// Constructeur champs par champs.
+        /// </summary>
+        /// <param name="id">Id du selector.</param>
+        /// <param name="creationDate">Date de création.</param>
+        /// <param name="itemId">Id de l'item.</param>
+        public SelectorDefinition(int? id, int? itemId, string groupId) {
+            this.Id = id;
+            this.ItemId = itemId;
+            this.GroupId = groupId;
+
             this.OnCreated();
         }
 
@@ -21,10 +32,8 @@ namespace Kinetix.Rules
         /// Constructeur par recopie.
         /// </summary>
         /// <param name="bean">Source.</param>
-        public SelectorDefinition(SelectorDefinition bean)
-        {
-            if (bean == null)
-            {
+        public SelectorDefinition(SelectorDefinition bean) {
+            if (bean == null) {
                 throw new ArgumentNullException(nameof(bean));
             }
 
@@ -41,8 +50,7 @@ namespace Kinetix.Rules
         /// Type énuméré présentant les noms des colonnes en base.
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1034:NestedTypesShouldNotBeVisible", Justification = "A corriger")]
-        public enum Cols
-        {
+        public enum Cols {
             /// <summary>
             /// Nom de la colonne en base associée à la propriété .
             /// </summary>
@@ -70,31 +78,27 @@ namespace Kinetix.Rules
         [Column("ID")]
         [Domain("DO_X_RULES_ID")]
         [Key]
-        public long? Id
-        {
+        public int? Id {
             get;
             set;
         }
 
         [Column("CREATION_DATE")]
         [Domain("DO_X_RULES_DATE")]
-        public string CreationDate
-        {
+        public DateTime? CreationDate {
             get;
         }
 
         [Column("ITEM_ID")]
         [Domain("DO_X_RULES_WEAK_ID")]
-        public long? ItemId
-        {
+        public int? ItemId {
             get;
             set;
         }
 
         [Column("GROUP_ID")]
         [Domain("DO_X_RULES_WEAK_ID")]
-        public string GroupId
-        {
+        public string GroupId {
             get;
         }
 
