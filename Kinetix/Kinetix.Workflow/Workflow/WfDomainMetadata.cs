@@ -36,6 +36,12 @@ namespace Kinetix.Workflow
         public DateTime? Date { get; set; }
 
         /// <summary>
+        /// Domaine DO_X_WORKFLOW_WEAK_ID.
+        /// </summary>
+        [Domain("DO_X_WORKFLOW_WEAK_ID")]
+        public int? WeakId { get; set; }
+
+        /// <summary>
         /// Domaine DO_X_WORKFLOW_USER.
         /// </summary>
         [Domain("DO_X_WORKFLOW_USER")]

@@ -83,7 +83,8 @@ namespace Kinetix.Workflow {
             var cmd = GetSqlServerCommand("FindActivityDefinitionByPosition.sql");
             cmd.Parameters.AddWithValue(WfActivityDefinition.Cols.WFWD_ID, wfWorkflowDefinition.WfwdId);
             cmd.Parameters.AddWithValue(WfActivityDefinition.Cols.LEVEL, position);
-            WfActivityDefinition activity = cmd.ReadItem<WfActivityDefinition>();
+
+            WfActivityDefinition activity = CollectionBuilder<WfActivityDefinition>.ParseCommandForSingleObject(cmd, true);
             return activity;
         }
 

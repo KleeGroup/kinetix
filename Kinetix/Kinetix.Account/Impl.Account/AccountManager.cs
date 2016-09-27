@@ -10,14 +10,14 @@ namespace Kinetix.Account
     public sealed class AccountManager : IAccountManager
     {
         private readonly string X_ACCOUNT_ID = "X_ACCOUNT_ID";
-        private readonly IAccountStore _accountStorePlugin;
+        private readonly IAccountStorePlugin _accountStorePlugin;
         private readonly DownloadedFile _defaultPhoto = new DownloadedFile();
 
-        public AccountManager(IAccountStore accountStore)
+        public AccountManager(IAccountStorePlugin accountStore)
         {
             _accountStorePlugin = accountStore;
             _defaultPhoto.ContentType = "image/png";
-            _defaultPhoto.Fichier = File.ReadAllBytes("defaultPhoto.png");
+            //_defaultPhoto.Fichier = File.ReadAllBytes("defaultPhoto.png");
             _defaultPhoto.FileName = "defaultPhoto.png";
         }
 

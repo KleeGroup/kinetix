@@ -8,6 +8,7 @@ create table [dbo].[SELECTOR_DEFINITION] (
 	[LABEL] nvarchar(100),
 	[CREATION_DATE] datetime2,
 	[ITEM_ID] int,
+	[GROUP_ID] nvarchar(100),
 	constraint [PK_SELECTOR_DEFINITION] primary key clustered ([ID] ASC))
 go
 

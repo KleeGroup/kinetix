@@ -5,6 +5,8 @@ using Kinetix.ComponentModel;
 
 
 namespace Kinetix.Rules {
+
+    [Table("SELECTOR_DEFINITION")]
     public partial class SelectorDefinition {
 
         /// <summary>
@@ -97,7 +99,7 @@ namespace Kinetix.Rules {
         }
 
         [Column("GROUP_ID")]
-        [Domain("DO_X_RULES_WEAK_ID")]
+        [Domain("DO_X_RULES_GROUP_ID")]
         public string GroupId {
             get;
         }

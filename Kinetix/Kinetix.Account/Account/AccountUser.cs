@@ -13,6 +13,19 @@ namespace Kinetix.Account
     public class AccountUser
     {
 
+        /// <summary>
+        /// AccountUser construcutor
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="name"></param>
+        /// <param name="email"></param>
+        public AccountUser(string id, string name, string email)
+        {
+            this.Id = id;
+            this.Name = name;
+            this.Email = email;
+        }
+
         [Column("ID")]
         [Domain("DO_X_ACCOUNT_ID")]
         [Key]

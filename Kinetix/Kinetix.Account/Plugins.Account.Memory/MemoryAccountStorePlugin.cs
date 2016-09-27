@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Kinetix.Account
 {
-    class MemoryAccountStorePlugin : IAccountStorePlugin
+    public class MemoryAccountStorePlugin : IAccountStorePlugin
     {
 
         private readonly IDictionary<string, AccountUser> AccountById = new Dictionary<string, AccountUser>();

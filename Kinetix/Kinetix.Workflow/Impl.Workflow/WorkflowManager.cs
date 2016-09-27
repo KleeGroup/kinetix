@@ -108,7 +108,7 @@ namespace Kinetix.Workflow {
 
         private WfActivity AutoValidateActivity(WfActivityDefinition wfNextActivityDefinition) {
             //Automatic validation of this activity
-            DateTime now = new DateTime();
+            DateTime now = DateTime.Now;
 
             WfActivity wfActivityCurrent = new WfActivity();
             wfActivityCurrent.CreationDate = now;
@@ -146,7 +146,7 @@ namespace Kinetix.Workflow {
             //---
             WfWorkflowDefinition wfWorkflowDefinition = _workflowStorePlugin.ReadWorkflowDefinition(definitionName);
             WfWorkflow wfWorkflow = new WfWorkflow();
-            wfWorkflow.CreationDate = new DateTime();
+            wfWorkflow.CreationDate = DateTime.Now;
             wfWorkflow.ItemId = item;
             wfWorkflow.WfsCode = WfCodeStatusWorkflow.Cre.ToString();
             wfWorkflow.WfwdId = wfWorkflowDefinition.WfwdId;
@@ -279,7 +279,7 @@ namespace Kinetix.Workflow {
                     WfActivity lastAutoValidateActivity = _workflowStorePlugin.ReadActivity((int)wfWorkflow.WfaId2);
                     WfActivityDefinition nextActivityDefinitionPrepare = _workflowStorePlugin.FindNextActivity(lastAutoValidateActivity);
 
-                    DateTime now = new DateTime();
+                    DateTime now = DateTime.Now;
                     // Creating the next activity to validate.
                     WfActivity nextActivity = new WfActivity();
                     nextActivity.CreationDate = now;
@@ -306,7 +306,7 @@ namespace Kinetix.Workflow {
             WfWorkflowDefinition wfWorkflowDefinition = _workflowStorePlugin.ReadWorkflowDefinition((int)wfWorkflow.WfwdId);
 
             WfActivity wfActivityCurrent = new WfActivity();
-            wfActivityCurrent.CreationDate = new DateTime();
+            wfActivityCurrent.CreationDate = DateTime.Now;
             wfActivityCurrent.WfadId = (int)wfWorkflowDefinition.WfadId;
             _workflowStorePlugin.CreateActivity(wfActivityCurrent);
             wfWorkflow.WfaId2 = wfActivityCurrent.WfaId;

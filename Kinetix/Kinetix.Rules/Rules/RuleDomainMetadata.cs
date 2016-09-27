@@ -39,6 +39,13 @@ namespace Kinetix.Rules {
         public int? WeakId { get; set; }
 
         /// <summary>
+        /// Domaine DO_X_RULES_GROUP_ID.
+        /// </summary>
+        [StringLength(100)]
+        [Domain("DO_X_RULES_GROUP_ID")]
+        public string GroupId { get; set; }
+        
+        /// <summary>
         /// Domaine DO_X_RULES_LABEL.
         /// </summary>
         [StringLength(100)]

@@ -2,7 +2,7 @@
 
 namespace Kinetix.Account
 {
-    interface IAccountStorePlugin : IAccountStore
+    public interface IAccountStorePlugin : IAccountStore
     {
         //
     }

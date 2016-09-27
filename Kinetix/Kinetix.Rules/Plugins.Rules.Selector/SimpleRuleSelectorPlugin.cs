@@ -10,9 +10,9 @@ namespace Kinetix.Rules
     public sealed class SimpleRuleSelectorPlugin : IRuleSelectorPlugin
     {
         private readonly IRuleStorePlugin _ruleStorePlugin;
-        private readonly AccountManager _accountManager;
+        private readonly IAccountManager _accountManager;
 
-        public SimpleRuleSelectorPlugin(IRuleStorePlugin ruleStorePlugin, AccountManager accountManager)
+        public SimpleRuleSelectorPlugin(IRuleStorePlugin ruleStorePlugin, IAccountManager accountManager)
         {
             this._ruleStorePlugin = ruleStorePlugin;
             this._accountManager = accountManager;
