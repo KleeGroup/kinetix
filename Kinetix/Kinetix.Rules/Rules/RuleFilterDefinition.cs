@@ -9,6 +9,7 @@ namespace Kinetix.Rules
     /// This class defines the Definition of a rule filter.
     /// </summary>
     /// 
+    [Table("RULE_FILTER_DEFINITION")]
     public partial class RuleFilterDefinition
     {
 
