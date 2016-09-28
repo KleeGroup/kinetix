@@ -14,11 +14,11 @@ namespace Kinetix.Audit
     public class AuditTrace 
     {
 
-        public AuditTrace(long? id, string category, string user, DateTime? businessDate, DateTime? executionDate, long? item, string message, string context)
+        public AuditTrace(long? id, string category, string username, DateTime? businessDate, DateTime? executionDate, long? item, string message, string context)
         {
             this.Id = id;
             this.Category = category;
-            this.User = user;
+            this.Username = username;
             this.BusinessDate = businessDate;
             this.ExecutionDate = executionDate;
             this.Item = item;
@@ -40,9 +40,9 @@ namespace Kinetix.Audit
             get;
         }
 
-        [Column("USER")]
+        [Column("USERNAME")]
         [Domain("DO_X_AUDIT_USER")]
-        public string User {
+        public string Username {
             get;
         }
 

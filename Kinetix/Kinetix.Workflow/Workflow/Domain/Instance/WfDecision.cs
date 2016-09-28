@@ -63,7 +63,7 @@ namespace Kinetix.Workflow.instance
             /// </summary>
             [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", Justification = "Correspondance schéma persistence")]
             [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1707:IdentifiersShouldNotContainUnderscores", Justification = "Correspondance schéma persistence")]
-            USER,
+            USERNAME,
 
             /// <summary>
             /// Nom de la colonne en base associée à la propriété .
@@ -107,9 +107,9 @@ namespace Kinetix.Workflow.instance
             set;
         }
 
-        [Column("USER")]
+        [Column("USERNAME")]
         [Domain("DO_X_WORKFLOW_USER")]
-        public string User
+        public string Username
         {
             get;
             set;

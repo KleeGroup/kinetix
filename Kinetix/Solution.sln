@@ -23,7 +23,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kinetix.Security", "Kinetix
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kinetix.ServiceModel", "Kinetix.ServiceModel\Kinetix.ServiceModel.csproj", "{A7A2C429-2E86-4830-84BD-1477D68F1401}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kintetix.Worker", "Kinetix.Worker\Kintetix.Worker.csproj", "{FE70D3D7-EF02-4AC4-A9CD-364AFA95E5D7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kinetix.Worker", "Kinetix.Worker\Kinetix.Worker.csproj", "{FE70D3D7-EF02-4AC4-A9CD-364AFA95E5D7}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Kinetix", "Kinetix", "{E566DC13-2180-4871-80F6-FBE41CF86D63}"
 EndProject

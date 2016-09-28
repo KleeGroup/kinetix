@@ -35,11 +35,11 @@ namespace Kinetix.Workflow {
 
                 //Find the previous activity to add a link to the newly created
                 if (position == 2) {
-                    WfTransitionDefinition wfTransitionDefinition = new WfTransitionBuilder(wfWorkflowDefinition.WfwdId, wfWorkflowDefinition.WfadId, wfActivityDefinitionToAdd.WfadId).build();
+                    WfTransitionDefinition wfTransitionDefinition = new WfTransitionBuilder(wfWorkflowDefinition.WfwdId, wfWorkflowDefinition.WfadId, wfActivityDefinitionToAdd.WfadId).Build();
                     _workflowStorePlugin.AddTransition(wfTransitionDefinition);
                 } else if (position > 2) {
                     WfActivityDefinition wfActivityDefinitionPrevious = _workflowStorePlugin.FindActivityDefinitionByPosition(wfWorkflowDefinition, position - 2);
-                    WfTransitionDefinition wfTransitionDefinition = new WfTransitionBuilder(wfWorkflowDefinition.WfwdId, wfActivityDefinitionPrevious.WfadId, wfActivityDefinitionToAdd.WfadId).build();
+                    WfTransitionDefinition wfTransitionDefinition = new WfTransitionBuilder(wfWorkflowDefinition.WfwdId, wfActivityDefinitionPrevious.WfadId, wfActivityDefinitionToAdd.WfadId).Build();
                     _workflowStorePlugin.AddTransition(wfTransitionDefinition);
                 } else {
                     //Saving starting activity
@@ -117,7 +117,7 @@ namespace Kinetix.Workflow {
             _workflowStorePlugin.CreateActivity(wfActivityCurrent);
 
             WfDecision decision = new WfDecision();
-            decision.User = USER_AUTO;
+            decision.Username = USER_AUTO;
             decision.DecisionDate = now;
 
             return wfActivityCurrent;
@@ -140,9 +140,9 @@ namespace Kinetix.Workflow {
             _workflowStorePlugin.CreateWorkflowDefinition(wfWorkflowDefinition);
         }
 
-        public WfWorkflow CreateWorkflowInstance(string definitionName, string user, bool userLogic, int item) {
+        public WfWorkflow CreateWorkflowInstance(string definitionName, string username, bool userLogic, int item) {
             Debug.Assert(definitionName != null);
-            Debug.Assert(user != null);
+            Debug.Assert(username != null);
             //---
             WfWorkflowDefinition wfWorkflowDefinition = _workflowStorePlugin.ReadWorkflowDefinition(definitionName);
             WfWorkflow wfWorkflow = new WfWorkflow();
@@ -152,7 +152,7 @@ namespace Kinetix.Workflow {
             wfWorkflow.WfwdId = wfWorkflowDefinition.WfwdId;
             wfWorkflow.WfaId2 = wfWorkflowDefinition.WfadId;
             wfWorkflow.UserLogic = userLogic;
-            wfWorkflow.User = user;
+            wfWorkflow.Username = username;
 
             _workflowStorePlugin.CreateWorkflowInstance(wfWorkflow);
 
@@ -253,7 +253,7 @@ namespace Kinetix.Workflow {
                 int match = 0;
                 foreach (AccountUser account in accounts) {
                     foreach (WfDecision decision in wfDecisions) {
-                        if (account.Id.Equals(decision.User)) {
+                        if (account.Id.Equals(decision.Username)) {
                             match++;
                             break;
                         }
@@ -313,6 +313,16 @@ namespace Kinetix.Workflow {
             _workflowStorePlugin.UpdateWorkflowInstance(wfWorkflow);
 
             AutoValidateNextActivities(wfWorkflow, (int)wfWorkflowDefinition.WfadId);
+        }
+
+
+        /// <summary>
+        /// Find activities matching the criteria in parameters
+        /// </summary>
+        /// <param name="criteria"></param>
+        public void FindActivitiesByCriteria(RuleCriteria criteria)
+        {
+            throw new NotImplementedException();
         }
 
     }

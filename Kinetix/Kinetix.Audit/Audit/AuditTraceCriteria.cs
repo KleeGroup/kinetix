@@ -7,14 +7,14 @@ namespace Kinetix.Audit
 
         public AuditTraceCriteria(
               string category,
-              string user,
+              string username,
               DateTime? startBusinessDate,
               DateTime? endBusinessDate,
               DateTime? startExecutionDate,
               DateTime? endExecutionDate,
               long? item) {
             this.Category = category;
-            this.User = user;
+            this.Username = username;
             this.StartBusinessDate = startBusinessDate;
             this.EndBusinessDate = endBusinessDate;
             this.StartExecutionDate = startExecutionDate;
@@ -27,7 +27,7 @@ namespace Kinetix.Audit
             set;
         }
 
-        public string User {
+        public string Username {
             get;
             set;
         }

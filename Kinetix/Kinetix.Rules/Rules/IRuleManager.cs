@@ -13,7 +13,7 @@ namespace Kinetix.Rules
         /// <param name="item">Business object.</param>
         /// <param name="constants">constants</param>
         /// <returns>a list of account.</returns>
-        IList<AccountUser> SelectAccounts(long idActivityDefinition, object item, RuleConstants constants);
+        IList<AccountUser> SelectAccounts(int idActivityDefinition, object item, RuleConstants constants);
         
         /// <summary>
         /// Validate a rule for an activity.
@@ -22,7 +22,7 @@ namespace Kinetix.Rules
         /// <param name="item">Business object.</param>
         /// <param name="constants">constants</param>
         /// <returns>a list of account.</returns>
-        bool IsRuleValid(long idActivityDefinition, object item, RuleConstants constants);
+        bool IsRuleValid(int idActivityDefinition, object item, RuleConstants constants);
 
 
         /// <summary>
@@ -37,7 +37,7 @@ namespace Kinetix.Rules
         /// </summary>
         /// <param name="itemId">itemId.</param>
         /// <returns>all the rules defined for the provided itemId.</returns>
-        IList<RuleDefinition> GetRulesForItemId(long itemId);
+        IList<RuleDefinition> GetRulesForItemId(int itemId);
 
         /// <summary>
         /// Remove a rule.
@@ -69,7 +69,7 @@ namespace Kinetix.Rules
         /// </summary>
         /// <param name="ruleId">the rule Id.</param>
         /// <returns>all the conditions associated to the provided rule</returns>
-        IList<RuleConditionDefinition> GetConditionsForRuleId(long ruleId);
+        IList<RuleConditionDefinition> GetConditionsForRuleId(int ruleId);
 
         /// <summary>
         /// Update a rule.
@@ -88,7 +88,7 @@ namespace Kinetix.Rules
         /// </summary>
         /// <param name="itemId">itemId.</param>
         /// <returns>all the conditions associated to the provided rule</returns>
-        IList<SelectorDefinition> GetSelectorsForItemId(long itemId);
+        IList<SelectorDefinition> GetSelectorsForItemId(int itemId);
 
         /// <summary>
         /// Remove a selector the selector to remove.
@@ -121,7 +121,7 @@ namespace Kinetix.Rules
         /// </summary>
         /// <param name="selectorId">the selector id.</param>
         /// <returns>the all the filters associated to the provided selector</returns>
-        IList<RuleFilterDefinition> GetFiltersForSelectorId(long selectorId);
+        IList<RuleFilterDefinition> GetFiltersForSelectorId(int selectorId);
 
         /// <summary>
         /// Update the provided Filter.
@@ -134,13 +134,20 @@ namespace Kinetix.Rules
         /// </summary>
         /// <param name="key">the key.</param>
         /// <param name="ruleConstants">constants to associate.</param>
-        void AddConstants(long key, RuleConstants ruleConstants);
+        void AddConstants(int key, RuleConstants ruleConstants);
 
         /// <summary>
         /// Get the constants associated to a key.
         /// </summary>
         /// <param name="key">the key.</param>
         /// <returns>the constants defined for this key</returns>
-        RuleConstants GetConstants(long key);
+        RuleConstants GetConstants(int key);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="criteria"></param>
+        /// <returns></returns>
+        IList<int> FindItemsByCriteria(RuleCriteria criteria, IList<int> items);
     }
 }

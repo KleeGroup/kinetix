@@ -26,7 +26,7 @@ namespace Kinetix.Rules
             _ruleStorePlugin.AddCondition(ruleConditionDefinition);
         }
 
-        public void AddConstants(long key, RuleConstants ruleConstants)
+        public void AddConstants(int key, RuleConstants ruleConstants)
         {
             _ruleConstantsStorePlugin.AddConstants(key, ruleConstants);
         }
@@ -46,32 +46,32 @@ namespace Kinetix.Rules
             _ruleStorePlugin.AddSelector(selectorDefinition);
         }
 
-        public IList<RuleConditionDefinition> GetConditionsForRuleId(long ruleId)
+        public IList<RuleConditionDefinition> GetConditionsForRuleId(int ruleId)
         {
             return _ruleStorePlugin.FindConditionByRuleId(ruleId);
         }
 
-        public RuleConstants GetConstants(long key)
+        public RuleConstants GetConstants(int key)
         {
             return _ruleConstantsStorePlugin.ReadConstants(key);
         }
 
-        public IList<RuleFilterDefinition> GetFiltersForSelectorId(long selectorId)
+        public IList<RuleFilterDefinition> GetFiltersForSelectorId(int selectorId)
         {
             return _ruleStorePlugin.FindFiltersBySelectorId(selectorId);
         }
 
-        public IList<RuleDefinition> GetRulesForItemId(long itemId)
+        public IList<RuleDefinition> GetRulesForItemId(int itemId)
         {
             return _ruleStorePlugin.FindRulesByItemId(itemId);
         }
 
-        public IList<SelectorDefinition> GetSelectorsForItemId(long itemId)
+        public IList<SelectorDefinition> GetSelectorsForItemId(int itemId)
         {
             return _ruleStorePlugin.FindSelectorsByItemId(itemId);
         }
 
-        public bool IsRuleValid(long idActivityDefinition, object item, RuleConstants constants)
+        public bool IsRuleValid(int idActivityDefinition, object item, RuleConstants constants)
         {
             IList<RuleDefinition> rules = _ruleStorePlugin.FindRulesByItemId(idActivityDefinition);
             RuleContext context = new RuleContext(item, constants);
@@ -99,7 +99,7 @@ namespace Kinetix.Rules
             _ruleStorePlugin.RemoveSelector(selectorDefinition);
         }
 
-        public IList<AccountUser> SelectAccounts(long idActivityDefinition, object item, RuleConstants constants)
+        public IList<AccountUser> SelectAccounts(int idActivityDefinition, object item, RuleConstants constants)
         {
             IList<SelectorDefinition> selectors = _ruleStorePlugin.FindSelectorsByItemId(idActivityDefinition);
             RuleContext context = new RuleContext(item, constants);
@@ -125,6 +125,11 @@ namespace Kinetix.Rules
         public void UpdateSelector(SelectorDefinition selectorDefinition)
         {
             _ruleStorePlugin.UpdateSelector(selectorDefinition);
+        }
+
+        public IList<int> FindItemsByCriteria(RuleCriteria criteria, IList<int> items)
+        {
+            return _ruleStorePlugin.FindItemsByCriteria(criteria, items);
         }
     }
 }

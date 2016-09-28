@@ -41,7 +41,7 @@ namespace Kinetix.Audit
                     continue;
                 }
 
-                if (!String.IsNullOrEmpty(auditTraceCriteria.User) && auditTraceCriteria.User.Equals(audit.User))
+                if (!String.IsNullOrEmpty(auditTraceCriteria.Username) && auditTraceCriteria.Username.Equals(audit.Username))
                 {
                     ret.Add(audit);
                     continue;

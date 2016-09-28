@@ -4,22 +4,23 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
+using System;
 
 namespace Kinetix.Rules
 {
     public sealed class MemoryRuleStorePlugin : IRuleStorePlugin
     {
 
-        private readonly IDictionary<long, RuleDefinition> inMemoryRuleStore = new ConcurrentDictionary<long, RuleDefinition>();
+        private readonly IDictionary<int, RuleDefinition> inMemoryRuleStore = new ConcurrentDictionary<int, RuleDefinition>();
         private int memoryRuleSequenceGenerator = 0;
 
-        private readonly IDictionary<long, RuleConditionDefinition> inMemoryConditionStore = new ConcurrentDictionary<long, RuleConditionDefinition>();
+        private readonly IDictionary<int, RuleConditionDefinition> inMemoryConditionStore = new ConcurrentDictionary<int, RuleConditionDefinition>();
         private int memoryConditionSequenceGenerator = 0;
 
-        private readonly IDictionary<long, SelectorDefinition> inMemorySelectorStore = new ConcurrentDictionary<long, SelectorDefinition>();
+        private readonly IDictionary<int, SelectorDefinition> inMemorySelectorStore = new ConcurrentDictionary<int, SelectorDefinition>();
         private int memorySelectorSequenceGenerator = 0;
 
-        private readonly IDictionary<long, RuleFilterDefinition> inMemoryFilterStore = new ConcurrentDictionary<long, RuleFilterDefinition>();
+        private readonly IDictionary<int, RuleFilterDefinition> inMemoryFilterStore = new ConcurrentDictionary<int, RuleFilterDefinition>();
         private int memoryFilterSequenceGenerator = 0;
 
         public void AddCondition(RuleConditionDefinition ruleConditionDefinition)
@@ -62,25 +63,25 @@ namespace Kinetix.Rules
             inMemorySelectorStore[generatedId] = selectorDefinition;
         }
 
-        public IList<RuleConditionDefinition> FindConditionByRuleId(long ruleId)
+        public IList<RuleConditionDefinition> FindConditionByRuleId(int ruleId)
         {
             IList<RuleConditionDefinition> ret = (inMemoryConditionStore.Where(r => r.Value.Id.Equals(ruleId)).Select(kp => kp.Value)).ToList();
             return ret;
         }
 
-        public IList<RuleFilterDefinition> FindFiltersBySelectorId(long selectorId)
+        public IList<RuleFilterDefinition> FindFiltersBySelectorId(int selectorId)
         {
             IList<RuleFilterDefinition> ret = (inMemoryFilterStore.Where(r => r.Value.Id.Equals(selectorId)).Select(kp => kp.Value)).ToList();
             return ret;
         }
 
-        public IList<RuleDefinition> FindRulesByItemId(long itemId)
+        public IList<RuleDefinition> FindRulesByItemId(int itemId)
         {
             IList<RuleDefinition> ret = (inMemoryRuleStore.Where(r => r.Value.Id.Equals(itemId)).Select(kp => kp.Value)).ToList();
             return ret;
         }
 
-        public IList<SelectorDefinition> FindSelectorsByItemId(long itemId)
+        public IList<SelectorDefinition> FindSelectorsByItemId(int itemId)
         {
             IList<SelectorDefinition> ret = (inMemorySelectorStore.Where(r => r.Value.Id.Equals(itemId)).Select(kp => kp.Value)).ToList();
             return ret;
@@ -91,7 +92,7 @@ namespace Kinetix.Rules
             Debug.Assert(ruleConditionDefinition != null);
             Debug.Assert(ruleConditionDefinition.Id != null);
             //---
-            inMemoryConditionStore.Remove((long)ruleConditionDefinition.Id);
+            inMemoryConditionStore.Remove((int)ruleConditionDefinition.Id);
         }
 
         public void RemoveFilter(RuleFilterDefinition ruleFilterDefinition)
@@ -99,7 +100,7 @@ namespace Kinetix.Rules
             Debug.Assert(ruleFilterDefinition != null);
             Debug.Assert(ruleFilterDefinition.Id != null);
             //---
-            inMemoryFilterStore.Remove((long)ruleFilterDefinition.Id);
+            inMemoryFilterStore.Remove((int)ruleFilterDefinition.Id);
         }
 
         public void RemoveRule(RuleDefinition ruleDefinition)
@@ -107,7 +108,7 @@ namespace Kinetix.Rules
             Debug.Assert(ruleDefinition != null);
             Debug.Assert(ruleDefinition.Id != null);
             //---
-            inMemoryRuleStore.Remove((long)ruleDefinition.Id);
+            inMemoryRuleStore.Remove((int)ruleDefinition.Id);
         }
 
         public void RemoveSelector(SelectorDefinition selectorDefinition)
@@ -115,7 +116,7 @@ namespace Kinetix.Rules
             Debug.Assert(selectorDefinition != null);
             Debug.Assert(selectorDefinition.Id != null);
             //---
-            inMemorySelectorStore.Remove((long)selectorDefinition.Id);
+            inMemorySelectorStore.Remove((int)selectorDefinition.Id);
         }
 
         public void UpdateCondition(RuleConditionDefinition ruleConditionDefinition)
@@ -123,7 +124,7 @@ namespace Kinetix.Rules
             Debug.Assert(ruleConditionDefinition != null);
             Debug.Assert(ruleConditionDefinition.Id != null);
             //---
-            inMemoryConditionStore[(long)ruleConditionDefinition.Id] = ruleConditionDefinition;
+            inMemoryConditionStore[(int)ruleConditionDefinition.Id] = ruleConditionDefinition;
         }
 
         public void UpdateFilter(RuleFilterDefinition ruleFilterDefinition)
@@ -131,7 +132,7 @@ namespace Kinetix.Rules
             Debug.Assert(ruleFilterDefinition != null);
             Debug.Assert(ruleFilterDefinition.Id != null);
             //---
-            inMemoryFilterStore[(long)ruleFilterDefinition.Id] = ruleFilterDefinition;
+            inMemoryFilterStore[(int)ruleFilterDefinition.Id] = ruleFilterDefinition;
         }
 
         public void UpdateRule(RuleDefinition ruleDefinition)
@@ -139,7 +140,7 @@ namespace Kinetix.Rules
             Debug.Assert(ruleDefinition != null);
             Debug.Assert(ruleDefinition.Id != null);
             //---
-            inMemoryRuleStore[(long)ruleDefinition.Id] = ruleDefinition;
+            inMemoryRuleStore[(int)ruleDefinition.Id] = ruleDefinition;
         }
 
         public void UpdateSelector(SelectorDefinition selectorDefinition)
@@ -147,7 +148,42 @@ namespace Kinetix.Rules
             Debug.Assert(selectorDefinition != null);
             Debug.Assert(selectorDefinition.Id != null);
             //---
-            inMemorySelectorStore[(long)selectorDefinition.Id] = selectorDefinition;
+            inMemorySelectorStore[(int)selectorDefinition.Id] = selectorDefinition;
+        }
+
+        public IList<int> FindItemsByCriteria(RuleCriteria criteria, IList<int> items)
+        {
+            Debug.Assert(criteria != null);
+            //---
+            IList<int> ret = new List<int>();
+            foreach (int itemId in items)
+            {
+                IList<RuleDefinition> rules = (inMemoryRuleStore.Where(r => r.Value.Id.Equals(itemId)).Select(kp => kp.Value)).ToList();
+
+                foreach(RuleDefinition rule in rules)
+                {
+                    Dictionary<string, RuleConditionDefinition> conditions = (inMemoryConditionStore.Where(r => r.Value.RudId.Equals(rule.Id)).Select(kp => kp.Value)).ToDictionary(r => r.Field);
+
+                    int match = 0;
+                    foreach(RuleConditionCriteria RuleConditionCriteria in criteria.ConditionCriteria)
+                    {
+                        RuleConditionDefinition currentRule = conditions[RuleConditionCriteria.Field];
+
+                        if (currentRule != null && currentRule.Expression.Equals(RuleConditionCriteria.Value))
+                        {
+                            match++;
+                        }
+                    }
+
+                    if (match == criteria.ConditionCriteria.Count)
+                    {
+                        ret.Add(itemId);
+                        break;
+                    }
+                }
+            }
+
+            return ret;            
         }
     }
 }

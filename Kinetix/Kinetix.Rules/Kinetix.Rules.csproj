@@ -31,10 +31,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Kinetix.Account, Version=0.0.0.1, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Kinetix.Account.0.0.0.1\lib\net451\Kinetix.Account.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
@@ -69,8 +65,14 @@
     <Compile Include="Plugins.Rules.Selector\SimpleRuleSelectorPlugin.cs" />
     <Compile Include="Plugins.Rules.Validator\SimpleRuleValidatorPlugin.cs" />
     <Compile Include="Rules\RuleDomainMetadata.cs" />
+    <Compile Include="Rules\RuleCriteria.cs" />
+    <Compile Include="Rules\RuleConditionCriteria.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Kinetix.Account\Kinetix.Account.csproj">
+      <Project>{f15fcf81-98cb-4f02-be27-440411684143}</Project>
+      <Name>Kinetix.Account</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Kinetix.Broker\Kinetix.Broker.csproj">
       <Project>{0C6E80B2-0E45-4922-9895-73B3A3EC160D}</Project>
       <Name>Kinetix.Broker</Name>
@@ -89,9 +91,6 @@
     <Content Include="dbo\RULE_CONDITION_DEFINITION.sql" />
     <Content Include="dbo\SELECTOR_DEFINITION.sql" />
     <Content Include="dbo\RULE_DEFINITION.sql" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

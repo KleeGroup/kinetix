@@ -26,7 +26,7 @@ namespace Kinetix.Rules
         /// </summary>
         /// <param name="itemId">itemId.</param>
         /// <returns>a list of all the rules defined for the itemId</returns>
-        IList<RuleDefinition> FindRulesByItemId(long itemId);
+        IList<RuleDefinition> FindRulesByItemId(int itemId);
 
         /// <summary>
         /// Removes a rule.
@@ -63,7 +63,7 @@ namespace Kinetix.Rules
         /// </summary>
         /// <param name="ruleId">ruleId.</param>
         /// <returns>a list of all the rules defined for the itemId</returns>
-        IList<RuleConditionDefinition> FindConditionByRuleId(long ruleId);
+        IList<RuleConditionDefinition> FindConditionByRuleId(int ruleId);
 
         /// <summary>
         /// Add a selector.
@@ -76,7 +76,7 @@ namespace Kinetix.Rules
         /// </summary>
         /// <param name="itemId">itemId.</param>
         /// <returns>a list of all the selectors defined for the itemId</returns>
-        IList<SelectorDefinition> FindSelectorsByItemId(long itemId);
+        IList<SelectorDefinition> FindSelectorsByItemId(int itemId);
 
         /// <summary>
         /// Remove a Selector.
@@ -107,12 +107,20 @@ namespace Kinetix.Rules
         /// </summary>
         /// <param name="selectorId">selectorId.</param>
         /// <returns>a list of all the filters defined for the selectorId</returns>
-        IList<RuleFilterDefinition> FindFiltersBySelectorId(long selectorId);
+        IList<RuleFilterDefinition> FindFiltersBySelectorId(int selectorId);
 
         /// <summary>
         /// Update a filter.
         /// </summary>
         /// <param name="ruleFilterDefinition">ruleFilterDefinition.</param>
         void UpdateFilter(RuleFilterDefinition ruleFilterDefinition);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="criteria"></param>
+        /// <param name="items"></param>
+        /// <returns></returns>
+        IList<int> FindItemsByCriteria(RuleCriteria criteria, IList<int> items);
     }
 }

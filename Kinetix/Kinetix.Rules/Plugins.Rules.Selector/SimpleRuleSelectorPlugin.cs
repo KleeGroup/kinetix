@@ -25,7 +25,7 @@ namespace Kinetix.Rules
 
             foreach (SelectorDefinition selectorDefinition in selectors)
             {
-                IList<RuleFilterDefinition> filters = _ruleStorePlugin.FindFiltersBySelectorId((long)selectorDefinition.Id);
+                IList<RuleFilterDefinition> filters = _ruleStorePlugin.FindFiltersBySelectorId((int)selectorDefinition.Id);
 
                 bool selectorMatch = true;
                 foreach (RuleFilterDefinition ruleFilterDefinition in filters)

@@ -21,6 +21,25 @@ namespace Kinetix.Rules
         }
 
         /// <summary>
+        /// Constructeur champs par champs.
+        /// </summary>
+        /// <param name="id">Id du filtre.</param>
+        /// <param name="field">Champ.</param>
+        /// <param name="operateur">Operateur de la condition.</param>
+        /// <param name="expression">Expression/Valeur.</param>
+        /// <param name="rudId">Id du selecteur associé.</param>
+        public RuleFilterDefinition(int? id, string field, string operateur, string expression, int? selId)
+        {
+            this.Id = id;
+            this.Field = field;
+            this.Operator = operateur;
+            this.Expression = expression;
+            this.SelId = selId;
+
+            this.OnCreated();
+        }
+
+        /// <summary>
         /// Constructeur par recopie.
         /// </summary>
         /// <param name="bean">Source.</param>
@@ -89,7 +108,7 @@ namespace Kinetix.Rules
         [Column("ID")]
         [Domain("DO_X_RULES_ID")]
         [Key]
-        public long? Id
+        public int? Id
         {
             get;
             set;
@@ -118,7 +137,7 @@ namespace Kinetix.Rules
 
         [Column("SEL_ID")]
         [Domain("DO_X_RULES_ID")]
-        public long? SelId
+        public int? SelId
         {
             get;
             set;

@@ -11,7 +11,7 @@ namespace Kinetix.Audit.Audit
     {
         private long? Id;
         private readonly string Category;
-	    private readonly string User;
+	    private readonly string Username;
 	    private DateTime BusinessDate;
         private readonly DateTime ExecutionDate;
 	    private readonly long Item;
@@ -22,17 +22,17 @@ namespace Kinetix.Audit.Audit
         /// Builder for Audit trace.
         /// </summary>
         /// <param name="category">category.</param>
-        /// <param name="user">user.</param>
+        /// <param name="username">username.</param>
         /// <param name="item">item.</param>
         /// <param name="message">message.</param>
-        public AuditTraceBuilder(string category,  string user, long item, string message)
+        public AuditTraceBuilder(string category, string username, long item, string message)
         {
             Debug.Assert(!String.IsNullOrEmpty(category));
-            Debug.Assert(!String.IsNullOrEmpty(user));
+            Debug.Assert(!String.IsNullOrEmpty(username));
             //---
             this.Id = null;
             this.Category = category;
-            this.User = user;
+            this.Username = username;
             this.Message = message;
             this.Item = item;
             this.ExecutionDate = DateTime.Now;
@@ -74,7 +74,7 @@ namespace Kinetix.Audit.Audit
         
         public AuditTrace Build()
         {
-            return new AuditTrace(Id, Category, User, BusinessDate, ExecutionDate, Item, Message, Context);
+            return new AuditTrace(Id, Category, Username, BusinessDate, ExecutionDate, Item, Message, Context);
         }
 
     }

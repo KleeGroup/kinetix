@@ -30,8 +30,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Kinetix.Account, Version=0.0.0.1, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Kinetix.Account.0.0.0.1\lib\net451\Kinetix.Account.dll</HintPath>
+    <Reference Include="Kinetix.Account, Version=0.0.0.2, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Kinetix.Account.0.0.0.2\lib\net451\Kinetix.Account.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -50,6 +50,7 @@
     <Compile Include="Plugins.Workflow.SqlServer\SqlServerWorkflowStorePlugin.cs" />
     <Compile Include="Workflow\IWorkflowManager.cs" />
     <Compile Include="Impl.Workflow\IWorkflowStorePlugin.cs" />
+    <Compile Include="Workflow\WfActivityCriteria.cs" />
     <Compile Include="Workflow\WfActivityDefinitionBuilder.cs" />
     <Compile Include="Workflow\WfCodeMultiplicityDefinition.cs" />
     <Compile Include="Workflow\IItemStore.cs" />
@@ -66,6 +67,7 @@
     <Compile Include="Workflow\Domain\Instance\WfActivity.cs" />
     <Compile Include="Workflow\WfCodeStatusWorkflow.cs" />
     <Compile Include="Workflow\WfCodeTransition.cs" />
+    <Compile Include="Workflow\WfConditionCriteria.cs" />
     <Compile Include="Workflow\WfDomainMetadata.cs" />
     <Compile Include="Workflow\WfTransitionBuilder.cs" />
     <Compile Include="Impl.Workflow\WorkflowManager.cs" />
@@ -85,7 +87,7 @@
       <Name>Kinetix.Data.SqlClient</Name>
     </ProjectReference>
     <ProjectReference Include="..\Kinetix.Rules\Kinetix.Rules.csproj">
-      <Project>{2A53DDE2-180D-4653-80E2-055F8ECAF1D3}</Project>
+      <Project>{2a53dde2-180d-4653-80e2-055f8ecaf1d3}</Project>
       <Name>Kinetix.Rules</Name>
     </ProjectReference>
   </ItemGroup>

@@ -5,7 +5,7 @@
 
 create table [dbo].[WF_DECISION] (
 	[WFE_ID] int identity,
-	[USER] nvarchar(100),
+	[USERNAME] nvarchar(100),
 	[CHOICE] int,
 	[DECISION_DATE] datetime2,
 	[COMMENTS] nvarchar(3000),

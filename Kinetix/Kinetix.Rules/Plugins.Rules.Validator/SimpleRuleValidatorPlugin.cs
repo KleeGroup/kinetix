@@ -20,7 +20,7 @@ namespace Kinetix.Rules
         {
             foreach (RuleDefinition ruleDefinition in rules)
             {
-                IList<RuleConditionDefinition> conditions = _ruleStorePlugin.FindConditionByRuleId((long)ruleDefinition.Id);
+                IList<RuleConditionDefinition> conditions = _ruleStorePlugin.FindConditionByRuleId((int)ruleDefinition.Id);
 
                 bool ruleValid = true;
                 foreach (RuleConditionDefinition ruleConditionDefinition in conditions)

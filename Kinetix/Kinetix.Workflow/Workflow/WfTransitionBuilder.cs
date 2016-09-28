@@ -35,7 +35,7 @@ namespace Kinetix.Workflow {
             return this;
         }
 
-        public WfTransitionDefinition build() {
+        public WfTransitionDefinition Build() {
             WfTransitionDefinition wfTransitionDefinition = new WfTransitionDefinition();
             wfTransitionDefinition.Name = (myName == null ? DEFAULT_VALUE_NAME : myName);
             wfTransitionDefinition.WfadIdFrom = wfadIdFrom;

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
 using Kinetix.Broker;
-
+using System;
 
 namespace Kinetix.Rules {
     public class SqlServerRuleStorePlugin : IRuleStorePlugin {
@@ -25,7 +25,7 @@ namespace Kinetix.Rules {
             BrokerManager.GetBroker<SelectorDefinition>().Save(selectorDefinition);
         }
 
-        public IList<RuleConditionDefinition> FindConditionByRuleId(long ruleId) {
+        public IList<RuleConditionDefinition> FindConditionByRuleId(int ruleId) {
             IList<RuleConditionDefinition> ret;
             FilterCriteria filterCriteria = new FilterCriteria();
             filterCriteria.Equals(RuleConditionDefinition.Cols.RUD_ID, ruleId);
@@ -33,7 +33,7 @@ namespace Kinetix.Rules {
             return ret;
         }
 
-        public IList<RuleFilterDefinition> FindFiltersBySelectorId(long selectorId) {
+        public IList<RuleFilterDefinition> FindFiltersBySelectorId(int selectorId) {
             IList<RuleFilterDefinition> ret;
             FilterCriteria filterCriteria = new FilterCriteria();
             filterCriteria.Equals(RuleFilterDefinition.Cols.SEL_ID, selectorId);
@@ -41,7 +41,7 @@ namespace Kinetix.Rules {
             return ret;
         }
 
-        public IList<RuleDefinition> FindRulesByItemId(long itemId) {
+        public IList<RuleDefinition> FindRulesByItemId(int itemId) {
             IList<RuleDefinition> ret;
             FilterCriteria filterCriteria = new FilterCriteria();
             filterCriteria.Equals(RuleDefinition.Cols.ITEM_ID, itemId);
@@ -49,7 +49,7 @@ namespace Kinetix.Rules {
             return ret;
         }
 
-        public IList<SelectorDefinition> FindSelectorsByItemId(long itemId) {
+        public IList<SelectorDefinition> FindSelectorsByItemId(int itemId) {
             IList<SelectorDefinition> ret;
             FilterCriteria filterCriteria = new FilterCriteria();
             filterCriteria.Equals(SelectorDefinition.Cols.ITEM_ID, itemId);
@@ -95,6 +95,12 @@ namespace Kinetix.Rules {
         public void UpdateSelector(SelectorDefinition selectorDefinition) {
             Debug.Assert(selectorDefinition.Id != null);
             BrokerManager.GetBroker<SelectorDefinition>().Save(selectorDefinition);
+        }
+
+
+        public IList<int> FindItemsByCriteria(RuleCriteria criteria, IList<int> items)
+        {
+            throw new NotImplementedException();
         }
     }
 }

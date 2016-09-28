@@ -7,7 +7,7 @@ create table [dbo].[WF_WORKFLOW] (
 	[WFW_ID] int identity,
 	[CREATION_DATE] datetime2,
 	[ITEM_ID] int,
-	[USER] nvarchar(50),
+	[USERNAME] nvarchar(50),
 	[USER_LOGIC] bit not null,
 	[WFWD_ID] int not null,
 	[WFS_CODE] nvarchar(3) not null,

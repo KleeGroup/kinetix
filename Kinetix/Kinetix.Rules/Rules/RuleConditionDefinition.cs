@@ -21,6 +21,11 @@ namespace Kinetix.Rules {
         /// <summary>
         /// Constructeur.
         /// </summary>
+        /// <param name="id">Id de la condition.</param>
+        /// <param name="field">Champ.</param>
+        /// <param name="operateur">Operateur de la condition.</param>
+        /// <param name="expression">Expression/Valeur.</param>
+        /// <param name="rudId">Id de la rule associée.</param>
         public RuleConditionDefinition(int? id, string field, string operateur, string expression, int? rudId) {
             this.Id = id;
             this.Field = field;
