@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -15,6 +16,7 @@ namespace Kinetix.Account
         private readonly IDictionary<string, HashSet<string>> AccountByGroupID = new Dictionary<string, HashSet<string>>();
         private readonly IDictionary<string, byte[]> PhotoByAccountIds = new Dictionary<string, byte[]>();
 
+        [MethodImpl(MethodImplOptions.Synchronized)]
         public void Attach(string accountId, string groupId)
         {
             HashSet<string> groups = GroupByAccountId[accountId];
@@ -24,6 +26,7 @@ namespace Kinetix.Account
             accounts.Add(accountId);
         }
 
+        [MethodImpl(MethodImplOptions.Synchronized)]
         public void Detach(string accountId, string groupId)
         {
             HashSet<string> groups = GroupByAccountId[accountId];
@@ -33,41 +36,49 @@ namespace Kinetix.Account
             accounts.Remove(accountId);
         }
 
+        [MethodImpl(MethodImplOptions.Synchronized)]
         public AccountUser GetAccount(string accountId)
         {
             return AccountById[accountId];
         }
 
+        [MethodImpl(MethodImplOptions.Synchronized)]
         public long GetAccountsCount()
         {
             return AccountById.Count;
         }
 
+        [MethodImpl(MethodImplOptions.Synchronized)]
         public ISet<string> GetAccountIds(string groupId)
         {
             return new HashSet<string>(AccountByGroupID[groupId]);
         }
 
+        [MethodImpl(MethodImplOptions.Synchronized)]
         public ICollection<AccountGroup> GetAllGroups()
         {
             return GroupById.Values;
         }
 
+        [MethodImpl(MethodImplOptions.Synchronized)]
         public AccountGroup GetGroup(string groupId)
         {
             return GroupById[groupId];
         }
 
+        [MethodImpl(MethodImplOptions.Synchronized)]
         public long GetGroupsCount()
         {
             return GroupByAccountId.Count;
         }
 
+        [MethodImpl(MethodImplOptions.Synchronized)]
         public ISet<string> GetGroupIds(string accountId)
         {
             return new HashSet<string>(GroupByAccountId[accountId]);
         }
 
+        [MethodImpl(MethodImplOptions.Synchronized)]
         public byte[] GetPhoto(string accountId)
         {
             return PhotoByAccountIds[accountId];
@@ -83,6 +94,7 @@ namespace Kinetix.Account
             }
         }
 
+        [MethodImpl(MethodImplOptions.Synchronized)]
         public void SaveAccounts(IList<AccountUser> accounts)
         {
             foreach (AccountUser account in accounts)
@@ -91,12 +103,14 @@ namespace Kinetix.Account
             }
         }
 
+        [MethodImpl(MethodImplOptions.Synchronized)]
         public void SaveGroup(AccountGroup group)
         {
             AccountByGroupID[group.Id] = new HashSet<string>();
             GroupById[group.Id] = group;
         }
 
+        [MethodImpl(MethodImplOptions.Synchronized)]
         public void SetPhoto(string accountId, byte[] photo)
         {
             PhotoByAccountIds[accountId] = photo;

@@ -99,6 +99,12 @@ namespace Kinetix.Rules {
 
         public IList<int> FindItemsByCriteria(RuleCriteria criteria, IList<int> items)
         {
+            Debug.Assert(criteria != null);
+            Debug.Assert(criteria.ConditionCriteria != null);
+            Debug.Assert(criteria.ConditionCriteria.Count <= 3);
+            //--
+
+
             throw new NotImplementedException();
         }
     }

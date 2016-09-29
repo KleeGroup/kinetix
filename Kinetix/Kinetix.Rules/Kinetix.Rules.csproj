@@ -91,6 +91,9 @@
     <Content Include="dbo\RULE_CONDITION_DEFINITION.sql" />
     <Content Include="dbo\SELECTOR_DEFINITION.sql" />
     <Content Include="dbo\RULE_DEFINITION.sql" />
+    <EmbeddedResource Include="SQLResources\FindItemsByCriteria.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Kinetix.Account;
+using System.Collections;
 
 namespace Kinetix.Rules
 {
@@ -40,6 +41,29 @@ namespace Kinetix.Rules
                         case "=":
                             result = ruleContext[field].Equals(expression);
                             break;
+                        case "IN":
+                            string[] expressions = expression.Split(',');
+                            if (ruleContext[field] is IList)
+                            {
+                                IList<string> valueList = (IList<string>)ruleContext[field];
+                                result = (expressions.Intersect(valueList).Count() > 0);
+                            }
+                            else
+                            {
+                                string valStr = (string)ruleContext[field];
+                                result = expressions.Contains<string>(valStr);
+                            }
+                            break;
+                        case "<":
+                            double doubleExpressionInf = Double.Parse(expression);
+                            double doubleFieldInf = Double.Parse((string)ruleContext[field]);
+                            result = doubleExpressionInf < doubleFieldInf;
+                            break;
+                        case ">":
+                            double doubleExpressionSup = Double.Parse(expression);
+                            double doubleFieldSup = Double.Parse((string)ruleContext[field]);
+                            result = doubleExpressionSup > doubleFieldSup;
+                            break;
                     }
 
                     if (!result)
@@ -51,15 +75,13 @@ namespace Kinetix.Rules
                 if (selectorMatch)
                 {
                     IAccountStore accountStore = _accountManager.GetStore();
-
-                    //FIXME: AccountManager should be a singleton
-                    /*ISet<string> accounts = accountStore.GetAccountIds(selectorDefinition.GroupId);
+                    ISet<string> accounts = accountStore.GetAccountIds(selectorDefinition.GroupId);
 
                     foreach (string accountId in accounts)
                     {
                         AccountUser account = accountStore.GetAccount(accountId);
                         collected.Add(account);
-                    }*/
+                    }
                 }
             }
 

@@ -1,15 +1,17 @@
 ﻿using Kinetix.ComponentModel;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Kinetix.Rules
 {
     public class RuleContext
     {
-        private readonly IDictionary<string, string> context;
+        private readonly IDictionary<string, object> context;
 
         public RuleContext(object obj, RuleConstants constants)
         {
-            context = new Dictionary<string, string>();
+            context = new Dictionary<string, object>();
 
             BeanDefinition definition = BeanDescriptor.GetDefinition(obj.GetType());
             BeanPropertyDescriptorCollection properties = definition.Properties;
@@ -19,7 +21,16 @@ namespace Kinetix.Rules
                 object val = bean.GetValue(obj);
                 if (val != null)
                 {
-                    context[bean.PropertyName] = val.ToString();
+                    if (val is IList)
+                    {
+                        IList valList = (IList) val;
+                        context[bean.PropertyName] = valList.Cast<object>().Select(v => v.ToString()).ToList();
+                    }
+                    else
+                    {
+                        context[bean.PropertyName] = val.ToString();
+                    }
+                    
                 }
             }
 
@@ -27,12 +38,12 @@ namespace Kinetix.Rules
             {
                 foreach (KeyValuePair<string, string> keyValue in constants.GetValues())
                 {
-                    context.Add(keyValue);
+                    context.Add(keyValue.Key, keyValue.Value);
                 }
             }
         }
 
-        public string this[string key]
+        public object this[string key]
         {
             get
             {

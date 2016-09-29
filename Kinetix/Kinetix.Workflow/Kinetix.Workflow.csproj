@@ -30,8 +30,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Kinetix.Account, Version=0.0.0.2, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Kinetix.Account.0.0.0.2\lib\net451\Kinetix.Account.dll</HintPath>
+    <Reference Include="Kinetix.Account, Version=0.0.0.3, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Kinetix.Account.0.0.0.3\lib\net451\Kinetix.Account.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />

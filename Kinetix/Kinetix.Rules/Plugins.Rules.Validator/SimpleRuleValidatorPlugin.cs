@@ -1,5 +1,6 @@
 ﻿using Kinetix.Rules;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -35,8 +36,31 @@ namespace Kinetix.Rules
                         case "=":
                             result = ruleContext[field].Equals(expression);
                             break;
+                        case "IN":
+                            string[] expressions = expression.Split(',');
+                            if (ruleContext[field] is IList)
+                            {
+                                IList<string> valueList = (IList<string>) ruleContext[field];
+                                result = (expressions.Intersect(valueList).Count() > 0);
+                            }
+                            else
+                            {
+                                string valStr = (string)ruleContext[field];
+                                result = expressions.Contains<string>(valStr);
+                            }
+                            break;
+                        case "<":
+                            double doubleExpressionInf = Double.Parse(expression);
+                            double doubleFieldInf = Double.Parse((string)ruleContext[field]);
+                            result = doubleExpressionInf < doubleFieldInf;
+                            break;
+                        case ">":
+                            double doubleExpressionSup = Double.Parse(expression);
+                            double doubleFieldSup = Double.Parse((string)ruleContext[field]);
+                            result = doubleExpressionSup > doubleFieldSup;
+                            break;
                     }
-
+                    
                     if (!result)
                     {
                         ruleValid = false;

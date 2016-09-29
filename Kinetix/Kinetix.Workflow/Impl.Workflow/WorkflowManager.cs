@@ -150,11 +150,21 @@ namespace Kinetix.Workflow {
             wfWorkflow.ItemId = item;
             wfWorkflow.WfsCode = WfCodeStatusWorkflow.Cre.ToString();
             wfWorkflow.WfwdId = wfWorkflowDefinition.WfwdId;
-            wfWorkflow.WfaId2 = wfWorkflowDefinition.WfadId;
             wfWorkflow.UserLogic = userLogic;
             wfWorkflow.Username = username;
 
             _workflowStorePlugin.CreateWorkflowInstance(wfWorkflow);
+
+            DateTime now = DateTime.Now;
+            // Creating the next activity to validate.
+            WfActivity nextActivity = new WfActivity();
+            nextActivity.CreationDate = now;
+            nextActivity.WfadId = (int)wfWorkflowDefinition.WfadId;
+            nextActivity.WfwId = (int)wfWorkflow.WfwId;
+            _workflowStorePlugin.CreateActivity(nextActivity);
+
+            wfWorkflow.WfaId2 = nextActivity.WfaId;
+            _workflowStorePlugin.UpdateWorkflowInstance(wfWorkflow);
 
             return wfWorkflow;
         }
@@ -321,6 +331,7 @@ namespace Kinetix.Workflow {
             WfActivity wfActivityCurrent = new WfActivity();
             wfActivityCurrent.CreationDate = DateTime.Now;
             wfActivityCurrent.WfadId = (int)wfWorkflowDefinition.WfadId;
+            wfActivityCurrent.WfwId = (int)wfWorkflow.WfwId;
             _workflowStorePlugin.CreateActivity(wfActivityCurrent);
             wfWorkflow.WfaId2 = wfActivityCurrent.WfaId;
             _workflowStorePlugin.UpdateWorkflowInstance(wfWorkflow);
