@@ -133,21 +133,22 @@ namespace Kinetix.Workflow {
 
         [OperationContract]
         public bool HasNextActivity(WfActivity activity, string transitionName) {
-            //TODO: remove this method and use FindNextActivity
-            FilterCriteria filterCriteria = new FilterCriteria();
-            filterCriteria.Equals(WfTransitionDefinition.Cols.WFAD_ID_FROM, activity.WfadId);
-            filterCriteria.Equals(WfTransitionDefinition.Cols.NAME, transitionName);
-            WfTransitionDefinition transition = BrokerManager.GetBroker<WfTransitionDefinition>().GetByCriteria(filterCriteria);
-            return transition != null;
+            var cmd = GetSqlServerCommand("HasNextTransition.sql");
+            cmd.Parameters.AddWithValue(WfTransitionDefinition.Cols.WFAD_ID_FROM, activity.WfadId);
+            cmd.Parameters.AddWithValue(WfTransitionDefinition.Cols.NAME, transitionName);
+
+            bool hasNext = cmd.ReadScalar<int>() == 1;
+
+            return hasNext;
         }
 
         [OperationContract]
-        public WfActivity ReadActivity(long wfadId) {
+        public WfActivity ReadActivity(int wfadId) {
             return BrokerManager.GetBroker<WfActivity>().Get(wfadId);
         }
 
         [OperationContract]
-        public WfActivityDefinition ReadActivityDefinition(long wfadId) {
+        public WfActivityDefinition ReadActivityDefinition(int wfadId) {
             return BrokerManager.GetBroker<WfActivityDefinition>().Get(wfadId);
         }
 
@@ -159,19 +160,20 @@ namespace Kinetix.Workflow {
         }
 
         [OperationContract]
-        public WfWorkflowDefinition ReadWorkflowDefinition(long wfwdId) {
+        public WfWorkflowDefinition ReadWorkflowDefinition(int wfwdId) {
             return BrokerManager.GetBroker<WfWorkflowDefinition>().Get(wfwdId);
         }
 
         [OperationContract]
-        public WfWorkflow ReadWorkflowInstanceById(long wfwId) {
+        public WfWorkflow ReadWorkflowInstanceById(int wfwId) {
             return BrokerManager.GetBroker<WfWorkflow>().Get(wfwId);
         }
 
         [OperationContract]
-        public WfWorkflow ReadWorkflowInstanceByItemId(long itemId) {
+        public WfWorkflow ReadWorkflowInstanceByItemId(int wfwdId, int itemId) {
             FilterCriteria filterCriteria = new FilterCriteria();
             filterCriteria.Equals(WfWorkflow.Cols.ITEM_ID, itemId);
+            filterCriteria.Equals(WfWorkflow.Cols.WFWD_ID, wfwdId);
             return BrokerManager.GetBroker<WfWorkflow>().GetByCriteria(filterCriteria);
         }
 

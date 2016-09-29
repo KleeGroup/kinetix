@@ -28,7 +28,7 @@ namespace Kinetix.Audit
             return _auditTraceStorePlugin.FindTraceByCriteria(auditTraceCriteria);
         }
 
-        public AuditTrace GetTrace(long idAuditTrace)
+        public AuditTrace GetTrace(int idAuditTrace)
         {
             return _auditTraceStorePlugin.ReadTrace(idAuditTrace);
         }

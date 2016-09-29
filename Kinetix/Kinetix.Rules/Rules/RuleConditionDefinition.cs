@@ -111,18 +111,21 @@ namespace Kinetix.Rules {
         [Domain("DO_X_RULES_FIELD")]
         public string Field {
             get;
+            set;
         }
 
         [Column("OPERATOR")]
         [Domain("DO_X_RULES_OPERATOR")]
         public string Operator {
             get;
+            set;
         }
 
         [Column("EXPRESSION")]
         [Domain("DO_X_RULES_EXPRESSION")]
         public string Expression {
             get;
+            set;
         }
 
         [Column("RUD_ID")]

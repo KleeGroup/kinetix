@@ -13,22 +13,22 @@ namespace Kinetix.Workflow
 
         // WorkflowInstance
         private int memoryWorkflowInstanceSequenceGenerator = 0;
-        private IDictionary<long?, WfWorkflow> inMemoryWorkflowInstanceStore = new ConcurrentDictionary<long?, WfWorkflow>();
+        private IDictionary<int?, WfWorkflow> inMemoryWorkflowInstanceStore = new ConcurrentDictionary<int?, WfWorkflow>();
 
         // Transition
         private IDictionary<string, WfTransitionDefinition> transitionsNext = new ConcurrentDictionary<string, WfTransitionDefinition>();
 
         // Activity
         private int memoryActivitySequenceGenerator = 0;
-        private IDictionary<long?, WfActivity> inMemoryActivityStore = new ConcurrentDictionary<long?, WfActivity>();
+        private IDictionary<int?, WfActivity> inMemoryActivityStore = new ConcurrentDictionary<int?, WfActivity>();
 
         // Decision
         private int memoryDecisionSequenceGenerator = 0;
-        private IDictionary<long?, WfDecision> inMemoryDecisionStore = new ConcurrentDictionary<long?, WfDecision>();
+        private IDictionary<int?, WfDecision> inMemoryDecisionStore = new ConcurrentDictionary<int?, WfDecision>();
 
         // ActivityDefinition
         private int memoryActivityDefinitionSequenceGenerator = 0;
-        private IDictionary<long?, WfActivityDefinition> inMemoryActivityDefinitionStore = new ConcurrentDictionary<long?, WfActivityDefinition>();
+        private IDictionary<int?, WfActivityDefinition> inMemoryActivityDefinitionStore = new ConcurrentDictionary<int?, WfActivityDefinition>();
 
         // WorkflowDefinition
         private int memoryWorkflowDefinitionSequenceGenerator = 0;
@@ -55,7 +55,7 @@ namespace Kinetix.Workflow
         {
             Debug.Assert(wfWorkflowDefinition != null);
             //--
-            long? idActivity = wfWorkflowDefinition.WfadId;
+            int? idActivity = wfWorkflowDefinition.WfadId;
             if (idActivity == null)
             {
                 //The workflow don't have a starting activity
@@ -176,7 +176,7 @@ namespace Kinetix.Workflow
         {
             Debug.Assert(wfWorkflowDefinition != null);
             //---
-            long? idStartActivity = wfWorkflowDefinition.WfadId;
+            int? idStartActivity = wfWorkflowDefinition.WfadId;
             IList<WfActivityDefinition> retAllDefaultActivities = new List<WfActivityDefinition>();
 
             WfTransitionDefinition transitionNext = transitionsNext[idStartActivity + "|" + WfCodeTransition.Default.ToString()];
@@ -212,12 +212,12 @@ namespace Kinetix.Workflow
             return transitionsNext.ContainsKey(activity.WfaId + "|" + transitionName);
         }
 
-        public WfActivity ReadActivity(long wfadId)
+        public WfActivity ReadActivity(int wfadId)
         {
             return inMemoryActivityStore[wfadId];
         }
 
-        public WfActivityDefinition ReadActivityDefinition(long wfadId)
+        public WfActivityDefinition ReadActivityDefinition(int wfadId)
         {
             return inMemoryActivityDefinitionStore[wfadId];
         }
@@ -237,21 +237,21 @@ namespace Kinetix.Workflow
             return null;
         }
 
-        public WfWorkflowDefinition ReadWorkflowDefinition(long wfwdId)
+        public WfWorkflowDefinition ReadWorkflowDefinition(int wfwdId)
         {
             return inMemoryWorkflowDefinitionStore[wfwdId];
         }
 
-        public WfWorkflow ReadWorkflowInstanceById(long wfwId)
+        public WfWorkflow ReadWorkflowInstanceById(int wfwId)
         {
             return inMemoryWorkflowInstanceStore[wfwId];
         }
 
-        public WfWorkflow ReadWorkflowInstanceByItemId(long itemId)
+        public WfWorkflow ReadWorkflowInstanceByItemId(int wfwdId, int itemId)
         {
             foreach (WfWorkflow wfWorkflow in inMemoryWorkflowInstanceStore.Values)
             {
-                if (itemId.Equals(wfWorkflow.ItemId))
+                if (itemId.Equals(wfWorkflow.ItemId) && wfwdId.Equals(wfWorkflow.WfwdId))
                 {
                     return wfWorkflow;
                 }

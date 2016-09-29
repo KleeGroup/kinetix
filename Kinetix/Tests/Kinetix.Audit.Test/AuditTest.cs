@@ -19,10 +19,10 @@ namespace Kinetix.Audit.Test
         {
             using (AuditManager auditManager = AuditManager.Instance)
             {
-                AuditTrace auditTrace = new AuditTraceBuilder("CAT1", "USER1", 1L, "My message 1").Build();
+                AuditTrace auditTrace = new AuditTraceBuilder("CAT1", "USER1", 1, "My message 1").Build();
 
                 auditManager.AddTrace(auditTrace);
-                AuditTrace auditFetch = auditManager.GetTrace((long)auditTrace.Id);
+                AuditTrace auditFetch = auditManager.GetTrace((int)auditTrace.Id);
 
                 Assert.AreEqual(auditTrace.BusinessDate, auditFetch.BusinessDate);
                 Assert.AreEqual(auditTrace.Category, auditFetch.Category);
@@ -37,10 +37,10 @@ namespace Kinetix.Audit.Test
         {
             using (AuditManager auditManager = AuditManager.Instance)
             {
-                AuditTrace auditTrace1 = new AuditTraceBuilder("CAT2", "USER2", 2L, "My message 2").Build();
+                AuditTrace auditTrace1 = new AuditTraceBuilder("CAT2", "USER2", 2, "My message 2").Build();
                 auditManager.AddTrace(auditTrace1);
 
-                AuditTrace auditTrace2 = new AuditTraceBuilder("CAT3", "USER3", 3L, "My message 3")
+                AuditTrace auditTrace2 = new AuditTraceBuilder("CAT3", "USER3", 3, "My message 3")
                         .WithDateBusiness(DateTime.Now)
                         .WithContext(new[] { "Context 3" })
                         .Build();
@@ -92,7 +92,7 @@ namespace Kinetix.Audit.Test
 
                 //Criteria Item
 
-                AuditTraceCriteria auditTraceCriteria4 = new AuditTraceCriteriaBuilder().WithItem(2L).Build();
+                AuditTraceCriteria auditTraceCriteria4 = new AuditTraceCriteriaBuilder().WithItem(2).Build();
                 IList<AuditTrace> auditTraceFetch4 = auditManager.FindTrace(auditTraceCriteria4);
 
                 Assert.AreEqual(1, auditTraceFetch4.Count);

@@ -26,6 +26,14 @@ namespace Kinetix.Workflow
         /// <return>the workflow instance</return>
         WfWorkflow GetWorkflowInstance(int wfwId);
 
+        /// <summary>
+        /// Get a workflow instance by the item Id. 
+        /// </summary>
+        /// <param name="wfwdId">wfwdId of the item</param>
+        /// <param name="itemId">id of the item</param>
+        /// <return>the workflow instance</return>
+        WfWorkflow GetWorkflowInstanceByItemId(int wfwdId, int itemId);
+
 
         /// <summary>
         /// Start a workflow instance. 
@@ -93,9 +101,8 @@ namespace Kinetix.Workflow
         /// Get the list of activities following the default transition from the start until the end.
         /// </summary>
         /// <param name="wfWorkflow">wfWorkflow</param>
-        /// <param name="transitionName">transitionName</param>
         /// <returns>the list of activities following the default path from the start until the end</returns>
-        List<WfActivity> GetActivities(WfWorkflow wfWorkflow);
+        IList<WfActivityDefinition> GetActivities(WfWorkflow wfWorkflow);
 
         // Definitions:
         /// <summary>

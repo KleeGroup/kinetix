@@ -15,13 +15,13 @@ namespace Kinetix.Workflow
         /// </summary>
         /// <param name="itemId">itemId to track.</param>
         /// <param name="item">item to track.</param>
-        void AddItem(long itemId, object item);
+        void AddItem(int itemId, object item);
 
         /// <summary>
         /// Get an item
         /// </summary>
         /// <param name="itemId">ItemId.</param>
         /// <returns>the object corresponding to the itemId.</returns>
-        object ReadItem(long itemId);
+        object ReadItem(int itemId);
     }
 }

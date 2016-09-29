@@ -29,6 +29,6 @@ namespace Kinetix.Audit
         /// </summary>
         /// <returns>the audit trace for the desired id.</returns>
         [OperationContract]
-        AuditTrace GetTrace(long idAuditTrace);
+        AuditTrace GetTrace(int idAuditTrace);
     }
 }

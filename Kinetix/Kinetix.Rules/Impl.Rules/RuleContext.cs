@@ -16,7 +16,11 @@ namespace Kinetix.Rules
 
             foreach (BeanPropertyDescriptor bean in properties)
             {
-                context[bean.PropertyName] = bean.GetValue(obj).ToString();
+                object val = bean.GetValue(obj);
+                if (val != null)
+                {
+                    context[bean.PropertyName] = val.ToString();
+                }
             }
 
             if (constants != null)

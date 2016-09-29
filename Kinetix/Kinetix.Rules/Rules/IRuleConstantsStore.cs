@@ -13,26 +13,26 @@ namespace Kinetix.Rules
         /// </summary>
         /// <param name="key">key.</param>
         /// <param name="ruleConstants">ruleConstants.</param>
-        void AddConstants(long key, RuleConstants ruleConstants);
+        void AddConstants(int key, RuleConstants ruleConstants);
 
         /// <summary>
         /// Remove constants.
         /// </summary>
         /// <param name="key">key.</param>
-        void RemoveConstants(long key);
+        void RemoveConstants(int key);
 
         /// <summary>
         /// Update constants.
         /// </summary>
         /// <param name="key">key.</param>
         /// <param name="ruleConstants">ruleConstants.</param>
-        void UpdateConstants(long key, RuleConstants ruleConstants);
+        void UpdateConstants(int key, RuleConstants ruleConstants);
 
         /// <summary>
         /// Get constants.
         /// </summary>
         /// <param name="key">key.</param>
         /// <returns>the rule constants matching the key</returns>
-        RuleConstants ReadConstants(long key);
+        RuleConstants ReadConstants(int key);
     }
 }

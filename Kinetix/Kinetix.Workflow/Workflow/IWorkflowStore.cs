@@ -24,14 +24,15 @@ namespace Kinetix.Workflow
         /// </summary>
         /// <param name="wfwId">id of the workflow instance.</param>
         /// <returns>the corresponding workflow</returns> 
-        WfWorkflow ReadWorkflowInstanceById(long wfwId);
+        WfWorkflow ReadWorkflowInstanceById(int wfwId);
 
         /// <summary>
         /// Get a workflow instance by an item id.
         /// </summary>
+        /// <param name="wfwdId">id of the workflow definition.</param>
         /// <param name="itemId">id of the item id.</param>
         /// <returns>the corresponding workflow</returns>
-        WfWorkflow ReadWorkflowInstanceByItemId(long itemId);
+        WfWorkflow ReadWorkflowInstanceByItemId(int wfwdId, int itemId);
 
         /// <summary>
         /// Update a workflow instance.
@@ -45,7 +46,7 @@ namespace Kinetix.Workflow
         /// </summary>
         /// <param name="wfadId">wfadId.</param>
         /// <returns>the corresponding activity</returns>
-        WfActivity ReadActivity(long wfadId);
+        WfActivity ReadActivity(int wfadId);
 
         /// <summary>
         /// Create a new activity.
@@ -136,7 +137,7 @@ namespace Kinetix.Workflow
         /// </summary>
         /// <param name="wfwdId">the id of the workflow definition</param>
         /// <returns>the corresponding Workflow definition</returns>
-        WfWorkflowDefinition ReadWorkflowDefinition(long wfwdId);
+        WfWorkflowDefinition ReadWorkflowDefinition(int wfwdId);
 
         /// <summary>
         /// Get an definition of workflow.
@@ -172,7 +173,7 @@ namespace Kinetix.Workflow
         /// </summary>
         /// <param name="wfadId">the workflow definition.</param>
         /// <returns>the corresponding activity definition.</returns>
-        WfActivityDefinition ReadActivityDefinition(long wfadId);
+        WfActivityDefinition ReadActivityDefinition(int wfadId);
 
         /// <summary>
         /// Update an activity definition.

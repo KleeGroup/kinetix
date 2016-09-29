@@ -120,6 +120,7 @@ namespace Kinetix.Rules
         public string Field
         {
             get;
+            set;
         }
 
         [Column("OPERATOR")]
@@ -127,6 +128,7 @@ namespace Kinetix.Rules
         public string Operator
         {
             get;
+            set;
         }
 
         [Column("EXPRESSION")]
@@ -134,6 +136,7 @@ namespace Kinetix.Rules
         public string Expression
         {
             get;
+            set;
         }
 
         [Column("SEL_ID")]

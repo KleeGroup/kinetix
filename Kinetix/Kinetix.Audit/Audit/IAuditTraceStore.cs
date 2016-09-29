@@ -14,7 +14,7 @@ namespace Kinetix.Audit
         /// </summary>
         /// <param name="idAuditTrace">the audit trail defined by its id.</param>
         /// <returns>the AuditTrace</returns>
-        AuditTrace ReadTrace(long? idAuditTrace);
+        AuditTrace ReadTrace(int? idAuditTrace);
 
         /// <summary>
         /// Save a new audit trail.

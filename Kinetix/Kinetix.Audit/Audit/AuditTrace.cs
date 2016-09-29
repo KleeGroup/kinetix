@@ -14,7 +14,7 @@ namespace Kinetix.Audit
     public class AuditTrace 
     {
 
-        public AuditTrace(long? id, string category, string username, DateTime? businessDate, DateTime? executionDate, long? item, string message, string context)
+        public AuditTrace(int? id, string category, string username, DateTime? businessDate, DateTime? executionDate, int? item, string message, string context)
         {
             this.Id = id;
             this.Category = category;
@@ -29,7 +29,7 @@ namespace Kinetix.Audit
         [Column("ID")]
         [Domain("DO_X_AUDIT_ID")]
         [Key]
-        public long? Id{
+        public int? Id{
             get;
             set;
         }
@@ -60,7 +60,7 @@ namespace Kinetix.Audit
 
         [Column("ITEM")]
         [Domain("DO_X_AUDIT_ITEM")]
-        public long? Item {
+        public int? Item {
             get;
         }
 

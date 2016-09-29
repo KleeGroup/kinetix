@@ -7,22 +7,22 @@ namespace Kinetix.Rules {
     public class SqlServerRuleStorePlugin : IRuleStorePlugin {
         public void AddCondition(RuleConditionDefinition ruleConditionDefinition) {
             Debug.Assert(ruleConditionDefinition.Id == null);
-            BrokerManager.GetBroker<RuleConditionDefinition>().Save(ruleConditionDefinition);
+            ruleConditionDefinition.Id = (int) BrokerManager.GetBroker<RuleConditionDefinition>().Save(ruleConditionDefinition);
         }
 
         public void AddFilter(RuleFilterDefinition ruleFilterDefinition) {
             Debug.Assert(ruleFilterDefinition.Id == null);
-            BrokerManager.GetBroker<RuleFilterDefinition>().Save(ruleFilterDefinition);
+            ruleFilterDefinition.Id = (int) BrokerManager.GetBroker<RuleFilterDefinition>().Save(ruleFilterDefinition);
         }
 
         public void AddRule(RuleDefinition ruleDefinition) {
             Debug.Assert(ruleDefinition.Id == null);
-            ruleDefinition.Id = (int)BrokerManager.GetBroker<RuleDefinition>().Save(ruleDefinition);
+            ruleDefinition.Id = (int) BrokerManager.GetBroker<RuleDefinition>().Save(ruleDefinition);
         }
 
         public void AddSelector(SelectorDefinition selectorDefinition) {
             Debug.Assert(selectorDefinition.Id == null);
-            BrokerManager.GetBroker<SelectorDefinition>().Save(selectorDefinition);
+            selectorDefinition.Id = (int) BrokerManager.GetBroker<SelectorDefinition>().Save(selectorDefinition);
         }
 
         public IList<RuleConditionDefinition> FindConditionByRuleId(int ruleId) {
@@ -42,10 +42,9 @@ namespace Kinetix.Rules {
         }
 
         public IList<RuleDefinition> FindRulesByItemId(int itemId) {
-            IList<RuleDefinition> ret;
             FilterCriteria filterCriteria = new FilterCriteria();
             filterCriteria.Equals(RuleDefinition.Cols.ITEM_ID, itemId);
-            ret = new List<RuleDefinition>(BrokerManager.GetBroker<RuleDefinition>().GetAllByCriteria(filterCriteria));
+            IList<RuleDefinition> ret = new List<RuleDefinition>(BrokerManager.GetBroker<RuleDefinition>().GetAllByCriteria(filterCriteria));
             return ret;
         }
 

@@ -9,12 +9,12 @@ namespace Kinetix.Audit.Audit
 {
     public class AuditTraceBuilder
     {
-        private long? Id;
+        private int? Id;
         private readonly string Category;
 	    private readonly string Username;
 	    private DateTime BusinessDate;
         private readonly DateTime ExecutionDate;
-	    private readonly long Item;
+	    private readonly int Item;
 	    private readonly string Message;
 	    private string Context;
 
@@ -25,7 +25,7 @@ namespace Kinetix.Audit.Audit
         /// <param name="username">username.</param>
         /// <param name="item">item.</param>
         /// <param name="message">message.</param>
-        public AuditTraceBuilder(string category, string username, long item, string message)
+        public AuditTraceBuilder(string category, string username, int item, string message)
         {
             Debug.Assert(!String.IsNullOrEmpty(category));
             Debug.Assert(!String.IsNullOrEmpty(username));

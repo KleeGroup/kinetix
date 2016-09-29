@@ -15,7 +15,7 @@ namespace Kinetix.Audit.Audit
         private DateTime? myEndBusinessDate;
         private DateTime? myStartExecutionDate;
         private DateTime? myEndExecutionDate;
-        private long? myItem;
+        private int? myItem;
 
         /// <summary>
         /// Optionnal category.
@@ -100,7 +100,7 @@ namespace Kinetix.Audit.Audit
         /// </summary>
         /// <param name="item">item.</param>
         /// <returns>the builder (for fluent style)</returns>
-        public AuditTraceCriteriaBuilder WithItem(long? item)
+        public AuditTraceCriteriaBuilder WithItem(int? item)
         {
             Debug.Assert(item != null);
             //---

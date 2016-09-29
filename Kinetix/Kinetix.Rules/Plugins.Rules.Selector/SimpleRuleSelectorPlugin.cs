@@ -51,13 +51,15 @@ namespace Kinetix.Rules
                 if (selectorMatch)
                 {
                     IAccountStore accountStore = _accountManager.GetStore();
-                    ISet<string> accounts = accountStore.GetAccountIds(selectorDefinition.GroupId);
+
+                    //FIXME: AccountManager should be a singleton
+                    /*ISet<string> accounts = accountStore.GetAccountIds(selectorDefinition.GroupId);
 
                     foreach (string accountId in accounts)
                     {
                         AccountUser account = accountStore.GetAccount(accountId);
                         collected.Add(account);
-                    }
+                    }*/
                 }
             }
 

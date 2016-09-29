@@ -106,6 +106,7 @@ namespace Kinetix.Rules {
         [Domain("DO_X_RULES_DATE")]
         public DateTime? CreationDate {
             get;
+            set;
         }
 
         [Column("ITEM_ID")]
@@ -119,6 +120,7 @@ namespace Kinetix.Rules {
         [Domain("DO_X_RULES_LABEL")]
         public string Label {
             get;
+            set;
         }
 
         /// <summary>

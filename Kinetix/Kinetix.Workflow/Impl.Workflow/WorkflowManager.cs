@@ -167,9 +167,22 @@ namespace Kinetix.Workflow {
             _workflowStorePlugin.UpdateWorkflowInstance(wfWorkflow);
         }
 
-        public List<WfActivity> GetActivities(WfWorkflow wfWorkflow) {
-            ///TODO
-            throw new NotImplementedException();
+        public IList<WfActivityDefinition> GetActivities(WfWorkflow wfWorkflow) {
+            WfWorkflowDefinition wfDefinition = _workflowStorePlugin.ReadWorkflowDefinition((int)wfWorkflow.WfwdId);
+            IList<WfActivityDefinition> activities = _workflowStorePlugin.FindAllDefaultActivityDefinitions(wfDefinition);
+
+            object obj = _itemStorePlugin.ReadItem((int)wfWorkflow.ItemId);
+
+            IList<WfActivityDefinition> ret = new List<WfActivityDefinition>();
+            foreach (WfActivityDefinition activity in activities)
+            {
+                if (CanAutoValidateActivity(activity, obj) == false)
+                {
+                    ret.Add(activity);
+                }
+            }
+
+            return ret;
         }
 
         public WfWorkflow GetWorkflowInstance(int wfwId) {
@@ -298,8 +311,8 @@ namespace Kinetix.Workflow {
         }
 
         public void StartInstance(WfWorkflow wfWorkflow) {
-            Debug.Assert(wfWorkflow == null);
-            Debug.Assert(WfCodeStatusWorkflow.Sta.ToString().Equals(wfWorkflow.WfsCode), "A workflow must be started before pausing");
+            Debug.Assert(wfWorkflow != null);
+            Debug.Assert(WfCodeStatusWorkflow.Cre.ToString().Equals(wfWorkflow.WfsCode), "A workflow must be created before starting");
             //---
             wfWorkflow.WfsCode = WfCodeStatusWorkflow.Sta.ToString();
 
@@ -315,6 +328,14 @@ namespace Kinetix.Workflow {
             AutoValidateNextActivities(wfWorkflow, (int)wfWorkflowDefinition.WfadId);
         }
 
+        /// <summary>
+        /// Find the workflow by itemId
+        /// </summary>
+        /// <param name="criteria"></param>
+        public WfWorkflow GetWorkflowInstanceByItemId(int wfwdId, int itemId)
+        {
+            return _workflowStorePlugin.ReadWorkflowInstanceByItemId(wfwdId, itemId);
+        }
 
         /// <summary>
         /// Find activities matching the criteria in parameters
@@ -324,6 +345,7 @@ namespace Kinetix.Workflow {
         {
             throw new NotImplementedException();
         }
+
 
     }
 }

@@ -12,7 +12,7 @@ namespace Kinetix.Audit
               DateTime? endBusinessDate,
               DateTime? startExecutionDate,
               DateTime? endExecutionDate,
-              long? item) {
+              int? item) {
             this.Category = category;
             this.Username = username;
             this.StartBusinessDate = startBusinessDate;
@@ -52,7 +52,7 @@ namespace Kinetix.Audit
             set;
         }
 
-        public long? Item {
+        public int? Item {
             get;
             set;
         }

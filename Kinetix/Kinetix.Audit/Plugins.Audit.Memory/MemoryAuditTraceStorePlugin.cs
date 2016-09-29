@@ -10,10 +10,10 @@ namespace Kinetix.Audit
     public class MemoryAuditTraceStorePlugin : IAuditTraceStorePlugin
     {
 
-        private IDictionary<long?, AuditTrace> inMemoryStore = new ConcurrentDictionary<long?, AuditTrace>();
+        private IDictionary<int?, AuditTrace> inMemoryStore = new ConcurrentDictionary<int?, AuditTrace>();
         private int memorySequenceGenerator = 0;
 
-        public AuditTrace ReadTrace(long? idAuditTrace)
+        public AuditTrace ReadTrace(int? idAuditTrace)
         {
             return inMemoryStore[idAuditTrace];
         }

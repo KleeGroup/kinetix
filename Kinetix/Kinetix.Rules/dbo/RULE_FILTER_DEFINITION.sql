@@ -11,7 +11,7 @@ create table [dbo].[RULE_FILTER_DEFINITION] (
 	[EXPRESSION] nvarchar(100),
 	[SEL_ID] int not null,
 	constraint [PK_RULE_FILTER_DEFINITION] primary key clustered ([ID] ASC),
-	constraint [FK_RFI_SEL] foreign key ([SEL_ID]) references [dbo].[RULE_DEFINITION] ([ID]))
+	constraint [FK_RFI_SEL] foreign key ([SEL_ID]) references [dbo].[SELECTOR_DEFINITION] ([ID]))
 go
 
 /* Index on foreign key column for RULE_CONDITION_DEFINITION.SEL_ID */

@@ -8,26 +8,28 @@ namespace Kinetix.Rules
     public sealed class MemoryRuleConstantsStore : IRuleConstantsStorePlugin
     {
 
-        private readonly IDictionary<long, RuleConstants> inMemoryRuleStore = new ConcurrentDictionary<long, RuleConstants>();
+        private readonly IDictionary<int, RuleConstants> inMemoryRuleStore = new ConcurrentDictionary<int, RuleConstants>();
 
-        public void AddConstants(long key, RuleConstants ruleConstants)
+        public void AddConstants(int key, RuleConstants ruleConstants)
         {
             Debug.Assert(ruleConstants != null);
             //---
             inMemoryRuleStore[key] = ruleConstants;
         }
 
-        public RuleConstants ReadConstants(long key)
+        public RuleConstants ReadConstants(int key)
         {
-            return inMemoryRuleStore[key];
+            RuleConstants val;
+            inMemoryRuleStore.TryGetValue(key, out val);
+            return val;
         }
 
-        public void RemoveConstants(long key)
+        public void RemoveConstants(int key)
         {
             inMemoryRuleStore.Remove(key);
         }
 
-        public void UpdateConstants(long key, RuleConstants ruleConstants)
+        public void UpdateConstants(int key, RuleConstants ruleConstants)
         {
             Debug.Assert(ruleConstants != null);
             //---
