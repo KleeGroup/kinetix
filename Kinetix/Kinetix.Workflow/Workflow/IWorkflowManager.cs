@@ -171,5 +171,11 @@ namespace Kinetix.Workflow
         /// </summary>
         /// <param name="selector">selector</param>
         void RemoveSelector(SelectorDefinition selector);
+
+        /// <summary>
+        /// Find activities matching the criteria in parameters
+        /// </summary>
+        /// <param name="criteria"></param>
+        IList<WfActivityDefinition> FindActivitiesByCriteria(RuleCriteria criteria);
     }
 }

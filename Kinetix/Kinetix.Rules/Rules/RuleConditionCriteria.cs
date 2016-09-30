@@ -19,5 +19,7 @@ namespace Kinetix.Rules
             get;
             set;
         }
+
+
     }
 }

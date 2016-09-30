@@ -121,6 +121,6 @@ namespace Kinetix.Rules
         /// <param name="criteria"></param>
         /// <param name="items"></param>
         /// <returns></returns>
-        IList<int> FindItemsByCriteria(RuleCriteria criteria, IList<int> items);
+        IList<RuleDefinition> FindRulesByCriteria(RuleCriteria criteria, IList<int> items);
     }
 }

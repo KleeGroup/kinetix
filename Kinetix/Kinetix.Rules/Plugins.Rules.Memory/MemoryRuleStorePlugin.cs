@@ -151,11 +151,11 @@ namespace Kinetix.Rules
             inMemorySelectorStore[(int)selectorDefinition.Id] = selectorDefinition;
         }
 
-        public IList<int> FindItemsByCriteria(RuleCriteria criteria, IList<int> items)
+        public IList<RuleDefinition> FindRulesByCriteria(RuleCriteria criteria, IList<int> items)
         {
             Debug.Assert(criteria != null);
             //---
-            IList<int> ret = new List<int>();
+            IList<RuleDefinition> ret = new List<RuleDefinition>();
             foreach (int itemId in items)
             {
                 IList<RuleDefinition> rules = (inMemoryRuleStore.Where(r => r.Value.Id.Equals(itemId)).Select(kp => kp.Value)).ToList();
@@ -165,19 +165,27 @@ namespace Kinetix.Rules
                     Dictionary<string, RuleConditionDefinition> conditions = (inMemoryConditionStore.Where(r => r.Value.RudId.Equals(rule.Id)).Select(kp => kp.Value)).ToDictionary(r => r.Field);
 
                     int match = 0;
-                    foreach(RuleConditionCriteria RuleConditionCriteria in criteria.ConditionCriteria)
-                    {
-                        RuleConditionDefinition currentRule = conditions[RuleConditionCriteria.Field];
+                    RuleConditionDefinition currentRule1 = conditions[criteria.ConditionCriteria1.Field];
 
-                        if (currentRule != null && currentRule.Expression.Equals(RuleConditionCriteria.Value))
+                    if (currentRule1 != null && currentRule1.Expression.Equals(criteria.ConditionCriteria1.Value))
+                    {
+                        match++;
+                    }
+
+                    if (criteria.ConditionCriteria2 != null)
+                    {
+                        RuleConditionDefinition currentRule2 = conditions[criteria.ConditionCriteria2.Field];
+                        if (currentRule2 != null && currentRule2.Expression.Equals(criteria.ConditionCriteria2.Value))
                         {
                             match++;
                         }
                     }
 
-                    if (match == criteria.ConditionCriteria.Count)
+                    int expectedMatch = criteria.ConditionCriteria2 != null ? 2 : 1;
+
+                    if (match == expectedMatch)
                     {
-                        ret.Add(itemId);
+                        ret.Add(rule);
                         break;
                     }
                 }

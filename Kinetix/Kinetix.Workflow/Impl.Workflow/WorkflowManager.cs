@@ -5,6 +5,7 @@ using Kinetix.Account;
 using Kinetix.Rules;
 using Kinetix.Workflow.instance;
 using Kinetix.Workflow.model;
+using System.Linq;
 
 namespace Kinetix.Workflow {
     public sealed class WorkflowManager : IWorkflowManager {
@@ -89,10 +90,10 @@ namespace Kinetix.Workflow {
             WfActivityDefinition activityDefinition = _workflowStorePlugin.ReadActivityDefinition(wfActivityDefinitionId);
 
             object obj = _itemStorePlugin.ReadItem((int)wfWorkflow.ItemId);
-            int? wfCurrentActivityDefinitionId = null;
+            int? wfCurrentActivityId = null;
             while (CanAutoValidateActivity(activityDefinition, obj)) {
                 WfActivity wfActivityCurrent = AutoValidateActivity(activityDefinition);
-                wfCurrentActivityDefinitionId = wfActivityCurrent.WfadId;
+                wfCurrentActivityId = wfActivityCurrent.WfaId;
                 if (_workflowStorePlugin.HasNextActivity(wfActivityCurrent) == false) {
                     break;
                 }
@@ -100,8 +101,8 @@ namespace Kinetix.Workflow {
             }
 
             // Remove this workflow update ?
-            if (wfCurrentActivityDefinitionId != null) {
-                wfWorkflow.WfaId2 = wfCurrentActivityDefinitionId;
+            if (wfCurrentActivityId != null) {
+                wfWorkflow.WfaId2 = wfCurrentActivityId;
                 _workflowStorePlugin.UpdateWorkflowInstance(wfWorkflow);
             }
         }
@@ -155,17 +156,6 @@ namespace Kinetix.Workflow {
 
             _workflowStorePlugin.CreateWorkflowInstance(wfWorkflow);
 
-            DateTime now = DateTime.Now;
-            // Creating the next activity to validate.
-            WfActivity nextActivity = new WfActivity();
-            nextActivity.CreationDate = now;
-            nextActivity.WfadId = (int)wfWorkflowDefinition.WfadId;
-            nextActivity.WfwId = (int)wfWorkflow.WfwId;
-            _workflowStorePlugin.CreateActivity(nextActivity);
-
-            wfWorkflow.WfaId2 = nextActivity.WfaId;
-            _workflowStorePlugin.UpdateWorkflowInstance(wfWorkflow);
-
             return wfWorkflow;
         }
 
@@ -194,6 +184,12 @@ namespace Kinetix.Workflow {
 
             return ret;
         }
+
+        public IList<WfActivityDefinition> GetAllDefaultActivities(WfWorkflowDefinition wfWorkflowDefinition)
+        {
+            return _workflowStorePlugin.FindAllDefaultActivityDefinitions(wfWorkflowDefinition);
+        }
+
 
         public WfWorkflow GetWorkflowInstance(int wfwId) {
             return _workflowStorePlugin.ReadWorkflowInstanceById(wfwId);
@@ -352,9 +348,16 @@ namespace Kinetix.Workflow {
         /// Find activities matching the criteria in parameters
         /// </summary>
         /// <param name="criteria"></param>
-        public void FindActivitiesByCriteria(RuleCriteria criteria)
+        public IList<WfActivityDefinition> FindActivitiesByCriteria(RuleCriteria criteria)
         {
-            throw new NotImplementedException();
+            WfWorkflowDefinition workflow = new WfWorkflowDefinition() { WfwdId = criteria.WfwdId };
+
+            IList<WfActivityDefinition> activities = GetAllDefaultActivities(workflow);
+            IDictionary<int?, WfActivityDefinition> dicAct = activities.ToDictionary<WfActivityDefinition, int?>(a => a.WfadId);
+            
+            IList<int> matchingActivities = _ruleManager.FindItemsByCriteria(criteria, dicAct.Keys.Cast<int>().ToList());
+
+            return matchingActivities.Select(act => dicAct[act]).ToList();
         }
 
 

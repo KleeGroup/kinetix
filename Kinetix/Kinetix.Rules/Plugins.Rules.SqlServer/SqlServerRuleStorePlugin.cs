@@ -2,9 +2,32 @@
 using System.Diagnostics;
 using Kinetix.Broker;
 using System;
+using Kinetix.Data.SqlClient;
 
 namespace Kinetix.Rules {
     public class SqlServerRuleStorePlugin : IRuleStorePlugin {
+
+
+        /// <summary>
+        /// Retourne la commande SQL Server associée au script.
+        /// </summary>
+        /// <param name="script">Nom du script.</param>
+        /// <param name="dataSource">Datasource.</param>
+        /// <param name="disableCheckTransCtx">Indique si la vérification de la présence d'un contexte transactionnel doit être désactivée.</param>
+        /// <returns>Commande.</returns>
+        public SqlServerCommand GetSqlServerCommand(string script, string dataSource = "default", bool disableCheckTransCtx = false)
+        {
+            if (string.IsNullOrEmpty(script))
+            {
+                throw new ArgumentNullException("script");
+            }
+            if (string.IsNullOrEmpty(dataSource))
+            {
+                throw new ArgumentNullException("dataSource");
+            }
+            return new SqlServerCommand(dataSource, GetType().Assembly, string.Concat(GetType().Namespace + ".SQLResources.", script), false);
+        }
+
         public void AddCondition(RuleConditionDefinition ruleConditionDefinition) {
             Debug.Assert(ruleConditionDefinition.Id == null);
             ruleConditionDefinition.Id = (int) BrokerManager.GetBroker<RuleConditionDefinition>().Save(ruleConditionDefinition);
@@ -97,15 +120,23 @@ namespace Kinetix.Rules {
         }
 
 
-        public IList<int> FindItemsByCriteria(RuleCriteria criteria, IList<int> items)
+        public IList<RuleDefinition> FindRulesByCriteria(RuleCriteria criteria, IList<int> items)
         {
             Debug.Assert(criteria != null);
-            Debug.Assert(criteria.ConditionCriteria != null);
-            Debug.Assert(criteria.ConditionCriteria.Count <= 3);
+            Debug.Assert(criteria.ConditionCriteria1 != null);
             //--
+            
+            var cmd = GetSqlServerCommand("FindItemsByCriteria.sql");
+            cmd.Parameters.AddWithValue(RuleCriteria.Cols.FIELD_1, criteria.ConditionCriteria1.Field);
+            cmd.Parameters.AddWithValue(RuleCriteria.Cols.VALUE_1, criteria.ConditionCriteria1.Value);
 
+            if (criteria.ConditionCriteria1 != null)
+            {
+                cmd.Parameters.AddWithValue(RuleCriteria.Cols.FIELD_2, criteria.ConditionCriteria2.Field);
+                cmd.Parameters.AddWithValue(RuleCriteria.Cols.VALUE_2, criteria.ConditionCriteria2.Value);
+            }
 
-            throw new NotImplementedException();
+            return new List<RuleDefinition>(cmd.ReadList<RuleDefinition>());
         }
     }
 }

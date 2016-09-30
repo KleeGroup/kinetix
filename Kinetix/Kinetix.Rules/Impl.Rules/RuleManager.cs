@@ -1,6 +1,6 @@
 ﻿using Kinetix.Account;
 using Kinetix.Rules;
-using System;
+using System.Linq;
 using System.Collections.Generic;
 
 
@@ -129,7 +129,9 @@ namespace Kinetix.Rules
 
         public IList<int> FindItemsByCriteria(RuleCriteria criteria, IList<int> items)
         {
-            return _ruleStorePlugin.FindItemsByCriteria(criteria, items);
+            IList<RuleDefinition> rules = _ruleStorePlugin.FindRulesByCriteria(criteria, items);
+
+            return rules.Select(r => r.ItemId).Cast<int>().Distinct().ToList();
         }
     }
 }
