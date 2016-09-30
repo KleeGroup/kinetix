@@ -8,6 +8,8 @@ namespace Kinetix.Rules {
     public class SqlServerRuleStorePlugin : IRuleStorePlugin {
 
 
+        private static string ITEMS_ID = "ITEMS_ID";
+
         /// <summary>
         /// Retourne la commande SQL Server associée au script.
         /// </summary>
@@ -129,11 +131,17 @@ namespace Kinetix.Rules {
             var cmd = GetSqlServerCommand("FindItemsByCriteria.sql");
             cmd.Parameters.AddWithValue(RuleCriteria.Cols.FIELD_1, criteria.ConditionCriteria1.Field);
             cmd.Parameters.AddWithValue(RuleCriteria.Cols.VALUE_1, criteria.ConditionCriteria1.Value);
+            cmd.Parameters.AddInParameter(ITEMS_ID, items);
 
-            if (criteria.ConditionCriteria1 != null)
+            if (criteria.ConditionCriteria2 != null)
             {
                 cmd.Parameters.AddWithValue(RuleCriteria.Cols.FIELD_2, criteria.ConditionCriteria2.Field);
                 cmd.Parameters.AddWithValue(RuleCriteria.Cols.VALUE_2, criteria.ConditionCriteria2.Value);
+            }
+            else
+            {
+                cmd.Parameters.AddWithValue(RuleCriteria.Cols.FIELD_2, null);
+                cmd.Parameters.AddWithValue(RuleCriteria.Cols.VALUE_2, null);
             }
 
             return new List<RuleDefinition>(cmd.ReadList<RuleDefinition>());

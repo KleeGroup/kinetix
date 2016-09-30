@@ -114,6 +114,7 @@ namespace Kinetix.Workflow {
             WfActivity wfActivityCurrent = new WfActivity();
             wfActivityCurrent.CreationDate = now;
             wfActivityCurrent.WfadId = (int)wfNextActivityDefinition.WfadId;
+            wfActivityCurrent.WfwId = wfNextActivityDefinition.WfwdId;
 
             _workflowStorePlugin.CreateActivity(wfActivityCurrent);
 
