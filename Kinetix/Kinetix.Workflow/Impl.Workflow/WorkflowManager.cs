@@ -92,7 +92,7 @@ namespace Kinetix.Workflow {
             object obj = _itemStorePlugin.ReadItem((int)wfWorkflow.ItemId);
             int? wfCurrentActivityId = null;
             while (CanAutoValidateActivity(activityDefinition, obj)) {
-                WfActivity wfActivityCurrent = AutoValidateActivity(activityDefinition);
+                WfActivity wfActivityCurrent = AutoValidateActivity(activityDefinition, wfWorkflow);
                 wfCurrentActivityId = wfActivityCurrent.WfaId;
                 if (_workflowStorePlugin.HasNextActivity(wfActivityCurrent) == false) {
                     break;
@@ -107,20 +107,22 @@ namespace Kinetix.Workflow {
             }
         }
 
-        private WfActivity AutoValidateActivity(WfActivityDefinition wfNextActivityDefinition) {
+        private WfActivity AutoValidateActivity(WfActivityDefinition wfNextActivityDefinition, WfWorkflow wfWorkflow) {
             //Automatic validation of this activity
             DateTime now = DateTime.Now;
 
             WfActivity wfActivityCurrent = new WfActivity();
             wfActivityCurrent.CreationDate = now;
             wfActivityCurrent.WfadId = (int)wfNextActivityDefinition.WfadId;
-            wfActivityCurrent.WfwId = wfNextActivityDefinition.WfwdId;
+            wfActivityCurrent.WfwId = wfWorkflow.WfwId.Value;
 
             _workflowStorePlugin.CreateActivity(wfActivityCurrent);
 
             WfDecision decision = new WfDecision();
             decision.Username = USER_AUTO;
             decision.DecisionDate = now;
+
+            _workflowStorePlugin.CreateDecision(decision);
 
             return wfActivityCurrent;
         }
@@ -142,22 +144,28 @@ namespace Kinetix.Workflow {
             _workflowStorePlugin.CreateWorkflowDefinition(wfWorkflowDefinition);
         }
 
+
+        public WfWorkflow CreateWorkflowInstance(int wfwdId, string username, bool userLogic, int item)
+        {
+            WfWorkflow wfWorkflow = new WfWorkflow();
+            wfWorkflow.CreationDate = DateTime.Now;
+            wfWorkflow.ItemId = item;
+            wfWorkflow.WfsCode = WfCodeStatusWorkflow.Cre.ToString();
+            wfWorkflow.WfwdId = wfwdId;
+            wfWorkflow.UserLogic = userLogic;
+            wfWorkflow.Username = username;
+
+            _workflowStorePlugin.CreateWorkflowInstance(wfWorkflow);
+            return wfWorkflow;
+        }
+
         public WfWorkflow CreateWorkflowInstance(string definitionName, string username, bool userLogic, int item) {
             Debug.Assert(definitionName != null);
             Debug.Assert(username != null);
             //---
             WfWorkflowDefinition wfWorkflowDefinition = _workflowStorePlugin.ReadWorkflowDefinition(definitionName);
-            WfWorkflow wfWorkflow = new WfWorkflow();
-            wfWorkflow.CreationDate = DateTime.Now;
-            wfWorkflow.ItemId = item;
-            wfWorkflow.WfsCode = WfCodeStatusWorkflow.Cre.ToString();
-            wfWorkflow.WfwdId = wfWorkflowDefinition.WfwdId;
-            wfWorkflow.UserLogic = userLogic;
-            wfWorkflow.Username = username;
 
-            _workflowStorePlugin.CreateWorkflowInstance(wfWorkflow);
-
-            return wfWorkflow;
+            return CreateWorkflowInstance(wfWorkflowDefinition.WfwdId.Value, username, userLogic, item);
         }
 
         public void EndInstance(WfWorkflow wfWorkflow) {
