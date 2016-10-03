@@ -86,15 +86,17 @@ namespace Kinetix.Workflow {
             }
         }
 
-        public void AutoValidateNextActivities(WfWorkflow wfWorkflow, int wfActivityDefinitionId) {
+        public bool AutoValidateNextActivities(WfWorkflow wfWorkflow, int wfActivityDefinitionId) {
             WfActivityDefinition activityDefinition = _workflowStorePlugin.ReadActivityDefinition(wfActivityDefinitionId);
 
             object obj = _itemStorePlugin.ReadItem((int)wfWorkflow.ItemId);
             int? wfCurrentActivityId = null;
+            bool endReached = false;
             while (CanAutoValidateActivity(activityDefinition, obj)) {
                 WfActivity wfActivityCurrent = AutoValidateActivity(activityDefinition, wfWorkflow);
                 wfCurrentActivityId = wfActivityCurrent.WfaId;
                 if (_workflowStorePlugin.HasNextActivity(wfActivityCurrent) == false) {
+                    endReached = true;
                     break;
                 }
                 activityDefinition = _workflowStorePlugin.FindNextActivity(wfActivityCurrent);
@@ -105,6 +107,7 @@ namespace Kinetix.Workflow {
                 wfWorkflow.WfaId2 = wfCurrentActivityId;
                 _workflowStorePlugin.UpdateWorkflowInstance(wfWorkflow);
             }
+            return endReached;
         }
 
         private WfActivity AutoValidateActivity(WfActivityDefinition wfNextActivityDefinition, WfWorkflow wfWorkflow) {
@@ -302,21 +305,28 @@ namespace Kinetix.Workflow {
                     WfActivityDefinition nextActivityDefinition = _workflowStorePlugin.FindNextActivity(currentActivity, transitionName);
 
                     //Autovalidating next activities
-                    AutoValidateNextActivities(wfWorkflow, (int)nextActivityDefinition.WfadId);
+                    bool endReached = AutoValidateNextActivities(wfWorkflow, (int)nextActivityDefinition.WfadId);
 
-                    WfActivity lastAutoValidateActivity = _workflowStorePlugin.ReadActivity((int)wfWorkflow.WfaId2);
-                    WfActivityDefinition nextActivityDefinitionPrepare = _workflowStorePlugin.FindNextActivity(lastAutoValidateActivity);
+                    if (endReached)
+                    {
+                        EndInstance(wfWorkflow);
+                    } else {
+                        WfActivity lastAutoValidateActivity = _workflowStorePlugin.ReadActivity((int)wfWorkflow.WfaId2);
+                        WfActivityDefinition nextActivityDefinitionPrepare = _workflowStorePlugin.FindNextActivity(lastAutoValidateActivity);
 
-                    DateTime now = DateTime.Now;
-                    // Creating the next activity to validate.
-                    WfActivity nextActivity = new WfActivity();
-                    nextActivity.CreationDate = now;
-                    nextActivity.WfadId = (int)nextActivityDefinitionPrepare.WfadId;
-                    nextActivity.WfwId = (int)wfWorkflow.WfwId;
-                    _workflowStorePlugin.CreateActivity(nextActivity);
+                        DateTime now = DateTime.Now;
+                        // Creating the next activity to validate.
+                        WfActivity nextActivity = new WfActivity();
+                        nextActivity.CreationDate = now;
+                        nextActivity.WfadId = (int)nextActivityDefinitionPrepare.WfadId;
+                        nextActivity.WfwId = (int)wfWorkflow.WfwId;
+                        _workflowStorePlugin.CreateActivity(nextActivity);
 
-                    wfWorkflow.WfaId2 = nextActivity.WfaId;
-                    _workflowStorePlugin.UpdateWorkflowInstance(wfWorkflow);
+                        wfWorkflow.WfaId2 = nextActivity.WfaId;
+                        _workflowStorePlugin.UpdateWorkflowInstance(wfWorkflow);
+                    }
+
+                   
                 } else {
                     // No next activity to go. Ending the workflow
                     wfWorkflow.WfsCode = WfCodeStatusWorkflow.End.ToString();
@@ -325,7 +335,8 @@ namespace Kinetix.Workflow {
             }
         }
 
-        public void StartInstance(WfWorkflow wfWorkflow) {
+        public void StartInstance(WfWorkflow wfWorkflow)
+        {
             Debug.Assert(wfWorkflow != null);
             Debug.Assert(WfCodeStatusWorkflow.Cre.ToString().Equals(wfWorkflow.WfsCode), "A workflow must be created before starting");
             //---
@@ -341,7 +352,12 @@ namespace Kinetix.Workflow {
             wfWorkflow.WfaId2 = wfActivityCurrent.WfaId;
             _workflowStorePlugin.UpdateWorkflowInstance(wfWorkflow);
 
-            AutoValidateNextActivities(wfWorkflow, (int)wfWorkflowDefinition.WfadId);
+            bool endReached = AutoValidateNextActivities(wfWorkflow, (int)wfWorkflowDefinition.WfadId);
+
+            if (endReached)
+            {
+                EndInstance(wfWorkflow);
+            }
         }
 
         /// <summary>

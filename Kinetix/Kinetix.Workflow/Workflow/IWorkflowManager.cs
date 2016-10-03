@@ -88,7 +88,8 @@ namespace Kinetix.Workflow
         /// </summary>
         /// <param name="wfWorkflow">wfWorkflow</param>
         /// <param name="wfActivityDefinitionId">wfActivityDefinitionId</param>
-        void AutoValidateNextActivities(WfWorkflow wfWorkflow, int wfActivityDefinitionId);
+        /// <returns>true if all the default activities has been reached, false otherwise</returns>
+        bool AutoValidateNextActivities(WfWorkflow wfWorkflow, int wfActivityDefinitionId);
 
         /// <summary>
         /// Does the provided activity can be autovalidated.
