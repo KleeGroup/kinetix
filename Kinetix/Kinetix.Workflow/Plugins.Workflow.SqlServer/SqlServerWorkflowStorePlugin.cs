@@ -178,6 +178,15 @@ namespace Kinetix.Workflow {
         }
 
         [OperationContract]
+        public IList<WfDecision> ReadDecisionsByActivityId(int wfaId)
+        {
+            FilterCriteria filterCriteria = new FilterCriteria();
+            filterCriteria.Equals(WfDecision.Cols.WFA_ID, wfaId);
+            return new List<WfDecision> (BrokerManager.GetBroker<WfDecision>().GetAllByCriteria(filterCriteria));
+        }
+
+
+        [OperationContract]
         public void RemoveTransition(WfTransitionDefinition transition) {
             BrokerManager.GetBroker<WfTransitionDefinition>().Delete(transition);
         }

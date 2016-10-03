@@ -245,6 +245,14 @@ namespace Kinetix.Workflow {
             _workflowStorePlugin.CreateDecision(wfDecision);
         }
 
+        public WfDecision GetDecision(WfActivityDefinition wfActivity)
+        {
+            Debug.Assert(wfActivity != null);
+            //---
+            IList<WfDecision> decision = _workflowStorePlugin.ReadDecisionsByActivityId((int)wfActivity.WfadId);
+            return decision[0];
+        }
+
         public void SaveDecisionAndGoToNextActivity(WfWorkflow wfWorkflow, WfDecision wfDecision) {
             SaveDecisionAndGoToNextActivity(wfWorkflow, WfCodeTransition.Default.ToString(), wfDecision);
         }

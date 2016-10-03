@@ -68,6 +68,12 @@ namespace Kinetix.Workflow
         void SaveDecision(WfWorkflow wfWorkflow, WfDecision wfDecision);
 
         /// <summary>
+        /// Get the decision for a single activity.
+        /// </summary>
+        /// <param name="wfDecision">Activity</param>
+        WfDecision GetDecision(WfActivityDefinition wfActivity);
+
+        /// <summary>
         /// Save the decision for the current activity and go to the next activity using the default transition
         /// </summary>
         /// <param name="wfWorkflow">wfWorkflow</param>

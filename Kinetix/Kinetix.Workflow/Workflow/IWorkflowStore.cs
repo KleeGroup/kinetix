@@ -49,6 +49,13 @@ namespace Kinetix.Workflow
         WfActivity ReadActivity(int wfadId);
 
         /// <summary>
+        /// Get all the decisions associated to an Activity
+        /// </summary>
+        /// <param name="wfadId"></param>
+        /// <returns></returns>
+        IList<WfDecision> ReadDecisionsByActivityId(int wfaId);
+
+        /// <summary>
         /// Create a new activity.
         /// </summary>
         /// <param name="wfActivity">wfActivity.</param>

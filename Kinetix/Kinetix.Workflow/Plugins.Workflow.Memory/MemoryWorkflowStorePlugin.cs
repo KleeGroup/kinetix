@@ -291,5 +291,20 @@ namespace Kinetix.Workflow
             //---
             inMemoryWorkflowInstanceStore[workflow.WfwId] = workflow;
         }
+
+        public IList<WfDecision> ReadDecisionsByActivityId(int wfaId)
+        {
+            IList<WfDecision> collect = new List<WfDecision>();
+            foreach (WfDecision wfDecision in inMemoryDecisionStore.Values)
+            {
+                if (wfaId.Equals(wfDecision.WfaId))
+                {
+                    collect.Add(wfDecision);
+                }
+            }
+
+            return collect;
+        }
+
     }
 }
