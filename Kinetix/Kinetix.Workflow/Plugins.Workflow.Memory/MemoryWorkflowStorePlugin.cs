@@ -5,6 +5,7 @@ using Kinetix.Workflow.model;
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Threading;
+using System.Linq;
 
 namespace Kinetix.Workflow
 {
@@ -291,5 +292,62 @@ namespace Kinetix.Workflow
             //---
             inMemoryWorkflowInstanceStore[workflow.WfwId] = workflow;
         }
+
+        public IList<WfActivity> FindActivitiesByDefinitionId(WfWorkflow wfWorkflow, IList<int> wfadIds)
+        {
+            Debug.Assert(wfWorkflow != null);
+            Debug.Assert(wfadIds != null);
+            //---
+            IList<WfActivity> wfActivities = new List<WfActivity>();
+            foreach (WfActivity wfActivity in inMemoryActivityStore.Values)
+            {
+                if (wfadIds.Contains(wfActivity.WfaId.Value) && wfWorkflow.WfwId.Equals(wfActivity.WfwId))
+                {
+                    wfActivities.Add(wfActivity);
+                }
+            }
+
+            return wfActivities;
+        }
+
+        public IList<WfActivity> FindActivitiesByWorkflowId(WfWorkflow wfWorkflow)
+        {
+            Debug.Assert(wfWorkflow != null);
+            //---
+            IList<WfActivity> wfActivities = new List<WfActivity>();
+            foreach (WfActivity wfActivity in inMemoryActivityStore.Values)
+            {
+                if (wfWorkflow.WfwId.Equals(wfActivity.WfwId))
+                {
+                    wfActivities.Add(wfActivity);
+                }
+            }
+
+            return wfActivities;
+        }
+
+        public IList<WfDecision> FindDecisionsByWorkflowId(WfWorkflow wfWorkflow)
+        {
+
+            Debug.Assert(wfWorkflow != null);
+            Debug.Assert(wfWorkflow.WfwId != null);
+            //---
+
+            IList<WfActivity> wfActivities = FindActivitiesByWorkflowId(wfWorkflow);
+
+            IList<int> wfActivitiesId = wfActivities.Select<WfActivity, int>(a => a.WfaId.Value).ToList();
+
+            IList<WfDecision> wfDecisions = new List<WfDecision>();
+            foreach (WfDecision wfDecision in inMemoryDecisionStore.Values)
+            {
+                if (wfDecision.WfaId.Equals(wfWorkflow.WfwId) && wfActivitiesId.Contains(wfDecision.WfaId))
+                {
+                    wfDecisions.Add(wfDecision);
+                }
+            }
+
+            return wfDecisions;
+        }
+
     }
 }

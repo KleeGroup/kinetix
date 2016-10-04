@@ -11,12 +11,10 @@ namespace Kinetix.Rules
         /// <summary>
         /// Validate a rule for an activity.
         /// </summary>
-        /// <param name="idActivityDefinition">idActivityDefinition.</param>
         /// <param name="rules">rules</param>
         /// <param name="ruleContext">ruleContext</param>
-        /// <param name="idActivityDefinition">idActivityDefinition.</param>
         /// <returns>true is the rule is valid, false otherwise.</returns>
-        bool IsRuleValid(long idActivityDefinition, IList<RuleDefinition> rules, RuleContext ruleContext);
+        bool IsRuleValid(IList<RuleDefinition> rules, RuleContext ruleContext);
 
     }
 }

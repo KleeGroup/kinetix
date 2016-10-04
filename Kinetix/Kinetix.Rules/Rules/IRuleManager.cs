@@ -14,7 +14,16 @@ namespace Kinetix.Rules
         /// <param name="constants">constants</param>
         /// <returns>a list of account.</returns>
         IList<AccountUser> SelectAccounts(int idActivityDefinition, object item, RuleConstants constants);
-        
+
+        /// <summary>
+        /// Select groups matching the selector for an activity.
+        /// </summary>
+        /// <param name="idActivityDefinition">Activity definition id.</param>
+        /// <param name="item">Business object.</param>
+        /// <param name="constants">constants</param>
+        /// <returns>a list of account.</returns>
+        IList<AccountGroup> SelectGroups(int idActivityDefinition, object item, RuleConstants constants);
+
         /// <summary>
         /// Validate a rule for an activity.
         /// </summary>

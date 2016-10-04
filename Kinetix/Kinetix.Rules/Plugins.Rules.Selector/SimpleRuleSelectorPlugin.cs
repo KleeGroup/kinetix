@@ -19,10 +19,9 @@ namespace Kinetix.Rules
             this._accountManager = accountManager;
         }
 
-        public IList<AccountUser> SelectAccounts(long idActivityDefinition, IList<SelectorDefinition> selectors, RuleContext ruleContext)
+        private IList<SelectorDefinition> FindMatchingSelectors(IList<SelectorDefinition> selectors, RuleContext ruleContext)
         {
-
-            IList<AccountUser> collected = new List<AccountUser>();
+            IList<SelectorDefinition> collected = new List<SelectorDefinition>();
 
             foreach (SelectorDefinition selectorDefinition in selectors)
             {
@@ -74,18 +73,49 @@ namespace Kinetix.Rules
 
                 if (selectorMatch)
                 {
-                    IAccountStore accountStore = _accountManager.GetStore();
-                    ISet<string> accounts = accountStore.GetAccountIds(selectorDefinition.GroupId);
+                    collected.Add(selectorDefinition);
+                }
+            }
+            return collected;
+        }
 
-                    foreach (string accountId in accounts)
-                    {
-                        AccountUser account = accountStore.GetAccount(accountId);
-                        collected.Add(account);
-                    }
+
+        public IList<AccountUser> SelectAccounts(IList<SelectorDefinition> selectors, RuleContext ruleContext)
+        {
+            IList<AccountUser> collected = new List<AccountUser>();
+            IList<SelectorDefinition> matchingSelectors = FindMatchingSelectors(selectors, ruleContext);
+
+            IAccountStore accountStore = _accountManager.GetStore();
+
+            foreach (SelectorDefinition selectorDefinition in matchingSelectors) { 
+                ISet<string> accounts = accountStore.GetAccountIds(selectorDefinition.GroupId);
+                foreach (string accountId in accounts)
+                {
+                    AccountUser account = accountStore.GetAccount(accountId);
+                    collected.Add(account);
                 }
             }
 
             return collected;
         }
+
+
+        public IList<AccountGroup> SelectGroups(IList<SelectorDefinition> selectors, RuleContext ruleContext)
+        {
+            IList<AccountGroup> collected = new List<AccountGroup>();
+            IList<SelectorDefinition> matchingSelectors = FindMatchingSelectors(selectors, ruleContext);
+
+            IAccountStore accountStore = _accountManager.GetStore();
+
+            foreach (SelectorDefinition selectorDefinition in matchingSelectors)
+            {
+                AccountGroup accountGroup = accountStore.GetGroup(selectorDefinition.GroupId);
+                collected.Add(accountGroup);
+            }
+
+            return collected;
+        }
+
+        
     }
 }

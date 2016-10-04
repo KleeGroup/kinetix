@@ -17,7 +17,7 @@ namespace Kinetix.Rules
             this._ruleStorePlugin = ruleStorePlugin;
         }
 
-        public bool IsRuleValid(long idActivityDefinition, IList<RuleDefinition> rules, RuleContext ruleContext)
+        public bool IsRuleValid(IList<RuleDefinition> rules, RuleContext ruleContext)
         {
             foreach (RuleDefinition ruleDefinition in rules)
             {

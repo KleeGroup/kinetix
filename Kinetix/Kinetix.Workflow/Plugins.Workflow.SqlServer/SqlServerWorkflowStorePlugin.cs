@@ -5,9 +5,13 @@ using Kinetix.Broker;
 using Kinetix.Data.SqlClient;
 using Kinetix.Workflow.instance;
 using Kinetix.Workflow.model;
+using System.Diagnostics;
 
 namespace Kinetix.Workflow {
     public class SqlServerWorkflowStorePlugin : IWorkflowStorePlugin {
+
+        private static string ACT_DEF_ID = "ACT_DEF_ID";
+
         [OperationContract]
         public void AddTransition(WfTransitionDefinition transition) {
             BrokerManager.GetBroker<WfTransitionDefinition>().Save(transition);
@@ -200,6 +204,34 @@ namespace Kinetix.Workflow {
         [OperationContract]
         public void UpdateWorkflowInstance(WfWorkflow workflow) {
             BrokerManager.GetBroker<WfWorkflow>().Save(workflow);
+        }
+
+        public IList<WfActivity> FindActivitiesByDefinitionId(WfWorkflow wfWorkflow, IList<int> wfadId)
+        {
+            Debug.Assert(wfWorkflow != null);
+            Debug.Assert(wfadId != null);
+            //--
+            var cmd = GetSqlServerCommand("FindActivitiesByDefinitionId.sql");
+            cmd.Parameters.AddInParameter(ACT_DEF_ID, wfadId);
+            cmd.Parameters.AddWithValue(WfWorkflow.Cols.WFW_ID, wfWorkflow.WfwId);
+            return new List<WfActivity>(cmd.ReadList<WfActivity>());
+        }
+
+        [OperationContract]
+        public IList<WfActivity> FindActivitiesByWorkflowId(WfWorkflow wfWorkflow)
+        {
+            FilterCriteria filterCriteria = new FilterCriteria();
+            filterCriteria.Equals(WfWorkflow.Cols.WFW_ID, wfWorkflow.WfwId);
+            return new List<WfActivity>(BrokerManager.GetBroker<WfActivity>().GetAllByCriteria(filterCriteria));
+        }
+
+        public IList<WfDecision> FindDecisionsByWorkflowId(WfWorkflow wfWorkflow)
+        {
+            Debug.Assert(wfWorkflow != null);
+            //--
+            var cmd = GetSqlServerCommand("FindDecisionsByWorkflowId.sql");
+            cmd.Parameters.AddWithValue(WfWorkflow.Cols.WFW_ID, wfWorkflow.WfwId);
+            return new List<WfDecision>(cmd.ReadList<WfDecision>());
         }
     }
 }

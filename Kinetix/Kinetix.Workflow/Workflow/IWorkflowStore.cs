@@ -55,6 +55,7 @@ namespace Kinetix.Workflow
         /// <param name="wfadId">wfadId.</param>
         void CreateActivity(WfActivity wfActivity);
 
+
         /// <summary>
         /// Update an existing activity
         /// </summary>
@@ -96,25 +97,12 @@ namespace Kinetix.Workflow
         bool HasNextActivity(WfActivity activity, String transitionName);
 
         /// <summary>
-        /// Find the next activity using the default transition
+        /// Find the activities from a list of activity definition ids for a workflow.
         /// </summary>
-        /// <param name="activity">activity</param>
-        /// <returns>the next activity definition</returns>
-        WfActivityDefinition FindNextActivity(WfActivity activity);
-
-        /// <summary>
-        /// Find the next activity using the provided transition name.
-        /// </summary>
-        /// <param name="activity">activity</param>
-        /// <param name="transitionName">transitionName</param>
-        /// <returns>the next activity definition</returns>
-        WfActivityDefinition FindNextActivity(WfActivity activity, String transitionName);
-
-        /// <summary>
-        /// Find the next activity using the provided transition name.
-        /// </summary>
-        /// <returns>the list of transitions ordered from start to end.</returns>
-        IList<WfActivityDefinition> FindActivityMatchingRules();
+        /// <param name="wfWorkflow"></param>
+        /// <param name="wfadIds"></param>
+        /// <returns>All matching activities</returns>
+        IList<WfActivity> FindActivitiesByDefinitionId(WfWorkflow wfWorkflow, IList<int> wfadIds);
 
         // Definition
 
@@ -207,6 +195,43 @@ namespace Kinetix.Workflow
         /// </summary>
         /// <param name="transition">transition.</param>
         void RemoveTransition(WfTransitionDefinition transition);
+
+
+        /// <summary>
+        /// Find the next activity using the default transition
+        /// </summary>
+        /// <param name="activity">activity</param>
+        /// <returns>the next activity definition</returns>
+        WfActivityDefinition FindNextActivity(WfActivity activity);
+
+        /// <summary>
+        /// Find the next activity using the provided transition name.
+        /// </summary>
+        /// <param name="activity">activity</param>
+        /// <param name="transitionName">transitionName</param>
+        /// <returns>the next activity definition</returns>
+        WfActivityDefinition FindNextActivity(WfActivity activity, String transitionName);
+
+        /// <summary>
+        /// Find the next activity using the provided transition name.
+        /// </summary>
+        /// <returns>the list of transitions ordered from start to end.</returns>
+        IList<WfActivityDefinition> FindActivityMatchingRules();
+
+
+        /// <summary>
+        /// Find all activities for a workflow
+        /// </summary>
+        /// <param name="wfWorkflow"></param>
+        /// <returns></returns>
+        IList<WfActivity> FindActivitiesByWorkflowId(WfWorkflow wfWorkflow);
+
+        /// <summary>
+        /// Find All Decisions for a workflow
+        /// </summary>
+        /// <param name="wfWorkflow"></param>
+        /// <returns></returns>
+        IList<WfDecision> FindDecisionsByWorkflowId(WfWorkflow wfWorkflow);
 
     }
 }

@@ -11,14 +11,21 @@ namespace Kinetix.Rules
     {
 
         /// <summary>
-        /// Select accounts matching the selector for an activity.
+        /// Select accounts matching the selector provided from an activity.
         /// </summary>
-        /// <param name="idActivityDefinition">Criteria.</param>
-        /// <param name="selectors">Criteria.</param>
-        /// <param name="ruleContext">Criteria.</param>
+        /// <param name="selectors">Selectors.</param>
+        /// <param name="ruleContext">ruleContext.</param>
         /// <returns>a list of account.</returns>
-        IList<AccountUser> SelectAccounts(long idActivityDefinition, IList<SelectorDefinition> selectors, RuleContext ruleContext);
+        IList<AccountUser> SelectAccounts(IList<SelectorDefinition> selectors, RuleContext ruleContext);
 
+
+        /// <summary>
+        /// Select groups mathing the selectors provided from an activity
+        /// </summary>
+        /// <param name="selectors"></param>
+        /// <param name="ruleContext"></param>
+        /// <returns></returns>
+        IList<AccountGroup> SelectGroups(IList<SelectorDefinition> selectors, RuleContext ruleContext);
 
     }
 }

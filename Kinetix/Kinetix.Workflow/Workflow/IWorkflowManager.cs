@@ -1,6 +1,7 @@
 ﻿using Kinetix.Rules;
 using Kinetix.Workflow.instance;
 using Kinetix.Workflow.model;
+using Kinetix.Workflow.Workflow;
 using System.Collections.Generic;
 
 namespace Kinetix.Workflow
@@ -9,6 +10,17 @@ namespace Kinetix.Workflow
     {
 
         // Instances:
+
+        /// <summary>
+        /// Instantiate a new workflow instance 
+        /// </summary>
+        /// <param name="wfwdId">wfwdId</param>
+        /// <param name="username">username</param>
+        /// <param name="userLogic">userLogic</param>
+        /// <param name="item">item</param>
+        /// <returns>a new workflow instance</returns>
+        WfWorkflow CreateWorkflowInstance(int wfwdId, string username, bool userLogic, int item);
+
         /// <summary>
         /// Instantiate a new workflow instance 
         /// </summary>
@@ -87,9 +99,10 @@ namespace Kinetix.Workflow
         /// This autovalidation can validate 0, 1 or N activities.
         /// </summary>
         /// <param name="wfWorkflow">wfWorkflow</param>
+        /// <param name="wfActivity">wfActivity</param>
         /// <param name="wfActivityDefinitionId">wfActivityDefinitionId</param>
         /// <returns>true if all the default activities has been reached, false otherwise</returns>
-        bool AutoValidateNextActivities(WfWorkflow wfWorkflow, int wfActivityDefinitionId);
+        bool AutoValidateNextActivities(WfWorkflow wfWorkflow, WfActivity wfActivity, int wfActivityDefinitionId);
 
         /// <summary>
         /// Does the provided activity can be autovalidated.
@@ -99,11 +112,27 @@ namespace Kinetix.Workflow
         bool CanAutoValidateActivity(WfActivityDefinition activityDefinition, object wfWorkflow);
 
         /// <summary>
-        /// Get the list of activities following the default transition from the start until the end.
+        /// Get the list of activities matching the rules following the default transition from the start until the end.
         /// </summary>
         /// <param name="wfWorkflow">wfWorkflow</param>
-        /// <returns>the list of activities following the default path from the start until the end</returns>
-        IList<WfActivityDefinition> GetActivities(WfWorkflow wfWorkflow);
+        /// <returns>the list of activities matching the rules following the default path from the start until the end</returns>
+        IList<WfActivityDefinition> GetActivityDefinitions(WfWorkflow wfWorkflow);
+
+
+        /// <summary>
+        /// Get all default activity definitions
+        /// </summary>
+        /// <param name="wfWorkflowDefinition"></param>
+        /// <returns>The list of all the definitions matching or not the rules</returns>
+        IList<WfActivityDefinition> GetAllDefaultActivities(WfWorkflowDefinition wfWorkflowDefinition);
+
+        /// <summary>
+        /// Get activities instance from definition for a workflow
+        /// </summary>
+        /// <param name="wfWorkflow"></param>
+        /// <param name="wfadId">List of activity definitinon ids </param>
+        /// <returns></returns>
+        IList<WfActivity> GetActivities(WfWorkflow wfWorkflow, IList<int> wfadIds);
 
         // Definitions:
         /// <summary>
@@ -178,5 +207,15 @@ namespace Kinetix.Workflow
         /// </summary>
         /// <param name="criteria"></param>
         IList<WfActivityDefinition> FindActivitiesByCriteria(RuleCriteria criteria);
+
+        // Custom Methods
+
+        /// <summary>
+        /// Get a workflow with all the associated elements
+        /// </summary>
+        /// <param name="wfwId">Workflow Id</param>
+        /// <returns>a List of WfWorkflowDecision</returns>
+        IList<WfWorkflowDecision> GetWorkflowDecision(int wfwId);
+
     }
 }

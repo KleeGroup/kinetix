@@ -76,7 +76,7 @@ namespace Kinetix.Rules
             IList<RuleDefinition> rules = _ruleStorePlugin.FindRulesByItemId(idActivityDefinition);
             RuleContext context = new RuleContext(item, constants);
 
-            return _ruleValidatorPlugin.IsRuleValid(idActivityDefinition, rules, context);
+            return _ruleValidatorPlugin.IsRuleValid(rules, context);
         }
 
         public void RemoveCondition(RuleConditionDefinition ruleConditionDefinition)
@@ -104,7 +104,15 @@ namespace Kinetix.Rules
             IList<SelectorDefinition> selectors = _ruleStorePlugin.FindSelectorsByItemId(idActivityDefinition);
             RuleContext context = new RuleContext(item, constants);
 
-            return _ruleSelectorPlugin.SelectAccounts(idActivityDefinition, selectors, context);
+            return _ruleSelectorPlugin.SelectAccounts(selectors, context);
+        }
+
+        public IList<AccountGroup> SelectGroups(int idActivityDefinition, object item, RuleConstants constants)
+        {
+            IList<SelectorDefinition> selectors = _ruleStorePlugin.FindSelectorsByItemId(idActivityDefinition);
+            RuleContext context = new RuleContext(item, constants);
+
+            return _ruleSelectorPlugin.SelectGroups(selectors, context);
         }
 
         public void UpdateCondition(RuleConditionDefinition ruleConditionDefinition)
