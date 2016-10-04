@@ -31,39 +31,44 @@ namespace Kinetix.Rules
                     string expression = ruleConditionDefinition.Expression;
 
                     bool result = false;
-                    switch (operat)
+                    object fieldToTest;
+                    ruleContext.TryGetValue(field, out fieldToTest);
+                    if (fieldToTest != null)
                     {
-                        case "=":
-                            result = ruleContext[field].Equals(expression);
-                            break;
-                        case "IN":
-                            string[] expressions = expression.Split(',');
-                            if (ruleContext[field] is IList)
-                            {
-                                IList<string> valueList = (IList<string>) ruleContext[field];
-                                result = (expressions.Intersect(valueList).Count() > 0);
-                            }
-                            else
-                            {
-                                string valStr = (string)ruleContext[field];
-                                result = expressions.Contains<string>(valStr);
-                            }
-                            break;
-                        case "<":
-                            double doubleExpressionInf = Double.Parse(expression);
-                            double doubleFieldInf = Double.Parse((string)ruleContext[field]);
-                            result = doubleExpressionInf < doubleFieldInf;
-                            break;
-                        case ">":
-                            double doubleExpressionSup = Double.Parse(expression);
-                            double doubleFieldSup = Double.Parse((string)ruleContext[field]);
-                            result = doubleExpressionSup > doubleFieldSup;
-                            break;
-                    }
-                    
-                    if (!result)
-                    {
-                        ruleValid = false;
+                        switch (operat)
+                        {
+                            case "=":
+                                result = fieldToTest.Equals(expression);
+                                break;
+                            case "IN":
+                                string[] expressions = expression.Split(',');
+                                if (fieldToTest is IList)
+                                {
+                                    IList<string> valueList = (IList<string>) fieldToTest;
+                                    result = (expressions.Intersect(valueList).Count() > 0);
+                                }
+                                else
+                                {
+                                    string valStr = (string) fieldToTest;
+                                    result = expressions.Contains<string>(valStr);
+                                }
+                                break;
+                            case "<":
+                                double doubleExpressionInf = Double.Parse(expression);
+                                double doubleFieldInf = Double.Parse((string) fieldToTest);
+                                result = doubleExpressionInf < doubleFieldInf;
+                                break;
+                            case ">":
+                                double doubleExpressionSup = Double.Parse(expression);
+                                double doubleFieldSup = Double.Parse((string) fieldToTest);
+                                result = doubleExpressionSup > doubleFieldSup;
+                                break;
+                        }
+
+                        if (!result)
+                        {
+                            ruleValid = false;
+                        }
                     }
                 }
 

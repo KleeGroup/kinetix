@@ -51,5 +51,10 @@ namespace Kinetix.Rules
             }
         }
 
+        public void TryGetValue(string key, out object obj)
+        {
+            context.TryGetValue(key, out obj);
+        }
+
     }
 }
