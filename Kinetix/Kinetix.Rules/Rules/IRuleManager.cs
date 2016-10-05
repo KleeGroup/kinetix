@@ -40,7 +40,6 @@ namespace Kinetix.Rules
         /// <param name="ruleDefinition">the rule to add.</param>
         void AddRule(RuleDefinition ruleDefinition);
 
-
         /// <summary>
         /// Get the rules for an itemId.
         /// </summary>
@@ -53,6 +52,12 @@ namespace Kinetix.Rules
         /// </summary>
         /// <param name="ruleDefinition">rule to remove.</param>
         void RemoveRule(RuleDefinition ruleDefinition);
+
+        /// <summary>
+        /// Remove a list of rules.
+        /// </summary>
+        /// <param name="ruleDefinition">list of rules to remove.</param>
+        void RemoveRules(IList<RuleDefinition> ruleDefinitions);
 
         /// <summary>
         /// Update a Rule.
@@ -71,7 +76,6 @@ namespace Kinetix.Rules
         /// </summary>
         /// <param name="ruleConditionDefinition">condition to remove.</param>
         void RemoveCondition(RuleConditionDefinition ruleConditionDefinition);
-
 
         /// <summary>
         /// Get all the conditions for a specified rule.
@@ -103,8 +107,14 @@ namespace Kinetix.Rules
         /// Remove a selector the selector to remove.
         /// </summary>
         /// <param name="itemId">itemId.</param>
-        /// <returns>all the conditions associated to the provided rule</returns>
         void RemoveSelector(SelectorDefinition selectorDefinition);
+
+
+        /// <summary>
+        /// Remove a list of rules.
+        /// </summary>
+        /// <param name="ruleDefinition">list of rules to remove.</param>
+        void RemoveSelectors(IList<SelectorDefinition> ruleDefinitions);
 
         /// <summary>
         /// Update a selector .

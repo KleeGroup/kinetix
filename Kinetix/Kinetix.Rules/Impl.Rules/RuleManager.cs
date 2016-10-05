@@ -2,7 +2,7 @@
 using Kinetix.Rules;
 using System.Linq;
 using System.Collections.Generic;
-
+using System;
 
 namespace Kinetix.Rules
 {
@@ -91,12 +91,12 @@ namespace Kinetix.Rules
 
         public void RemoveRule(RuleDefinition ruleDefinition)
         {
-            _ruleStorePlugin.RemoveRule(ruleDefinition);
+            RemoveRules(new List<RuleDefinition>() { ruleDefinition });
         }
 
         public void RemoveSelector(SelectorDefinition selectorDefinition)
         {
-            _ruleStorePlugin.RemoveSelector(selectorDefinition);
+            RemoveSelectors(new List<SelectorDefinition>(){ selectorDefinition });
         }
 
         public IList<AccountUser> SelectAccounts(int idActivityDefinition, object item, RuleConstants constants)
@@ -140,6 +140,18 @@ namespace Kinetix.Rules
             IList<RuleDefinition> rules = _ruleStorePlugin.FindRulesByCriteria(criteria, items);
 
             return rules.Select(r => r.ItemId).Cast<int>().Distinct().ToList();
+        }
+
+        public void RemoveRules(IList<RuleDefinition> ruleDefinitions)
+        {
+            IList<int> ids = ruleDefinitions.Where(r => r.Id != null).Select(r => r.Id).Cast<int>().ToList();
+            _ruleStorePlugin.RemoveRules(ids);
+        }
+
+        public void RemoveSelectors(IList<SelectorDefinition> selectorDefinitions)
+        {
+            IList<int> ids = selectorDefinitions.Where(s => s.Id != null).Select(s => s.Id).Cast<int>().ToList();
+            _ruleStorePlugin.RemoveSelectors(ids);
         }
     }
 }

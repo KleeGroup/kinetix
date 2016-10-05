@@ -91,15 +91,6 @@ namespace Kinetix.Rules {
             BrokerManager.GetBroker<RuleFilterDefinition>().Delete(ruleFilterDefinition);
         }
 
-        public void RemoveRule(RuleDefinition ruleDefinition) {
-            Debug.Assert(ruleDefinition.Id != null);
-            BrokerManager.GetBroker<RuleDefinition>().Delete(ruleDefinition);
-        }
-
-        public void RemoveSelector(SelectorDefinition selectorDefinition) {
-            Debug.Assert(selectorDefinition.Id != null);
-            BrokerManager.GetBroker<SelectorDefinition>().Delete(selectorDefinition);
-        }
 
         public void UpdateCondition(RuleConditionDefinition ruleConditionDefinition) {
             Debug.Assert(ruleConditionDefinition.Id != null);
@@ -145,6 +136,26 @@ namespace Kinetix.Rules {
             }
 
             return new List<RuleDefinition>(cmd.ReadList<RuleDefinition>());
+        }
+
+        public void RemoveRules(IList<int> list)
+        {
+            Debug.Assert(list != null);
+            //--
+            var cmd = GetSqlServerCommand("DeleteRulesByIds.sql");
+            cmd.Parameters.AddInParameter(ITEMS_ID, list);
+
+            cmd.ExecuteNonQuery();
+        }
+
+        public void RemoveSelectors(IList<int> list)
+        {
+            Debug.Assert(list != null);
+            //--
+            var cmd = GetSqlServerCommand("DeleteSelectorsByIds.sql");
+            cmd.Parameters.AddInParameter(ITEMS_ID, list);
+
+            cmd.ExecuteNonQuery();
         }
     }
 }

@@ -193,5 +193,21 @@ namespace Kinetix.Rules
 
             return ret;            
         }
+
+        public void RemoveRules(IList<int> list)
+        {
+            foreach (int id in list)
+            {
+                inMemoryRuleStore.Remove(id);
+            }
+        }
+
+        public void RemoveSelectors(IList<int> list)
+        {
+            foreach (int id in list)
+            {
+                inMemorySelectorStore.Remove(id);
+            }
+        }
     }
 }

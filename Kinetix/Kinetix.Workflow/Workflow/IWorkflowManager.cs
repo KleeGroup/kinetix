@@ -46,7 +46,6 @@ namespace Kinetix.Workflow
         /// <return>the workflow instance</return>
         WfWorkflow GetWorkflowInstanceByItemId(int wfwdId, int itemId);
 
-
         /// <summary>
         /// Start a workflow instance. 
         /// </summary>
@@ -207,6 +206,60 @@ namespace Kinetix.Workflow
         /// </summary>
         /// <param name="criteria"></param>
         IList<WfActivityDefinition> FindActivitiesByCriteria(RuleCriteria criteria);
+
+        /// <summary>
+        /// Get the conditions associated to a rule
+        /// </summary>
+        /// <param name="ruleId"></param>
+        /// <returns>a list of all the conditions for the rule</returns>
+        IList<RuleConditionDefinition> GetConditionsForRuleId(int ruleId);
+
+        /// <summary>
+        /// Get the conditions associated to a rule
+        /// </summary>
+        /// <param name="selectorId"></param>
+        /// <returns>a list of all the filters for the selector</returns>
+        IList<RuleFilterDefinition> GetFiltersForSelectorId(int selectorId);
+
+        /// <summary>
+        /// Get the rules associated to an activity definition
+        /// </summary>
+        /// <param name="wfadId"></param>
+        /// <returns>a list of all the rules for the activity definition</returns>
+        IList<RuleDefinition> GetRulesForActivityDefinition(int wfadId);
+
+        /// <summary>
+        /// Get the selectors associated to an activity definition
+        /// </summary>
+        /// <param name="wfadId"></param>
+        /// <returns>a list of all the selectors for the activity definition</returns>
+        IList<SelectorDefinition> GetSelectorsForActivityDefinition(int wfadId);
+
+        /// <summary>
+        /// Get the workflow definition from its id
+        /// </summary>
+        /// <param name="wfwdId"></param>
+        /// <returns>the workflow definition</returns>
+        WfWorkflowDefinition GetWorkflowDefinition(int wfwdId);
+
+        /// <summary>
+        /// Get the workflow definition from its name
+        /// </summary>
+        /// <param name="wfdName"></param>
+        /// <returns>the workflow definition</returns>
+        WfWorkflowDefinition GetWorkflowDefinition(string wfdName);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="rules"></param>
+        void RemoveRules(IList<RuleDefinition> rules);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="selectors"></param>
+        void RemoveSelectors(IList<SelectorDefinition> selectors);
 
         // Custom Methods
 

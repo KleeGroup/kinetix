@@ -35,7 +35,6 @@ namespace Kinetix.Workflow
         private int memoryWorkflowDefinitionSequenceGenerator = 0;
         private IDictionary<long?, WfWorkflowDefinition> inMemoryWorkflowDefinitionStore = new ConcurrentDictionary<long?, WfWorkflowDefinition>();
 
-
         public void AddTransition(WfTransitionDefinition transition)
         {
             Debug.Assert(transition != null);

@@ -29,12 +29,6 @@ namespace Kinetix.Rules
         IList<RuleDefinition> FindRulesByItemId(int itemId);
 
         /// <summary>
-        /// Removes a rule.
-        /// </summary>
-        /// <param name="ruleDefinition">ruleDefinition.</param>
-        void RemoveRule(RuleDefinition ruleDefinition);
-
-        /// <summary>
         /// Update a rule.
         /// </summary>
         /// <param name="ruleDefinition">ruleDefinition.</param>
@@ -79,12 +73,6 @@ namespace Kinetix.Rules
         IList<SelectorDefinition> FindSelectorsByItemId(int itemId);
 
         /// <summary>
-        /// Remove a Selector.
-        /// </summary>
-        /// <param name="selectorDefinition">selectorDefinition.</param>
-        void RemoveSelector(SelectorDefinition selectorDefinition);
-
-        /// <summary>
         /// Update a Selector.
         /// </summary>
         /// <param name="selectorDefinition">selectorDefinition.</param>
@@ -122,5 +110,17 @@ namespace Kinetix.Rules
         /// <param name="items"></param>
         /// <returns></returns>
         IList<RuleDefinition> FindRulesByCriteria(RuleCriteria criteria, IList<int> items);
+
+        /// <summary>
+        /// Removes all the specified rules
+        /// </summary>
+        /// <param name="list">list of ids</param>
+        void RemoveRules(IList<int> list);
+
+        /// <summary>
+        /// Removes all the specified Selectors
+        /// </summary>
+        /// <param name="list">list of ids</param>
+        void RemoveSelectors(IList<int> list);
     }
 }

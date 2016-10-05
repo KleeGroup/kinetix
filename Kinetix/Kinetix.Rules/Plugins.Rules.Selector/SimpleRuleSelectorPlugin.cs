@@ -60,12 +60,12 @@ namespace Kinetix.Rules
                             case "<":
                                 double doubleExpressionInf = Double.Parse(expression);
                                 double doubleFieldInf = Double.Parse((string) fieldToTest);
-                                result = doubleExpressionInf < doubleFieldInf;
+                                result = doubleFieldInf < doubleExpressionInf;
                                 break;
                             case ">":
                                 double doubleExpressionSup = Double.Parse(expression);
                                 double doubleFieldSup = Double.Parse((string) fieldToTest);
-                                result = doubleExpressionSup > doubleFieldSup;
+                                result = doubleFieldSup < doubleExpressionSup;
                                 break;
                         }
 
