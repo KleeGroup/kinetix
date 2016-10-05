@@ -34,7 +34,6 @@ namespace Kinetix.Workflow
         /// <return>the workflow instance</return>
         WfWorkflow GetWorkflowInstanceByItemId(int wfwdId, int itemId);
 
-
         /// <summary>
         /// Start a workflow instance. 
         /// </summary>
@@ -70,8 +69,16 @@ namespace Kinetix.Workflow
         /// <summary>
         /// Get the decision for a single activity.
         /// </summary>
-        /// <param name="wfDecision">Activity</param>
-        WfDecision GetDecision(WfActivityDefinition wfActivity);
+        /// <param name="wfActivity">Activity</param>
+        /// <returns>The decision for this activity</returns>
+        WfDecision GetDecision(WfActivity wfActivity);
+
+        /// <summary>
+        /// Get the decisions for an multiple activity
+        /// </summary>
+        /// <param name="wfActivity">Activity</param>
+        /// <returns>All the decisions for this activity</returns>
+        IList<WfDecision> GetDecisions(WfActivity wfActivity);
 
         /// <summary>
         /// Save the decision for the current activity and go to the next activity using the default transition

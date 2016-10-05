@@ -74,7 +74,6 @@ namespace Kinetix.Workflow
             }
 
             return count;
-
         }
 
         public void CreateActivity(WfActivity wfActivity)
@@ -290,6 +289,16 @@ namespace Kinetix.Workflow
             Debug.Assert(inMemoryWorkflowInstanceStore.ContainsKey(workflow.WfwId), "This workflow cannot be updated : It does not exist in the store");
             //---
             inMemoryWorkflowInstanceStore[workflow.WfwId] = workflow;
+        }
+
+
+        public void UpdateDecision(WfDecision wfDecision)
+        {
+            Debug.Assert(wfDecision != null);
+            Debug.Assert(wfDecision.Id != null);
+            Debug.Assert(inMemoryDecisionStore.ContainsKey(wfDecision.Id), "This workflow cannot be updated : It does not exist in the store");
+            //---
+            inMemoryDecisionStore[wfDecision.Id] = wfDecision;
         }
 
         public IList<WfDecision> ReadDecisionsByActivityId(int wfaId)

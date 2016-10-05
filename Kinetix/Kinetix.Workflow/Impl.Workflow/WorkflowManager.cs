@@ -242,15 +242,43 @@ namespace Kinetix.Workflow {
 
             // Attach decision to the activity
             wfDecision.WfaId = (int)currentActivity.WfaId;
-            _workflowStorePlugin.CreateDecision(wfDecision);
+            if (wfDecision.Id == null)
+            {
+                _workflowStorePlugin.CreateDecision(wfDecision);
+            }
+            else
+            {
+                _workflowStorePlugin.UpdateDecision(wfDecision);
+            }
         }
 
-        public WfDecision GetDecision(WfActivityDefinition wfActivity)
+        public WfDecision GetDecision(WfActivity wfActivity)
         {
             Debug.Assert(wfActivity != null);
             //---
-            IList<WfDecision> decision = _workflowStorePlugin.ReadDecisionsByActivityId((int)wfActivity.WfadId);
+            WfActivityDefinition wfActivityDefinition = _workflowStorePlugin.ReadActivityDefinition(wfActivity.WfadId);
+            WfCodeMultiplicityDefinition multiplicity = (WfCodeMultiplicityDefinition) Enum.Parse(typeof(WfCodeMultiplicityDefinition), wfActivityDefinition.WfmdCode, true);
+
+            if (multiplicity != WfCodeMultiplicityDefinition.Sin)
+            {
+                throw new InvalidOperationException();
+            }
+            IList<WfDecision> decision = _workflowStorePlugin.ReadDecisionsByActivityId(wfActivity.WfaId.Value);
             return decision[0];
+        }
+
+        public IList<WfDecision> GetDecisions(WfActivity wfActivity)
+        {
+            Debug.Assert(wfActivity != null);
+            //---
+            WfActivityDefinition wfActivityDefinition = _workflowStorePlugin.ReadActivityDefinition(wfActivity.WfadId);
+            WfCodeMultiplicityDefinition multiplicity = (WfCodeMultiplicityDefinition)Enum.Parse(typeof(WfCodeMultiplicityDefinition), wfActivityDefinition.WfmdCode, true);
+
+            if (multiplicity != WfCodeMultiplicityDefinition.Mul)
+            {
+                throw new InvalidOperationException();
+            }
+            return _workflowStorePlugin.ReadDecisionsByActivityId(wfActivity.WfaId.Value);
         }
 
         public void SaveDecisionAndGoToNextActivity(WfWorkflow wfWorkflow, WfDecision wfDecision) {
@@ -319,8 +347,7 @@ namespace Kinetix.Workflow {
                     _workflowStorePlugin.UpdateWorkflowInstance(wfWorkflow);
                 } else {
                     // No next activity to go. Ending the workflow
-                    wfWorkflow.WfsCode = WfCodeStatusWorkflow.End.ToString();
-                    _workflowStorePlugin.UpdateWorkflowInstance(wfWorkflow);
+                    EndInstance(wfWorkflow);
                 }
             }
         }

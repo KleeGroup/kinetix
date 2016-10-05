@@ -81,6 +81,12 @@ namespace Kinetix.Workflow
         void CreateDecision(WfDecision wfDecision);
 
         /// <summary>
+        /// Update a decision
+        /// </summary>
+        /// <param name="wfDecision">wfDecision</param>
+        void UpdateDecision(WfDecision wfDecision);
+
+        /// <summary>
         /// Find all decision for an activity
         /// </summary>
         /// <param name="wfActivity">wfActivity</param>

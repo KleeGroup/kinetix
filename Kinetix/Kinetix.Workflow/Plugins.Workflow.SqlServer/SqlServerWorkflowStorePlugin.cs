@@ -57,6 +57,12 @@ namespace Kinetix.Workflow {
         }
 
         [OperationContract]
+        public void DeleteDecision(WfDecision wfDecision)
+        {
+            BrokerManager.GetBroker<WfDecision>().Delete(wfDecision);
+        }
+
+        [OperationContract]
         public void CreateWorkflowDefinition(WfWorkflowDefinition workflowDefinition) {
             int id = (int)BrokerManager.GetBroker<WfWorkflowDefinition>().Save(workflowDefinition);
             workflowDefinition.WfwdId = id;
@@ -210,5 +216,12 @@ namespace Kinetix.Workflow {
         public void UpdateWorkflowInstance(WfWorkflow workflow) {
             BrokerManager.GetBroker<WfWorkflow>().Save(workflow);
         }
+
+        [OperationContract]
+        public void UpdateDecision(WfDecision wfDecision)
+        {
+            BrokerManager.GetBroker<WfDecision>().Save(wfDecision);
+        }
+
     }
 }
