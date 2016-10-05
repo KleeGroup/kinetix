@@ -396,6 +396,14 @@ namespace Kinetix.Workflow {
             return matchingActivities.Select(act => dicAct[act]).ToList();
         }
 
+        public WfActivity GetActivity(int wfaId)
+        {
+            return _workflowStorePlugin.ReadActivity(wfaId);
+        }
 
+        public WfActivity GetActivity(WfWorkflow wfWorkflow, WfActivityDefinition wfActivityDefinition)
+        {
+            return _workflowStorePlugin.FindActivityByDefinitionWorkflow(wfWorkflow, wfActivityDefinition);
+        }
     }
 }

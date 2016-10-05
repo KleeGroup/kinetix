@@ -223,5 +223,12 @@ namespace Kinetix.Workflow {
             BrokerManager.GetBroker<WfDecision>().Save(wfDecision);
         }
 
+        public WfActivity FindActivityByDefinitionWorkflow(WfWorkflow wfWorkflow, WfActivityDefinition wfActivityDefinition)
+        {
+            FilterCriteria filterCriteria = new FilterCriteria();
+            filterCriteria.Equals(WfActivity.Cols.WFW_ID, wfWorkflow.WfwId.Value);
+            filterCriteria.Equals(WfActivity.Cols.WFAD_ID, wfActivityDefinition.WfadId.Value);
+            return BrokerManager.GetBroker<WfActivity>().GetByCriteria(filterCriteria);
+        }
     }
 }

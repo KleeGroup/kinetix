@@ -203,6 +203,14 @@ namespace Kinetix.Workflow
         WfActivityDefinition FindActivityDefinitionByPosition(WfWorkflowDefinition wfWorkflowDefinition, int position);
 
         /// <summary>
+        /// Find an activity by its definition for a workflow
+        /// </summary>
+        /// <param name="wfWorkflow"></param>
+        /// <param name="wfActivityDefinition"></param>
+        /// <returns></returns>
+        WfActivity FindActivityByDefinitionWorkflow(WfWorkflow wfWorkflow, WfActivityDefinition wfActivityDefinition);
+
+        /// <summary>
         /// Find the list of all the definitions following the default transitions.
         /// </summary>
         /// <param name="wfWorkflowDefinition">wfWorkflowDefinition.</param>

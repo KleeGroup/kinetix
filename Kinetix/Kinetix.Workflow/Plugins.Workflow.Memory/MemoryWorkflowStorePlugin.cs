@@ -314,6 +314,18 @@ namespace Kinetix.Workflow
 
             return collect;
         }
+        public WfActivity FindActivityByDefinitionWorkflow(WfWorkflow wfWorkflow, WfActivityDefinition wfActivityDefinition)
+        {
+            IList<WfActivity> collect = new List<WfActivity>();
+            foreach (WfActivity wfActivity in inMemoryActivityStore.Values)
+            {
+                if (wfWorkflow.WfwId.Equals(wfActivity.WfwId) && wfActivityDefinition.WfadId.Equals(wfActivityDefinition.WfadId))
+                {
+                    return wfActivity;
+                }
+            }
 
+            return null;
+        }
     }
 }
