@@ -544,8 +544,11 @@ namespace Kinetix.Workflow {
                         wfWorkflowDecision.activity = wfActivity;
                         wfWorkflowDecision.groups = groups;
                         List<WfDecision> decisions;
-                        dicDecision.TryGetValue(wfActivity.WfaId.Value, out decisions);
-                        wfWorkflowDecision.decisions = decisions;
+                        if (wfActivity != null)
+                        {
+                            dicDecision.TryGetValue(wfActivity.WfaId.Value, out decisions);
+                            wfWorkflowDecision.decisions = decisions;
+                        }
                         workflowDecisions.Add(wfWorkflowDecision);
                     }
                 }
