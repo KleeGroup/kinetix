@@ -65,7 +65,7 @@ namespace Kinetix.Rules
                             case ">":
                                 double doubleExpressionSup = Double.Parse(expression);
                                 double doubleFieldSup = Double.Parse((string) fieldToTest);
-                                result = doubleFieldSup < doubleExpressionSup;
+                                result = doubleFieldSup > doubleExpressionSup;
                                 break;
                         }
 
