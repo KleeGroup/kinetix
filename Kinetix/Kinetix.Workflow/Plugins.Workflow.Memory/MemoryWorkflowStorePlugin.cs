@@ -74,7 +74,6 @@ namespace Kinetix.Workflow
             }
 
             return count;
-
         }
 
         public void CreateActivity(WfActivity wfActivity)
@@ -348,5 +347,40 @@ namespace Kinetix.Workflow
             return wfDecisions;
         }
 
+        public void UpdateDecision(WfDecision wfDecision)
+        {
+            Debug.Assert(wfDecision != null);
+            Debug.Assert(wfDecision.Id != null);
+            Debug.Assert(inMemoryDecisionStore.ContainsKey(wfDecision.Id), "This workflow cannot be updated : It does not exist in the store");
+            //---
+            inMemoryDecisionStore[wfDecision.Id] = wfDecision;
+        }
+
+        public IList<WfDecision> ReadDecisionsByActivityId(int wfaId)
+        {
+            IList<WfDecision> collect = new List<WfDecision>();
+            foreach (WfDecision wfDecision in inMemoryDecisionStore.Values)
+            {
+                if (wfaId.Equals(wfDecision.WfaId))
+                {
+                    collect.Add(wfDecision);
+                }
+            }
+
+            return collect;
+        }
+        public WfActivity FindActivityByDefinitionWorkflow(WfWorkflow wfWorkflow, WfActivityDefinition wfActivityDefinition)
+        {
+            IList<WfActivity> collect = new List<WfActivity>();
+            foreach (WfActivity wfActivity in inMemoryActivityStore.Values)
+            {
+                if (wfWorkflow.WfwId.Equals(wfActivity.WfwId) && wfActivityDefinition.WfadId.Equals(wfActivityDefinition.WfadId))
+                {
+                    return wfActivity;
+                }
+            }
+
+            return null;
+        }
     }
 }

@@ -49,6 +49,13 @@ namespace Kinetix.Workflow
         WfActivity ReadActivity(int wfadId);
 
         /// <summary>
+        /// Get all the decisions associated to an Activity
+        /// </summary>
+        /// <param name="wfadId"></param>
+        /// <returns></returns>
+        IList<WfDecision> ReadDecisionsByActivityId(int wfaId);
+
+        /// <summary>
         /// Create a new activity.
         /// </summary>
         /// <param name="wfActivity">wfActivity.</param>
@@ -73,6 +80,12 @@ namespace Kinetix.Workflow
         /// </summary>
         /// <param name="wfDecision">wfDecision</param>
         void CreateDecision(WfDecision wfDecision);
+
+        /// <summary>
+        /// Update a decision
+        /// </summary>
+        /// <param name="wfDecision">wfDecision</param>
+        void UpdateDecision(WfDecision wfDecision);
 
         /// <summary>
         /// Find all decision for an activity
@@ -176,6 +189,14 @@ namespace Kinetix.Workflow
         /// <param name="wfWorkflowDefinition">wfWorkflowDefinition.</param>
         /// <param name="position">position.</param>
         WfActivityDefinition FindActivityDefinitionByPosition(WfWorkflowDefinition wfWorkflowDefinition, int position);
+
+        /// <summary>
+        /// Find an activity by its definition for a workflow
+        /// </summary>
+        /// <param name="wfWorkflow"></param>
+        /// <param name="wfActivityDefinition"></param>
+        /// <returns></returns>
+        WfActivity FindActivityByDefinitionWorkflow(WfWorkflow wfWorkflow, WfActivityDefinition wfActivityDefinition);
 
         /// <summary>
         /// Find the list of all the definitions following the default transitions.

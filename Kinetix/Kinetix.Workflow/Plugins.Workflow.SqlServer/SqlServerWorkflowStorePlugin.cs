@@ -61,6 +61,12 @@ namespace Kinetix.Workflow {
         }
 
         [OperationContract]
+        public void DeleteDecision(WfDecision wfDecision)
+        {
+            BrokerManager.GetBroker<WfDecision>().Delete(wfDecision);
+        }
+
+        [OperationContract]
         public void CreateWorkflowDefinition(WfWorkflowDefinition workflowDefinition) {
             int id = (int)BrokerManager.GetBroker<WfWorkflowDefinition>().Save(workflowDefinition);
             workflowDefinition.WfwdId = id;
@@ -182,6 +188,15 @@ namespace Kinetix.Workflow {
         }
 
         [OperationContract]
+        public IList<WfDecision> ReadDecisionsByActivityId(int wfaId)
+        {
+            FilterCriteria filterCriteria = new FilterCriteria();
+            filterCriteria.Equals(WfDecision.Cols.WFA_ID, wfaId);
+            return new List<WfDecision> (BrokerManager.GetBroker<WfDecision>().GetAllByCriteria(filterCriteria));
+        }
+
+
+        [OperationContract]
         public void RemoveTransition(WfTransitionDefinition transition) {
             BrokerManager.GetBroker<WfTransitionDefinition>().Delete(transition);
         }
@@ -206,6 +221,7 @@ namespace Kinetix.Workflow {
             BrokerManager.GetBroker<WfWorkflow>().Save(workflow);
         }
 
+        [OperationContract]
         public IList<WfActivity> FindActivitiesByDefinitionId(WfWorkflow wfWorkflow, IList<int> wfadId)
         {
             Debug.Assert(wfWorkflow != null);
@@ -232,6 +248,20 @@ namespace Kinetix.Workflow {
             var cmd = GetSqlServerCommand("FindDecisionsByWorkflowId.sql");
             cmd.Parameters.AddWithValue(WfWorkflow.Cols.WFW_ID, wfWorkflow.WfwId);
             return new List<WfDecision>(cmd.ReadList<WfDecision>());
+        }
+
+        [OperationContract]
+        public void UpdateDecision(WfDecision wfDecision)
+        {
+            BrokerManager.GetBroker<WfDecision>().Save(wfDecision);
+        }
+
+        public WfActivity FindActivityByDefinitionWorkflow(WfWorkflow wfWorkflow, WfActivityDefinition wfActivityDefinition)
+        {
+            FilterCriteria filterCriteria = new FilterCriteria();
+            filterCriteria.Equals(WfActivity.Cols.WFW_ID, wfWorkflow.WfwId.Value);
+            filterCriteria.Equals(WfActivity.Cols.WFAD_ID, wfActivityDefinition.WfadId.Value);
+            return BrokerManager.GetBroker<WfActivity>().GetByCriteria(filterCriteria);
         }
     }
 }

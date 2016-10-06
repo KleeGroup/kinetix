@@ -71,12 +71,41 @@ namespace Kinetix.Workflow
         void ResumeInstance(WfWorkflow wfWorkflow);
 
         /// <summary>
+        /// Get an activity from Id
+        /// </summary>
+        /// <param name="wfaId">Activity Id</param>
+        /// <returns></returns>
+        WfActivity GetActivity(int wfaId);
+
+        /// <summary>
+        /// Get an activity from a definition and a workflow instance
+        /// </summary>
+        /// <param name="wfWorkflow">workflow instance</param>
+        /// <param name="wfActivityDefinition">Activity Definition</param>
+        /// <returns></returns>
+        WfActivity GetActivity(WfWorkflow wfWorkflow, WfActivityDefinition wfActivityDefinition);
+
+        /// <summary>
         /// Save the decision for the current activity without moving to the next.
         /// Use this method when the decision has to be saved before pausing the or ending the worklfow.
         /// </summary>
         /// <param name="wfWorkflow">wfWorkflow</param>
         /// <param name="wfDecision">wfDecision</param>
         void SaveDecision(WfWorkflow wfWorkflow, WfDecision wfDecision);
+
+        /// <summary>
+        /// Get the decision for a single activity.
+        /// </summary>
+        /// <param name="wfActivity">Activity</param>
+        /// <returns>The decision for this activity</returns>
+        WfDecision GetDecision(WfActivity wfActivity);
+
+        /// <summary>
+        /// Get the decisions for an multiple activity
+        /// </summary>
+        /// <param name="wfActivity">Activity</param>
+        /// <returns>All the decisions for this activity</returns>
+        IList<WfDecision> GetDecisions(WfActivity wfActivity);
 
         /// <summary>
         /// Save the decision for the current activity and go to the next activity using the default transition
