@@ -277,6 +277,9 @@ namespace Kinetix.Workflow {
             WfActivity currentActivity = _workflowStorePlugin.ReadActivity((int)wfWorkflow.WfaId2);
 
             // Attach decision to the activity
+            currentActivity.IsAuto = false;
+            _workflowStorePlugin.UpdateActivity(currentActivity);
+
             wfDecision.WfaId = (int)currentActivity.WfaId;
             if (wfDecision.Id == null)
             {
@@ -322,7 +325,7 @@ namespace Kinetix.Workflow {
         }
 
         public void SaveDecisionAndGoToNextActivity(WfWorkflow wfWorkflow, string transitionName, WfDecision wfDecision) {
-            Debug.Assert(WfCodeStatusWorkflow.Sta.ToString().Equals(wfWorkflow.WfsCode), "A workflow must be started before saving decision");
+            Debug.Assert(WfCodeStatusWorkflow.Sta.ToString().Equals(wfWorkflow.WfsCode), "A workflow must be started before saving a decision");
             //---
             WfActivity currentActivity = _workflowStorePlugin.ReadActivity((int)wfWorkflow.WfaId2);
 
