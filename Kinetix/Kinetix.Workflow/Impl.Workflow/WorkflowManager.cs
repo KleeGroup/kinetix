@@ -499,7 +499,6 @@ namespace Kinetix.Workflow {
 
         public void RecalculateWorkflowDefinition(WfWorkflowDefinition wfWorkflowDefinition)
         {
-
             IList<WfWorkflow> workflows = _workflowStorePlugin.FindActiveWorkflows(wfWorkflowDefinition);
             IList<WfActivityDefinition> activityDefinitions = _workflowStorePlugin.FindAllDefaultActivityDefinitions(wfWorkflowDefinition);
 
