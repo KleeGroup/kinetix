@@ -355,28 +355,24 @@ namespace Kinetix.Workflow {
                 if (_workflowStorePlugin.HasNextActivity(currentActivity, transitionName)) {
                     WfActivityDefinition nextActivityDefinition = _workflowStorePlugin.FindNextActivity(currentActivity, transitionName);
 
+                    DateTime now = DateTime.Now;
+                    // Creating the next activity to validate.
+                    WfActivity nextActivity = new WfActivity();
+                    nextActivity.CreationDate = now;
+                    nextActivity.WfadId = nextActivityDefinition.WfadId.Value;
+                    nextActivity.WfwId = wfWorkflow.WfwId.Value;
+                    _workflowStorePlugin.CreateActivity(nextActivity);
+
+                    wfWorkflow.WfaId2 = nextActivity.WfaId;
+                    _workflowStorePlugin.UpdateWorkflowInstance(wfWorkflow);
+
                     //Autovalidating next activities
-                    bool endReached = AutoValidateNextActivities(wfWorkflow, currentActivity, (int)nextActivityDefinition.WfadId);
+                    bool endReached = AutoValidateNextActivities(wfWorkflow, nextActivity, nextActivityDefinition.WfadId.Value);
 
                     if (endReached)
                     {
                         EndInstance(wfWorkflow);
-                    } else {
-                        WfActivity lastAutoValidateActivity = _workflowStorePlugin.ReadActivity((int)wfWorkflow.WfaId2);
-                        WfActivityDefinition nextActivityDefinitionPrepare = _workflowStorePlugin.FindNextActivity(lastAutoValidateActivity);
-
-                        DateTime now = DateTime.Now;
-                        // Creating the next activity to validate.
-                        WfActivity nextActivity = new WfActivity();
-                        nextActivity.CreationDate = now;
-                        nextActivity.WfadId = (int)nextActivityDefinitionPrepare.WfadId;
-                        nextActivity.WfwId = (int)wfWorkflow.WfwId;
-                        _workflowStorePlugin.CreateActivity(nextActivity);
-
-                        wfWorkflow.WfaId2 = nextActivity.WfaId;
-                        _workflowStorePlugin.UpdateWorkflowInstance(wfWorkflow);
                     }
-
                    
                 } else {
                     // No next activity to go. Ending the workflow
