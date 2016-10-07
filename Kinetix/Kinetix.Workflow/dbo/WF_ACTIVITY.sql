@@ -8,6 +8,7 @@ create table [dbo].[WF_ACTIVITY] (
 	[CREATION_DATE] datetime2,
 	[WFW_ID] int,
 	[WFAD_ID] int,
+	[IS_AUTO] bit not null,
 	constraint [PK_WF_ACTIVITY] primary key clustered ([WFA_ID] ASC),
 	constraint [FK_WFAD_WFA] foreign key ([WFAD_ID]) references [dbo].[WF_ACTIVITY_DEFINITION] ([WFAD_ID]))
 go

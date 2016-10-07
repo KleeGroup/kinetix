@@ -136,6 +136,10 @@ namespace Kinetix.Workflow {
 
         private void AutoValidateDecision(WfActivity wfActivityCurrent)
         {
+
+            wfActivityCurrent.IsAuto = true;
+            _workflowStorePlugin.UpdateActivity(wfActivityCurrent);
+
             WfDecision decision = new WfDecision();
             decision.Username = USER_AUTO;
             decision.DecisionDate = DateTime.Now; 
@@ -522,17 +526,17 @@ namespace Kinetix.Workflow {
                             wf.WfaId2 = wfActivity.WfaId;
                             _workflowStorePlugin.UpdateWorkflowInstance(wf);
                         }
-                        else // if Activity Is Auto
+                        else if (activity.IsAuto)
                         {
                             wf.WfaId2 = activity.WfaId;
                             _workflowStorePlugin.UpdateWorkflowInstance(wf);
                             break;
                         }
                     }
-                    else
+                    else if (activity.IsAuto == false)
                     {
-                        //if Activity Is Not auto
-                        //Activity.auto = true;
+                        activity.IsAuto = true;
+                        _workflowStorePlugin.UpdateActivity(activity);
                     }
 
                     IList<AccountUser> accounts = _ruleManager.SelectAccounts(actDefId, obj, ruleConstants);
