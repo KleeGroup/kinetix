@@ -382,5 +382,21 @@ namespace Kinetix.Workflow
 
             return null;
         }
+
+        public IList<WfWorkflow> FindActiveWorkflows(WfWorkflowDefinition wfWorkflowDefinition)
+        {
+            IList<WfWorkflow> collect = new List<WfWorkflow>();
+            foreach (WfWorkflow wfWorkflow in inMemoryWorkflowInstanceStore.Values)
+            {
+                WfCodeStatusWorkflow status = (WfCodeStatusWorkflow)Enum.Parse(typeof(WfCodeStatusWorkflow), wfWorkflow.WfsCode, true);
+
+                if (wfWorkflowDefinition.WfwdId.Equals(wfWorkflow.WfwId) && (status == WfCodeStatusWorkflow.Sta || status == WfCodeStatusWorkflow.Pau))
+                {
+                    collect.Add(wfWorkflow);
+                }
+            }
+
+            return collect;
+        }
     }
 }

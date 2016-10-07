@@ -117,6 +117,14 @@ namespace Kinetix.Workflow
         /// <returns>All matching activities</returns>
         IList<WfActivity> FindActivitiesByDefinitionId(WfWorkflow wfWorkflow, IList<int> wfadIds);
 
+
+        /// <summary>
+        /// Find All active workflow (Started, or Paused)
+        /// </summary>
+        /// <param name="wfWorkflowDefinition"></param>
+        /// <returns></returns>
+        IList<WfWorkflow> FindActiveWorkflows(WfWorkflowDefinition wfWorkflowDefinition);
+
         // Definition
 
         /// <summary>
