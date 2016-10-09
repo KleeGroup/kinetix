@@ -304,7 +304,14 @@ namespace Kinetix.Workflow {
                 throw new InvalidOperationException();
             }
             IList<WfDecision> decision = _workflowStorePlugin.ReadDecisionsByActivityId(wfActivity.WfaId.Value);
-            return decision[0];
+            if (decision.Count == 0)
+            {
+                return null;
+            }
+            else
+            {
+                return decision[0];
+            }
         }
 
         public IList<WfDecision> GetDecisions(WfActivity wfActivity)
@@ -510,6 +517,9 @@ namespace Kinetix.Workflow {
 
                 IDictionary<int, WfActivity> activities = _workflowStorePlugin.FindActivitiesByWorkflowId(wf).ToDictionary(a => a.WfadId);
 
+                bool isLastPreviousCurrentActivityReached = false;
+
+                bool newCurrentActivityFound = false;
                 foreach (WfActivityDefinition activityDefinition in activityDefinitions)
                 {
                     int actDefId = activityDefinition.WfadId.Value;
@@ -517,6 +527,13 @@ namespace Kinetix.Workflow {
                     activities.TryGetValue(actDefId, out activity);
 
                     bool isRuleValid = _ruleManager.IsRuleValid(actDefId, obj, ruleConstants);
+
+                    if (activity != null && activityDefinition.WfadId.Equals(activity.WfadId))
+                    {
+                        isLastPreviousCurrentActivityReached = true;
+                    }
+
+                    bool isCurrentActivityAuto = false;
 
                     if (isRuleValid)
                     {
@@ -530,17 +547,24 @@ namespace Kinetix.Workflow {
                             //There is at least one users allowed to validate.
                             if (activity == null)
                             {
-                                // No previous activity was found. A new activity definition has been inserted in the workflow.
+                                // No activity linked to this definition was found. 
+                                // 2 possibilities : 
+                                // - A new activity definition has been inserted in the workflow.
+                                // - The previous current activity has been switched to auto.
                                 WfActivity wfActivity = CreateActivity(activityDefinition, wf, false);
                                 wf.WfaId2 = wfActivity.WfaId;
                                 _workflowStorePlugin.UpdateWorkflowInstance(wf);
+                                newCurrentActivityFound = true;
                                 break;
                             }
                             else if (activity.IsAuto)
                             {
-                                //The previous valiadtion was auto. This activity should be manually validated.
+                                //The previous validation was auto. This activity should be manually validated.
+                                activity.IsAuto = false;
+                                _workflowStorePlugin.UpdateActivity(activity);
                                 wf.WfaId2 = activity.WfaId;
                                 _workflowStorePlugin.UpdateWorkflowInstance(wf);
+                                newCurrentActivityFound = true;
                                 break;
                             }
 
@@ -550,58 +574,80 @@ namespace Kinetix.Workflow {
                             if (multiplicity == WfCodeMultiplicityDefinition.Sin)
                             {
                                 WfDecision decision = GetDecision(activity);
-                                IList<string> accountNames = accounts.Select(a => a.Name).ToList();
+                                IList<string> accountIds = accounts.Select(a => a.Id).ToList();
 
-                                if (!accountNames.Contains(decision.Username))
+                                if (decision == null || !accountIds.Contains(decision.Username))
                                 {
                                     // The user previously allowed to validate are no longer selected with the new selectors.
                                     // This activity must be revalidated
                                     wf.WfaId2 = activity.WfaId;
                                     _workflowStorePlugin.UpdateWorkflowInstance(wf);
+                                    newCurrentActivityFound = true;
                                     break;
                                 }
                             }
                             else
                             {
                                 IList<WfDecision> decisions = GetDecisions(activity);
-                                IList<string> accountNames = accounts.Select(a => a.Name).ToList();
+                                IList<string> accountIds = accounts.Select(a => a.Id).ToList();
                                 IList<string> decisionUsernames = decisions.Select(d => d.Username).ToList();
-                                IList<string> matches = accountNames.Intersect(decisionUsernames).ToList();
+                                IList<string> matches = accountIds.Intersect(decisionUsernames).ToList();
                                 if (matches.Count < decisionUsernames.Count)
                                 {
                                     // At least one user previously allowed to validate are no longer selected with the new selectors.
                                     // This activity must be revalidated
                                     wf.WfaId2 = activity.WfaId;
                                     _workflowStorePlugin.UpdateWorkflowInstance(wf);
+                                    newCurrentActivityFound = true;
                                     break;
                                 }
                             }
                         }
                         else
                         {
-                            //There is no users allowed to validate.
-                            //This activity is now auto.
+                            // There is no users allowed to validate.
+                            // This activity is now auto.
+                            isCurrentActivityAuto = true;
                             activity.IsAuto = true;
                             _workflowStorePlugin.UpdateActivity(activity);
                         }
                     }
                     else
                     {
+                        isCurrentActivityAuto = true;
                         if (activity == null)
                         {
+                            // No activity linked to this definition was found. 
+                            // 2 possibilities : 
+                            // - A new activity definition has been inserted in the workflow.
+                            // - The previous current activity has been switched to auto.
                             WfActivity wfActivity = CreateActivity(activityDefinition, wf, true);
-                            wf.WfaId2 = wfActivity.WfaId;
-                            _workflowStorePlugin.UpdateWorkflowInstance(wf);
-                            break;
                         }
                         else if (activity.IsAuto == false)
                         {
+                            // The previous activity was manual but now this activity is auto
                             activity.IsAuto = true;
                             _workflowStorePlugin.UpdateActivity(activity);
-                            break;
                         }
                     }
+
+                    if (isLastPreviousCurrentActivityReached && isCurrentActivityAuto == false)
+                    {
+                        // The last activity has been reached.
+                        newCurrentActivityFound = true;
+                        break;
+                    }
+
+                    
                 }
+
+                if (newCurrentActivityFound == false)
+                {
+                    // All the definitions have been iterated until the end.
+                    // The workflow mus be ended.
+                    EndInstance(wf);
+                }
+
             }
 
         }
