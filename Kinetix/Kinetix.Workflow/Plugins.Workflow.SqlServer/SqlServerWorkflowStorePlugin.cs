@@ -6,6 +6,7 @@ using Kinetix.Data.SqlClient;
 using Kinetix.Workflow.instance;
 using Kinetix.Workflow.model;
 using System.Diagnostics;
+using Kinetix.Workflow.Workflow;
 
 namespace Kinetix.Workflow {
     public class SqlServerWorkflowStorePlugin : IWorkflowStorePlugin {
@@ -271,6 +272,37 @@ namespace Kinetix.Workflow {
             var cmd = GetSqlServerCommand("FindActiveWorkflows.sql");
             cmd.Parameters.AddWithValue(WfWorkflow.Cols.WFWD_ID, wfWorkflowDefinition.WfwdId);
             return new List<WfWorkflow>(cmd.ReadList<WfWorkflow>());
+        }
+
+        public void UpdateTransition(WfTransitionDefinition transition)
+        {
+            BrokerManager.GetBroker<WfTransitionDefinition>().Save(transition);
+        }
+
+        public WfTransitionDefinition FindTransition(WfTransitionCriteria wfTransitionCriteria)
+        {
+            FilterCriteria filterCriteria = new FilterCriteria();
+            filterCriteria.Equals(WfTransitionDefinition.Cols.NAME, wfTransitionCriteria.TransitionName);
+            if (wfTransitionCriteria.WfadIdFrom != null)
+            {
+                filterCriteria.Equals(WfTransitionDefinition.Cols.WFAD_ID_FROM, wfTransitionCriteria.WfadIdFrom);
+            }
+
+            if (wfTransitionCriteria.WfadIdTo != null)
+            {
+                filterCriteria.Equals(WfTransitionDefinition.Cols.WFAD_ID_TO, wfTransitionCriteria.WfadIdTo);
+            }
+
+            return BrokerManager.GetBroker<WfTransitionDefinition>().GetByCriteria(filterCriteria);
+        }
+
+        public void IncrementActivityDefinitionPositionsAfter(int wfwdId, int position)
+        {
+            var cmd = GetSqlServerCommand("IncrementActivityDefinitionPositionsAfter.sql");
+            cmd.Parameters.AddWithValue(WfActivityDefinition.Cols.WFWD_ID, wfwdId);
+            cmd.Parameters.AddWithValue(WfActivityDefinition.Cols.LEVEL, position);
+
+            cmd.ExecuteNonQuery();
         }
     }
 }

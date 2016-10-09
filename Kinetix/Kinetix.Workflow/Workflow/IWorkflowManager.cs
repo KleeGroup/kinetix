@@ -198,7 +198,7 @@ namespace Kinetix.Workflow
         /// <param name="wfActivity">activity to move</param>
         /// <param name="wfActivityReferential">the referential activity where the activity should move (before or after)</param>
         /// <param name="after">true to move the activity after the referential activity. false before</param>
-        void MoveActivity(WfWorkflowDefinition wfWorkflowDefinition, WfActivityDefinition wfActivity, WfActivityDefinition wfActivityReferential, bool after);
+        void MoveActivity(WfWorkflowDefinition wfWorkflowDefinition, WfActivityDefinition wfActivityToMove, WfActivityDefinition wfActivityReferential, bool after);
 
         #endregion
 

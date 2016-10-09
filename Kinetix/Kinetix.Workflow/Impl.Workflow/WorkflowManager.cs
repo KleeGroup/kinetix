@@ -29,12 +29,12 @@ namespace Kinetix.Workflow {
 
             WfActivityDefinition wfActivityDefinition = _workflowStorePlugin.FindActivityDefinitionByPosition(wfWorkflowDefinition, position);
 
+            wfActivityDefinitionToAdd.Level = position;
+
             if (wfActivityDefinition == null) {
                 // Inserting a activity in trail
                 int size = _workflowStorePlugin.CountDefaultTransitions(wfWorkflowDefinition);
                 Debug.Assert(size == Math.Max(0, position - 2), "Position is not valid");
-
-                wfActivityDefinitionToAdd.Level = position;
 
                 _workflowStorePlugin.CreateActivityDefinition(wfWorkflowDefinition, wfActivityDefinitionToAdd);
 
@@ -54,10 +54,26 @@ namespace Kinetix.Workflow {
 
 
             } else {
+
+                _workflowStorePlugin.IncrementActivityDefinitionPositionsAfter(wfWorkflowDefinition.WfwdId.Value, position);
+
                 // Inserting an activity inside the default activities "linked list"
                 _workflowStorePlugin.CreateActivityDefinition(wfWorkflowDefinition, wfActivityDefinitionToAdd);
-                // Automatically move the next activity after the newly created
-                MoveActivity(wfWorkflowDefinition, wfActivityDefinitionToAdd, wfActivityDefinition, false);
+                
+                if (position > 1)
+                {
+                    // Automatically move the next activity after the newly created
+                    InsertActivityBefore(wfWorkflowDefinition, wfActivityDefinitionToAdd, wfActivityDefinition);
+                }
+                else
+                {
+                    // position == 1
+                    WfTransitionDefinition wfTransitionDefinition = new WfTransitionBuilder(wfWorkflowDefinition.WfwdId, wfActivityDefinitionToAdd.WfadId, wfActivityDefinition.WfadId).Build();
+                    _workflowStorePlugin.AddTransition(wfTransitionDefinition);
+                    wfWorkflowDefinition.WfadId = wfActivityDefinitionToAdd.WfadId;
+                    _workflowStorePlugin.UpdateWorkflowDefinition(wfWorkflowDefinition);
+                }
+                
             }
 
         }
@@ -233,7 +249,22 @@ namespace Kinetix.Workflow {
             return _workflowStorePlugin.ReadWorkflowInstanceById(wfwId);
         }
 
-        public void MoveActivity(WfWorkflowDefinition wfWorkflowDefinition, WfActivityDefinition wfActivity, WfActivityDefinition wfActivityReferential, bool after) {
+        private void InsertActivityBefore(WfWorkflowDefinition wfWorkflowDefinition, WfActivityDefinition wfActivityToAdd, WfActivityDefinition wfActivityReferential)
+        {
+            WfTransitionCriteria wfTransitionCriteria = new WfTransitionCriteria();
+            wfTransitionCriteria.TransitionName = WfCodeTransition.Default.ToString();
+            wfTransitionCriteria.WfadIdTo = wfActivityReferential.WfadId.Value;
+
+            WfTransitionDefinition transition = _workflowStorePlugin.FindTransition(wfTransitionCriteria);
+            transition.WfadIdTo = wfActivityToAdd.WfadId.Value;
+
+            _workflowStorePlugin.UpdateTransition(transition);
+
+            WfTransitionDefinition wfTransitionDefinition = new WfTransitionBuilder(wfWorkflowDefinition.WfwdId, wfActivityToAdd.WfadId, wfActivityReferential.WfadId).Build();
+            _workflowStorePlugin.AddTransition(wfTransitionDefinition);
+        }
+
+        public void MoveActivity(WfWorkflowDefinition wfWorkflowDefinition, WfActivityDefinition wfActivityToMove, WfActivityDefinition wfActivityReferential, bool after) {
             ///TODO
             throw new NotImplementedException();
         }

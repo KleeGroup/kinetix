@@ -1,5 +1,6 @@
 ﻿using Kinetix.Workflow.instance;
 using Kinetix.Workflow.model;
+using Kinetix.Workflow.Workflow;
 using System;
 using System.Collections.Generic;
 
@@ -74,6 +75,13 @@ namespace Kinetix.Workflow
         /// </summary>
         /// <param name="wfActivity">wfActivity</param>
         void DeleteActivity(WfActivity wfActivity);
+
+        /// <summary>
+        /// Increment position by 1 for all activity definition >= position
+        /// </summary>
+        /// <param name="wfwdId"></param>
+        /// <param name="position"></param>
+        void IncrementActivityDefinitionPositionsAfter(int wfwdId, int position);
 
         /// <summary>
         /// Create a new decision
@@ -225,6 +233,18 @@ namespace Kinetix.Workflow
         /// <param name="transition">transition.</param>
         void RemoveTransition(WfTransitionDefinition transition);
 
+        /// <summary>
+        /// Update a transition
+        /// </summary>
+        /// <param name="transition">transition</param>
+        void UpdateTransition(WfTransitionDefinition transition);
+
+        /// <summary>
+        /// Find a transition by criteria
+        /// </summary>
+        /// <param name="wfTransitionCriteria">criteria</param>
+        /// <returns></returns>
+        WfTransitionDefinition FindTransition(WfTransitionCriteria wfTransitionCriteria);
 
         /// <summary>
         /// Find the next activity using the default transition
