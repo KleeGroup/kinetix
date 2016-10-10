@@ -70,6 +70,10 @@ namespace Kinetix.Rules
                             ruleValid = false;
                         }
                     }
+                    else
+                    {
+                        ruleValid = false;
+                    }
                 }
 
                 if (ruleValid)
