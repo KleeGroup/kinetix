@@ -535,6 +535,15 @@ namespace Kinetix.Workflow {
         }
 
 
+        public void RecalculateWorkflow(WfWorkflow wfworkflow)
+        {
+            WfWorkflowDefinition wfWorkflowDefinition = _workflowStorePlugin.ReadWorkflowDefinition(wfworkflow.WfwdId.Value);
+            IList<WfActivityDefinition> activityDefinitions = _workflowStorePlugin.FindAllDefaultActivityDefinitions(wfWorkflowDefinition);
+            RuleConstants ruleConstants = _ruleManager.GetConstants(wfWorkflowDefinition.WfwdId.Value);
+
+            RecalculateWorkflow(activityDefinitions, ruleConstants, wfworkflow);
+        }
+
         public void RecalculateWorkflowDefinition(WfWorkflowDefinition wfWorkflowDefinition)
         {
             IList<WfWorkflow> workflows = _workflowStorePlugin.FindActiveWorkflows(wfWorkflowDefinition);
@@ -544,143 +553,148 @@ namespace Kinetix.Workflow {
 
             foreach (WfWorkflow wf in workflows)
             {
-                object obj = _itemStorePlugin.ReadItem(wf.ItemId.Value);
+                RecalculateWorkflow(activityDefinitions, ruleConstants, wf);
+            }
 
-                IDictionary<int, WfActivity> activities = _workflowStorePlugin.FindActivitiesByWorkflowId(wf).ToDictionary(a => a.WfadId);
+        }
 
-                bool isLastPreviousCurrentActivityReached = false;
 
-                bool newCurrentActivityFound = false;
-                foreach (WfActivityDefinition activityDefinition in activityDefinitions)
+        private void RecalculateWorkflow(IList<WfActivityDefinition> activityDefinitions, RuleConstants ruleConstants, WfWorkflow wf)
+        {
+            object obj = _itemStorePlugin.ReadItem(wf.ItemId.Value);
+
+            IDictionary<int, WfActivity> activities = _workflowStorePlugin.FindActivitiesByWorkflowId(wf).ToDictionary(a => a.WfadId);
+
+            bool isLastPreviousCurrentActivityReached = false;
+
+            bool newCurrentActivityFound = false;
+            foreach (WfActivityDefinition activityDefinition in activityDefinitions)
+            {
+                int actDefId = activityDefinition.WfadId.Value;
+                WfActivity activity;
+                activities.TryGetValue(actDefId, out activity);
+
+                bool isRuleValid = _ruleManager.IsRuleValid(actDefId, obj, ruleConstants);
+
+                if (activity != null && activityDefinition.WfadId.Equals(activity.WfadId))
                 {
-                    int actDefId = activityDefinition.WfadId.Value;
-                    WfActivity activity;
-                    activities.TryGetValue(actDefId, out activity);
+                    isLastPreviousCurrentActivityReached = true;
+                }
 
-                    bool isRuleValid = _ruleManager.IsRuleValid(actDefId, obj, ruleConstants);
+                bool isCurrentActivityAuto = false;
 
-                    if (activity != null && activityDefinition.WfadId.Equals(activity.WfadId))
+                if (isRuleValid)
+                {
+                    //This activity need a validation
+
+                    //We need to check if there is users allowed to validate
+                    IList<AccountUser> accounts = _ruleManager.SelectAccounts(actDefId, obj, ruleConstants);
+
+                    if (accounts.Count > 0)
                     {
-                        isLastPreviousCurrentActivityReached = true;
-                    }
-
-                    bool isCurrentActivityAuto = false;
-
-                    if (isRuleValid)
-                    {
-                        //This activity need a validation
-
-                        //We need to check if there is users allowed to validate
-                        IList<AccountUser> accounts = _ruleManager.SelectAccounts(actDefId, obj, ruleConstants);
-
-                        if (accounts.Count > 0)
-                        {
-                            //There is at least one users allowed to validate.
-                            if (activity == null)
-                            {
-                                // No activity linked to this definition was found. 
-                                // 2 possibilities : 
-                                // - A new activity definition has been inserted in the workflow.
-                                // - The previous current activity has been switched to auto.
-                                WfActivity wfActivity = CreateActivity(activityDefinition, wf, false);
-                                wf.WfaId2 = wfActivity.WfaId;
-                                _workflowStorePlugin.UpdateWorkflowInstance(wf);
-                                newCurrentActivityFound = true;
-                                break;
-                            }
-                            else if (activity.IsAuto)
-                            {
-                                //The previous validation was auto. This activity should be manually validated.
-                                activity.IsAuto = false;
-                                _workflowStorePlugin.UpdateActivity(activity);
-                                wf.WfaId2 = activity.WfaId;
-                                _workflowStorePlugin.UpdateWorkflowInstance(wf);
-                                newCurrentActivityFound = true;
-                                break;
-                            }
-
-                            // No new activity. The previous activity was manual too.
-                            // We need to check if all the users are still allowed to validate.
-                            WfCodeMultiplicityDefinition multiplicity = (WfCodeMultiplicityDefinition)Enum.Parse(typeof(WfCodeMultiplicityDefinition), activityDefinition.WfmdCode, true);
-                            if (multiplicity == WfCodeMultiplicityDefinition.Sin)
-                            {
-                                WfDecision decision = GetDecision(activity);
-                                IList<string> accountIds = accounts.Select(a => a.Id).ToList();
-
-                                if (decision == null || !accountIds.Contains(decision.Username))
-                                {
-                                    // The user previously allowed to validate are no longer selected with the new selectors.
-                                    // This activity must be revalidated
-                                    wf.WfaId2 = activity.WfaId;
-                                    _workflowStorePlugin.UpdateWorkflowInstance(wf);
-                                    newCurrentActivityFound = true;
-                                    break;
-                                }
-                            }
-                            else
-                            {
-                                IList<WfDecision> decisions = GetDecisions(activity);
-                                IList<string> accountIds = accounts.Select(a => a.Id).ToList();
-                                IList<string> decisionUsernames = decisions.Select(d => d.Username).ToList();
-                                IList<string> matches = accountIds.Intersect(decisionUsernames).ToList();
-                                if (matches.Count < decisionUsernames.Count)
-                                {
-                                    // At least one user previously allowed to validate are no longer selected with the new selectors.
-                                    // This activity must be revalidated
-                                    wf.WfaId2 = activity.WfaId;
-                                    _workflowStorePlugin.UpdateWorkflowInstance(wf);
-                                    newCurrentActivityFound = true;
-                                    break;
-                                }
-                            }
-                        }
-                        else
-                        {
-                            // There is no users allowed to validate.
-                            // This activity is now auto.
-                            isCurrentActivityAuto = true;
-                            activity.IsAuto = true;
-                            _workflowStorePlugin.UpdateActivity(activity);
-                        }
-                    }
-                    else
-                    {
-                        isCurrentActivityAuto = true;
+                        //There is at least one users allowed to validate.
                         if (activity == null)
                         {
                             // No activity linked to this definition was found. 
                             // 2 possibilities : 
                             // - A new activity definition has been inserted in the workflow.
                             // - The previous current activity has been switched to auto.
-                            WfActivity wfActivity = CreateActivity(activityDefinition, wf, true);
+                            WfActivity wfActivity = CreateActivity(activityDefinition, wf, false);
+                            wf.WfaId2 = wfActivity.WfaId;
+                            _workflowStorePlugin.UpdateWorkflowInstance(wf);
+                            newCurrentActivityFound = true;
+                            break;
                         }
-                        else if (activity.IsAuto == false)
+                        else if (activity.IsAuto)
                         {
-                            // The previous activity was manual but now this activity is auto
-                            activity.IsAuto = true;
+                            //The previous validation was auto. This activity should be manually validated.
+                            activity.IsAuto = false;
                             _workflowStorePlugin.UpdateActivity(activity);
+                            wf.WfaId2 = activity.WfaId;
+                            _workflowStorePlugin.UpdateWorkflowInstance(wf);
+                            newCurrentActivityFound = true;
+                            break;
+                        }
+
+                        // No new activity. The previous activity was manual too.
+                        // We need to check if all the users are still allowed to validate.
+                        WfCodeMultiplicityDefinition multiplicity = (WfCodeMultiplicityDefinition)Enum.Parse(typeof(WfCodeMultiplicityDefinition), activityDefinition.WfmdCode, true);
+                        if (multiplicity == WfCodeMultiplicityDefinition.Sin)
+                        {
+                            WfDecision decision = GetDecision(activity);
+                            IList<string> accountIds = accounts.Select(a => a.Id).ToList();
+
+                            if (decision == null || !accountIds.Contains(decision.Username))
+                            {
+                                // The user previously allowed to validate are no longer selected with the new selectors.
+                                // This activity must be revalidated
+                                wf.WfaId2 = activity.WfaId;
+                                _workflowStorePlugin.UpdateWorkflowInstance(wf);
+                                newCurrentActivityFound = true;
+                                break;
+                            }
+                        }
+                        else
+                        {
+                            IList<WfDecision> decisions = GetDecisions(activity);
+                            IList<string> accountIds = accounts.Select(a => a.Id).ToList();
+                            IList<string> decisionUsernames = decisions.Select(d => d.Username).ToList();
+                            IList<string> matches = accountIds.Intersect(decisionUsernames).ToList();
+                            if (matches.Count < decisionUsernames.Count)
+                            {
+                                // At least one user previously allowed to validate are no longer selected with the new selectors.
+                                // This activity must be revalidated
+                                wf.WfaId2 = activity.WfaId;
+                                _workflowStorePlugin.UpdateWorkflowInstance(wf);
+                                newCurrentActivityFound = true;
+                                break;
+                            }
                         }
                     }
-
-                    if (isLastPreviousCurrentActivityReached && isCurrentActivityAuto == false)
+                    else
                     {
-                        // The last activity has been reached.
-                        newCurrentActivityFound = true;
-                        break;
+                        // There is no users allowed to validate.
+                        // This activity is now auto.
+                        isCurrentActivityAuto = true;
+                        activity.IsAuto = true;
+                        _workflowStorePlugin.UpdateActivity(activity);
                     }
-
-                    
                 }
-
-                if (newCurrentActivityFound == false)
+                else
                 {
-                    // All the definitions have been iterated until the end.
-                    // The workflow mus be ended.
-                    EndInstance(wf);
+                    isCurrentActivityAuto = true;
+                    if (activity == null)
+                    {
+                        // No activity linked to this definition was found. 
+                        // 2 possibilities : 
+                        // - A new activity definition has been inserted in the workflow.
+                        // - The previous current activity has been switched to auto.
+                        WfActivity wfActivity = CreateActivity(activityDefinition, wf, true);
+                    }
+                    else if (activity.IsAuto == false)
+                    {
+                        // The previous activity was manual but now this activity is auto
+                        activity.IsAuto = true;
+                        _workflowStorePlugin.UpdateActivity(activity);
+                    }
                 }
+
+                if (isLastPreviousCurrentActivityReached && isCurrentActivityAuto == false)
+                {
+                    // The last activity has been reached.
+                    newCurrentActivityFound = true;
+                    break;
+                }
+
 
             }
 
+            if (newCurrentActivityFound == false)
+            {
+                // All the definitions have been iterated until the end.
+                // The workflow mus be ended.
+                EndInstance(wf);
+            }
         }
 
         #region Custom Methods
