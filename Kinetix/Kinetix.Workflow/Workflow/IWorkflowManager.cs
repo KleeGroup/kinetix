@@ -9,8 +9,7 @@ namespace Kinetix.Workflow
     public interface IWorkflowManager
     {
 
-        // Instances:
-
+        #region instances
         /// <summary>
         /// Instantiate a new workflow instance 
         /// </summary>
@@ -199,9 +198,11 @@ namespace Kinetix.Workflow
         /// <param name="wfActivity">activity to move</param>
         /// <param name="wfActivityReferential">the referential activity where the activity should move (before or after)</param>
         /// <param name="after">true to move the activity after the referential activity. false before</param>
-        void MoveActivity(WfWorkflowDefinition wfWorkflowDefinition, WfActivityDefinition wfActivity, WfActivityDefinition wfActivityReferential, bool after);
+        void MoveActivity(WfWorkflowDefinition wfWorkflowDefinition, WfActivityDefinition wfActivityToMove, WfActivityDefinition wfActivityReferential, bool after);
 
-        //Rules/selectors
+        #endregion
+
+        #region Rules/selectors
         /// <summary>
         /// Add and attach the provided rule to the designed activity.
         /// </summary>
@@ -289,8 +290,14 @@ namespace Kinetix.Workflow
         /// </summary>
         /// <param name="selectors"></param>
         void RemoveSelectors(IList<SelectorDefinition> selectors);
+        #endregion
 
-        // Custom Methods
+        #region recalculation
+        void RecalculateWorkflowDefinition(WfWorkflowDefinition wfWorkflowDefinition);
+
+        #endregion
+
+        #region Custom Methods
 
         /// <summary>
         /// Get a workflow with all the associated elements
@@ -298,6 +305,8 @@ namespace Kinetix.Workflow
         /// <param name="wfwId">Workflow Id</param>
         /// <returns>a List of WfWorkflowDecision</returns>
         IList<WfWorkflowDecision> GetWorkflowDecision(int wfwId);
+
+        #endregion
 
     }
 }

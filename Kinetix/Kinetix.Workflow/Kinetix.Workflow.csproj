@@ -71,6 +71,7 @@
     <Compile Include="Workflow\WfDomainMetadata.cs" />
     <Compile Include="Workflow\WfTransitionBuilder.cs" />
     <Compile Include="Impl.Workflow\WorkflowManager.cs" />
+    <Compile Include="Workflow\WfTransitionCriteria.cs" />
     <Compile Include="Workflow\WfWorkflowDecision.cs" />
     <Compile Include="Workflow\WfWorkflowDefinitionBuilder.cs" />
   </ItemGroup>
@@ -104,6 +105,12 @@
     <Content Include="generated.sql" />
     <Content Include="Init\WF_MULTIPLICITY_DEFINITION.insert.sql" />
     <Content Include="Init\WF_STATUS.insert.sql" />
+    <EmbeddedResource Include="SQLResources\IncrementActivityDefinitionPositionsAfter.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SQLResources\FindActiveWorkflows.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
     <EmbeddedResource Include="SQLResources\FindDecisionsByWorkflowId.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>

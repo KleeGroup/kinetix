@@ -6,6 +6,7 @@ using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Threading;
 using System.Linq;
+using Kinetix.Workflow.Workflow;
 
 namespace Kinetix.Workflow
 {
@@ -16,7 +17,7 @@ namespace Kinetix.Workflow
         private int memoryWorkflowInstanceSequenceGenerator = 0;
         private IDictionary<int?, WfWorkflow> inMemoryWorkflowInstanceStore = new ConcurrentDictionary<int?, WfWorkflow>();
 
-        // Transition
+        // Transition ( idFrom+ "|" +name => WfTransitionDefinition)
         private IDictionary<string, WfTransitionDefinition> transitionsNext = new ConcurrentDictionary<string, WfTransitionDefinition>();
 
         // Activity
@@ -381,6 +382,58 @@ namespace Kinetix.Workflow
             }
 
             return null;
+        }
+
+        public IList<WfWorkflow> FindActiveWorkflows(WfWorkflowDefinition wfWorkflowDefinition)
+        {
+            IList<WfWorkflow> collect = new List<WfWorkflow>();
+            foreach (WfWorkflow wfWorkflow in inMemoryWorkflowInstanceStore.Values)
+            {
+                WfCodeStatusWorkflow status = (WfCodeStatusWorkflow)Enum.Parse(typeof(WfCodeStatusWorkflow), wfWorkflow.WfsCode, true);
+
+                if (wfWorkflowDefinition.WfwdId.Equals(wfWorkflow.WfwId) && (status == WfCodeStatusWorkflow.Sta || status == WfCodeStatusWorkflow.Pau))
+                {
+                    collect.Add(wfWorkflow);
+                }
+            }
+
+            return collect;
+        }
+
+        public void UpdateTransition(WfTransitionDefinition transition)
+        {
+            transitionsNext[transition.WfadIdFrom + "|" + transition.Name] = transition;
+        }
+
+        public WfTransitionDefinition FindTransition(WfTransitionCriteria wfTransitionCriteria)
+        {
+            Debug.Assert(wfTransitionCriteria != null);
+            //---
+
+            foreach (WfTransitionDefinition tr in transitionsNext.Values)
+            {
+                bool matchFrom = wfTransitionCriteria.WfadIdFrom == null || wfTransitionCriteria.WfadIdFrom.Equals(tr.WfadIdFrom);
+                bool matchTo = wfTransitionCriteria.WfadIdTo == null || wfTransitionCriteria.WfadIdTo.Equals(tr.WfadIdTo);
+
+                if (wfTransitionCriteria.TransitionName.Equals(tr.Name) && matchFrom && matchTo)
+                {
+                    return tr;
+                }
+            }
+            return null;
+        }
+
+        public void IncrementActivityDefinitionPositionsAfter(int wfwdId, int position)
+        {
+            IList<WfActivity> collect = new List<WfActivity>();
+            foreach (WfActivityDefinition wfActivityDefinition in inMemoryActivityDefinitionStore.Values)
+            {
+                if (wfwdId.Equals(wfActivityDefinition.WfwdId) && wfActivityDefinition.Level.Value >= position)
+                {
+                    wfActivityDefinition.Level = wfActivityDefinition.Level.Value + 1;
+                }
+            }
+
         }
     }
 }
