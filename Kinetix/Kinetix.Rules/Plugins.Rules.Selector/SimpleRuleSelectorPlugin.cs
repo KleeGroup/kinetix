@@ -74,6 +74,10 @@ namespace Kinetix.Rules
                             selectorMatch = false;
                         }
                     }
+                    else
+                    {
+                        selectorMatch = false;
+                    }
                 }
 
                 if (selectorMatch)

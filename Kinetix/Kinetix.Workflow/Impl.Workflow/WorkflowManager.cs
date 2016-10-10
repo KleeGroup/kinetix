@@ -447,6 +447,7 @@ namespace Kinetix.Workflow {
             wfActivityCurrent.CreationDate = DateTime.Now;
             wfActivityCurrent.WfadId = (int)wfWorkflowDefinition.WfadId;
             wfActivityCurrent.WfwId = (int)wfWorkflow.WfwId;
+            wfActivityCurrent.IsAuto = false;
             _workflowStorePlugin.CreateActivity(wfActivityCurrent);
             wfWorkflow.WfaId2 = wfActivityCurrent.WfaId;
             _workflowStorePlugin.UpdateWorkflowInstance(wfWorkflow);
