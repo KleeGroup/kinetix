@@ -536,13 +536,16 @@ namespace Kinetix.Workflow {
         }
 
 
-        public void RecalculateWorkflow(WfWorkflow wfworkflow)
+        public void RecalculateWorkflow(WfWorkflow wfWorkflow)
         {
-            WfWorkflowDefinition wfWorkflowDefinition = _workflowStorePlugin.ReadWorkflowDefinition(wfworkflow.WfwdId.Value);
+            Debug.Assert(wfWorkflow != null);
+            Debug.Assert(WfCodeStatusWorkflow.Sta.ToString().Equals(wfWorkflow.WfsCode) || WfCodeStatusWorkflow.Pau.ToString().Equals(wfWorkflow.WfsCode), "A workflow must be started or paused before ending");
+            //---
+            WfWorkflowDefinition wfWorkflowDefinition = _workflowStorePlugin.ReadWorkflowDefinition(wfWorkflow.WfwdId.Value);
             IList<WfActivityDefinition> activityDefinitions = _workflowStorePlugin.FindAllDefaultActivityDefinitions(wfWorkflowDefinition);
             RuleConstants ruleConstants = _ruleManager.GetConstants(wfWorkflowDefinition.WfwdId.Value);
 
-            RecalculateWorkflow(activityDefinitions, ruleConstants, wfworkflow);
+            RecalculateWorkflow(activityDefinitions, ruleConstants, wfWorkflow);
         }
 
         public void RecalculateWorkflowDefinition(WfWorkflowDefinition wfWorkflowDefinition)
@@ -567,8 +570,11 @@ namespace Kinetix.Workflow {
             IDictionary<int, WfActivity> activities = _workflowStorePlugin.FindActivitiesByWorkflowId(wf).ToDictionary(a => a.WfadId);
 
             bool isLastPreviousCurrentActivityReached = false;
-
             bool newCurrentActivityFound = false;
+
+            WfActivity currentActivity;
+            activities.TryGetValue(wf.WfaId2.Value, out currentActivity);
+
             foreach (WfActivityDefinition activityDefinition in activityDefinitions)
             {
                 int actDefId = activityDefinition.WfadId.Value;
@@ -577,7 +583,7 @@ namespace Kinetix.Workflow {
 
                 bool isRuleValid = _ruleManager.IsRuleValid(actDefId, obj, ruleConstants);
 
-                if (activity != null && activityDefinition.WfadId.Equals(activity.WfadId))
+                if (activity != null && activityDefinition.WfadId.Equals(wf.WfaId2))
                 {
                     isLastPreviousCurrentActivityReached = true;
                 }
