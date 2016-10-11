@@ -566,14 +566,12 @@ namespace Kinetix.Workflow {
         private void RecalculateWorkflow(IList<WfActivityDefinition> activityDefinitions, RuleConstants ruleConstants, WfWorkflow wf)
         {
             object obj = _itemStorePlugin.ReadItem(wf.ItemId.Value);
-
-            IDictionary<int, WfActivity> activities = _workflowStorePlugin.FindActivitiesByWorkflowId(wf).ToDictionary(a => a.WfadId);
+            IList<WfActivity> allActivities = _workflowStorePlugin.FindActivitiesByWorkflowId(wf);
+            IDictionary<int, WfActivity> activities = allActivities.ToDictionary(a => a.WfadId);
+            WfActivity currentActivity = allActivities.Where(a => a.WfaId.Equals(wf.WfaId2.Value)).First();
 
             bool isLastPreviousCurrentActivityReached = false;
             bool newCurrentActivityFound = false;
-
-            WfActivity currentActivity;
-            activities.TryGetValue(wf.WfaId2.Value, out currentActivity);
 
             foreach (WfActivityDefinition activityDefinition in activityDefinitions)
             {
@@ -583,7 +581,7 @@ namespace Kinetix.Workflow {
 
                 bool isRuleValid = _ruleManager.IsRuleValid(actDefId, obj, ruleConstants);
 
-                if (activity != null && activityDefinition.WfadId.Equals(wf.WfaId2))
+                if (activity != null && currentActivity != null && activityDefinition.WfadId.Equals(currentActivity.WfadId))
                 {
                     isLastPreviousCurrentActivityReached = true;
                 }
