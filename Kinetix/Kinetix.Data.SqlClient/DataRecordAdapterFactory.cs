@@ -24,11 +24,13 @@ namespace Kinetix.Data.SqlClient {
         private readonly AssemblyBuilder _assemblyBuilder;
         private readonly ModuleBuilder _dynamicModule;
         private readonly MethodInfo _readBooleanMethodInfo;
-        private readonly MethodInfo _readNonNullableBooleanMethodIndo;
+        private readonly MethodInfo _readNonNullableBooleanMethodInfo;
         private readonly MethodInfo _readByteMethodInfo;
         private readonly MethodInfo _readDateTimeMethodInfo;
+        private readonly MethodInfo _readNonNullableDateTimeMethodInfo;
         private readonly MethodInfo _readDecimalMethodInfo;
         private readonly MethodInfo _readIntMethodInfo;
+        private readonly MethodInfo _readNonNullableIntMethodInfo;
         private readonly MethodInfo _readShortMethodInfo;
         private readonly MethodInfo _readFloatMethodInfo;
         private readonly MethodInfo _readDoubleMethodInfo;
@@ -39,6 +41,7 @@ namespace Kinetix.Data.SqlClient {
         private readonly MethodInfo _readGuidMethodInfo;
         private readonly MethodInfo _readByteArrayMethodInfo;
         private readonly MethodInfo _readTimeSpanMethodInfo;
+        private readonly MethodInfo _readNonNullableTimeSpanMethodInfo;
         private int _adapterNum = 0;
 
         /// <summary>
@@ -50,12 +53,15 @@ namespace Kinetix.Data.SqlClient {
             _assemblyBuilder = Thread.GetDomain().DefineDynamicAssembly(name, AssemblyBuilderAccess.Run);
             _dynamicModule = _assemblyBuilder.DefineDynamicModule(_assemblyName);
             _readBooleanMethodInfo = typeof(AbstractDataReaderAdapter).GetMethod("ReadBoolean", BindingFlags.Static | BindingFlags.NonPublic, null, _abstractReadMethodParams, null);
-            _readNonNullableBooleanMethodIndo = typeof(AbstractDataReaderAdapter).GetMethod("ReadNonNullableBoolean", BindingFlags.Static | BindingFlags.NonPublic, null, _abstractReadMethodParams, null);
+            _readNonNullableBooleanMethodInfo = typeof(AbstractDataReaderAdapter).GetMethod("ReadNonNullableBoolean", BindingFlags.Static | BindingFlags.NonPublic, null, _abstractReadMethodParams, null);
             _readByteMethodInfo = typeof(AbstractDataReaderAdapter).GetMethod("ReadByte", BindingFlags.Static | BindingFlags.NonPublic, null, _abstractReadMethodParams, null);
             _readDateTimeMethodInfo = typeof(AbstractDataReaderAdapter).GetMethod("ReadDateTime", BindingFlags.Static | BindingFlags.NonPublic, null, _abstractReadMethodParams, null);
+            _readNonNullableDateTimeMethodInfo = typeof(AbstractDataReaderAdapter).GetMethod("ReadNonNullableDateTime", BindingFlags.Static | BindingFlags.NonPublic, null, _abstractReadMethodParams, null);
             _readTimeSpanMethodInfo = typeof(AbstractDataReaderAdapter).GetMethod("ReadTimeSpan", BindingFlags.Static | BindingFlags.NonPublic, null, _abstractReadMethodParams, null);
+            _readNonNullableTimeSpanMethodInfo = typeof(AbstractDataReaderAdapter).GetMethod("ReadNonNullableTimeSpan", BindingFlags.Static | BindingFlags.NonPublic, null, _abstractReadMethodParams, null);
             _readDecimalMethodInfo = typeof(AbstractDataReaderAdapter).GetMethod("ReadDecimal", BindingFlags.Static | BindingFlags.NonPublic, null, _abstractReadMethodParams, null);
             _readIntMethodInfo = typeof(AbstractDataReaderAdapter).GetMethod("ReadInt", BindingFlags.Static | BindingFlags.NonPublic, null, _abstractReadMethodParams, null);
+            _readNonNullableIntMethodInfo = typeof(AbstractDataReaderAdapter).GetMethod("ReadNonNullableInt", BindingFlags.Static | BindingFlags.NonPublic, null, _abstractReadMethodParams, null);
             _readShortMethodInfo = typeof(AbstractDataReaderAdapter).GetMethod("ReadShort", BindingFlags.Static | BindingFlags.NonPublic, null, _abstractReadMethodParams, null);
             _readLongMethodInfo = typeof(AbstractDataReaderAdapter).GetMethod("ReadLong", BindingFlags.Static | BindingFlags.NonPublic, null, _abstractReadMethodParams, null);
             _readFloatMethodInfo = typeof(AbstractDataReaderAdapter).GetMethod("ReadFloat", BindingFlags.Static | BindingFlags.NonPublic, null, _abstractReadMethodParams, null);
@@ -234,17 +240,17 @@ namespace Kinetix.Data.SqlClient {
             } else if (type == typeof(DateTime?)) {
                 return _readDateTimeMethodInfo;
             } else if (type == typeof(DateTime)) {
-                return _readDateTimeMethodInfo;
+                return _readNonNullableDateTimeMethodInfo;
             } else if (type == typeof(short?)) {
                 return _readShortMethodInfo;
             } else if (type == typeof(bool?)) {
                 return _readBooleanMethodInfo;
             } else if (type == typeof(bool)) {
-                return _readNonNullableBooleanMethodIndo;
+                return _readNonNullableBooleanMethodInfo;
             } else if (type == typeof(byte?)) {
                 return _readByteMethodInfo;
             } else if (type == typeof(int)) {
-                return _readIntMethodInfo;
+                return _readNonNullableIntMethodInfo;
             } else if (type == typeof(long?)) {
                 return _readLongMethodInfo;
             } else if (type == typeof(float?)) {
@@ -262,7 +268,7 @@ namespace Kinetix.Data.SqlClient {
             } else if (type == typeof(TimeSpan?)) {
                 return _readTimeSpanMethodInfo;
             } else if (type == typeof(TimeSpan)) {
-                return _readTimeSpanMethodInfo;
+                return _readNonNullableTimeSpanMethodInfo;
             } else {
                 throw new NotSupportedException("No read method defined in DataRecordFactory for type : " + type.FullName);
             }
