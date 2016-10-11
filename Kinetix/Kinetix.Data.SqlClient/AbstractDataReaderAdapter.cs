@@ -80,12 +80,34 @@ namespace Kinetix.Data.SqlClient {
             return record.GetDateTime(idx);
         }
 
+
         /// <summary>
-        /// Retourne un DateTime.
+        /// Retourne un DateTime non null.
         /// </summary>
         /// <param name="record">Record.</param>
         /// <param name="idx">Index.</param>
         /// <returns>DateTime.</returns>
+        protected static DateTime ReadNonNullableDateTime(IDataRecord record, int idx)
+        {
+            if (record == null)
+            {
+                throw new ArgumentNullException("record");
+            }
+
+            if (record.IsDBNull(idx))
+            {
+                throw new ArgumentNullException("record");
+            }
+
+            return record.GetDateTime(idx);
+        }
+
+        /// <summary>
+        /// Retourne un TimeSpan.
+        /// </summary>
+        /// <param name="record">Record.</param>
+        /// <param name="idx">Index.</param>
+        /// <returns>TimeSpan.</returns>
         protected static TimeSpan? ReadTimeSpan(IDataRecord record, int idx) {
             if (record == null) {
                 throw new ArgumentNullException("record");
@@ -96,6 +118,27 @@ namespace Kinetix.Data.SqlClient {
             }
 
             return (TimeSpan?)record.GetValue(idx);
+        }
+
+        /// <summary>
+        /// Retourne un TimeSpan.
+        /// </summary>
+        /// <param name="record">Record.</param>
+        /// <param name="idx">Index.</param>
+        /// <returns>TimeSpan.</returns>
+        protected static TimeSpan ReadNonNullableTimeSpan(IDataRecord record, int idx)
+        {
+            if (record == null)
+            {
+                throw new ArgumentNullException("record");
+            }
+
+            if (record.IsDBNull(idx))
+            {
+                throw new ArgumentNullException("record");
+            }
+
+            return (TimeSpan)record.GetValue(idx);
         }
 
         /// <summary>
@@ -129,6 +172,28 @@ namespace Kinetix.Data.SqlClient {
 
             if (record.IsDBNull(idx)) {
                 return null;
+            }
+
+            return record.GetInt32(idx);
+        }
+
+
+        /// <summary>
+        /// Retourne un int32 non null.
+        /// </summary>
+        /// <param name="record">Record.</param>
+        /// <param name="idx">Index.</param>
+        /// <returns>Entier.</returns>
+        protected static int ReadNonNullableInt(IDataRecord record, int idx)
+        {
+            if (record == null)
+            {
+                throw new ArgumentNullException("record");
+            }
+
+            if (record.IsDBNull(idx))
+            {
+                throw new ArgumentNullException("record");
             }
 
             return record.GetInt32(idx);
