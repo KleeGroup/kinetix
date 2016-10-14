@@ -111,12 +111,21 @@ namespace Kinetix.Broker {
         void LoadAllByCriteria(ICollection<T> collection, FilterCriteria criteria, QueryParameter queryParameter = null);
 
         /// <summary>
-        /// Retourne un bean à partir de critères de recherches.
+        /// Retourne un bean à partir d'un critère de recherche.
         /// </summary>
         /// <param name="criteria">Le critère de recherche.</param>
         /// <returns>Bean.</returns>
-        /// <exception cref="NotSupportedException">Si la recherche renvoie plus d'un élément.</exception>
+        /// <exception cref="CollectionBuilderException">Si la recherche renvoie plus d'un élément.</exception>
+        /// <exception cref="CollectionBuilderException">Si la recherche ne renvoit pas d'élément.</exception>
         T GetByCriteria(FilterCriteria criteria);
+
+        /// <summary>
+        /// Retourne un bean à partir d'un critère de recherche.
+        /// </summary>
+        /// <param name="criteria">Le critère de recherche.</param>
+        /// <returns>Bean ou null si l'élément n'a pas été trouvé.</returns>
+        /// <exception cref="CollectionBuilderException">Si la recherche renvoie plus d'un élément.</exception>
+        T FindByCriteria(FilterCriteria criteria);
 
         /// <summary>
         /// Charge un bean à partir de critères de recherches.

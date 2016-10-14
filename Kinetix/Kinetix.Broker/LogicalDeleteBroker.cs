@@ -91,14 +91,32 @@ namespace Kinetix.Broker {
         /// <summary>
         /// Retourne un bean à partir d'un critère de recherche.
         /// </summary>
-        /// <param name="criteria">Critère.</param>
+        /// <param name="criteria">Le critère de recherche.</param>
         /// <returns>Bean.</returns>
+        /// <exception cref="CollectionBuilderException">Si la recherche renvoie plus d'un élément.</exception>
+        /// <exception cref="CollectionBuilderException">Si la recherche ne renvoit pas d'élément.</exception>
         public override T GetByCriteria(FilterCriteria criteria) {
             if (criteria == null) {
                 throw new ArgumentNullException("criteria");
             }
 
             return base.GetByCriteria(criteria);
+        }
+
+        /// <summary>
+        /// Retourne un bean à partir d'un critère de recherche.
+        /// </summary>
+        /// <param name="criteria">Le critère de recherche.</param>
+        /// <returns>Bean ou null si l'élément n'a pas été trouvé.</returns>
+        /// <exception cref="CollectionBuilderException">Si la recherche renvoie plus d'un élément.</exception>
+        public override T FindByCriteria(FilterCriteria criteria)
+        {
+            if (criteria == null)
+            {
+                throw new ArgumentNullException("criteria");
+            }
+
+            return base.FindByCriteria(criteria);
         }
 
         /// <summary>

@@ -293,7 +293,7 @@ namespace Kinetix.Workflow {
                 filterCriteria.Equals(WfTransitionDefinition.Cols.WFAD_ID_TO, wfTransitionCriteria.WfadIdTo);
             }
 
-            return BrokerManager.GetBroker<WfTransitionDefinition>().GetByCriteria(filterCriteria);
+            return BrokerManager.GetBroker<WfTransitionDefinition>().FindByCriteria(filterCriteria);
         }
 
         public void IncrementActivityDefinitionPositionsAfter(int wfwdId, int position)

@@ -7,7 +7,6 @@ using Kinetix.Workflow.instance;
 using Kinetix.Workflow.model;
 using System.Linq;
 using Kinetix.Workflow.Workflow;
-using System.Collections;
 
 namespace Kinetix.Workflow {
     public sealed class WorkflowManager : IWorkflowManager {
@@ -264,14 +263,148 @@ namespace Kinetix.Workflow {
             _workflowStorePlugin.AddTransition(wfTransitionDefinition);
         }
 
-        public void MoveActivity(WfWorkflowDefinition wfWorkflowDefinition, WfActivityDefinition wfActivityToMove, WfActivityDefinition wfActivityReferential, bool after) {
-            ///TODO
-            throw new NotImplementedException();
+        public void MoveActivity(WfWorkflowDefinition wfWorkflowDefinition, WfActivityDefinition wfActivityToMove, WfActivityDefinition wfActivityReferential,bool after)
+        {
+            if (after)
+            {
+                MoveActivityAfter(wfWorkflowDefinition, wfActivityToMove, wfActivityReferential);
+            }
+            else
+            {
+                MoveActivityBefore(wfWorkflowDefinition, wfActivityToMove, wfActivityReferential);
+            }
+        }
+
+        private void MoveActivityAfter(WfWorkflowDefinition wfWorkflowDefinition, WfActivityDefinition wfActivityToMove, WfActivityDefinition wfActivityReferential)
+        {
+            // T1
+            WfTransitionCriteria critTrFromRef = new WfTransitionCriteria();
+            critTrFromRef.WfadIdFrom = wfActivityReferential.WfadId;
+            critTrFromRef.TransitionName = WfCodeTransition.Default.ToString();
+            WfTransitionDefinition trFromRef = _workflowStorePlugin.FindTransition(critTrFromRef);
+
+            if (trFromRef != null && trFromRef.WfadIdTo.Equals(wfActivityToMove.WfadId))
+            {
+                //The activity to move is already positonned after the ref activity.
+                // Nothing to do in that case.
+                return;
+            }
+
+            // T2
+            WfTransitionCriteria critTrFromMove = new WfTransitionCriteria();
+            critTrFromMove.WfadIdFrom = wfActivityToMove.WfadId;
+            critTrFromMove.TransitionName = WfCodeTransition.Default.ToString();
+            WfTransitionDefinition trFromMove = _workflowStorePlugin.FindTransition(critTrFromMove);
+
+            // T3
+            WfTransitionCriteria critTrToMove = new WfTransitionCriteria();
+            critTrToMove.WfadIdFrom = wfActivityToMove.WfadId;
+            critTrToMove.TransitionName = WfCodeTransition.Default.ToString();
+            WfTransitionDefinition trToMove = _workflowStorePlugin.FindTransition(critTrToMove);
+
+            // Update T3
+            if (trToMove == null)
+            {
+                //No transition before T3. Move is the first Activity of the WorkflowDefinition
+                wfWorkflowDefinition.WfadId = trFromMove.WfadIdTo;
+                _workflowStorePlugin.UpdateWorkflowDefinition(wfWorkflowDefinition);
+            }
+            else
+            {
+                trToMove.WfadIdTo = trFromMove.WfadIdTo;
+                _workflowStorePlugin.UpdateTransition(trFromRef);
+            }
+
+            // Update T1
+            if (trFromRef == null)
+            {
+                //No transition after T1. 
+                trFromMove.WfadIdFrom = wfActivityReferential.WfadId.Value;
+                trFromMove.WfadIdTo = wfActivityToMove.WfadId.Value;
+                _workflowStorePlugin.UpdateTransition(trFromMove);
+            }
+            else
+            {
+                // Moving T1
+                trFromRef.WfadIdTo = wfActivityToMove.WfadId.Value;
+                _workflowStorePlugin.UpdateTransition(trFromRef);
+
+                // Update T2
+                trFromMove.WfadIdTo = trFromRef.WfadIdTo;
+                _workflowStorePlugin.UpdateTransition(trFromRef);
+            }
+
+        }
+
+        private void MoveActivityBefore(WfWorkflowDefinition wfWorkflowDefinition, WfActivityDefinition wfActivityToMove, WfActivityDefinition wfActivityReferential) {
+
+            // T1
+            WfTransitionCriteria critTrToRef = new WfTransitionCriteria();
+            critTrToRef.WfadIdTo = wfActivityReferential.WfadId;
+            critTrToRef.TransitionName = WfCodeTransition.Default.ToString();
+            WfTransitionDefinition trToRef = _workflowStorePlugin.FindTransition(critTrToRef);
+
+            if (trToRef != null && trToRef.WfadIdFrom.Equals(wfActivityToMove.WfadId))
+            {
+                //The activity to move is already positonned before the ref activity.
+                // Nothing to do in that case.
+                return;
+            }
+
+            // T2
+            WfTransitionCriteria critTrFromMove = new WfTransitionCriteria();
+            critTrFromMove.WfadIdFrom = wfActivityToMove.WfadId;
+            critTrFromMove.TransitionName = WfCodeTransition.Default.ToString();
+            WfTransitionDefinition trFromMove = _workflowStorePlugin.FindTransition(critTrFromMove);
+
+            // T3
+            WfTransitionCriteria critTrToMove = new WfTransitionCriteria();
+            critTrToMove.WfadIdFrom = wfActivityToMove.WfadId;
+            critTrToMove.TransitionName = WfCodeTransition.Default.ToString();
+            WfTransitionDefinition trToMove = _workflowStorePlugin.FindTransition(critTrToMove);
+
+            // Update T1
+            if (trToRef == null)
+            {
+                //No transition before T1. Ref is the first Activity of the WorkflowDefinition
+                wfWorkflowDefinition.WfadId = wfActivityToMove.WfadId.Value;
+                _workflowStorePlugin.UpdateWorkflowDefinition(wfWorkflowDefinition);
+            }
+            else
+            {
+                // Moving T1
+                trToRef.WfadIdTo = wfActivityToMove.WfadId.Value;
+                _workflowStorePlugin.UpdateTransition(trToRef);
+            }
+
+            // Update T2
+            //If there is no Activity after the activity to move. No transition should be modified
+            if (trFromMove != null)
+            {
+                // Moving T2
+                trFromMove.WfadIdTo = wfActivityReferential.WfadId.Value;
+                _workflowStorePlugin.UpdateTransition(trToRef);
+            }
+
+            // Update T3
+            if (trToMove == null)
+            {
+                //No transition before T3. Move is the first Activity of the WorkflowDefinition
+                wfWorkflowDefinition.WfadId = wfActivityToMove.WfadId.Value;
+                _workflowStorePlugin.UpdateWorkflowDefinition(wfWorkflowDefinition);
+            }
+            else
+            {
+                // Moving T3
+                trToMove.WfadIdTo = trFromMove.WfadIdTo;
+                _workflowStorePlugin.UpdateTransition(trToMove);
+            }
         }
 
         public void MoveActivity(WfWorkflowDefinition wfWorkflowDefinition, int src, int dst, bool after) {
             WfActivityDefinition wfActivityDefinitionFrom = _workflowStorePlugin.FindActivityDefinitionByPosition(wfWorkflowDefinition, src);
             WfActivityDefinition wfActivityDefinitionTo = _workflowStorePlugin.FindActivityDefinitionByPosition(wfWorkflowDefinition, dst);
+
             MoveActivity(wfWorkflowDefinition, wfActivityDefinitionFrom, wfActivityDefinitionTo, after);
         }
 
@@ -592,12 +725,12 @@ namespace Kinetix.Workflow {
                 {
                     //This activity need a validation
 
-                    //We need to check if there is users allowed to validate
+                    //We need to check if there is at least one user allowed to validate
                     IList<AccountUser> accounts = _ruleManager.SelectAccounts(actDefId, obj, ruleConstants);
 
                     if (accounts.Count > 0)
                     {
-                        //There is at least one users allowed to validate.
+                        //There is at least one user allowed to validate.
                         if (activity == null)
                         {
                             // No activity linked to this definition was found. 
@@ -697,7 +830,7 @@ namespace Kinetix.Workflow {
             if (newCurrentActivityFound == false)
             {
                 // All the definitions have been iterated until the end.
-                // The workflow mus be ended.
+                // The workflow must be ended.
                 EndInstance(wf);
             }
         }

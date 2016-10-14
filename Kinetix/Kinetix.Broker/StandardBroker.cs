@@ -223,10 +223,27 @@ namespace Kinetix.Broker {
         /// </summary>
         /// <param name="criteria">Le critère de recherche.</param>
         /// <returns>Bean.</returns>
-        /// <exception cref="NotSupportedException">Si la recherche renvoie plus d'un élément.</exception>
+        /// <exception cref="CollectionBuilderException">Si la recherche renvoie plus d'un élément.</exception>
+        /// <exception cref="CollectionBuilderException">Si la recherche ne renvoit pas d'élément.</exception>
         public virtual T GetByCriteria(FilterCriteria criteria) {
             using (ServiceScope tx = new ServiceScope(TransactionScopeOption.Required)) {
                 T value = _store.LoadByCriteria(null, criteria);
+                tx.Complete();
+                return value;
+            }
+        }
+
+        /// <summary>
+        /// Retourne un bean à partir d'un critère de recherche.
+        /// </summary>
+        /// <param name="criteria">Le critère de recherche.</param>
+        /// <returns>Bean ou null si l'élément n'a pas été trouvé.</returns>
+        /// <exception cref="CollectionBuilderException">Si la recherche renvoie plus d'un élément.</exception>
+        public virtual T FindByCriteria(FilterCriteria criteria)
+        {
+            using (ServiceScope tx = new ServiceScope(TransactionScopeOption.Required))
+            {
+                T value = _store.LoadByCriteria(null, criteria, true);
                 tx.Complete();
                 return value;
             }

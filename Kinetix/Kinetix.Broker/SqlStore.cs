@@ -239,15 +239,16 @@ namespace Kinetix.Broker {
         /// </summary>
         /// <param name="destination">Bean à charger.</param>
         /// <param name="criteria">Le critère de recherche.</param>
+        /// <param name="returnNullIfZeroRow">Retourne null si la recherche a retournée zero ligne.</param>
         /// <returns>Objet.</returns>
-        public T LoadByCriteria(T destination, FilterCriteria criteria) {
+        public T LoadByCriteria(T destination, FilterCriteria criteria, bool returnNullIfZeroRow = false) {
             if (criteria == null) {
                 throw new ArgumentNullException("criteria");
             }
 
             string commandName = ServiceSelect + "_LIKE_" + _definition.ContractName;
             IReadCommand cmd = this.GetCommand(commandName, _definition.ContractName, criteria, BrokerManager.NoLimit, null);
-            return CollectionBuilder<T>.ParseCommandForSingleObject(destination, cmd);
+            return CollectionBuilder<T>.ParseCommandForSingleObject(destination, cmd, returnNullIfZeroRow);
         }
 
         /// <summary>

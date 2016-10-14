@@ -69,8 +69,9 @@ namespace Kinetix.Broker {
         /// </summary>
         /// <param name="destination">Bean à charger.</param>
         /// <param name="criteria">Le critère de recherche.</param>
+        /// <param name="returnNullIfZeroRow">Retourne null si la recherche a retournée zero ligne.</param>
         /// <returns>Objet.</returns>
-        T LoadByCriteria(T destination, FilterCriteria criteria);
+        T LoadByCriteria(T destination, FilterCriteria criteria, bool returnNullIfZeroRow = false);
 
         /// <summary>
         /// Dépose un bean dans le store.
