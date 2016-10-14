@@ -305,7 +305,7 @@ namespace Kinetix.Workflow {
             // Update T3
             if (trToMove == null)
             {
-                //No transition before T3. Move is the first Activity of the WorkflowDefinition
+                //No transition before Move. Move is the first Activity of the WorkflowDefinition
                 wfWorkflowDefinition.WfadId = trFromMove.WfadIdTo;
                 _workflowStorePlugin.UpdateWorkflowDefinition(wfWorkflowDefinition);
             }
@@ -316,7 +316,7 @@ namespace Kinetix.Workflow {
                 _workflowStorePlugin.UpdateTransition(trToMove);
             }
 
-            // Update T1
+            // Update T1/T2
             if (trFromRef == null)
             {
                 //No transition after T1. 
@@ -326,7 +326,7 @@ namespace Kinetix.Workflow {
             }
             else
             {
-                // Update T2
+                // Moving T2
                 trFromMove.WfadIdTo = trFromRef.WfadIdTo;
                 _workflowStorePlugin.UpdateTransition(trFromMove);
 
@@ -367,7 +367,7 @@ namespace Kinetix.Workflow {
             // Update T1
             if (trToRef == null)
             {
-                //No transition before T1. Ref is the first Activity of the WorkflowDefinition
+                //No transition before Ref. Ref is the first Activity of the WorkflowDefinition
                 wfWorkflowDefinition.WfadId = wfActivityToMove.WfadId.Value;
                 _workflowStorePlugin.UpdateWorkflowDefinition(wfWorkflowDefinition);
             }
