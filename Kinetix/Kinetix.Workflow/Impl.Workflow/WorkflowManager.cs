@@ -263,8 +263,12 @@ namespace Kinetix.Workflow {
             _workflowStorePlugin.AddTransition(wfTransitionDefinition);
         }
 
-        public void MoveActivity(WfWorkflowDefinition wfWorkflowDefinition, WfActivityDefinition wfActivityToMove, WfActivityDefinition wfActivityReferential,bool after)
+        public void MoveActivity(WfWorkflowDefinition wfWorkflowDefinition, WfActivityDefinition wfActivityToMove, WfActivityDefinition wfActivityReferential, bool after)
         {
+            Debug.Assert(wfActivityToMove.WfadId != null);
+            Debug.Assert(wfActivityReferential.WfadId != null);
+            Debug.Assert(!wfActivityToMove.WfadId.Equals(wfActivityReferential.WfadId));
+            //---
             if (after)
             {
                 MoveActivityAfter(wfWorkflowDefinition, wfActivityToMove, wfActivityReferential);
