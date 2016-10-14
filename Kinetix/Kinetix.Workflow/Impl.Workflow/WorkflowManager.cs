@@ -311,8 +311,9 @@ namespace Kinetix.Workflow {
             }
             else
             {
+                // Update T3
                 trToMove.WfadIdTo = trFromMove.WfadIdTo;
-                _workflowStorePlugin.UpdateTransition(trFromRef);
+                _workflowStorePlugin.UpdateTransition(trToMove);
             }
 
             // Update T1
@@ -325,12 +326,12 @@ namespace Kinetix.Workflow {
             }
             else
             {
-                // Moving T1
-                trFromRef.WfadIdTo = wfActivityToMove.WfadId.Value;
-                _workflowStorePlugin.UpdateTransition(trFromRef);
-
                 // Update T2
                 trFromMove.WfadIdTo = trFromRef.WfadIdTo;
+                _workflowStorePlugin.UpdateTransition(trFromMove);
+
+                // Moving T1
+                trFromRef.WfadIdTo = wfActivityToMove.WfadId.Value;
                 _workflowStorePlugin.UpdateTransition(trFromRef);
             }
 
