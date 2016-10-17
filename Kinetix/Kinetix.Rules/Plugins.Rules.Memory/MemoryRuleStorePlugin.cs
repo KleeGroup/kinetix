@@ -77,13 +77,13 @@ namespace Kinetix.Rules
 
         public IList<RuleDefinition> FindRulesByItemId(int itemId)
         {
-            IList<RuleDefinition> ret = (inMemoryRuleStore.Where(r => r.Value.Id.Equals(itemId)).Select(kp => kp.Value)).ToList();
+            IList<RuleDefinition> ret = (inMemoryRuleStore.Where(r => r.Value.ItemId.Equals(itemId)).Select(kp => kp.Value)).ToList();
             return ret;
         }
 
         public IList<SelectorDefinition> FindSelectorsByItemId(int itemId)
         {
-            IList<SelectorDefinition> ret = (inMemorySelectorStore.Where(r => r.Value.Id.Equals(itemId)).Select(kp => kp.Value)).ToList();
+            IList<SelectorDefinition> ret = (inMemorySelectorStore.Where(r => r.Value.ItemId.Equals(itemId)).Select(kp => kp.Value)).ToList();
             return ret;
         }
 

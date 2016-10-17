@@ -8,8 +8,10 @@ using Kinetix.Workflow.model;
 using System.Linq;
 using Kinetix.Workflow.Workflow;
 using System.Collections;
+using System.ServiceModel;
 
 namespace Kinetix.Workflow {
+    [ServiceBehavior(ConcurrencyMode = ConcurrencyMode.Multiple, InstanceContextMode = InstanceContextMode.PerCall, IncludeExceptionDetailInFaults = true)]
     public sealed class WorkflowManager : IWorkflowManager {
         private readonly IWorkflowStorePlugin _workflowStorePlugin;
         private readonly IItemStorePlugin _itemStorePlugin;
@@ -209,7 +211,10 @@ namespace Kinetix.Workflow {
 
         public void EndInstance(WfWorkflow wfWorkflow) {
             Debug.Assert(wfWorkflow != null);
-            Debug.Assert(WfCodeStatusWorkflow.Sta.ToString().Equals(wfWorkflow.WfsCode) || WfCodeStatusWorkflow.Pau.ToString().Equals(wfWorkflow.WfsCode), "A workflow must be started or paused before ending");
+            if (!(WfCodeStatusWorkflow.Sta.ToString().Equals(wfWorkflow.WfsCode) || WfCodeStatusWorkflow.Pau.ToString().Equals(wfWorkflow.WfsCode)))
+            {
+                throw new System.InvalidOperationException("A workflow must be started or paused before ending");
+            }
             //---
             wfWorkflow.WfsCode = WfCodeStatusWorkflow.End.ToString();
             _workflowStorePlugin.UpdateWorkflowInstance(wfWorkflow);
@@ -277,7 +282,10 @@ namespace Kinetix.Workflow {
 
         public void PauseInstance(WfWorkflow wfWorkflow) {
             Debug.Assert(wfWorkflow != null);
-            Debug.Assert(WfCodeStatusWorkflow.Sta.ToString().Equals(wfWorkflow.WfsCode), "A workflow must be started before pausing");
+            if (!WfCodeStatusWorkflow.Sta.ToString().Equals(wfWorkflow.WfsCode))
+            {
+                throw new System.InvalidOperationException("A workflow must be started before pausing");
+            }
             //---
             wfWorkflow.WfsCode = WfCodeStatusWorkflow.Pau.ToString();
             _workflowStorePlugin.UpdateWorkflowInstance(wfWorkflow);
@@ -297,14 +305,20 @@ namespace Kinetix.Workflow {
 
         public void ResumeInstance(WfWorkflow wfWorkflow) {
             Debug.Assert(wfWorkflow != null);
-            Debug.Assert(WfCodeStatusWorkflow.Pau.ToString().Equals(wfWorkflow.WfsCode), "A workflow must be paused before resuming");
+            if (!WfCodeStatusWorkflow.Pau.ToString().Equals(wfWorkflow.WfsCode))
+            {
+                throw new System.InvalidOperationException("A workflow must be paused before resuming");
+            }
             //---
             wfWorkflow.WfsCode = WfCodeStatusWorkflow.Sta.ToString();
             _workflowStorePlugin.UpdateWorkflowInstance(wfWorkflow);
         }
 
         public void SaveDecision(WfWorkflow wfWorkflow, WfDecision wfDecision) {
-            Debug.Assert(WfCodeStatusWorkflow.Sta.ToString().Equals(wfWorkflow.WfsCode), "A workflow must be started before saving decision");
+            if (!WfCodeStatusWorkflow.Sta.ToString().Equals(wfWorkflow.WfsCode))
+            {
+                throw new System.InvalidOperationException("A workflow must be started before saving decision");
+            }
             //---
             WfActivity currentActivity = _workflowStorePlugin.ReadActivity((int)wfWorkflow.WfaId2);
 
@@ -364,7 +378,10 @@ namespace Kinetix.Workflow {
         }
 
         public void SaveDecisionAndGoToNextActivity(WfWorkflow wfWorkflow, string transitionName, WfDecision wfDecision) {
-            Debug.Assert(WfCodeStatusWorkflow.Sta.ToString().Equals(wfWorkflow.WfsCode), "A workflow must be started before saving a decision");
+            if (!WfCodeStatusWorkflow.Sta.ToString().Equals(wfWorkflow.WfsCode))
+            {
+                throw new System.InvalidOperationException("A workflow must be started before saving a decision");
+            }
             //---
             WfActivity currentActivity = _workflowStorePlugin.ReadActivity((int)wfWorkflow.WfaId2);
 
@@ -437,7 +454,10 @@ namespace Kinetix.Workflow {
         public void StartInstance(WfWorkflow wfWorkflow)
         {
             Debug.Assert(wfWorkflow != null);
-            Debug.Assert(WfCodeStatusWorkflow.Cre.ToString().Equals(wfWorkflow.WfsCode), "A workflow must be created before starting");
+            if (!WfCodeStatusWorkflow.Cre.ToString().Equals(wfWorkflow.WfsCode))
+            {
+                throw new System.InvalidOperationException("A workflow must be created before starting");
+            }
             //---
             wfWorkflow.WfsCode = WfCodeStatusWorkflow.Sta.ToString();
 
