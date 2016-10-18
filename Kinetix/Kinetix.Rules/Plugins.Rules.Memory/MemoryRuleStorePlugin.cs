@@ -65,13 +65,13 @@ namespace Kinetix.Rules
 
         public IList<RuleConditionDefinition> FindConditionByRuleId(int ruleId)
         {
-            IList<RuleConditionDefinition> ret = (inMemoryConditionStore.Where(r => r.Value.Id.Equals(ruleId)).Select(kp => kp.Value)).ToList();
+            IList<RuleConditionDefinition> ret = (inMemoryConditionStore.Where(r => r.Value.RudId.Equals(ruleId)).Select(kp => kp.Value)).ToList();
             return ret;
         }
 
         public IList<RuleFilterDefinition> FindFiltersBySelectorId(int selectorId)
         {
-            IList<RuleFilterDefinition> ret = (inMemoryFilterStore.Where(r => r.Value.Id.Equals(selectorId)).Select(kp => kp.Value)).ToList();
+            IList<RuleFilterDefinition> ret = (inMemoryFilterStore.Where(r => r.Value.SelId.Equals(selectorId)).Select(kp => kp.Value)).ToList();
             return ret;
         }
 
