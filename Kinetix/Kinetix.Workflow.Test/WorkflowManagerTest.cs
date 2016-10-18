@@ -167,9 +167,37 @@ namespace Kinetix.Workflow.Test
 		    _workflowManager.EndInstance(wfWorkflow2);
 
             Assert.AreEqual(wfWorkflow2.WfsCode, WfCodeStatusWorkflow.End.ToString());
-
         }
-        
+
+        private void assertHasOneDecision(WfWorkflowDecision wfWorkflowDecision)
+        {
+            Assert.IsNotNull(wfWorkflowDecision.decisions);
+            Assert.AreEqual(1, wfWorkflowDecision.decisions.Count);
+        }
+
+        private void assertActivityExist(WfActivityDefinition activityDefinition, WfWorkflowDecision wfWorkflowDecision)
+        {
+            Assert.AreEqual(activityDefinition.WfadId, wfWorkflowDecision.activityDefinition.WfadId);
+            Assert.IsNotNull(wfWorkflowDecision.activity);
+            Assert.AreEqual(activityDefinition.WfadId, wfWorkflowDecision.activity.WfadId);
+            Assert.IsNotNull(wfWorkflowDecision.activity.WfaId);
+        }
+
+        private void assertFirstDecisionEquals(WfDecision wfDecisionAct, WfWorkflowDecision wfWorkflowDecision)
+        {
+            Assert.AreEqual(wfDecisionAct.WfaId, wfWorkflowDecision.decisions[0].WfaId);
+            Assert.AreEqual(wfDecisionAct.Choice, wfWorkflowDecision.decisions[0].Choice);
+            Assert.AreEqual(wfDecisionAct.Comments, wfWorkflowDecision.decisions[0].Comments);
+            Assert.AreEqual(wfDecisionAct.DecisionDate, wfWorkflowDecision.decisions[0].DecisionDate);
+        }
+
+        private void assertHasOneGroup(AccountGroup accountGroup, WfWorkflowDecision wfWorkflowDecision)
+        {
+            Assert.IsNotNull(wfWorkflowDecision.groups);
+            Assert.AreEqual(1, wfWorkflowDecision.groups.Count);
+            Assert.AreEqual(accountGroup.Id, wfWorkflowDecision.groups[0].Id);
+        }
+
         [TestMethod]
         public void TestWorkflowRulesManualValidationActivities()
         {
@@ -239,11 +267,35 @@ namespace Kinetix.Workflow.Test
             // Starting the workflow
             _workflowManager.StartInstance(wfWorkflow);
 
-            IList<WfWorkflowDecision> workflowDecisions1 = _workflowManager.GetWorkflowDecision(wfWorkflow.WfwId.Value);
+            IList<WfWorkflowDecision> workflowDecisions = _workflowManager.GetWorkflowDecision(wfWorkflow.WfwId.Value);
+
+            //Step 1,3,4 should be Manual, Step 2 should be auto 
+            // No decisons for now
+            Assert.IsNotNull(workflowDecisions);
+            Assert.AreEqual(workflowDecisions.Count, 3);
+            //Check Step 1
+            Assert.AreEqual(firstActivity.WfadId, workflowDecisions[0].activityDefinition.WfadId);
+            Assert.IsNotNull(workflowDecisions[0].activity);
+            Assert.AreEqual(firstActivity.WfadId, workflowDecisions[0].activity.WfadId);
+            Assert.IsNotNull(workflowDecisions[0].activity.WfaId);
+            Assert.IsNull(workflowDecisions[0].decisions);
+            assertHasOneGroup(accountGroup, workflowDecisions[0]);
+            //Check Step 3
+            Assert.AreEqual(thirdActivity.WfadId, workflowDecisions[1].activityDefinition.WfadId);
+            Assert.IsNull(workflowDecisions[1].activity);
+            Assert.IsNull(workflowDecisions[1].decisions);
+            assertHasOneGroup(accountGroup, workflowDecisions[1]);
+            //Check Step 4
+            Assert.AreEqual(fourthActivity.WfadId, workflowDecisions[2].activityDefinition.WfadId);
+            Assert.IsNull(workflowDecisions[2].activity);
+            Assert.IsNull(workflowDecisions[2].decisions);
+            assertHasOneGroup(accountGroup, workflowDecisions[2]);
+
 
             // Entry actions should NOT validate all activities.
-            int currentActivity = (int)wfWorkflow.WfaId2;
-            Assert.AreEqual(currentActivity, firstActivity.WfadId);
+            int currentActivityId = (int)wfWorkflow.WfaId2;
+            WfActivity currentActivity = _workflowManager.GetActivity(currentActivityId);
+            Assert.AreEqual(currentActivity.WfadId, firstActivity.WfadId);
 
             WfWorkflow wfWorkflowFetched = _workflowManager.GetWorkflowInstance(wfWorkflow.WfwId.Value);
             Assert.IsNotNull(wfWorkflowFetched);
@@ -257,26 +309,76 @@ namespace Kinetix.Workflow.Test
 
             _workflowManager.SaveDecisionAndGoToNextActivity(wfWorkflow, decision);
 
+            workflowDecisions = _workflowManager.GetWorkflowDecision(wfWorkflow.WfwId.Value);
+
+            // Step 1,3,4 should be Manual, Step 2 should be auto 
+            // 1 Decisions for Step 1
+            Assert.IsNotNull(workflowDecisions);
+            Assert.AreEqual(workflowDecisions.Count, 3);
+            //Check Step 1
+            assertActivityExist(firstActivity, workflowDecisions[0]);
+            // 1 Decision
+            assertHasOneDecision(workflowDecisions[0]);
+            assertFirstDecisionEquals(decision, workflowDecisions[0]);
+            assertHasOneGroup(accountGroup, workflowDecisions[0]);
+            //Check Step 3
+            assertActivityExist(thirdActivity, workflowDecisions[1]);
+            Assert.IsNull(workflowDecisions[1].decisions);
+            assertHasOneGroup(accountGroup, workflowDecisions[1]);
+            //Check Step 4
+            Assert.AreEqual(fourthActivity.WfadId, workflowDecisions[2].activityDefinition.WfadId);
+            Assert.IsNull(workflowDecisions[2].activity);
+            Assert.IsNull(workflowDecisions[2].decisions);
+            assertHasOneGroup(accountGroup, workflowDecisions[2]);
+
             // Activity 1 should now be validated.
             // No rule defined for activity 2. Activity 2 should be autovalidated
             // The current activity should be now activity 3
-            currentActivity = wfWorkflow.WfaId2.Value;
-            Assert.AreEqual(currentActivity, thirdActivity.WfadId);
+            currentActivityId = wfWorkflow.WfaId2.Value;
+            currentActivity = _workflowManager.GetActivity(currentActivityId);
+            Assert.AreEqual(currentActivity.WfadId, thirdActivity.WfadId);
 
             WfWorkflow wfWorkflowFetched2 = _workflowManager.GetWorkflowInstance(wfWorkflow.WfwId.Value);
             Assert.IsNotNull(wfWorkflowFetched2);
             Assert.AreEqual(wfWorkflowFetched2.WfaId2, thirdActivity.WfadId);
 
             //Manually validating activity 3
-            WfDecision wfDecisionAct2 = new WfDecision();
-            wfDecisionAct2.Choice = 1;
-            wfDecisionAct2.Username = account.Id;
-            _workflowManager.SaveDecisionAndGoToNextActivity(wfWorkflow, wfDecisionAct2);
+            WfDecision wfDecisionAct3 = new WfDecision();
+            wfDecisionAct3.Choice = 1;
+            wfDecisionAct3.Username = account.Id;
+            wfDecisionAct3.WfaId = currentActivity.WfaId.Value;
+
+            _workflowManager.SaveDecisionAndGoToNextActivity(wfWorkflow, wfDecisionAct3);
+
+            workflowDecisions = _workflowManager.GetWorkflowDecision(wfWorkflow.WfwId.Value);
+
+            // Step 1,3,4 should be Manual, Step 2 should be auto 
+            // Decisions for Step 1, Step 3
+            Assert.IsNotNull(workflowDecisions);
+            Assert.AreEqual(workflowDecisions.Count, 3);
+            // Check Step 1
+            assertActivityExist(firstActivity, workflowDecisions[0]);
+            // 1 Decision
+            assertHasOneDecision(workflowDecisions[0]);
+            assertFirstDecisionEquals(decision, workflowDecisions[0]);
+            assertHasOneGroup(accountGroup, workflowDecisions[0]);
+            // Check Step 3
+            assertActivityExist(thirdActivity, workflowDecisions[1]);
+            // Decisions for Step 3
+            assertHasOneDecision(workflowDecisions[1]);
+            assertFirstDecisionEquals(wfDecisionAct3, workflowDecisions[1]);
+            assertHasOneGroup(accountGroup, workflowDecisions[1]);
+            // Check Step 4
+            Assert.AreEqual(fourthActivity.WfadId, workflowDecisions[2].activityDefinition.WfadId);
+            Assert.IsNotNull(workflowDecisions[2].activity);
+            Assert.IsNull(workflowDecisions[2].decisions);
+            assertHasOneGroup(accountGroup, workflowDecisions[2]);
 
             // Activity 3 should now be validated.
             // The current activity should be now activity 4
-            currentActivity = wfWorkflow.WfaId2.Value;
-            Assert.AreEqual(currentActivity, fourthActivity.WfadId);
+            currentActivityId = wfWorkflow.WfaId2.Value;
+            currentActivity = _workflowManager.GetActivity(currentActivityId);
+            Assert.AreEqual(currentActivity.WfadId, fourthActivity.WfadId);
 
             WfWorkflow wfWorkflowFetched3 = _workflowManager.GetWorkflowInstance(wfWorkflow.WfwId.Value);
             Assert.IsNotNull(wfWorkflowFetched3);
@@ -288,15 +390,42 @@ namespace Kinetix.Workflow.Test
             wfDecisionAct4.Username = account.Id;
             _workflowManager.SaveDecisionAndGoToNextActivity(wfWorkflow, wfDecisionAct4);
 
+            workflowDecisions = _workflowManager.GetWorkflowDecision(wfWorkflow.WfwId.Value);
+
+            // Step 1,3,4 should be Manual, Step 2 should be auto 
+            // Decisions for Step 1, Step 3
+            Assert.IsNotNull(workflowDecisions);
+            Assert.AreEqual(workflowDecisions.Count, 3);
+            // Check Step 1
+            assertActivityExist(firstActivity, workflowDecisions[0]);
+            // 1 Decision
+            assertHasOneDecision(workflowDecisions[0]);
+            assertFirstDecisionEquals(decision, workflowDecisions[0]);
+            assertHasOneGroup(accountGroup, workflowDecisions[0]);
+            // Check Step 3
+            assertActivityExist(thirdActivity, workflowDecisions[1]);
+            // Decisions for Step 3
+            assertHasOneDecision(workflowDecisions[1]);
+            assertFirstDecisionEquals(wfDecisionAct3, workflowDecisions[1]);
+            assertHasOneGroup(accountGroup, workflowDecisions[1]);
+            // Check Step 4
+            assertActivityExist(fourthActivity, workflowDecisions[2]);
+            // Decisions for Step 4
+            assertHasOneDecision(workflowDecisions[2]);
+            assertFirstDecisionEquals(wfDecisionAct4, workflowDecisions[2]);
+
+            Assert.IsNotNull(workflowDecisions[2].groups);
+            Assert.AreEqual(1, workflowDecisions[2].groups.Count);
+            Assert.AreEqual(accountGroup.Id, workflowDecisions[2].groups[0].Id);
+
             // Activity 4 should now be validated. The current activity is now activity 4, with the end status
-            currentActivity = wfWorkflow.WfaId2.Value;
-            Assert.AreEqual(currentActivity, fourthActivity.WfadId);
+            currentActivityId = wfWorkflow.WfaId2.Value;
+            Assert.AreEqual(currentActivityId, fourthActivity.WfadId);
             Assert.AreEqual(wfWorkflow.WfsCode, WfCodeStatusWorkflow.End.ToString());
 
             WfWorkflow wfWorkflowFetched5 = _workflowManager.GetWorkflowInstance(wfWorkflow.WfwId.Value);
             Assert.AreEqual(wfWorkflowFetched5.WfsCode, WfCodeStatusWorkflow.End.ToString());
         }
-
 
         [TestMethod]
         public void TestWorkflowRulesAutoValidationNoSelectorAllActivities()

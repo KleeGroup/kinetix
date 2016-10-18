@@ -180,15 +180,20 @@ namespace Kinetix.Workflow
             //---
             int? idStartActivity = wfWorkflowDefinition.WfadId;
             IList<WfActivityDefinition> retAllDefaultActivities = new List<WfActivityDefinition>();
-
-            WfTransitionDefinition transitionNext;
-            transitionsNext.TryGetValue(idStartActivity + "|" + WfCodeTransition.Default.ToString(), out transitionNext);
-
-            while (transitionNext != null)
+            if (idStartActivity != null)
             {
-                WfActivityDefinition wfNextActivityDefinition = inMemoryActivityDefinitionStore[transitionNext.WfadIdTo];
-                retAllDefaultActivities.Add(wfNextActivityDefinition);
-                transitionsNext.TryGetValue(wfNextActivityDefinition.WfadId + "|" + WfCodeTransition.Default.ToString(), out transitionNext);
+                WfActivityDefinition first = inMemoryActivityDefinitionStore[idStartActivity];
+                retAllDefaultActivities.Add(first);
+
+                WfTransitionDefinition transitionNext;
+                transitionsNext.TryGetValue(idStartActivity + "|" + WfCodeTransition.Default.ToString(), out transitionNext);
+
+                while (transitionNext != null)
+                {
+                    WfActivityDefinition wfNextActivityDefinition = inMemoryActivityDefinitionStore[transitionNext.WfadIdTo];
+                    retAllDefaultActivities.Add(wfNextActivityDefinition);
+                    transitionsNext.TryGetValue(wfNextActivityDefinition.WfadId + "|" + WfCodeTransition.Default.ToString(), out transitionNext);
+                }
             }
 
             return retAllDefaultActivities;
@@ -342,7 +347,7 @@ namespace Kinetix.Workflow
             IList<WfDecision> wfDecisions = new List<WfDecision>();
             foreach (WfDecision wfDecision in inMemoryDecisionStore.Values)
             {
-                if (wfDecision.WfaId.Equals(wfWorkflow.WfwId) && wfActivitiesId.Contains(wfDecision.WfaId))
+                if (wfActivitiesId.Contains(wfDecision.WfaId))
                 {
                     wfDecisions.Add(wfDecision);
                 }

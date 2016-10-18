@@ -320,7 +320,7 @@ namespace Kinetix.Workflow {
                 throw new System.InvalidOperationException("A workflow must be started before saving decision");
             }
             //---
-            WfActivity currentActivity = _workflowStorePlugin.ReadActivity((int)wfWorkflow.WfaId2);
+            WfActivity currentActivity = _workflowStorePlugin.ReadActivity(wfWorkflow.WfaId2.Value);
 
             // Attach decision to the activity
             currentActivity.IsAuto = false;
@@ -383,7 +383,7 @@ namespace Kinetix.Workflow {
                 throw new System.InvalidOperationException("A workflow must be started before saving a decision");
             }
             //---
-            WfActivity currentActivity = _workflowStorePlugin.ReadActivity((int)wfWorkflow.WfaId2);
+            WfActivity currentActivity = _workflowStorePlugin.ReadActivity(wfWorkflow.WfaId2.Value);
 
             // Updating the decision
             SaveDecision(wfWorkflow, wfDecision);
@@ -722,7 +722,6 @@ namespace Kinetix.Workflow {
 
         public IList<WfWorkflowDecision> GetWorkflowDecision(int wfwId)
         {
-
             //Get the workflow from id
             WfWorkflow wfWorkflow = _workflowStorePlugin.ReadWorkflowInstanceById(wfwId);
 
