@@ -65,25 +65,25 @@ namespace Kinetix.Rules
 
         public IList<RuleConditionDefinition> FindConditionByRuleId(int ruleId)
         {
-            IList<RuleConditionDefinition> ret = (inMemoryConditionStore.Where(r => r.Value.Id.Equals(ruleId)).Select(kp => kp.Value)).ToList();
+            IList<RuleConditionDefinition> ret = (inMemoryConditionStore.Where(r => r.Value.RudId.Equals(ruleId)).Select(kp => kp.Value)).ToList();
             return ret;
         }
 
         public IList<RuleFilterDefinition> FindFiltersBySelectorId(int selectorId)
         {
-            IList<RuleFilterDefinition> ret = (inMemoryFilterStore.Where(r => r.Value.Id.Equals(selectorId)).Select(kp => kp.Value)).ToList();
+            IList<RuleFilterDefinition> ret = (inMemoryFilterStore.Where(r => r.Value.SelId.Equals(selectorId)).Select(kp => kp.Value)).ToList();
             return ret;
         }
 
         public IList<RuleDefinition> FindRulesByItemId(int itemId)
         {
-            IList<RuleDefinition> ret = (inMemoryRuleStore.Where(r => r.Value.Id.Equals(itemId)).Select(kp => kp.Value)).ToList();
+            IList<RuleDefinition> ret = (inMemoryRuleStore.Where(r => r.Value.ItemId.Equals(itemId)).Select(kp => kp.Value)).ToList();
             return ret;
         }
 
         public IList<SelectorDefinition> FindSelectorsByItemId(int itemId)
         {
-            IList<SelectorDefinition> ret = (inMemorySelectorStore.Where(r => r.Value.Id.Equals(itemId)).Select(kp => kp.Value)).ToList();
+            IList<SelectorDefinition> ret = (inMemorySelectorStore.Where(r => r.Value.ItemId.Equals(itemId)).Select(kp => kp.Value)).ToList();
             return ret;
         }
 

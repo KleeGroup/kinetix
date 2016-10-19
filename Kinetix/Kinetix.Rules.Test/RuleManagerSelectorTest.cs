@@ -1,0 +1,315 @@
+﻿using System;
+using Kinetix.Test;
+using System.Collections.Generic;
+using System.Linq;
+using Microsoft.Practices.Unity;
+using Kinetix.Account.Account;
+using Kinetix.Account;
+#if NUnit
+    using NUnit.Framework; 
+#else
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+#endif
+
+namespace Kinetix.Rules.Test
+{
+    [TestClass]
+    public class RuleManagerSelectorTest : MemoryBaseTest
+    {
+
+        public override void Register()
+        {
+            var container = GetConfiguredContainer();
+
+            container.RegisterType<Kinetix.Account.IAccountStorePlugin, Kinetix.Account.MemoryAccountStorePlugin>(new ContainerControlledLifetimeManager());
+            container.RegisterType<Kinetix.Account.IAccountManager, Kinetix.Account.AccountManager>(new ContainerControlledLifetimeManager());
+
+            container.RegisterType<Kinetix.Rules.IRuleManager, Kinetix.Rules.RuleManager>();
+            container.RegisterType<Kinetix.Rules.IRuleStorePlugin, Kinetix.Rules.MemoryRuleStorePlugin>(new ContainerControlledLifetimeManager());
+            //container.RegisterType<Kinetix.Rules.IRuleStorePlugin, Kinetix.Rules.SqlServerRuleStorePlugin>();
+            container.RegisterType<Kinetix.Rules.IRuleConstantsStorePlugin, Kinetix.Rules.MemoryRuleConstantsStore>(new ContainerControlledLifetimeManager());
+
+            container.RegisterType<Kinetix.Rules.IRuleSelectorPlugin, Kinetix.Rules.SimpleRuleSelectorPlugin>();
+            container.RegisterType<Kinetix.Rules.IRuleValidatorPlugin, Kinetix.Rules.SimpleRuleValidatorPlugin>();
+        }
+
+
+        /// <summary>
+        /// Add/Find Rules for RulesManager
+        /// </summary>
+        [TestMethod]
+        public void TestAddRule()
+        {
+            var container = GetConfiguredContainer();
+            IRuleManager ruleManager = container.Resolve<IRuleManager>();
+
+            SelectorDefinition rule1 = new SelectorDefinition(null, 1, "1");
+            SelectorDefinition rule2 = new SelectorDefinition(null, 2, "2");
+            SelectorDefinition rule3 = new SelectorDefinition(null, 2, "3");
+
+            ruleManager.AddSelector(rule1);
+            ruleManager.AddSelector(rule2);
+            ruleManager.AddSelector(rule3);
+
+            // Only 1 rule
+            IList<SelectorDefinition> selectorFetch1 = ruleManager.GetSelectorsForItemId(1);
+
+            Assert.IsNotNull(selectorFetch1);
+            Assert.AreEqual(selectorFetch1.Count, 1);
+            Assert.IsTrue(selectorFetch1.Contains(rule1));
+
+            // 2 rules
+            IList<SelectorDefinition> selectorFetch2 = ruleManager.GetSelectorsForItemId(2);
+
+            Assert.IsNotNull(selectorFetch2);
+            Assert.AreEqual(selectorFetch2.Count, 2);
+            CollectionAssert.AreEquivalent(new List<SelectorDefinition>() { rule2, rule3 }, (List<SelectorDefinition>)selectorFetch2);
+        }
+
+
+        /// <summary>
+        /// Add/Update/Delete Rules for RulesManager
+        /// </summary>
+        [TestMethod]
+        public void TestAddUpdateDelete()
+        {
+            var container = GetConfiguredContainer();
+            IRuleManager ruleManager = container.Resolve<IRuleManager>();
+
+            // Rule created to Item 1
+            SelectorDefinition selector = new SelectorDefinition(null, 1, "1");
+            ruleManager.AddSelector(selector);
+
+            IList<SelectorDefinition> rulesFetch_1_1 = ruleManager.GetSelectorsForItemId(1);
+
+
+            Assert.IsNotNull(rulesFetch_1_1);
+            Assert.AreEqual(rulesFetch_1_1.Count, 1);
+            Assert.IsTrue(rulesFetch_1_1.Contains(selector));
+
+            // Update rule. This is now associated with Item 2
+            selector.ItemId = 2;
+            ruleManager.UpdateSelector(selector);
+
+            // The rule is not associated to item 1 anymore
+            IList<SelectorDefinition> rulesFetch_1_0 = ruleManager.GetSelectorsForItemId(1);
+
+            Assert.IsNotNull(rulesFetch_1_0);
+            Assert.AreEqual(rulesFetch_1_0.Count, 0);
+
+            // The rule should be associated with item 2
+            IList<SelectorDefinition> rulesFetch_2_1 = ruleManager.GetSelectorsForItemId(2);
+
+            Assert.IsNotNull(rulesFetch_2_1);
+            Assert.AreEqual(rulesFetch_2_1.Count, 1);
+            CollectionAssert.AreEquivalent(new List<SelectorDefinition>() { selector } , (List<SelectorDefinition>) rulesFetch_2_1 );
+
+            // Update rule. This is now associated with Item 2
+            ruleManager.RemoveSelector(selector);
+
+            // No rule should be associated with item 2
+            IList<RuleDefinition> rulesFetch_2_0 = ruleManager.GetRulesForItemId(2);
+
+            Assert.IsNotNull(rulesFetch_2_0);
+            Assert.AreEqual(rulesFetch_2_0.Count, 0);
+        }
+
+        /// <summary>
+        /// One simple selector for RulesManager
+        /// </summary>
+        [TestMethod]
+        public void TestValidationOneSelectorOneFilter()
+        {
+            var container = GetConfiguredContainer();
+            IRuleManager ruleManager = container.Resolve<IRuleManager>();
+            IAccountManager accountManager = container.Resolve<IAccountManager>();
+
+            AccountGroup accountGroup = new AccountGroup("1", "Group activity 1");
+            AccountUser account = new AccountUserBuilder("0").WithDisplayName("User 1")
+                    .WithEmail("user1@account.vertigo.io")
+                    .Build();
+            accountManager.GetStore().SaveGroup(accountGroup);
+            accountManager.GetStore().SaveAccounts(new List<AccountUser>() { account });
+            accountManager.GetStore().Attach(account.Id, accountGroup.Id);
+
+            // Selector created to Item 1
+            SelectorDefinition selector = new SelectorDefinition(null, 1, accountGroup.Id);
+            ruleManager.AddSelector(selector);
+
+            RuleFilterDefinition filterDefinition = new RuleFilterDefinition(null, "Division", "=", "BTL", selector.Id);
+            ruleManager.AddFilter(filterDefinition);
+
+            MyDummyDtObject myDummyDtObject = new MyDummyDtObject();
+            myDummyDtObject.Division = "BTL";
+
+            IList<AccountUser> selectedAccounts = ruleManager.SelectAccounts(1, myDummyDtObject, RuleConstants.EmptyRuleConstants);
+
+            Assert.IsNotNull(selectedAccounts);
+            Assert.AreEqual(selectedAccounts.Count, 1);
+            CollectionAssert.AreEquivalent(new List<AccountUser>() { account }, (List<AccountUser>)selectedAccounts);
+        }
+
+        /// <summary>
+        /// One simple selector with many filters for RulesManager
+        /// </summary>
+        [TestMethod]
+        public void TestValidationOneSelectorManyFilters()
+        {
+            var container = GetConfiguredContainer();
+            IRuleManager ruleManager = container.Resolve<IRuleManager>();
+            IAccountManager accountManager = container.Resolve<IAccountManager>();
+
+            AccountGroup accountGroup = new AccountGroup("1", "Group activity 1");
+            AccountUser account = new AccountUserBuilder("0")
+                    .WithDisplayName("User 1")
+                    .WithEmail("user1@account.vertigo.io")
+                    .Build();
+
+            accountManager.GetStore().SaveGroup(accountGroup);
+            accountManager.GetStore().SaveAccounts(new List<AccountUser>() { account });
+            accountManager.GetStore().Attach(account.Id, accountGroup.Id);
+
+            // Selector created to Item 1
+            SelectorDefinition selector_1 = new SelectorDefinition(null, 1, accountGroup.Id);
+            ruleManager.AddSelector(selector_1);
+
+            RuleFilterDefinition filterDefinition_1_1 = new RuleFilterDefinition(null, "Division", "=", "BTL", selector_1.Id);
+            ruleManager.AddFilter(filterDefinition_1_1);
+
+            RuleFilterDefinition filterDefinition_1_2 = new RuleFilterDefinition(null, "Entity", "=", "ENT", selector_1.Id);
+            ruleManager.AddFilter(filterDefinition_1_2);
+
+            MyDummyDtObject myDummyDtObject = new MyDummyDtObject();
+            myDummyDtObject.Division = "BTL";
+
+            // The entity is not set to ENT. The selector should not match
+            IList<AccountUser> selectedAccounts_1 = ruleManager.SelectAccounts(1, myDummyDtObject, RuleConstants.EmptyRuleConstants);
+
+            Assert.IsNotNull(selectedAccounts_1);
+            Assert.AreEqual(selectedAccounts_1.Count, 0);
+
+            //We set the entity to 'ENT'
+            myDummyDtObject.Entity = "ENT";
+            // The selector should match now.
+            IList<AccountUser> selectedAccounts_2 = ruleManager.SelectAccounts(1, myDummyDtObject, RuleConstants.EmptyRuleConstants);
+
+            Assert.IsNotNull(selectedAccounts_2);
+            Assert.AreEqual(selectedAccounts_2.Count, 1);
+            CollectionAssert.AreEquivalent(new List<AccountUser>() { account }, (List<AccountUser>)selectedAccounts_2);
+
+            //We set the entity to 'XXX'
+            myDummyDtObject.Entity = "XXX";
+            // The selector should not match .
+            IList<AccountUser> selectedAccounts_3 = ruleManager.SelectAccounts(1, myDummyDtObject, RuleConstants.EmptyRuleConstants);
+
+            Assert.IsNotNull(selectedAccounts_3);
+            Assert.AreEqual(selectedAccounts_3.Count, 0);
+        }
+
+        /// <summary>
+        /// Many selectors with many filters for RulesManager
+        /// </summary>
+        [TestMethod]
+        public void TestValidationManySelectorsManyFilters()
+        {
+            var container = GetConfiguredContainer();
+            IRuleManager ruleManager = container.Resolve<IRuleManager>();
+            IAccountManager accountManager = container.Resolve<IAccountManager>();
+
+            AccountGroup accountGroup_1 = new AccountGroup("1", "Group activity 1");
+
+            AccountUser account_1_1 = new AccountUserBuilder("0")
+                    .WithDisplayName("User 1 Group 1")
+                    .WithEmail("user1@account.vertigo.io")
+                    .Build();
+
+            AccountUser account_1_2 = new AccountUserBuilder("1")
+                    .WithDisplayName("User 2 Group 1")
+                    .WithEmail("user1@account.vertigo.io")
+                    .Build();
+
+            accountManager.GetStore().SaveGroup(accountGroup_1);
+            accountManager.GetStore().SaveAccounts(new List<AccountUser>() { account_1_1, account_1_2 });
+            accountManager.GetStore().Attach(account_1_1.Id, accountGroup_1.Id);
+            accountManager.GetStore().Attach(account_1_2.Id, accountGroup_1.Id);
+
+            AccountGroup accountGroup_2 = new AccountGroup("2", "Group activity 2");
+
+            AccountUser account_2_1 = new AccountUserBuilder("2")
+                    .WithDisplayName("User 1 Group 2")
+                    .WithEmail("user1@account.vertigo.io")
+                    .Build();
+
+            AccountUser account_2_2 = new AccountUserBuilder("3")
+                    .WithDisplayName("User 2 Group 2")
+                    .WithEmail("user1@account.vertigo.io")
+                    .Build();
+
+            accountManager.GetStore().SaveAccounts(new List<AccountUser>() { account_2_1, account_2_2 });
+            accountManager.GetStore().SaveGroup(accountGroup_2);
+            accountManager.GetStore().Attach(account_2_1.Id, accountGroup_2.Id);
+            accountManager.GetStore().Attach(account_2_2.Id, accountGroup_2.Id);
+
+            // Selector 1 created to Item 1
+            SelectorDefinition selector_1 = new SelectorDefinition(null, 1, accountGroup_1.Id);
+            ruleManager.AddSelector(selector_1);
+
+            RuleFilterDefinition filterDefinition_1_1 = new RuleFilterDefinition(null, "Division", "=", "BTL", selector_1.Id);
+            ruleManager.AddFilter(filterDefinition_1_1);
+
+            RuleFilterDefinition filterDefinition_1_2 = new RuleFilterDefinition(null, "Entity", "=", "ENT", selector_1.Id);
+            ruleManager.AddFilter(filterDefinition_1_2);
+
+            // Selector 2 created to Item 1
+            SelectorDefinition selector_2 = new SelectorDefinition(null, 1, accountGroup_2.Id);
+            ruleManager.AddSelector(selector_2);
+
+            RuleFilterDefinition filterDefinition_2_1 = new RuleFilterDefinition(null, "Division", "=", "BTL", selector_2.Id);
+            ruleManager.AddFilter(filterDefinition_2_1);
+
+            RuleFilterDefinition filterDefinition_2_2 = new RuleFilterDefinition(null, "Nom", "=", "DONALD", selector_2.Id);
+            ruleManager.AddFilter(filterDefinition_2_2);
+
+            // 
+            MyDummyDtObject myDummyDtObject = new MyDummyDtObject();
+            myDummyDtObject.Division = "BTL";
+
+            // The entity only has entity set to ENT. No selectors should match
+            IList<AccountUser> selectedAccounts_1 = ruleManager.SelectAccounts(1, myDummyDtObject, RuleConstants.EmptyRuleConstants);
+
+            Assert.IsNotNull(selectedAccounts_1);
+            Assert.AreEqual(selectedAccounts_1.Count, 0);
+
+            // Set entity to ENT
+            myDummyDtObject.Entity = "ENT";
+            // Only Group 1 should match 
+            IList<AccountUser> selectedAccounts_2 = ruleManager.SelectAccounts(1, myDummyDtObject, RuleConstants.EmptyRuleConstants);
+
+            Assert.IsNotNull(selectedAccounts_2);
+            Assert.AreEqual(selectedAccounts_2.Count, 2);
+            CollectionAssert.AreEquivalent(new List<AccountUser>() { account_1_1, account_1_2 }, (List<AccountUser>)selectedAccounts_2);
+
+            // Set entity to XXX
+            myDummyDtObject.Entity = "XXX";
+            myDummyDtObject.Nom = "DONALD";
+            // Only Group 2 should match 
+            IList<AccountUser> selectedAccounts_3 = ruleManager.SelectAccounts(1, myDummyDtObject, RuleConstants.EmptyRuleConstants);
+
+            Assert.IsNotNull(selectedAccounts_3);
+            Assert.AreEqual(selectedAccounts_3.Count, 2);
+            CollectionAssert.AreEquivalent(new List<AccountUser>() { account_2_1, account_2_2 }, (List<AccountUser>)selectedAccounts_3);
+
+            // Set entity to ENT
+            myDummyDtObject.Entity = "ENT";
+            // Group 1 and Group 2 should match 
+            IList<AccountUser> selectedAccounts_4 = ruleManager.SelectAccounts(1, myDummyDtObject, RuleConstants.EmptyRuleConstants);
+
+            Assert.IsNotNull(selectedAccounts_4);
+            Assert.AreEqual(selectedAccounts_4.Count, 4);
+            CollectionAssert.AreEquivalent(new List<AccountUser>() { account_1_1, account_1_2, account_2_1, account_2_2 }, (List<AccountUser>)selectedAccounts_4);
+
+        }
+
+    }
+
+}

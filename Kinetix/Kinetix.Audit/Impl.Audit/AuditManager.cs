@@ -8,9 +8,8 @@ using System.Threading.Tasks;
 namespace Kinetix.Audit
 {
     [ServiceBehavior(ConcurrencyMode = ConcurrencyMode.Multiple, InstanceContextMode = InstanceContextMode.PerCall, IncludeExceptionDetailInFaults = true)]
-    public sealed class AuditManager : IAuditManager, IDisposable
+    public sealed class AuditManager : IAuditManager
     {
-        private static AuditManager _instance;
         private readonly IAuditTraceStorePlugin _auditTraceStorePlugin;
 
         public AuditManager(IAuditTraceStorePlugin auditTraceStorePlugin)
@@ -33,26 +32,5 @@ namespace Kinetix.Audit
             return _auditTraceStorePlugin.ReadTrace(idAuditTrace);
         }
 
-        /// <summary>
-        /// Retourne un singleton.
-        /// </summary>
-        public static AuditManager Instance
-        {
-            get
-            {
-                if (_instance == null)
-                {
-                    _instance = new AuditManager(new MemoryAuditTraceStorePlugin());
-                }
-
-                return _instance;
-            }
-        }
-
-        public void Dispose()
-        {
-            _instance = null;
-            GC.SuppressFinalize(this);
-        }
     }
 }

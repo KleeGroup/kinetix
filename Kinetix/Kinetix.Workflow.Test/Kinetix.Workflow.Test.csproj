@@ -3,11 +3,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{84499E7F-1774-450E-B29E-49FDF0D76709}</ProjectGuid>
+    <ProjectGuid>{E3F2BE57-955F-43AE-9350-C55249B5F2FF}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Kinetix.Audit.Test</RootNamespace>
-    <AssemblyName>Kinetix.Audit.Test</AssemblyName>
+    <RootNamespace>Kinetix.Workflow.Test</RootNamespace>
+    <AssemblyName>Kinetix.Workflow.Test</AssemblyName>
     <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -36,19 +36,19 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Practices.ServiceLocation, Version=1.3.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\CommonServiceLocator.1.3\lib\portable-net4+sl5+netcore45+wpa81+wp8\Microsoft.Practices.ServiceLocation.dll</HintPath>
+      <HintPath>..\packages\CommonServiceLocator.1.3\lib\portable-net4+sl5+netcore45+wpa81+wp8\Microsoft.Practices.ServiceLocation.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.Practices.Unity, Version=4.0.0.0, Culture=neutral, PublicKeyToken=6d32ff45e0ccc69f, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Unity.4.0.1\lib\net45\Microsoft.Practices.Unity.dll</HintPath>
+      <HintPath>..\packages\Unity.4.0.1\lib\net45\Microsoft.Practices.Unity.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.Practices.Unity.Configuration, Version=4.0.0.0, Culture=neutral, PublicKeyToken=6d32ff45e0ccc69f, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Unity.4.0.1\lib\net45\Microsoft.Practices.Unity.Configuration.dll</HintPath>
+      <HintPath>..\packages\Unity.4.0.1\lib\net45\Microsoft.Practices.Unity.Configuration.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.Practices.Unity.RegistrationByConvention, Version=4.0.0.0, Culture=neutral, PublicKeyToken=6d32ff45e0ccc69f, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Unity.4.0.1\lib\net45\Microsoft.Practices.Unity.RegistrationByConvention.dll</HintPath>
+      <HintPath>..\packages\Unity.4.0.1\lib\net45\Microsoft.Practices.Unity.RegistrationByConvention.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -66,17 +66,31 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="AuditTest.cs" />
+    <Compile Include="MemoryItemStorePlugin.cs" />
+    <Compile Include="MyDummyDtObject.cs" />
+    <Compile Include="WorkflowManagerTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Kinetix.Audit\Kinetix.Audit.csproj">
-      <Project>{D0186E5D-68C4-4B00-99C8-D8558A13822E}</Project>
+    <ProjectReference Include="..\Kinetix.Account\Kinetix.Account.csproj">
+      <Project>{f15fcf81-98cb-4f02-be27-440411684143}</Project>
+      <Name>Kinetix.Account</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Kinetix.Audit\Kinetix.Audit.csproj">
+      <Project>{d0186e5d-68c4-4b00-99c8-d8558a13822e}</Project>
       <Name>Kinetix.Audit</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Kinetix.Test\Kinetix.Test.csproj">
+    <ProjectReference Include="..\Kinetix.Rules\Kinetix.Rules.csproj">
+      <Project>{2a53dde2-180d-4653-80e2-055f8ecaf1d3}</Project>
+      <Name>Kinetix.Rules</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Kinetix.Test\Kinetix.Test.csproj">
       <Project>{39AF2ADD-55E0-41C4-8DD6-65DFEB63A441}</Project>
       <Name>Kinetix.Test</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Kinetix.Workflow\Kinetix.Workflow.csproj">
+      <Project>{d85ee99c-8fb5-4347-9ee2-cec9f334176f}</Project>
+      <Name>Kinetix.Workflow</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

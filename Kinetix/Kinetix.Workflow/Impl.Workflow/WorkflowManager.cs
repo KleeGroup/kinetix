@@ -7,8 +7,11 @@ using Kinetix.Workflow.instance;
 using Kinetix.Workflow.model;
 using System.Linq;
 using Kinetix.Workflow.Workflow;
+using System.ServiceModel;
+
 
 namespace Kinetix.Workflow {
+    [ServiceBehavior(ConcurrencyMode = ConcurrencyMode.Multiple, InstanceContextMode = InstanceContextMode.PerCall, IncludeExceptionDetailInFaults = true)]
     public sealed class WorkflowManager : IWorkflowManager {
         private readonly IWorkflowStorePlugin _workflowStorePlugin;
         private readonly IItemStorePlugin _itemStorePlugin;
@@ -109,7 +112,7 @@ namespace Kinetix.Workflow {
         {
             WfActivity wfActivity = new WfActivity();
             wfActivity.CreationDate = DateTime.Now;
-            wfActivity.WfadId = (int)activityDefinition.WfadId;
+            wfActivity.WfadId = activityDefinition.WfadId.Value;
             wfActivity.WfwId = wfWorkflow.WfwId.Value;
             wfActivity.IsAuto = isAuto;
 
@@ -121,7 +124,7 @@ namespace Kinetix.Workflow {
         {
             WfActivityDefinition activityDefinition = _workflowStorePlugin.ReadActivityDefinition(wfActivityDefinitionId);
 
-            object obj = _itemStorePlugin.ReadItem((int)wfWorkflow.ItemId);
+            object obj = _itemStorePlugin.ReadItem(wfWorkflow.ItemId.Value);
             int? wfCurrentActivityId = null;
             bool endReached = false;
             WfActivity wfActivityCurrent = currentActivity;
@@ -136,7 +139,15 @@ namespace Kinetix.Workflow {
                 }
                 activityDefinition = _workflowStorePlugin.FindNextActivity(wfActivityCurrent);
 
-                wfActivityCurrent = CreateActivity(activityDefinition, wfWorkflow, false);
+                WfActivity nextActivity = _workflowStorePlugin.FindActivityByDefinitionWorkflow(wfWorkflow, activityDefinition);
+                if (nextActivity == null)
+                {
+                    wfActivityCurrent = CreateActivity(activityDefinition, wfWorkflow, false);
+                }
+                else
+                {
+                    wfActivityCurrent = nextActivity;
+                }
 
                 wfCurrentActivityId = wfActivityCurrent.WfaId;
             }
@@ -208,7 +219,10 @@ namespace Kinetix.Workflow {
 
         public void EndInstance(WfWorkflow wfWorkflow) {
             Debug.Assert(wfWorkflow != null);
-            Debug.Assert(WfCodeStatusWorkflow.Sta.ToString().Equals(wfWorkflow.WfsCode) || WfCodeStatusWorkflow.Pau.ToString().Equals(wfWorkflow.WfsCode), "A workflow must be started or paused before ending");
+            if (!(WfCodeStatusWorkflow.Sta.ToString().Equals(wfWorkflow.WfsCode) || WfCodeStatusWorkflow.Pau.ToString().Equals(wfWorkflow.WfsCode)))
+            {
+                throw new System.InvalidOperationException("A workflow must be started or paused before ending");
+            }
             //---
             wfWorkflow.WfsCode = WfCodeStatusWorkflow.End.ToString();
             _workflowStorePlugin.UpdateWorkflowInstance(wfWorkflow);
@@ -415,7 +429,10 @@ namespace Kinetix.Workflow {
 
         public void PauseInstance(WfWorkflow wfWorkflow) {
             Debug.Assert(wfWorkflow != null);
-            Debug.Assert(WfCodeStatusWorkflow.Sta.ToString().Equals(wfWorkflow.WfsCode), "A workflow must be started before pausing");
+            if (!WfCodeStatusWorkflow.Sta.ToString().Equals(wfWorkflow.WfsCode))
+            {
+                throw new System.InvalidOperationException("A workflow must be started before pausing");
+            }
             //---
             wfWorkflow.WfsCode = WfCodeStatusWorkflow.Pau.ToString();
             _workflowStorePlugin.UpdateWorkflowInstance(wfWorkflow);
@@ -435,22 +452,28 @@ namespace Kinetix.Workflow {
 
         public void ResumeInstance(WfWorkflow wfWorkflow) {
             Debug.Assert(wfWorkflow != null);
-            Debug.Assert(WfCodeStatusWorkflow.Pau.ToString().Equals(wfWorkflow.WfsCode), "A workflow must be paused before resuming");
+            if (!WfCodeStatusWorkflow.Pau.ToString().Equals(wfWorkflow.WfsCode))
+            {
+                throw new System.InvalidOperationException("A workflow must be paused before resuming");
+            }
             //---
             wfWorkflow.WfsCode = WfCodeStatusWorkflow.Sta.ToString();
             _workflowStorePlugin.UpdateWorkflowInstance(wfWorkflow);
         }
 
         public void SaveDecision(WfWorkflow wfWorkflow, WfDecision wfDecision) {
-            Debug.Assert(WfCodeStatusWorkflow.Sta.ToString().Equals(wfWorkflow.WfsCode), "A workflow must be started before saving decision");
+            if (!WfCodeStatusWorkflow.Sta.ToString().Equals(wfWorkflow.WfsCode))
+            {
+                throw new System.InvalidOperationException("A workflow must be started before saving decision");
+            }
             //---
-            WfActivity currentActivity = _workflowStorePlugin.ReadActivity((int)wfWorkflow.WfaId2);
+            WfActivity currentActivity = _workflowStorePlugin.ReadActivity(wfWorkflow.WfaId2.Value);
 
             // Attach decision to the activity
             currentActivity.IsAuto = false;
             _workflowStorePlugin.UpdateActivity(currentActivity);
 
-            wfDecision.WfaId = (int)currentActivity.WfaId;
+            wfDecision.WfaId = currentActivity.WfaId.Value;
             if (wfDecision.Id == null)
             {
                 _workflowStorePlugin.CreateDecision(wfDecision);
@@ -502,9 +525,12 @@ namespace Kinetix.Workflow {
         }
 
         public void SaveDecisionAndGoToNextActivity(WfWorkflow wfWorkflow, string transitionName, WfDecision wfDecision) {
-            Debug.Assert(WfCodeStatusWorkflow.Sta.ToString().Equals(wfWorkflow.WfsCode), "A workflow must be started before saving a decision");
+            if (!WfCodeStatusWorkflow.Sta.ToString().Equals(wfWorkflow.WfsCode))
+            {
+                throw new System.InvalidOperationException("A workflow must be started before saving a decision");
+            }
             //---
-            WfActivity currentActivity = _workflowStorePlugin.ReadActivity((int)wfWorkflow.WfaId2);
+            WfActivity currentActivity = _workflowStorePlugin.ReadActivity(wfWorkflow.WfaId2.Value);
 
             // Updating the decision
             SaveDecision(wfWorkflow, wfDecision);
@@ -545,14 +571,25 @@ namespace Kinetix.Workflow {
                 if (_workflowStorePlugin.HasNextActivity(currentActivity, transitionName)) {
                     WfActivityDefinition nextActivityDefinition = _workflowStorePlugin.FindNextActivity(currentActivity, transitionName);
 
-                    DateTime now = DateTime.Now;
+                    WfActivity nextActivity = _workflowStorePlugin.FindActivityByDefinitionWorkflow(wfWorkflow, nextActivityDefinition);
+                    if (nextActivity == null)
+                    {
+                        nextActivity = new WfActivity();
+                    }
                     // Creating the next activity to validate.
-                    WfActivity nextActivity = new WfActivity();
-                    nextActivity.CreationDate = now;
+                    nextActivity.CreationDate = DateTime.Now;
                     nextActivity.WfadId = nextActivityDefinition.WfadId.Value;
                     nextActivity.WfwId = wfWorkflow.WfwId.Value;
                     nextActivity.IsAuto = false;
-                    _workflowStorePlugin.CreateActivity(nextActivity);
+                    if (nextActivity.WfaId == null)
+                    {
+                        _workflowStorePlugin.CreateActivity(nextActivity);
+                    }
+                    else
+                    {
+                        _workflowStorePlugin.UpdateActivity(nextActivity);
+                    }
+                    
 
                     wfWorkflow.WfaId2 = nextActivity.WfaId;
                     _workflowStorePlugin.UpdateWorkflowInstance(wfWorkflow);
@@ -575,7 +612,10 @@ namespace Kinetix.Workflow {
         public void StartInstance(WfWorkflow wfWorkflow)
         {
             Debug.Assert(wfWorkflow != null);
-            Debug.Assert(WfCodeStatusWorkflow.Cre.ToString().Equals(wfWorkflow.WfsCode), "A workflow must be created before starting");
+            if (!WfCodeStatusWorkflow.Cre.ToString().Equals(wfWorkflow.WfsCode))
+            {
+                throw new System.InvalidOperationException("A workflow must be created before starting");
+            }
             //---
             wfWorkflow.WfsCode = WfCodeStatusWorkflow.Sta.ToString();
 
@@ -844,7 +884,6 @@ namespace Kinetix.Workflow {
 
         public IList<WfWorkflowDecision> GetWorkflowDecision(int wfwId)
         {
-
             //Get the workflow from id
             WfWorkflow wfWorkflow = _workflowStorePlugin.ReadWorkflowInstanceById(wfwId);
 

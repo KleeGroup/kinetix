@@ -4,8 +4,6 @@ using Kinetix.Workflow.model;
 
 namespace Kinetix.Workflow {
     public class WfTransitionBuilder {
-        private readonly static string DEFAULT_VALUE_NAME = "default";
-
         private string myName;
         private int wfadIdFrom;
         private int wfadIdTo;
@@ -37,7 +35,7 @@ namespace Kinetix.Workflow {
 
         public WfTransitionDefinition Build() {
             WfTransitionDefinition wfTransitionDefinition = new WfTransitionDefinition();
-            wfTransitionDefinition.Name = (myName == null ? DEFAULT_VALUE_NAME : myName);
+            wfTransitionDefinition.Name = (myName == null ? WfCodeTransition.Default.ToString() : myName);
             wfTransitionDefinition.WfadIdFrom = wfadIdFrom;
             wfTransitionDefinition.WfadIdTo = wfadIdTo;
             wfTransitionDefinition.WfwdId = wfwdId;
