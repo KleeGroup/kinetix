@@ -56,21 +56,21 @@ namespace Kinetix.Workflow
         {
             Debug.Assert(wfWorkflowDefinition != null);
             //--
-            int? idActivity = wfWorkflowDefinition.WfadId;
-            if (idActivity == null)
+            int? idActivityDefinition = wfWorkflowDefinition.WfadId;
+            if (idActivityDefinition == null)
             {
                 //The workflow don't have a starting activity
                 return 0;
             }
             WfTransitionDefinition transitionNext;
-            transitionsNext.TryGetValue(idActivity + "|" + WfCodeTransition.Default.ToString(), out transitionNext);
+            transitionsNext.TryGetValue(idActivityDefinition + "|" + WfCodeTransition.Default.ToString(), out transitionNext);
 
             int count = 0;
             while (transitionNext != null)
             {
                 WfActivityDefinition wfNextActivityDefinition = inMemoryActivityDefinitionStore[transitionNext.WfadIdTo];
-                idActivity = wfNextActivityDefinition.WfadId;
-                transitionsNext.TryGetValue(idActivity + "|" + WfCodeTransition.Default.ToString(), out transitionNext);
+                idActivityDefinition = wfNextActivityDefinition.WfadId;
+                transitionsNext.TryGetValue(idActivityDefinition + "|" + WfCodeTransition.Default.ToString(), out transitionNext);
                 count++;
             }
 
@@ -211,7 +211,7 @@ namespace Kinetix.Workflow
 
         public WfActivityDefinition FindNextActivity(WfActivity activity, string transitionName)
         {
-            WfTransitionDefinition transitionNext = transitionsNext[activity.WfaId + "|" + transitionName];
+            WfTransitionDefinition transitionNext = transitionsNext[activity.WfadId + "|" + transitionName];
             return inMemoryActivityDefinitionStore[transitionNext.WfadIdTo];
         }
 
@@ -222,7 +222,7 @@ namespace Kinetix.Workflow
 
         public bool HasNextActivity(WfActivity activity, string transitionName)
         {
-            return transitionsNext.ContainsKey(activity.WfaId + "|" + transitionName);
+            return transitionsNext.ContainsKey(activity.WfadId + "|" + transitionName);
         }
 
         public WfActivity ReadActivity(int wfadId)
@@ -383,12 +383,13 @@ namespace Kinetix.Workflow
 
             return collect;
         }
+
         public WfActivity FindActivityByDefinitionWorkflow(WfWorkflow wfWorkflow, WfActivityDefinition wfActivityDefinition)
         {
             IList<WfActivity> collect = new List<WfActivity>();
             foreach (WfActivity wfActivity in inMemoryActivityStore.Values)
             {
-                if (wfWorkflow.WfwId.Equals(wfActivity.WfwId) && wfActivityDefinition.WfadId.Equals(wfActivityDefinition.WfadId))
+                if (wfActivityDefinition.WfadId.Equals(wfActivity.WfadId))
                 {
                     return wfActivity;
                 }

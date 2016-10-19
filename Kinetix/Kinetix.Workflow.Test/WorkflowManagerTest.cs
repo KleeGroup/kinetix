@@ -194,8 +194,8 @@ namespace Kinetix.Workflow.Test
         {
             Assert.AreEqual(activityDefinition.WfadId, wfWorkflowDecision.activityDefinition.WfadId);
             Assert.IsNotNull(wfWorkflowDecision.activity);
-            Assert.AreEqual(activityDefinition.WfadId, wfWorkflowDecision.activity.WfadId);
             Assert.IsNotNull(wfWorkflowDecision.activity.WfaId);
+            Assert.AreEqual(activityDefinition.WfadId, wfWorkflowDecision.activity.WfadId);
         }
 
         private void assertFirstDecisionEquals(WfDecision wfDecisionAct, WfWorkflowDecision wfWorkflowDecision)
@@ -289,10 +289,7 @@ namespace Kinetix.Workflow.Test
             Assert.IsNotNull(workflowDecisions);
             Assert.AreEqual(workflowDecisions.Count, 3);
             //Check Step 1
-            Assert.AreEqual(firstActivity.WfadId, workflowDecisions[0].activityDefinition.WfadId);
-            Assert.IsNotNull(workflowDecisions[0].activity);
-            Assert.AreEqual(firstActivity.WfadId, workflowDecisions[0].activity.WfadId);
-            Assert.IsNotNull(workflowDecisions[0].activity.WfaId);
+            assertActivityExist(firstActivity, workflowDecisions[0]);
             Assert.IsNull(workflowDecisions[0].decisions);
             assertHasOneGroup(accountGroup, workflowDecisions[0]);
             //Check Step 3
@@ -598,6 +595,8 @@ namespace Kinetix.Workflow.Test
             Assert.AreEqual(thirdActivity.WfadId, recalculActivity.WfadId);
 
             // We add back the rule removed
+            rule1Act1.Id = null;
+            condition1Rule1Act1.Id = null;
             _workflowManager.AddRule(firstActivity, rule1Act1, new List<RuleConditionDefinition>() { condition1Rule1Act1 });
 
             //We call the Recalculation of the Workflow
