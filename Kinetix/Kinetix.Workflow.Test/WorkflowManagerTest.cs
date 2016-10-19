@@ -433,10 +433,14 @@ namespace Kinetix.Workflow.Test
             // Activity 4 should now be validated. The current activity is now activity 4, with the end status
             currentActivityId = wfWorkflow.WfaId2.Value;
             Assert.AreEqual(currentActivityId, fourthActivity.WfadId);
-            Assert.AreEqual(wfWorkflow.WfsCode, WfCodeStatusWorkflow.End.ToString());
+
+            // No Automatic ending.
+            //Assert.AreEqual(wfWorkflow.WfsCode, WfCodeStatusWorkflow.End.ToString());
+            Assert.AreEqual(wfWorkflow.WfsCode, WfCodeStatusWorkflow.Sta.ToString());
 
             WfWorkflow wfWorkflowFetched5 = _workflowManager.GetWorkflowInstance(wfWorkflow.WfwId.Value);
-            Assert.AreEqual(wfWorkflowFetched5.WfsCode, WfCodeStatusWorkflow.End.ToString());
+            //Assert.AreEqual(wfWorkflowFetched5.WfsCode, WfCodeStatusWorkflow.End.ToString());
+            Assert.AreEqual(wfWorkflowFetched5.WfsCode, WfCodeStatusWorkflow.Sta.ToString());
         }
 
         [TestMethod]
