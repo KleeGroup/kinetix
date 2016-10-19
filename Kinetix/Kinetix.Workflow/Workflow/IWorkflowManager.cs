@@ -107,6 +107,12 @@ namespace Kinetix.Workflow
         IList<WfDecision> GetDecisions(WfActivity wfActivity);
 
         /// <summary>
+        /// Delete one decision
+        /// </summary>
+        /// <param name="wfDecision">The decision to remove</param>
+        void DeleteDecision(WfDecision wfDecision);
+
+        /// <summary>
         /// Save the decision for the current activity and go to the next activity using the default transition
         /// </summary>
         /// <param name="wfWorkflow">wfWorkflow</param>

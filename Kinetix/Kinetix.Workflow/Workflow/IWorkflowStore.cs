@@ -77,6 +77,12 @@ namespace Kinetix.Workflow
         void DeleteActivity(WfActivity wfActivity);
 
         /// <summary>
+        /// Delete all activities for the ActivityDefinition id.
+        /// </summary>
+        /// <param name="wfadId">ActivityDefinition id</param>
+        void DeleteActivities(int wfadId);
+
+        /// <summary>
         /// Increment position by 1 for all activity definition >= position
         /// </summary>
         /// <param name="wfwdId"></param>
@@ -94,6 +100,13 @@ namespace Kinetix.Workflow
         /// </summary>
         /// <param name="wfDecision">wfDecision</param>
         void UpdateDecision(WfDecision wfDecision);
+
+
+        /// <summary>
+        /// Delete a Decision
+        /// </summary>
+        /// <param name="wfDecision">Decision to delete</param>
+        void DeleteDecision(WfDecision wfDecision);
 
         /// <summary>
         /// Find all decision for an activity
@@ -249,9 +262,9 @@ namespace Kinetix.Workflow
         /// <summary>
         /// Find the next activity using the default transition
         /// </summary>
-        /// <param name="activity">activity</param>
+        /// <param name="wfadId">wfadId</param>
         /// <returns>the next activity definition</returns>
-        WfActivityDefinition FindNextActivity(WfActivity activity);
+        WfActivityDefinition FindNextActivity(int wfadId);
 
         /// <summary>
         /// Find the next activity using the provided transition name.
@@ -259,14 +272,7 @@ namespace Kinetix.Workflow
         /// <param name="activity">activity</param>
         /// <param name="transitionName">transitionName</param>
         /// <returns>the next activity definition</returns>
-        WfActivityDefinition FindNextActivity(WfActivity activity, String transitionName);
-
-        /// <summary>
-        /// Find the next activity using the provided transition name.
-        /// </summary>
-        /// <returns>the list of transitions ordered from start to end.</returns>
-        IList<WfActivityDefinition> FindActivityMatchingRules();
-
+        WfActivityDefinition FindNextActivity(int wfadId, String transitionName);
 
         /// <summary>
         /// Find all activities for a workflow
@@ -281,6 +287,13 @@ namespace Kinetix.Workflow
         /// <param name="wfWorkflow"></param>
         /// <returns></returns>
         IList<WfDecision> FindDecisionsByWorkflowId(WfWorkflow wfWorkflow);
+
+
+        /// <summary>
+        /// Reset (set to null) the current activity (wfaid2) of all worklow for the activity linked to the provided activityDefinition
+        /// </summary>
+        /// <param name="wfActivityDefinition"></param>
+        void UnsetCurrentActivity(WfActivityDefinition wfActivityDefinition);
 
     }
 }

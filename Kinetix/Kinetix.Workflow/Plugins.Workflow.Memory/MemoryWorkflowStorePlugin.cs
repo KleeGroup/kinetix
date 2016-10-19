@@ -98,6 +98,11 @@ namespace Kinetix.Workflow
             inMemoryDecisionStore[generatedId] = wfDecision;
         }
 
+        public void DeleteDecision(WfDecision wfDecision)
+        {
+            inMemoryDecisionStore.Remove(wfDecision.Id);
+        }
+
         public void CreateWorkflowDefinition(WfWorkflowDefinition workflowDefinition)
         {
             int generatedId = Interlocked.Increment(ref memoryWorkflowDefinitionSequenceGenerator);
@@ -157,11 +162,6 @@ namespace Kinetix.Workflow
             return ReadActivityDefinition(transitionNext.WfadIdTo);
         }
 
-        public IList<WfActivityDefinition> FindActivityMatchingRules()
-        {
-            throw new NotImplementedException();
-        }
-
         public IList<WfDecision> FindAllDecisionByActivity(WfActivity wfActivity)
         {
             Debug.Assert(wfActivity != null);
@@ -204,14 +204,14 @@ namespace Kinetix.Workflow
             return retAllDefaultActivities;
         }
 
-        public WfActivityDefinition FindNextActivity(WfActivity activity)
+        public WfActivityDefinition FindNextActivity(int wfadId)
         {
-            return FindNextActivity(activity, WfCodeTransition.Default.ToString());
+            return FindNextActivity(wfadId, WfCodeTransition.Default.ToString());
         }
 
-        public WfActivityDefinition FindNextActivity(WfActivity activity, string transitionName)
+        public WfActivityDefinition FindNextActivity(int wfadId, string transitionName)
         {
-            WfTransitionDefinition transitionNext = transitionsNext[activity.WfadId + "|" + transitionName];
+            WfTransitionDefinition transitionNext = transitionsNext[wfadId + "|" + transitionName];
             return inMemoryActivityDefinitionStore[transitionNext.WfadIdTo];
         }
 
@@ -448,6 +448,40 @@ namespace Kinetix.Workflow
                 }
             }
 
+        }
+
+        public void DeleteActivities(int wfadId)
+        {
+            IList<int> wfaIds = new List<int>();
+
+            foreach(WfActivity wfActivity in inMemoryActivityStore.Values)
+            {
+                if (wfadId.Equals(wfActivity.WfadId))
+                {
+                    inMemoryActivityStore.Remove(wfActivity.WfaId);
+                    wfaIds.Add(wfActivity.WfaId.Value);
+                }
+            }
+
+            foreach (WfDecision wfDecision in inMemoryDecisionStore.Values)
+            {
+                if (wfaIds.Contains(wfDecision.WfaId))
+                {
+                    inMemoryDecisionStore.Remove(wfDecision.Id);
+                }
+            }
+        }
+
+        public void UnsetCurrentActivity(WfActivityDefinition wfActivityDefinition)
+        {
+            foreach(WfWorkflow wf in inMemoryWorkflowInstanceStore.Values)
+            {
+                WfActivity currentActivity = ReadActivity(wf.WfaId2.Value);
+                if (wf.WfaId2.Equals(currentActivity.WfaId) && wfActivityDefinition.WfadId.Equals(currentActivity.WfadId))
+                {
+                    wf.WfaId2 = null;
+                }
+            }
         }
     }
 }

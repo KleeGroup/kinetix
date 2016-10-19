@@ -137,7 +137,7 @@ namespace Kinetix.Workflow {
                     endReached = true;
                     break;
                 }
-                activityDefinition = _workflowStorePlugin.FindNextActivity(wfActivityCurrent);
+                activityDefinition = _workflowStorePlugin.FindNextActivity(wfActivityCurrent.WfadId);
 
                 WfActivity nextActivity = _workflowStorePlugin.FindActivityByDefinitionWorkflow(wfWorkflow, activityDefinition);
                 if (nextActivity == null)
@@ -303,7 +303,7 @@ namespace Kinetix.Workflow {
 
             if (trFromRef != null && trFromRef.WfadIdTo.Equals(wfActivityToMove.WfadId))
             {
-                //The activity to move is already positonned after the ref activity.
+                // The activity is already positonned after the ref activity.
                 // Nothing to do in that case.
                 return;
             }
@@ -365,7 +365,7 @@ namespace Kinetix.Workflow {
 
             if (trToRef != null && trToRef.WfadIdFrom.Equals(wfActivityToMove.WfadId))
             {
-                //The activity to move is already positonned before the ref activity.
+                //The activity is already positonned before the ref activity.
                 // Nothing to do in that case.
                 return;
             }
@@ -439,6 +439,31 @@ namespace Kinetix.Workflow {
         }
 
         public void RemoveActivity(WfActivityDefinition wfActivityDefinition) {
+
+            WfWorkflowDefinition wfD = _workflowStorePlugin.ReadWorkflowDefinition(wfActivityDefinition.WfwdId);
+
+            if (wfD.WfwdId.Equals(wfActivityDefinition.WfwdId))
+            {
+                //The Activity Definition to remove is the start activity
+                WfActivityDefinition wfActivityDefinitionNext = _workflowStorePlugin.FindNextActivity(wfActivityDefinition.WfadId.Value);
+
+                if (wfActivityDefinitionNext != null)
+                {
+                    // The first activity definition will be the next definition
+                    wfD.WfadId = wfActivityDefinitionNext.WfadId;
+                    _workflowStorePlugin.UpdateWorkflowDefinition(wfD);
+                }
+
+            }
+
+            IList<RuleDefinition> rules = _ruleManager.GetRulesForItemId(wfActivityDefinition.WfadId.Value);
+            IList<SelectorDefinition> selectors = _ruleManager.GetSelectorsForItemId(wfActivityDefinition.WfadId.Value);
+            _ruleManager.RemoveRules(rules);
+            _ruleManager.RemoveSelectors(selectors);
+
+            _workflowStorePlugin.UnsetCurrentActivity(wfActivityDefinition);
+
+            _workflowStorePlugin.DeleteActivities(wfActivityDefinition.WfadId.Value);
             _workflowStorePlugin.DeleteActivityDefinition(wfActivityDefinition);
         }
 
@@ -569,7 +594,7 @@ namespace Kinetix.Workflow {
             if (canGoToNextActivity) {
 
                 if (_workflowStorePlugin.HasNextActivity(currentActivity, transitionName)) {
-                    WfActivityDefinition nextActivityDefinition = _workflowStorePlugin.FindNextActivity(currentActivity, transitionName);
+                    WfActivityDefinition nextActivityDefinition = _workflowStorePlugin.FindNextActivity(currentActivity.WfadId, transitionName);
 
                     WfActivity nextActivity = _workflowStorePlugin.FindActivityByDefinitionWorkflow(wfWorkflow, nextActivityDefinition);
                     if (nextActivity == null)
@@ -599,12 +624,17 @@ namespace Kinetix.Workflow {
 
                     if (endReached)
                     {
-                        EndInstance(wfWorkflow);
+                        // Stepping back : No Automatic ending. 
+                        // TODO: Remove the commented code when the behavior will be validated
+                        //EndInstance(wfWorkflow);
                     }
                    
                 } else {
                     // No next activity to go. Ending the workflow
-                    EndInstance(wfWorkflow);
+
+                    // Stepping back : No Automatic ending. 
+                    // TODO: Remove the commented code when the behavior will be validated
+                    //EndInstance(wfWorkflow);
                 }
             }
         }
@@ -634,7 +664,9 @@ namespace Kinetix.Workflow {
 
             if (endReached)
             {
-                EndInstance(wfWorkflow);
+                // Stepping back : No Automatic ending. 
+                // TODO: Remove the commented code when the behavior will be validated
+                //EndInstance(wfWorkflow);
             }
         }
 
@@ -708,6 +740,14 @@ namespace Kinetix.Workflow {
             _ruleManager.RemoveSelectors(selectors);
         }
 
+        public void DeleteDecision(WfDecision wfDecision)
+        {
+            Debug.Assert(wfDecision != null);
+            Debug.Assert(wfDecision.Id != null);
+            //---
+            _workflowStorePlugin.DeleteDecision(wfDecision);
+        }
+
         public WfActivity GetActivity(WfWorkflow wfWorkflow, WfActivityDefinition wfActivityDefinition)
         {
             return _workflowStorePlugin.FindActivityByDefinitionWorkflow(wfWorkflow, wfActivityDefinition);
@@ -743,12 +783,30 @@ namespace Kinetix.Workflow {
 
         private void RecalculateWorkflow(IList<WfActivityDefinition> activityDefinitions, RuleConstants ruleConstants, WfWorkflow wf)
         {
+
+            if (activityDefinitions.Count == 0)
+            {
+                // If the workflow don't have any activity definition, no need to recalculate.
+                return;
+            }
+
             object obj = _itemStorePlugin.ReadItem(wf.ItemId.Value);
             IList<WfActivity> allActivities = _workflowStorePlugin.FindActivitiesByWorkflowId(wf);
             IDictionary<int, WfActivity> activities = allActivities.ToDictionary(a => a.WfadId);
-            WfActivity currentActivity = allActivities.Where(a => a.WfaId.Equals(wf.WfaId2.Value)).First();
-
-            bool isLastPreviousCurrentActivityReached = false;
+            WfActivity currentActivity;
+            bool isLastPreviousCurrentActivityReached;
+            if (wf.WfaId2 == null)
+            {
+                //If the first(s) manual Activity(ies) has(ve) been deleted, the workflow don't have a curreent activity.
+                currentActivity = null;
+                isLastPreviousCurrentActivityReached = true;
+            }
+            else
+            {
+                currentActivity = allActivities.Where(a => a.WfaId.Equals(wf.WfaId2.Value)).First();
+                isLastPreviousCurrentActivityReached = false;
+            }
+            
             bool newCurrentActivityFound = false;
 
             foreach (WfActivityDefinition activityDefinition in activityDefinitions)
@@ -876,7 +934,10 @@ namespace Kinetix.Workflow {
             {
                 // All the definitions have been iterated until the end.
                 // The workflow must be ended.
-                EndInstance(wf);
+
+                // Stepping back : No Automatic ending. 
+                // TODO: Remove the commented code when the behavior will be validated
+                //EndInstance(wf);
             }
         }
 

@@ -123,14 +123,14 @@ namespace Kinetix.Workflow {
         }
 
         [OperationContract]
-        public WfActivityDefinition FindNextActivity(WfActivity activity) {
-            return FindNextActivity(activity, WfCodeTransition.Default.ToString());
+        public WfActivityDefinition FindNextActivity(int wfadId) {
+            return FindNextActivity(wfadId, WfCodeTransition.Default.ToString());
         }
 
         [OperationContract]
-        public WfActivityDefinition FindNextActivity(WfActivity activity, string transitionName) {
+        public WfActivityDefinition FindNextActivity(int wfadId, string transitionName) {
             FilterCriteria filterCriteria = new FilterCriteria();
-            filterCriteria.Equals(WfTransitionDefinition.Cols.WFAD_ID_FROM, activity.WfadId);
+            filterCriteria.Equals(WfTransitionDefinition.Cols.WFAD_ID_FROM, wfadId);
             filterCriteria.Equals(WfTransitionDefinition.Cols.NAME, transitionName);
             WfTransitionDefinition transition = BrokerManager.GetBroker<WfTransitionDefinition>().GetByCriteria(filterCriteria);
 
@@ -301,7 +301,20 @@ namespace Kinetix.Workflow {
             var cmd = GetSqlServerCommand("IncrementActivityDefinitionPositionsAfter.sql");
             cmd.Parameters.AddWithValue(WfActivityDefinition.Cols.WFWD_ID, wfwdId);
             cmd.Parameters.AddWithValue(WfActivityDefinition.Cols.LEVEL, position);
+            cmd.ExecuteNonQuery();
+        }
 
+        public void DeleteActivities(int wfadId)
+        {
+            var cmd = GetSqlServerCommand("DeleteActivitiesByDefinitionIds.sql");
+            cmd.Parameters.AddWithValue(WfActivityDefinition.Cols.WFAD_ID, wfadId);
+            cmd.ExecuteNonQuery();
+        }
+
+        public void UnsetCurrentActivity(WfActivityDefinition wfActivityDefinition)
+        {
+            var cmd = GetSqlServerCommand("UnsetCurrentActivity.sql");
+            cmd.Parameters.AddWithValue(WfActivityDefinition.Cols.WFAD_ID, wfActivityDefinition.WfadId);
             cmd.ExecuteNonQuery();
         }
     }
