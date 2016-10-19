@@ -112,7 +112,7 @@ namespace Kinetix.Workflow {
         {
             WfActivity wfActivity = new WfActivity();
             wfActivity.CreationDate = DateTime.Now;
-            wfActivity.WfadId = (int)activityDefinition.WfadId;
+            wfActivity.WfadId = activityDefinition.WfadId.Value;
             wfActivity.WfwId = wfWorkflow.WfwId.Value;
             wfActivity.IsAuto = isAuto;
 
@@ -124,7 +124,7 @@ namespace Kinetix.Workflow {
         {
             WfActivityDefinition activityDefinition = _workflowStorePlugin.ReadActivityDefinition(wfActivityDefinitionId);
 
-            object obj = _itemStorePlugin.ReadItem((int)wfWorkflow.ItemId);
+            object obj = _itemStorePlugin.ReadItem(wfWorkflow.ItemId.Value);
             int? wfCurrentActivityId = null;
             bool endReached = false;
             WfActivity wfActivityCurrent = currentActivity;
@@ -139,7 +139,15 @@ namespace Kinetix.Workflow {
                 }
                 activityDefinition = _workflowStorePlugin.FindNextActivity(wfActivityCurrent);
 
-                wfActivityCurrent = CreateActivity(activityDefinition, wfWorkflow, false);
+                WfActivity nextActivity = _workflowStorePlugin.FindActivityByDefinitionWorkflow(wfWorkflow, activityDefinition);
+                if (nextActivity == null)
+                {
+                    wfActivityCurrent = CreateActivity(activityDefinition, wfWorkflow, false);
+                }
+                else
+                {
+                    wfActivityCurrent = nextActivity;
+                }
 
                 wfCurrentActivityId = wfActivityCurrent.WfaId;
             }
@@ -326,7 +334,7 @@ namespace Kinetix.Workflow {
             currentActivity.IsAuto = false;
             _workflowStorePlugin.UpdateActivity(currentActivity);
 
-            wfDecision.WfaId = (int)currentActivity.WfaId;
+            wfDecision.WfaId = currentActivity.WfaId.Value;
             if (wfDecision.Id == null)
             {
                 _workflowStorePlugin.CreateDecision(wfDecision);
@@ -424,14 +432,25 @@ namespace Kinetix.Workflow {
                 if (_workflowStorePlugin.HasNextActivity(currentActivity, transitionName)) {
                     WfActivityDefinition nextActivityDefinition = _workflowStorePlugin.FindNextActivity(currentActivity, transitionName);
 
-                    DateTime now = DateTime.Now;
+                    WfActivity nextActivity = _workflowStorePlugin.FindActivityByDefinitionWorkflow(wfWorkflow, nextActivityDefinition);
+                    if (nextActivity == null)
+                    {
+                        nextActivity = new WfActivity();
+                    }
                     // Creating the next activity to validate.
-                    WfActivity nextActivity = new WfActivity();
-                    nextActivity.CreationDate = now;
+                    nextActivity.CreationDate = DateTime.Now;
                     nextActivity.WfadId = nextActivityDefinition.WfadId.Value;
                     nextActivity.WfwId = wfWorkflow.WfwId.Value;
                     nextActivity.IsAuto = false;
-                    _workflowStorePlugin.CreateActivity(nextActivity);
+                    if (nextActivity.WfaId == null)
+                    {
+                        _workflowStorePlugin.CreateActivity(nextActivity);
+                    }
+                    else
+                    {
+                        _workflowStorePlugin.UpdateActivity(nextActivity);
+                    }
+                    
 
                     wfWorkflow.WfaId2 = nextActivity.WfaId;
                     _workflowStorePlugin.UpdateWorkflowInstance(wfWorkflow);

@@ -132,6 +132,11 @@ namespace Kinetix.Workflow
                 return null;
             }
 
+            if (position == 1)
+            {
+                return ReadActivityDefinition(idActivity.Value);
+            }
+
             WfTransitionDefinition transitionNext;
             transitionsNext.TryGetValue(idActivity + "|" + WfCodeTransition.Default.ToString(), out transitionNext);
 
