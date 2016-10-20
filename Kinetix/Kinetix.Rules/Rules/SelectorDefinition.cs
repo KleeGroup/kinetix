@@ -22,11 +22,11 @@ namespace Kinetix.Rules {
         /// <param name="id">Id du selector.</param>
         /// <param name="creationDate">Date de création.</param>
         /// <param name="itemId">Id de l'item.</param>
-        public SelectorDefinition(int? id, int? itemId, string groupId) {
+        public SelectorDefinition(int? id, DateTime? creationDate, int? itemId, string groupId) {
             this.Id = id;
             this.ItemId = itemId;
             this.GroupId = groupId;
-
+            this.CreationDate = creationDate;
             this.OnCreated();
         }
 

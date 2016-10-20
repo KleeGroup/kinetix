@@ -65,7 +65,19 @@ namespace Kinetix.Test
             }
         }
 
-        public abstract void TestInitialize();
+        /// <summary>
+        /// Test initialize.
+        /// </summary>
+        [TestInitialize]
+        public void TestInitialize()
+        {
+            this.Register();
+
+            /* Initialise la configuration. */
+            ConfigManager.Init();
+
+            _scope = new TransactionScope();
+        }
 
 
         public virtual void Register()

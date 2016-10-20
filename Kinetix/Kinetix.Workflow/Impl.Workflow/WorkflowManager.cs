@@ -442,19 +442,7 @@ namespace Kinetix.Workflow {
 
             WfWorkflowDefinition wfD = _workflowStorePlugin.ReadWorkflowDefinition(wfActivityDefinition.WfwdId);
 
-            if (wfD.WfwdId.Equals(wfActivityDefinition.WfwdId))
-            {
-                //The Activity Definition to remove is the start activity
-                WfActivityDefinition wfActivityDefinitionNext = _workflowStorePlugin.FindNextActivity(wfActivityDefinition.WfadId.Value);
-
-                if (wfActivityDefinitionNext != null)
-                {
-                    // The first activity definition will be the next definition
-                    wfD.WfadId = wfActivityDefinitionNext.WfadId;
-                    _workflowStorePlugin.UpdateWorkflowDefinition(wfD);
-                }
-
-            }
+            
 
             IList<RuleDefinition> rules = _ruleManager.GetRulesForItemId(wfActivityDefinition.WfadId.Value);
             IList<SelectorDefinition> selectors = _ruleManager.GetSelectorsForItemId(wfActivityDefinition.WfadId.Value);
@@ -464,6 +452,47 @@ namespace Kinetix.Workflow {
             _workflowStorePlugin.UnsetCurrentActivity(wfActivityDefinition);
 
             _workflowStorePlugin.DeleteActivities(wfActivityDefinition.WfadId.Value);
+
+            WfTransitionCriteria critFrom = new WfTransitionCriteria();
+            critFrom.WfadIdFrom = wfActivityDefinition.WfadId;
+            critFrom.TransitionName = WfCodeTransition.Default.ToString();
+            WfTransitionDefinition transitionFrom = _workflowStorePlugin.FindTransition(critFrom);
+
+            if (wfD.WfwdId.Equals(wfActivityDefinition.WfwdId))
+            {
+                //The Activity Definition to remove is the start activity
+
+                if (transitionFrom != null)
+                {
+                    // The first activity definition will be the next definition
+                    wfD.WfadId = transitionFrom.WfadIdTo;
+                    _workflowStorePlugin.UpdateWorkflowDefinition(wfD);
+                    _workflowStorePlugin.RemoveTransition(transitionFrom);
+                }
+            }
+            else
+            {
+                //The Activity Definition to remove is NOT the start activity
+                WfTransitionCriteria critTo = new WfTransitionCriteria();
+                critTo.WfadIdFrom = wfActivityDefinition.WfadId;
+                critTo.TransitionName = WfCodeTransition.Default.ToString();
+                WfTransitionDefinition transitionTo = _workflowStorePlugin.FindTransition(critTo);
+
+                if (transitionFrom != null)
+                {
+                    _workflowStorePlugin.RemoveTransition(transitionFrom);
+                    transitionTo.WfadIdTo = transitionFrom.WfadIdTo;
+                    _workflowStorePlugin.UpdateTransition(transitionTo);
+                }
+                else
+                {
+                    // Last acitivity
+                    _workflowStorePlugin.RemoveTransition(transitionFrom);
+                    transitionTo.WfadIdTo = transitionFrom.WfadIdTo;
+                    _workflowStorePlugin.UpdateTransition(transitionTo);
+                }
+            }
+
             _workflowStorePlugin.DeleteActivityDefinition(wfActivityDefinition);
         }
 

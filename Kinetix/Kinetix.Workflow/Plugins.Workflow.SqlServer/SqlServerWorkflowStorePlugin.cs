@@ -86,7 +86,7 @@ namespace Kinetix.Workflow {
 
         [OperationContract]
         public void DeleteActivityDefinition(WfActivityDefinition wfActivityDefinition) {
-            BrokerManager.GetBroker<WfActivityDefinition>().Delete(wfActivityDefinition);
+            BrokerManager.GetBroker<WfActivityDefinition>().Delete(wfActivityDefinition.WfadId);
         }
 
         [OperationContract]
@@ -199,7 +199,7 @@ namespace Kinetix.Workflow {
 
         [OperationContract]
         public void RemoveTransition(WfTransitionDefinition transition) {
-            BrokerManager.GetBroker<WfTransitionDefinition>().Delete(transition);
+            BrokerManager.GetBroker<WfTransitionDefinition>().Delete(transition.Id);
         }
 
         [OperationContract]
@@ -262,7 +262,7 @@ namespace Kinetix.Workflow {
             FilterCriteria filterCriteria = new FilterCriteria();
             filterCriteria.Equals(WfActivity.Cols.WFW_ID, wfWorkflow.WfwId.Value);
             filterCriteria.Equals(WfActivity.Cols.WFAD_ID, wfActivityDefinition.WfadId.Value);
-            return BrokerManager.GetBroker<WfActivity>().GetByCriteria(filterCriteria);
+            return BrokerManager.GetBroker<WfActivity>().FindByCriteria(filterCriteria);
         }
 
         public IList<WfWorkflow> FindActiveWorkflows(WfWorkflowDefinition wfWorkflowDefinition)
@@ -314,7 +314,7 @@ namespace Kinetix.Workflow {
         public void UnsetCurrentActivity(WfActivityDefinition wfActivityDefinition)
         {
             var cmd = GetSqlServerCommand("UnsetCurrentActivity.sql");
-            cmd.Parameters.AddWithValue(WfActivityDefinition.Cols.WFAD_ID, wfActivityDefinition.WfadId);
+            cmd.Parameters.AddWithValue(WfActivityDefinition.Cols.WFAD_ID, wfActivityDefinition.WfadId.Value);
             cmd.ExecuteNonQuery();
         }
     }

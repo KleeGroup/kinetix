@@ -14,15 +14,48 @@ using System.Collections.Generic;
 using Kinetix.Account;
 using Kinetix.Account.Account;
 using System.Diagnostics;
+using System.Security.Principal;
+using System.Configuration;
+using Kinetix.ComponentModel;
+using Kinetix.Data.SqlClient;
+using Kinetix.Broker;
 
 namespace Kinetix.Workflow.Test
 {
     [TestClass]
-    public class WorkflowManagerTest : MemoryBaseTest
+    public class WorkflowManagerTest : UnityBaseTest
     {
+
+        private readonly string DefaultDataSource = "default";
+
+        private readonly bool SqlServer = true;
 
         public override void Register()
         {
+
+            if (SqlServer)
+            {
+                /* Utilise une base de données spécifique si on est dans la build TFS. */
+                WindowsIdentity currentUser = WindowsIdentity.GetCurrent();
+                bool isTfs = currentUser.Name == @"KLEE\TFSBUILD";
+                string dataBaseName = isTfs ? "DianeTfs" : "DianeDev";
+
+                // Connection string.
+                ConnectionStringSettings conn = new ConnectionStringSettings
+                {
+                    Name = DefaultDataSource,
+                    ConnectionString = "Data Source=martha;Initial Catalog=" + dataBaseName + ";User ID=dianeConnection;Password=Puorgeelk23",
+                    ProviderName = "System.Data.SqlClient"
+                };
+
+                // Register Domain metadata in Domain manager.
+                DomainManager.Instance.RegisterDomainMetadataType(typeof(RuleDomainMetadata));
+                DomainManager.Instance.RegisterDomainMetadataType(typeof(WfDomainMetadata));
+                SqlServerManager.Instance.RegisterConnectionStringSettings(conn);
+                BrokerManager.RegisterDefaultDataSource(DefaultDataSource);
+                BrokerManager.Instance.RegisterStore(DefaultDataSource, typeof(SqlServerStore<>));
+            }
+
             var container = GetConfiguredContainer();
             container.RegisterType<Kinetix.Audit.IAuditManager, Kinetix.Audit.AuditManager>();
             container.RegisterType<Kinetix.Audit.IAuditTraceStorePlugin, Kinetix.Audit.MemoryAuditTraceStorePlugin>();
@@ -31,13 +64,22 @@ namespace Kinetix.Workflow.Test
             container.RegisterType<Kinetix.Account.IAccountManager, Kinetix.Account.AccountManager>(new ContainerControlledLifetimeManager());
 
             container.RegisterType<Kinetix.Workflow.IWorkflowManager, Kinetix.Workflow.WorkflowManager>();
-            container.RegisterType<Kinetix.Workflow.IWorkflowStorePlugin, Kinetix.Workflow.MemoryWorkflowStorePlugin>(new ContainerControlledLifetimeManager());
-            //container.RegisterType<Kinetix.Workflow.IWorkflowStorePlugin, Kinetix.Workflow.SqlServerWorkflowStorePlugin>();
+
+            if (SqlServer)
+            {
+                container.RegisterType<Kinetix.Workflow.IWorkflowStorePlugin, Kinetix.Workflow.SqlServerWorkflowStorePlugin>();
+                container.RegisterType<Kinetix.Rules.IRuleStorePlugin, Kinetix.Rules.SqlServerRuleStorePlugin>();
+            }
+            else
+            {
+                container.RegisterType<Kinetix.Workflow.IWorkflowStorePlugin, Kinetix.Workflow.MemoryWorkflowStorePlugin>(new ContainerControlledLifetimeManager());
+                container.RegisterType<Kinetix.Rules.IRuleStorePlugin, Kinetix.Rules.MemoryRuleStorePlugin>(new ContainerControlledLifetimeManager());
+            }
+            
             container.RegisterType<Kinetix.Workflow.IItemStorePlugin, MemoryItemStorePlugin>(new ContainerControlledLifetimeManager());
 
             container.RegisterType<Kinetix.Rules.IRuleManager, Kinetix.Rules.RuleManager>();
-            container.RegisterType<Kinetix.Rules.IRuleStorePlugin, Kinetix.Rules.MemoryRuleStorePlugin>(new ContainerControlledLifetimeManager());
-            //container.RegisterType<Kinetix.Rules.IRuleStorePlugin, Kinetix.Rules.SqlServerRuleStorePlugin>();
+            
             container.RegisterType<Kinetix.Rules.IRuleConstantsStorePlugin, Kinetix.Rules.MemoryRuleConstantsStore>(new ContainerControlledLifetimeManager());
 
             container.RegisterType<Kinetix.Rules.IRuleSelectorPlugin, Kinetix.Rules.SimpleRuleSelectorPlugin>();
@@ -81,7 +123,7 @@ namespace Kinetix.Workflow.Test
             RuleConditionDefinition condition1Rule1Act1 = new RuleConditionDefinition(null, "Entity", "IN", "ENT,FED,GFE", null);
             _workflowManager.AddRule(firstActivity, rule1Act1, new List<RuleConditionDefinition>() { condition1Rule1Act1 });
             //Selector/filter to validate the activity (preventing auto validation when no one is linked to an activity)
-            SelectorDefinition selector1 = new SelectorDefinition(null, firstActivity.WfadId, accountGroup.Id);
+            SelectorDefinition selector1 = new SelectorDefinition(null, DateTime.Now, firstActivity.WfadId, accountGroup.Id);
             RuleFilterDefinition filter1 = new RuleFilterDefinition(null, "Entity", "=", "ENT", null);
             _workflowManager.AddSelector(firstActivity, selector1, new List<RuleFilterDefinition>() { filter1 });
 
@@ -238,7 +280,7 @@ namespace Kinetix.Workflow.Test
             RuleConditionDefinition condition1Rule1Act1 = new RuleConditionDefinition(null, "Entity", "IN", "ENT,FED,GFE", null);
             _workflowManager.AddRule(firstActivity, rule1Act1, new List<RuleConditionDefinition>() { condition1Rule1Act1 });
             //Selector/filter to validate the activity (preventing auto validation when no one is linked to an activity)
-            SelectorDefinition selector1 = new SelectorDefinition(null, firstActivity.WfadId, accountGroup.Id);
+            SelectorDefinition selector1 = new SelectorDefinition(null, DateTime.Now, firstActivity.WfadId, accountGroup.Id);
             RuleFilterDefinition filter1 = new RuleFilterDefinition(null, "Entity", "=", "ENT", null);
             _workflowManager.AddSelector(firstActivity, selector1, new List<RuleFilterDefinition>() { filter1 });
 
@@ -246,7 +288,7 @@ namespace Kinetix.Workflow.Test
             WfActivityDefinition secondActivity = new WfActivityDefinitionBuilder("Step 2", (int)wfWorkflowDefinition.WfwdId).Build();
             _workflowManager.AddActivity(wfWorkflowDefinition, secondActivity, 2);
             // Selector/filter to validate the activity (preventing auto validation when no one is linked to an activity)
-            SelectorDefinition selector2 = new SelectorDefinition(null, secondActivity.WfadId, accountGroup.Id);
+            SelectorDefinition selector2 = new SelectorDefinition(null, DateTime.Now, secondActivity.WfadId, accountGroup.Id);
             _workflowManager.AddSelector(secondActivity, selector2, new List<RuleFilterDefinition>());
 
             // Step 3 : 1 rule, 2 conditions
@@ -257,7 +299,7 @@ namespace Kinetix.Workflow.Test
             RuleConditionDefinition condition2Rule1Act3 = new RuleConditionDefinition(null, "Entity", "=", "ENT", null);
             _workflowManager.AddRule(thirdActivity, rule1Act3, new List<RuleConditionDefinition>() { condition1Rule1Act3, condition2Rule1Act3 });
             // Selector/filter to validate the activity (preventing auto validation when no one is linked to an activity)
-            SelectorDefinition selector3 = new SelectorDefinition(null, thirdActivity.WfadId, accountGroup.Id);
+            SelectorDefinition selector3 = new SelectorDefinition(null, DateTime.Now, thirdActivity.WfadId, accountGroup.Id);
             RuleFilterDefinition filter3 = new RuleFilterDefinition(null, "Entity", "=", "ENT", null);
             _workflowManager.AddSelector(thirdActivity, selector3, new List<RuleFilterDefinition>() { filter3 });
 
@@ -271,7 +313,7 @@ namespace Kinetix.Workflow.Test
             _workflowManager.AddRule(fourthActivity, rule1Act4, new List<RuleConditionDefinition>() { condition1Rule1Act4 });
             _workflowManager.AddRule(fourthActivity, rule2Act4, new List<RuleConditionDefinition>() { condition1Rule2Act4 });
             // Selector/filter to validate the activity (preventing auto validation when no one is linked to an activity)
-            SelectorDefinition selector41 = new SelectorDefinition(null, fourthActivity.WfadId, accountGroup.Id);
+            SelectorDefinition selector41 = new SelectorDefinition(null, DateTime.Now, fourthActivity.WfadId, accountGroup.Id);
             RuleFilterDefinition filter4 = new RuleFilterDefinition(null, "Entity", "=", "ENT", null);
             _workflowManager.AddSelector(fourthActivity, selector41, new List<RuleFilterDefinition>() { filter4 });
 
@@ -311,8 +353,11 @@ namespace Kinetix.Workflow.Test
 
             WfWorkflow wfWorkflowFetched = _workflowManager.GetWorkflowInstance(wfWorkflow.WfwId.Value);
             Assert.IsNotNull(wfWorkflowFetched);
-            Assert.AreEqual(wfWorkflowFetched.WfaId2, firstActivity.WfadId);
 
+            currentActivityId = (int)wfWorkflow.WfaId2;
+            currentActivity = _workflowManager.GetActivity(currentActivityId);
+            Assert.AreEqual(currentActivity.WfadId, firstActivity.WfadId);
+            
             WfDecision decision = new WfDecision();
             decision.Choice = 1;
             decision.Comments = "abc";
@@ -352,7 +397,11 @@ namespace Kinetix.Workflow.Test
 
             WfWorkflow wfWorkflowFetched2 = _workflowManager.GetWorkflowInstance(wfWorkflow.WfwId.Value);
             Assert.IsNotNull(wfWorkflowFetched2);
-            Assert.AreEqual(wfWorkflowFetched2.WfaId2, thirdActivity.WfadId);
+
+            currentActivityId = wfWorkflow.WfaId2.Value;
+            currentActivity = _workflowManager.GetActivity(currentActivityId);
+            Assert.AreEqual(currentActivity.WfadId, thirdActivity.WfadId);
+            
 
             //Manually validating activity 3
             WfDecision wfDecisionAct3 = new WfDecision();
@@ -394,7 +443,10 @@ namespace Kinetix.Workflow.Test
 
             WfWorkflow wfWorkflowFetched3 = _workflowManager.GetWorkflowInstance(wfWorkflow.WfwId.Value);
             Assert.IsNotNull(wfWorkflowFetched3);
-            Assert.AreEqual(wfWorkflowFetched3.WfaId2, fourthActivity.WfadId);
+
+            currentActivityId = wfWorkflow.WfaId2.Value;
+            currentActivity = _workflowManager.GetActivity(currentActivityId);
+            Assert.AreEqual(currentActivity.WfadId, fourthActivity.WfadId);
 
             // Manually validating activity 4
             WfDecision wfDecisionAct4 = new WfDecision();
@@ -432,7 +484,8 @@ namespace Kinetix.Workflow.Test
 
             // Activity 4 should now be validated. The current activity is now activity 4, with the end status
             currentActivityId = wfWorkflow.WfaId2.Value;
-            Assert.AreEqual(currentActivityId, fourthActivity.WfadId);
+            currentActivity = _workflowManager.GetActivity(currentActivityId);
+            Assert.AreEqual(currentActivity.WfadId, fourthActivity.WfadId);
 
             // No Automatic ending.
             //Assert.AreEqual(wfWorkflow.WfsCode, WfCodeStatusWorkflow.End.ToString());
@@ -499,12 +552,13 @@ namespace Kinetix.Workflow.Test
             IList<WfWorkflowDecision> workflowDecisions1 = _workflowManager.GetWorkflowDecision(wfWorkflow.WfwId.Value);
 
             // Entry actions should validate all activities (because no group have been associated).
-            int currentActivity = wfWorkflow.WfaId2.Value;
-            Assert.AreEqual(currentActivity, fourthActivity.WfadId);
+            int currentActivityId = wfWorkflow.WfaId2.Value;
+            WfActivity currentActivity = _workflowManager.GetActivity(currentActivityId);
+            Assert.AreEqual(currentActivity.WfadId, fourthActivity.WfadId);
 
             WfWorkflow wfWorkflowFetched = _workflowManager.GetWorkflowInstance(wfWorkflow.WfwId.Value);
             Assert.IsNotNull(wfWorkflowFetched);
-            Assert.AreEqual(currentActivity, fourthActivity.WfadId);
+            Assert.AreEqual(currentActivity.WfadId, fourthActivity.WfadId);
         }
 
 
@@ -532,7 +586,7 @@ namespace Kinetix.Workflow.Test
             RuleConditionDefinition condition1Rule1Act1 = new RuleConditionDefinition(null, "Entity", "IN", "ENT,FED,GFE", null);
             _workflowManager.AddRule(firstActivity, rule1Act1, new List<RuleConditionDefinition>() { condition1Rule1Act1 });
             //Selector/filter to validate the activity (preventing auto validation when no one is linked to an activity)
-            SelectorDefinition selector1 = new SelectorDefinition(null, firstActivity.WfadId, accountGroup.Id);
+            SelectorDefinition selector1 = new SelectorDefinition(null, DateTime.Now, firstActivity.WfadId, accountGroup.Id);
             RuleFilterDefinition filter1 = new RuleFilterDefinition(null, "Entity", "=", "ENT", null);
             _workflowManager.AddSelector(firstActivity, selector1, new List<RuleFilterDefinition>() { filter1 });
 
@@ -540,7 +594,7 @@ namespace Kinetix.Workflow.Test
             WfActivityDefinition secondActivity = new WfActivityDefinitionBuilder("Step 2", (int)wfWorkflowDefinition.WfwdId).Build();
             _workflowManager.AddActivity(wfWorkflowDefinition, secondActivity, 2);
             // Selector/filter to validate the activity (preventing auto validation when no one is linked to an activity)
-            SelectorDefinition selector2 = new SelectorDefinition(null, secondActivity.WfadId, accountGroup.Id);
+            SelectorDefinition selector2 = new SelectorDefinition(null, DateTime.Now, secondActivity.WfadId, accountGroup.Id);
             _workflowManager.AddSelector(secondActivity, selector2, new List<RuleFilterDefinition>());
 
             // Step 3 : 1 rule, 2 conditions
@@ -551,7 +605,7 @@ namespace Kinetix.Workflow.Test
             RuleConditionDefinition condition2Rule1Act3 = new RuleConditionDefinition(null, "Entity", "=", "ENT", null);
             _workflowManager.AddRule(thirdActivity, rule1Act3, new List<RuleConditionDefinition>() { condition1Rule1Act3, condition2Rule1Act3 });
             // Selector/filter to validate the activity (preventing auto validation when no one is linked to an activity)
-            SelectorDefinition selector3 = new SelectorDefinition(null, thirdActivity.WfadId, accountGroup.Id);
+            SelectorDefinition selector3 = new SelectorDefinition(null, DateTime.Now, thirdActivity.WfadId, accountGroup.Id);
             RuleFilterDefinition filter3 = new RuleFilterDefinition(null, "Entity", "=", "ENT", null);
             _workflowManager.AddSelector(thirdActivity, selector3, new List<RuleFilterDefinition>() { filter3 });
 
@@ -565,7 +619,7 @@ namespace Kinetix.Workflow.Test
             _workflowManager.AddRule(fourthActivity, rule1Act4, new List<RuleConditionDefinition>() { condition1Rule1Act4 });
             _workflowManager.AddRule(fourthActivity, rule2Act4, new List<RuleConditionDefinition>() { condition1Rule2Act4 });
             // Selector/filter to validate the activity (preventing auto validation when no one is linked to an activity)
-            SelectorDefinition selector41 = new SelectorDefinition(null, fourthActivity.WfadId, accountGroup.Id);
+            SelectorDefinition selector41 = new SelectorDefinition(null, DateTime.Now, fourthActivity.WfadId, accountGroup.Id);
             RuleFilterDefinition filter4 = new RuleFilterDefinition(null, "Entity", "=", "ENT", null);
             _workflowManager.AddSelector(fourthActivity, selector41, new List<RuleFilterDefinition>() { filter4 });
 
@@ -639,7 +693,7 @@ namespace Kinetix.Workflow.Test
             RuleConditionDefinition condition1Rule1Act1 = new RuleConditionDefinition(null, "Entity", "IN", "ENT,FED,GFE", null);
             _workflowManager.AddRule(firstActivity, rule1Act1, new List<RuleConditionDefinition>() { condition1Rule1Act1 });
             // Selector/filter to validate the activity (preventing auto validation when no one is linked to an activity)
-            SelectorDefinition selector1 = new SelectorDefinition(null, firstActivity.WfadId, accountGroup.Id);
+            SelectorDefinition selector1 = new SelectorDefinition(null, DateTime.Now, firstActivity.WfadId, accountGroup.Id);
             RuleFilterDefinition filter1 = new RuleFilterDefinition(null, "Entity", "=", "ENT", null);
             _workflowManager.AddSelector(firstActivity, selector1, new List<RuleFilterDefinition>() { filter1 });
 
@@ -665,7 +719,7 @@ namespace Kinetix.Workflow.Test
             RuleConditionDefinition condition1Rule1Act0 = new RuleConditionDefinition(null, "Entity", "IN", "ENT,FED,GFE", null);
             _workflowManager.AddRule(activityZero, rule1Act0, new List<RuleConditionDefinition>() { condition1Rule1Act0 });
             // Selector/filter to validate the activity (preventing auto validation when no one is linked to an activity)
-            SelectorDefinition selector0 = new SelectorDefinition(null, activityZero.WfadId, accountGroup.Id);
+            SelectorDefinition selector0 = new SelectorDefinition(null, DateTime.Now, activityZero.WfadId, accountGroup.Id);
             RuleFilterDefinition filter0 = new RuleFilterDefinition(null, "Entity", "=", "ENT", null);
             _workflowManager.AddSelector(activityZero, selector0, new List<RuleFilterDefinition>() { filter0 });
 
@@ -685,7 +739,8 @@ namespace Kinetix.Workflow.Test
             wfDecision.DecisionDate = DateTime.Now;
             wfDecision.Comments = "Test";
 
-            _workflowManager.SaveDecisionAndGoToNextActivity(wfWorkflow, wfDecision);
+            // _workflowManager.SaveDecisionAndGoToNextActivity(wfWorkflow, wfDecision);
+            _workflowManager.SaveDecisionAndGoToNextActivity(wfWorkflowFetched, wfDecision);
 
             wfWorkflowFetched = _workflowManager.GetWorkflowInstance(wfWorkflow.WfwId.Value);
 
@@ -746,7 +801,7 @@ namespace Kinetix.Workflow.Test
             RuleConditionDefinition condition1Rule1Act1 = new RuleConditionDefinition(null, "Entity", "IN", "ENT,FED,GFE", null);
             _workflowManager.AddRule(firstActivity, rule1Act1, new List<RuleConditionDefinition>() { condition1Rule1Act1 });
             // Selector/filter to validate the activity (preventing auto validation when no one is linked to an activity)
-            SelectorDefinition selector1 = new SelectorDefinition(null, firstActivity.WfadId, accountGroup.Id);
+            SelectorDefinition selector1 = new SelectorDefinition(null, DateTime.Now, firstActivity.WfadId, accountGroup.Id);
             RuleFilterDefinition filter1 = new RuleFilterDefinition(null, "Entity", "=", "ENT", null);
             _workflowManager.AddSelector(firstActivity, selector1, new List<RuleFilterDefinition>() { filter1 });
 
@@ -773,7 +828,7 @@ namespace Kinetix.Workflow.Test
             RuleConditionDefinition condition1Rule1Act2 = new RuleConditionDefinition(null, "Entity", "IN", "ENT,FED,GFE", null);
             _workflowManager.AddRule(activityEnd, rule1Act2, new List<RuleConditionDefinition>() { condition1Rule1Act2 });
             // Selector/filter to validate the activity (preventing auto validation when no one is linked to an activity)
-            SelectorDefinition selector2 = new SelectorDefinition(null, activityEnd.WfadId, accountGroup.Id);
+            SelectorDefinition selector2 = new SelectorDefinition(null, DateTime.Now, activityEnd.WfadId, accountGroup.Id);
             RuleFilterDefinition filter2 = new RuleFilterDefinition(null, "Entity", "=", "ENT", null);
             _workflowManager.AddSelector(activityEnd, selector2, new List<RuleFilterDefinition>() { filter2 });
 
@@ -830,7 +885,6 @@ namespace Kinetix.Workflow.Test
         }
 
 
-
         [TestMethod]
         public void TestWorkflowRecalculationRemovingActivityFirstPosition()
         {
@@ -855,7 +909,7 @@ namespace Kinetix.Workflow.Test
             RuleConditionDefinition condition1Rule1Act1 = new RuleConditionDefinition(null, "Entity", "IN", "ENT,FED,GFE", null);
             _workflowManager.AddRule(firstActivity, rule1Act1, new List<RuleConditionDefinition>() { condition1Rule1Act1 });
             // Selector/filter to validate the activity (preventing auto validation when no one is linked to an activity)
-            SelectorDefinition selector1 = new SelectorDefinition(null, firstActivity.WfadId, accountGroup.Id);
+            SelectorDefinition selector1 = new SelectorDefinition(null, DateTime.Now, firstActivity.WfadId, accountGroup.Id);
             RuleFilterDefinition filter1 = new RuleFilterDefinition(null, "Entity", "=", "ENT", null);
             _workflowManager.AddSelector(firstActivity, selector1, new List<RuleFilterDefinition>() { filter1 });
 
@@ -867,7 +921,7 @@ namespace Kinetix.Workflow.Test
             RuleConditionDefinition condition1Rule1Act2 = new RuleConditionDefinition(null, "Entity", "IN", "ENT,FED,GFE", null);
             _workflowManager.AddRule(secondActivity, rule1Act2, new List<RuleConditionDefinition>() { condition1Rule1Act2 });
             // Selector/filter to validate the activity (preventing auto validation when no one is linked to an activity)
-            SelectorDefinition selector2 = new SelectorDefinition(null, secondActivity.WfadId, accountGroup.Id);
+            SelectorDefinition selector2 = new SelectorDefinition(null, DateTime.Now, secondActivity.WfadId, accountGroup.Id);
             RuleFilterDefinition filter2 = new RuleFilterDefinition(null, "Entity", "=", "ENT", null);
             _workflowManager.AddSelector(secondActivity, selector2, new List<RuleFilterDefinition>() { filter2 });
 
@@ -902,7 +956,7 @@ namespace Kinetix.Workflow.Test
             wfDecision.DecisionDate = DateTime.Now;
             wfDecision.Comments = "Test";
 
-            _workflowManager.SaveDecisionAndGoToNextActivity(wfWorkflow, wfDecision);
+            _workflowManager.SaveDecisionAndGoToNextActivity(wfWorkflowFetched, wfDecision);
 
             wfWorkflowFetched = _workflowManager.GetWorkflowInstance(wfWorkflow.WfwId.Value);
 

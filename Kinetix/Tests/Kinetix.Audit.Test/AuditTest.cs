@@ -12,7 +12,7 @@ using Microsoft.Practices.Unity;
 namespace Kinetix.Audit.Test
 {
     [TestClass]
-    public class AuditTest : MemoryBaseTest
+    public class AuditTest : UnityBaseTest
     {
 
         //private IUnityContainer container;

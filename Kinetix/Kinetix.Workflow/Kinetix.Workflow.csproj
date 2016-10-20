@@ -48,7 +48,9 @@
   <ItemGroup>
     <Compile Include="Impl.Workflow\IItemStorePlugin.cs" />
     <Compile Include="Plugins.Workflow.SqlServer\SqlServerWorkflowStorePlugin.cs" />
-    <Content Include="SQLResources\DeleteActivitiesByDefinitionIds.sql" />
+    <EmbeddedResource Include="SQLResources\DeleteActivitiesByDefinitionIds.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
     <Compile Include="Workflow\IWorkflowManager.cs" />
     <Compile Include="Impl.Workflow\IWorkflowStorePlugin.cs" />
     <Compile Include="Workflow\WfActivityCriteria.cs" />
@@ -75,7 +77,9 @@
     <Compile Include="Workflow\WfTransitionCriteria.cs" />
     <Compile Include="Workflow\WfWorkflowDecision.cs" />
     <Compile Include="Workflow\WfWorkflowDefinitionBuilder.cs" />
-    <Content Include="SQLResources\UnsetCurrentActivity.sql" />
+    <EmbeddedResource Include="SQLResources\UnsetCurrentActivity.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Kinetix.Broker\Kinetix.Broker.csproj">

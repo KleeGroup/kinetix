@@ -5,6 +5,13 @@ using System.Linq;
 using Microsoft.Practices.Unity;
 using Kinetix.Account.Account;
 using Kinetix.Account;
+using System.Security.Principal;
+using System.Configuration;
+using Kinetix.Broker;
+using Kinetix.Workflow;
+using Kinetix.ComponentModel;
+using Kinetix.Data.SqlClient;
+using Kinetix.ServiceModel;
 #if NUnit
     using NUnit.Framework; 
 #else
@@ -14,23 +21,46 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace Kinetix.Rules.Test
 {
     [TestClass]
-    public class RuleManagerSelectorTest : MemoryBaseTest
+    public class RuleManagerSelectorTest : UnityBaseTest
     {
+
+        private readonly string DefaultDataSource = "default";
 
         public override void Register()
         {
+
+            /* Utilise une base de données spécifique si on est dans la build TFS. */
+            WindowsIdentity currentUser = WindowsIdentity.GetCurrent();
+            bool isTfs = currentUser.Name == @"KLEE\TFSBUILD";
+            string dataBaseName = isTfs ? "DianeTfs" : "DianeDev";
+
+            // Connection string.
+            ConnectionStringSettings conn = new ConnectionStringSettings
+            {
+                Name = DefaultDataSource,
+                ConnectionString = "Data Source=martha;Initial Catalog=" + dataBaseName + ";User ID=dianeConnection;Password=Puorgeelk23",
+                ProviderName = "System.Data.SqlClient"
+            };
+
+            // Register Domain metadata in Domain manager.
+            DomainManager.Instance.RegisterDomainMetadataType(typeof(RuleDomainMetadata));
+            SqlServerManager.Instance.RegisterConnectionStringSettings(conn);
+            BrokerManager.RegisterDefaultDataSource(DefaultDataSource);
+            BrokerManager.Instance.RegisterStore(DefaultDataSource, typeof(SqlServerStore<>));
+
             var container = GetConfiguredContainer();
 
             container.RegisterType<Kinetix.Account.IAccountStorePlugin, Kinetix.Account.MemoryAccountStorePlugin>(new ContainerControlledLifetimeManager());
             container.RegisterType<Kinetix.Account.IAccountManager, Kinetix.Account.AccountManager>(new ContainerControlledLifetimeManager());
 
             container.RegisterType<Kinetix.Rules.IRuleManager, Kinetix.Rules.RuleManager>();
-            container.RegisterType<Kinetix.Rules.IRuleStorePlugin, Kinetix.Rules.MemoryRuleStorePlugin>(new ContainerControlledLifetimeManager());
-            //container.RegisterType<Kinetix.Rules.IRuleStorePlugin, Kinetix.Rules.SqlServerRuleStorePlugin>();
+            //container.RegisterType<Kinetix.Rules.IRuleStorePlugin, Kinetix.Rules.MemoryRuleStorePlugin>(new ContainerControlledLifetimeManager());
+            container.RegisterType<Kinetix.Rules.IRuleStorePlugin, Kinetix.Rules.SqlServerRuleStorePlugin>();
             container.RegisterType<Kinetix.Rules.IRuleConstantsStorePlugin, Kinetix.Rules.MemoryRuleConstantsStore>(new ContainerControlledLifetimeManager());
 
             container.RegisterType<Kinetix.Rules.IRuleSelectorPlugin, Kinetix.Rules.SimpleRuleSelectorPlugin>();
             container.RegisterType<Kinetix.Rules.IRuleValidatorPlugin, Kinetix.Rules.SimpleRuleValidatorPlugin>();
+
         }
 
 
@@ -43,9 +73,10 @@ namespace Kinetix.Rules.Test
             var container = GetConfiguredContainer();
             IRuleManager ruleManager = container.Resolve<IRuleManager>();
 
-            SelectorDefinition rule1 = new SelectorDefinition(null, 1, "1");
-            SelectorDefinition rule2 = new SelectorDefinition(null, 2, "2");
-            SelectorDefinition rule3 = new SelectorDefinition(null, 2, "3");
+            DateTime now = DateTime.Now;
+            SelectorDefinition rule1 = new SelectorDefinition(null, now, 1, "1");
+            SelectorDefinition rule2 = new SelectorDefinition(null, now, 2, "2");
+            SelectorDefinition rule3 = new SelectorDefinition(null, now, 2, "3");
 
             ruleManager.AddSelector(rule1);
             ruleManager.AddSelector(rule2);
@@ -56,14 +87,14 @@ namespace Kinetix.Rules.Test
 
             Assert.IsNotNull(selectorFetch1);
             Assert.AreEqual(selectorFetch1.Count, 1);
-            Assert.IsTrue(selectorFetch1.Contains(rule1));
+            Assert.IsTrue(selectorFetch1.SequenceEqual(new List<SelectorDefinition>() { rule1 }, new SelectorEqualityComparer()));
 
             // 2 rules
             IList<SelectorDefinition> selectorFetch2 = ruleManager.GetSelectorsForItemId(2);
 
             Assert.IsNotNull(selectorFetch2);
             Assert.AreEqual(selectorFetch2.Count, 2);
-            CollectionAssert.AreEquivalent(new List<SelectorDefinition>() { rule2, rule3 }, (List<SelectorDefinition>)selectorFetch2);
+            Assert.IsTrue(selectorFetch2.SequenceEqual(new List<SelectorDefinition>() { rule2, rule3 }, new SelectorEqualityComparer()));
         }
 
 
@@ -77,15 +108,14 @@ namespace Kinetix.Rules.Test
             IRuleManager ruleManager = container.Resolve<IRuleManager>();
 
             // Rule created to Item 1
-            SelectorDefinition selector = new SelectorDefinition(null, 1, "1");
+            SelectorDefinition selector = new SelectorDefinition(null, DateTime.Now, 1, "1");
             ruleManager.AddSelector(selector);
 
             IList<SelectorDefinition> rulesFetch_1_1 = ruleManager.GetSelectorsForItemId(1);
 
-
             Assert.IsNotNull(rulesFetch_1_1);
             Assert.AreEqual(rulesFetch_1_1.Count, 1);
-            Assert.IsTrue(rulesFetch_1_1.Contains(selector));
+            Assert.IsTrue(rulesFetch_1_1.SequenceEqual(new List<SelectorDefinition>() { selector }, new SelectorEqualityComparer()));
 
             // Update rule. This is now associated with Item 2
             selector.ItemId = 2;
@@ -102,7 +132,7 @@ namespace Kinetix.Rules.Test
 
             Assert.IsNotNull(rulesFetch_2_1);
             Assert.AreEqual(rulesFetch_2_1.Count, 1);
-            CollectionAssert.AreEquivalent(new List<SelectorDefinition>() { selector } , (List<SelectorDefinition>) rulesFetch_2_1 );
+            Assert.IsTrue(rulesFetch_2_1.SequenceEqual(new List<SelectorDefinition>() { selector }, new SelectorEqualityComparer()));
 
             // Update rule. This is now associated with Item 2
             ruleManager.RemoveSelector(selector);
@@ -133,7 +163,7 @@ namespace Kinetix.Rules.Test
             accountManager.GetStore().Attach(account.Id, accountGroup.Id);
 
             // Selector created to Item 1
-            SelectorDefinition selector = new SelectorDefinition(null, 1, accountGroup.Id);
+            SelectorDefinition selector = new SelectorDefinition(null, DateTime.Now, 1, accountGroup.Id);
             ruleManager.AddSelector(selector);
 
             RuleFilterDefinition filterDefinition = new RuleFilterDefinition(null, "Division", "=", "BTL", selector.Id);
@@ -146,7 +176,7 @@ namespace Kinetix.Rules.Test
 
             Assert.IsNotNull(selectedAccounts);
             Assert.AreEqual(selectedAccounts.Count, 1);
-            CollectionAssert.AreEquivalent(new List<AccountUser>() { account }, (List<AccountUser>)selectedAccounts);
+            Assert.IsTrue(selectedAccounts.SequenceEqual(new List<AccountUser>() { account }, new AccountEqualityComparer()));
         }
 
         /// <summary>
@@ -170,7 +200,7 @@ namespace Kinetix.Rules.Test
             accountManager.GetStore().Attach(account.Id, accountGroup.Id);
 
             // Selector created to Item 1
-            SelectorDefinition selector_1 = new SelectorDefinition(null, 1, accountGroup.Id);
+            SelectorDefinition selector_1 = new SelectorDefinition(null, DateTime.Now,1, accountGroup.Id);
             ruleManager.AddSelector(selector_1);
 
             RuleFilterDefinition filterDefinition_1_1 = new RuleFilterDefinition(null, "Division", "=", "BTL", selector_1.Id);
@@ -195,7 +225,7 @@ namespace Kinetix.Rules.Test
 
             Assert.IsNotNull(selectedAccounts_2);
             Assert.AreEqual(selectedAccounts_2.Count, 1);
-            CollectionAssert.AreEquivalent(new List<AccountUser>() { account }, (List<AccountUser>)selectedAccounts_2);
+            Assert.IsTrue(selectedAccounts_2.SequenceEqual(new List<AccountUser>() { account }, new AccountEqualityComparer()));
 
             //We set the entity to 'XXX'
             myDummyDtObject.Entity = "XXX";
@@ -251,7 +281,7 @@ namespace Kinetix.Rules.Test
             accountManager.GetStore().Attach(account_2_2.Id, accountGroup_2.Id);
 
             // Selector 1 created to Item 1
-            SelectorDefinition selector_1 = new SelectorDefinition(null, 1, accountGroup_1.Id);
+            SelectorDefinition selector_1 = new SelectorDefinition(null, DateTime.Now, 1, accountGroup_1.Id);
             ruleManager.AddSelector(selector_1);
 
             RuleFilterDefinition filterDefinition_1_1 = new RuleFilterDefinition(null, "Division", "=", "BTL", selector_1.Id);
@@ -261,7 +291,7 @@ namespace Kinetix.Rules.Test
             ruleManager.AddFilter(filterDefinition_1_2);
 
             // Selector 2 created to Item 1
-            SelectorDefinition selector_2 = new SelectorDefinition(null, 1, accountGroup_2.Id);
+            SelectorDefinition selector_2 = new SelectorDefinition(null, DateTime.Now, 1, accountGroup_2.Id);
             ruleManager.AddSelector(selector_2);
 
             RuleFilterDefinition filterDefinition_2_1 = new RuleFilterDefinition(null, "Division", "=", "BTL", selector_2.Id);
@@ -287,7 +317,7 @@ namespace Kinetix.Rules.Test
 
             Assert.IsNotNull(selectedAccounts_2);
             Assert.AreEqual(selectedAccounts_2.Count, 2);
-            CollectionAssert.AreEquivalent(new List<AccountUser>() { account_1_1, account_1_2 }, (List<AccountUser>)selectedAccounts_2);
+            Assert.IsTrue(selectedAccounts_2.SequenceEqual(new List<AccountUser>() { account_1_1, account_1_2 }, new AccountEqualityComparer()));
 
             // Set entity to XXX
             myDummyDtObject.Entity = "XXX";
@@ -297,7 +327,7 @@ namespace Kinetix.Rules.Test
 
             Assert.IsNotNull(selectedAccounts_3);
             Assert.AreEqual(selectedAccounts_3.Count, 2);
-            CollectionAssert.AreEquivalent(new List<AccountUser>() { account_2_1, account_2_2 }, (List<AccountUser>)selectedAccounts_3);
+            Assert.IsTrue(selectedAccounts_3.SequenceEqual(new List<AccountUser>() { account_2_1, account_2_2 }, new AccountEqualityComparer()));
 
             // Set entity to ENT
             myDummyDtObject.Entity = "ENT";
@@ -306,7 +336,7 @@ namespace Kinetix.Rules.Test
 
             Assert.IsNotNull(selectedAccounts_4);
             Assert.AreEqual(selectedAccounts_4.Count, 4);
-            CollectionAssert.AreEquivalent(new List<AccountUser>() { account_1_1, account_1_2, account_2_1, account_2_2 }, (List<AccountUser>)selectedAccounts_4);
+            Assert.IsTrue(selectedAccounts_4.SequenceEqual(new List<AccountUser>() { account_1_1, account_1_2, account_2_1, account_2_2 }, new AccountEqualityComparer()));
 
         }
 

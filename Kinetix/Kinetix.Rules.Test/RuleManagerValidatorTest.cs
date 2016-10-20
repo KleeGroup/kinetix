@@ -1,5 +1,11 @@
 ﻿using Kinetix.Test;
 using System.Collections.Generic;
+using System.Security.Principal;
+using System.Configuration;
+using Kinetix.ComponentModel;
+using Kinetix.Data.SqlClient;
+using Kinetix.Broker;
+using System.Linq;
 #if NUnit
     using NUnit.Framework; 
 #else
@@ -8,22 +14,56 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 #endif
 using Microsoft.Practices.Unity;
 
+using System;
+
 namespace Kinetix.Rules.Test
 {
     [TestClass]
-    public class RuleManagerValidatorTest : MemoryBaseTest
+    public class RuleManagerValidatorTest : UnityBaseTest
     {
+        private readonly string DefaultDataSource = "default";
+
+        private readonly bool SqlServer = true;
 
         public override void Register()
         {
+
+            if (SqlServer)
+            {
+                /* Utilise une base de données spécifique si on est dans la build TFS. */
+                WindowsIdentity currentUser = WindowsIdentity.GetCurrent();
+                bool isTfs = currentUser.Name == @"KLEE\TFSBUILD";
+                string dataBaseName = isTfs ? "DianeTfs" : "DianeDev";
+
+                // Connection string.
+                ConnectionStringSettings conn = new ConnectionStringSettings
+                {
+                    Name = DefaultDataSource,
+                    ConnectionString = "Data Source=martha;Initial Catalog=" + dataBaseName + ";User ID=dianeConnection;Password=Puorgeelk23",
+                    ProviderName = "System.Data.SqlClient"
+                };
+
+                // Register Domain metadata in Domain manager.
+                DomainManager.Instance.RegisterDomainMetadataType(typeof(RuleDomainMetadata));
+                SqlServerManager.Instance.RegisterConnectionStringSettings(conn);
+                BrokerManager.RegisterDefaultDataSource(DefaultDataSource);
+                BrokerManager.Instance.RegisterStore(DefaultDataSource, typeof(SqlServerStore<>));
+            }
             var container = GetConfiguredContainer();
 
             container.RegisterType<Kinetix.Account.IAccountStorePlugin, Kinetix.Account.MemoryAccountStorePlugin>(new ContainerControlledLifetimeManager());
             container.RegisterType<Kinetix.Account.IAccountManager, Kinetix.Account.AccountManager>(new ContainerControlledLifetimeManager());
 
             container.RegisterType<Kinetix.Rules.IRuleManager, Kinetix.Rules.RuleManager>();
-            container.RegisterType<Kinetix.Rules.IRuleStorePlugin, Kinetix.Rules.MemoryRuleStorePlugin>(new ContainerControlledLifetimeManager());
-            //container.RegisterType<Kinetix.Rules.IRuleStorePlugin, Kinetix.Rules.SqlServerRuleStorePlugin>();
+
+            if (SqlServer)
+            {
+                container.RegisterType<Kinetix.Rules.IRuleStorePlugin, Kinetix.Rules.SqlServerRuleStorePlugin>();
+            } else
+            {
+                container.RegisterType<Kinetix.Rules.IRuleStorePlugin, Kinetix.Rules.MemoryRuleStorePlugin>(new ContainerControlledLifetimeManager());
+            }
+
             container.RegisterType<Kinetix.Rules.IRuleConstantsStorePlugin, Kinetix.Rules.MemoryRuleConstantsStore>(new ContainerControlledLifetimeManager());
 
             container.RegisterType<Kinetix.Rules.IRuleSelectorPlugin, Kinetix.Rules.SimpleRuleSelectorPlugin>();
@@ -36,9 +76,10 @@ namespace Kinetix.Rules.Test
             var container = GetConfiguredContainer();
             IRuleManager ruleManager = container.Resolve<IRuleManager>();
 
-            RuleDefinition rule1 = new RuleDefinition(null, null, 1, "My Rule 1");
-            RuleDefinition rule2 = new RuleDefinition(null, null, 2, "My Rule 2");
-            RuleDefinition rule3 = new RuleDefinition(null, null, 2, "My Rule 3");
+            DateTime now = DateTime.Now;
+            RuleDefinition rule1 = new RuleDefinition(null, now, 1, "My Rule 1");
+            RuleDefinition rule2 = new RuleDefinition(null, now, 2, "My Rule 2");
+            RuleDefinition rule3 = new RuleDefinition(null, now, 2, "My Rule 3");
 
             ruleManager.AddRule(rule1);
             ruleManager.AddRule(rule2);
@@ -49,14 +90,15 @@ namespace Kinetix.Rules.Test
 
             Assert.IsNotNull(rulesFetch1);
             Assert.AreEqual(rulesFetch1.Count, 1);
-            Assert.IsTrue(rulesFetch1.Contains(rule1));
+
+            Assert.IsTrue(rulesFetch1.SequenceEqual(new List<RuleDefinition>() { rule1 }, new RuleEqualityComparer()));
 
             // 2 rules
             IList<RuleDefinition> rulesFetch2 = ruleManager.GetRulesForItemId(2);
 
             Assert.IsNotNull(rulesFetch2);
             Assert.AreEqual(rulesFetch2.Count, 2);
-            CollectionAssert.AreEquivalent(new List<RuleDefinition>() { rule2, rule3 }, (List<RuleDefinition>)rulesFetch2);
+            Assert.IsTrue(rulesFetch2.SequenceEqual(new List<RuleDefinition>() { rule2, rule3 }, new RuleEqualityComparer()));
         }
 
         [TestMethod]
@@ -73,7 +115,7 @@ namespace Kinetix.Rules.Test
 
             Assert.IsNotNull(rulesFetch_1_1);
             Assert.AreEqual(rulesFetch_1_1.Count, 1);
-            CollectionAssert.AreEquivalent(new List<RuleDefinition>() { rule }, (List <RuleDefinition>) rulesFetch_1_1);
+            Assert.IsTrue(rulesFetch_1_1.SequenceEqual(new List<RuleDefinition>() { rule }, new RuleEqualityComparer()));
 
             // Update rule. This is now associated with Item 2
             rule.ItemId = 2;
@@ -90,7 +132,7 @@ namespace Kinetix.Rules.Test
 
             Assert.IsNotNull(rulesFetch_2_1);
             Assert.AreEqual(rulesFetch_2_1.Count, 1);
-            CollectionAssert.AreEquivalent(new List<RuleDefinition>() { rule }, (List<RuleDefinition>) rulesFetch_2_1);
+            Assert.IsTrue(rulesFetch_2_1.SequenceEqual(new List<RuleDefinition>() { rule }, new RuleEqualityComparer()));
 
             // Update rule. This is now associated with Item 2
             ruleManager.RemoveRule(rule);
