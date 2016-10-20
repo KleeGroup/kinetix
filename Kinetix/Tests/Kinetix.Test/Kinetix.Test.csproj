@@ -63,7 +63,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Kinetix.Configuration\Kinetix.Configuration.csproj">
+    <ProjectReference Include="..\..\Kinetix.Configuration\Kinetix.Configuration.csproj">
       <Project>{D2C80C22-8099-4D28-9407-6CD6BA8B725C}</Project>
       <Name>Kinetix.Configuration</Name>
     </ProjectReference>

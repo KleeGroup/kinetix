@@ -74,8 +74,8 @@
       <Project>{D0186E5D-68C4-4B00-99C8-D8558A13822E}</Project>
       <Name>Kinetix.Audit</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Kinetix.Test\Kinetix.Test.csproj">
-      <Project>{39AF2ADD-55E0-41C4-8DD6-65DFEB63A441}</Project>
+    <ProjectReference Include="..\Kinetix.Test\Kinetix.Test.csproj">
+      <Project>{39af2add-55e0-41c4-8dd6-65dfeb63a441}</Project>
       <Name>Kinetix.Test</Name>
     </ProjectReference>
   </ItemGroup>
