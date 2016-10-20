@@ -442,13 +442,12 @@ namespace Kinetix.Workflow {
 
             WfWorkflowDefinition wfD = _workflowStorePlugin.ReadWorkflowDefinition(wfActivityDefinition.WfwdId);
 
-            
-
             IList<RuleDefinition> rules = _ruleManager.GetRulesForItemId(wfActivityDefinition.WfadId.Value);
             IList<SelectorDefinition> selectors = _ruleManager.GetSelectorsForItemId(wfActivityDefinition.WfadId.Value);
             _ruleManager.RemoveRules(rules);
             _ruleManager.RemoveSelectors(selectors);
 
+            //The current activity will be unset. The workflow recalculation will correct the current activity
             _workflowStorePlugin.UnsetCurrentActivity(wfActivityDefinition);
 
             _workflowStorePlugin.DeleteActivities(wfActivityDefinition.WfadId.Value);
