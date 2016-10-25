@@ -111,10 +111,28 @@
     <Content Include="generated.sql" />
     <Content Include="Init\WF_MULTIPLICITY_DEFINITION.insert.sql" />
     <Content Include="Init\WF_STATUS.insert.sql" />
+    <EmbeddedResource Include="SQLResources\FindAllFiltersByWorkflowDefinitionId.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SQLResources\FindAllSelectorsByWorkflowDefinitionId.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SQLResources\FindAllConditionsByWorkflowDefinitionId.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SQLResources\FindAllRulesByWorkflowDefinitionId.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SQLResources\ReadWorkflowsForUpdate.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SQLResources\ReadWorkflowForUpdate.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
     <EmbeddedResource Include="SQLResources\IncrementActivityDefinitionPositionsAfter.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="SQLResources\FindActiveWorkflows.sql">
+    <EmbeddedResource Include="SQLResources\FindActiveWorkflowsForUpdate.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
     <EmbeddedResource Include="SQLResources\FindDecisionsByWorkflowId.sql">

@@ -773,7 +773,6 @@ namespace Kinetix.Workflow.Test
             recalculActivityId = wfWorkflowFetched.WfaId2.Value;
             recalculActivity = _workflowManager.GetActivity(recalculActivityId);
             Assert.AreEqual(firstActivity.WfadId, recalculActivity.WfadId);
-
         }
 
 

@@ -7,6 +7,7 @@ using Kinetix.Workflow.instance;
 using Kinetix.Workflow.model;
 using System.Diagnostics;
 using Kinetix.Workflow.Workflow;
+using Kinetix.Rules;
 
 namespace Kinetix.Workflow {
     public class SqlServerWorkflowStorePlugin : IWorkflowStorePlugin {
@@ -180,6 +181,20 @@ namespace Kinetix.Workflow {
             return BrokerManager.GetBroker<WfWorkflow>().Get(wfwId);
         }
 
+        public WfWorkflow ReadWorkflowInstanceForUpdateById(int wfwId)
+        {
+            var cmd = GetSqlServerCommand("ReadWorkflowForUpdate.sql");
+            cmd.Parameters.AddWithValue(WfWorkflow.Cols.WFW_ID, wfwId);
+            return cmd.ReadItem<WfWorkflow>();
+        }
+
+        public IList<WfWorkflow> ReadWorkflowsInstanceForUpdateById(int wfwdId)
+        {
+            var cmd = GetSqlServerCommand("ReadWorkflowsForUpdate.sql");
+            cmd.Parameters.AddWithValue(WfWorkflow.Cols.WFWD_ID, wfwdId);
+            return new List<WfWorkflow>(cmd.ReadList<WfWorkflow>());
+        }
+
         [OperationContract]
         public WfWorkflow ReadWorkflowInstanceByItemId(int wfwdId, int itemId) {
             FilterCriteria filterCriteria = new FilterCriteria();
@@ -269,7 +284,7 @@ namespace Kinetix.Workflow {
         {
             Debug.Assert(wfWorkflowDefinition != null);
             //--
-            var cmd = GetSqlServerCommand("FindActiveWorkflows.sql");
+            var cmd = GetSqlServerCommand("FindActiveWorkflowsForUpdate.sql");
             cmd.Parameters.AddWithValue(WfWorkflow.Cols.WFWD_ID, wfWorkflowDefinition.WfwdId);
             return new List<WfWorkflow>(cmd.ReadList<WfWorkflow>());
         }
@@ -317,5 +332,36 @@ namespace Kinetix.Workflow {
             cmd.Parameters.AddWithValue(WfActivityDefinition.Cols.WFAD_ID, wfActivityDefinition.WfadId.Value);
             cmd.ExecuteNonQuery();
         }
+
+
+        #region directAccesRules
+        public IList<RuleDefinition> FindAllRulesByWorkflowDefinitionId(int wfwdId)
+        {
+            var cmd = GetSqlServerCommand("FindAllRulesByWorkflowDefinitionId.sql");
+            cmd.Parameters.AddWithValue(WfWorkflow.Cols.WFWD_ID, wfwdId);
+            return new List<RuleDefinition>(cmd.ReadList<RuleDefinition>());
+        }
+
+        public IList<RuleConditionDefinition> FindAllConditionsByWorkflowDefinitionId(int wfwdId)
+        {
+            var cmd = GetSqlServerCommand("FindAllConditionsByWorkflowDefinitionId.sql");
+            cmd.Parameters.AddWithValue(WfWorkflow.Cols.WFWD_ID, wfwdId);
+            return new List<RuleConditionDefinition>(cmd.ReadList<RuleConditionDefinition>());
+        }
+
+        public IList<SelectorDefinition> FindAllSelectorsByWorkflowDefinitionId(int wfwdId)
+        {
+            var cmd = GetSqlServerCommand("FindAllSelectorsByWorkflowDefinitionId.sql");
+            cmd.Parameters.AddWithValue(WfWorkflow.Cols.WFWD_ID, wfwdId);
+            return new List<SelectorDefinition>(cmd.ReadList<SelectorDefinition>());
+        }
+
+        public IList<RuleFilterDefinition> FindAllFiltersByWorkflowDefinitionId(int wfwdId)
+        {
+            var cmd = GetSqlServerCommand("FindAllFiltersByWorkflowDefinitionId.sql");
+            cmd.Parameters.AddWithValue(WfWorkflow.Cols.WFWD_ID, wfwdId);
+            return new List<RuleFilterDefinition>(cmd.ReadList<RuleFilterDefinition>());
+        }
+        #endregion
     }
 }

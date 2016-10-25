@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.Threading;
 using System.Linq;
 using Kinetix.Workflow.Workflow;
+using Kinetix.Rules;
 
 namespace Kinetix.Workflow
 {
@@ -259,6 +260,18 @@ namespace Kinetix.Workflow
         {
             return inMemoryWorkflowInstanceStore[wfwId];
         }
+        public WfWorkflow ReadWorkflowInstanceForUpdateById(int wfwId)
+        {
+            //No lock for Memory Plugin
+            return ReadWorkflowInstanceById(wfwId);
+        }
+
+        public IList<WfWorkflow> ReadWorkflowsInstanceForUpdateById(int wfwdId)
+        {
+            //No lock for Memory Plugin
+            return new List<WfWorkflow>(inMemoryWorkflowInstanceStore.Values);
+        }
+
 
         public WfWorkflow ReadWorkflowInstanceByItemId(int wfwdId, int itemId)
         {
@@ -483,5 +496,28 @@ namespace Kinetix.Workflow
                 }
             }
         }
+
+        #region directAccesRules
+        public IList<RuleDefinition> FindAllRulesByWorkflowDefinitionId(int wfwdId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IList<RuleConditionDefinition> FindAllConditionsByWorkflowDefinitionId(int wfwdId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IList<SelectorDefinition> FindAllSelectorsByWorkflowDefinitionId(int wfwdId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IList<RuleFilterDefinition> FindAllFiltersByWorkflowDefinitionId(int wfwdId)
+        {
+            throw new NotImplementedException();
+        }
+        #endregion
+
     }
 }

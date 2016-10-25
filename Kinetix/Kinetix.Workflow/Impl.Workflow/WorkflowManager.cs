@@ -179,8 +179,8 @@ namespace Kinetix.Workflow {
         public bool CanAutoValidateActivity(WfActivityDefinition activityDefinition, object obj) {
             RuleConstants ruleConstants = _ruleManager.GetConstants(activityDefinition.WfwdId);
 
-            bool ruleValid = _ruleManager.IsRuleValid((int)activityDefinition.WfadId, obj, ruleConstants);
-            IList<AccountUser> accounts = _ruleManager.SelectAccounts((int)activityDefinition.WfadId, obj, ruleConstants);
+            bool ruleValid = _ruleManager.IsRuleValid(activityDefinition.WfadId.Value, obj, ruleConstants);
+            IList<AccountUser> accounts = _ruleManager.SelectAccounts(activityDefinition.WfadId.Value, obj, ruleConstants);
 
             bool atLeastOnePerson = accounts.Count > 0;
 
@@ -442,8 +442,6 @@ namespace Kinetix.Workflow {
 
             WfWorkflowDefinition wfD = _workflowStorePlugin.ReadWorkflowDefinition(wfActivityDefinition.WfwdId);
 
-            
-
             IList<RuleDefinition> rules = _ruleManager.GetRulesForItemId(wfActivityDefinition.WfadId.Value);
             IList<SelectorDefinition> selectors = _ruleManager.GetSelectorsForItemId(wfActivityDefinition.WfadId.Value);
             _ruleManager.RemoveRules(rules);
@@ -508,7 +506,7 @@ namespace Kinetix.Workflow {
             Debug.Assert(wfWorkflow != null);
             if (!WfCodeStatusWorkflow.Pau.ToString().Equals(wfWorkflow.WfsCode))
             {
-                throw new System.InvalidOperationException("A workflow must be paused before resuming");
+                throw new InvalidOperationException("A workflow must be paused before resuming");
             }
             //---
             wfWorkflow.WfsCode = WfCodeStatusWorkflow.Sta.ToString();
@@ -518,9 +516,16 @@ namespace Kinetix.Workflow {
         public void SaveDecision(WfWorkflow wfWorkflow, WfDecision wfDecision) {
             if (!WfCodeStatusWorkflow.Sta.ToString().Equals(wfWorkflow.WfsCode))
             {
-                throw new System.InvalidOperationException("A workflow must be started before saving decision");
+                throw new InvalidOperationException("A workflow must be started before saving decision");
             }
             //---
+            WfWorkflow wfWorkflowFetch = _workflowStorePlugin.ReadWorkflowInstanceForUpdateById(wfWorkflow.WfwId.Value);
+
+            if (wfWorkflowFetch.WfaId2 != null && !wfWorkflow.WfaId2.Equals(wfWorkflow.WfaId2))
+            {
+                throw new InvalidOperationException("Concurrent workflow modification");
+            }
+
             WfActivity currentActivity = _workflowStorePlugin.ReadActivity(wfWorkflow.WfaId2.Value);
 
             // Attach decision to the activity
@@ -783,34 +788,56 @@ namespace Kinetix.Workflow {
         }
 
 
+        #region Workflow Recalculation
         public void RecalculateWorkflow(WfWorkflow wfWorkflow)
         {
             Debug.Assert(wfWorkflow != null);
-            Debug.Assert(WfCodeStatusWorkflow.Sta.ToString().Equals(wfWorkflow.WfsCode) || WfCodeStatusWorkflow.Pau.ToString().Equals(wfWorkflow.WfsCode), "A workflow must be started or paused before ending");
+            WfWorkflow wfWorkflowFetched = _workflowStorePlugin.ReadWorkflowInstanceForUpdateById(wfWorkflow.WfwId.Value);
+            Debug.Assert(WfCodeStatusWorkflow.Sta.ToString().Equals(wfWorkflowFetched.WfsCode) || WfCodeStatusWorkflow.Pau.ToString().Equals(wfWorkflowFetched.WfsCode), "A workflow must be started or paused before ending");
             //---
-            WfWorkflowDefinition wfWorkflowDefinition = _workflowStorePlugin.ReadWorkflowDefinition(wfWorkflow.WfwdId.Value);
-            IList<WfActivityDefinition> activityDefinitions = _workflowStorePlugin.FindAllDefaultActivityDefinitions(wfWorkflowDefinition);
-            RuleConstants ruleConstants = _ruleManager.GetConstants(wfWorkflowDefinition.WfwdId.Value);
-
-            RecalculateWorkflow(activityDefinitions, ruleConstants, wfWorkflow);
+            WfWorkflowDefinition wfWorkflowDefinition = _workflowStorePlugin.ReadWorkflowDefinition(wfWorkflowFetched.WfwdId.Value);
+            RecalculateWorkflows(new List<WfWorkflow>() { wfWorkflowFetched}, wfWorkflowDefinition);
         }
 
         public void RecalculateWorkflowDefinition(WfWorkflowDefinition wfWorkflowDefinition)
         {
             IList<WfWorkflow> workflows = _workflowStorePlugin.FindActiveWorkflows(wfWorkflowDefinition);
+            RecalculateWorkflows(workflows, wfWorkflowDefinition);
+        }
+
+
+        private void RecalculateWorkflows(IList<WfWorkflow> wfWorfklows, WfWorkflowDefinition wfWorkflowDefinition)
+        {
             IList<WfActivityDefinition> activityDefinitions = _workflowStorePlugin.FindAllDefaultActivityDefinitions(wfWorkflowDefinition);
 
             RuleConstants ruleConstants = _ruleManager.GetConstants(wfWorkflowDefinition.WfwdId.Value);
 
-            foreach (WfWorkflow wf in workflows)
-            {
-                RecalculateWorkflow(activityDefinitions, ruleConstants, wf);
-            }
+            IList<RuleDefinition> rules = _workflowStorePlugin.FindAllRulesByWorkflowDefinitionId(wfWorkflowDefinition.WfwdId.Value);
+            IList<RuleConditionDefinition> conditions = _workflowStorePlugin.FindAllConditionsByWorkflowDefinitionId(wfWorkflowDefinition.WfwdId.Value);
 
+            IList<SelectorDefinition> selectors = _workflowStorePlugin.FindAllSelectorsByWorkflowDefinitionId(wfWorkflowDefinition.WfwdId.Value);
+            IList<RuleFilterDefinition> filters = _workflowStorePlugin.FindAllFiltersByWorkflowDefinitionId(wfWorkflowDefinition.WfwdId.Value);
+
+            //Build a dictionary from the : WfadId => List<RuleDefinition>
+            IDictionary<int, List<RuleDefinition>> dicRules = rules.GroupBy(c => c.ItemId.Value).ToDictionary(d => d.Key, e => e.ToList());
+
+            //Build a dictionary from the : RudId => List<RuleConditionDefinition>
+            IDictionary<int, List<RuleConditionDefinition>> dicConditions = conditions.GroupBy(c => c.RudId.Value).ToDictionary(d => d.Key, e => e.ToList());
+
+            //Build a dictionary from the : WfadId => List<SelectorDefinition>
+            IDictionary<int, List<SelectorDefinition>> dicSelectors = selectors.GroupBy(c => c.ItemId.Value).ToDictionary(d => d.Key, e => e.ToList());
+
+            //Build a dictionary from the : SelId => List<RuleFilterDefinition>
+            IDictionary<int, List<RuleFilterDefinition>> dicFilters = filters.GroupBy(c => c.SelId.Value).ToDictionary(d => d.Key, e => e.ToList());
+
+            foreach (WfWorkflow wfWorfklow in wfWorfklows)
+            {
+                RecalculateWorkflow(activityDefinitions, ruleConstants, wfWorfklow, dicRules, dicConditions, dicSelectors, dicFilters);
+            }
         }
 
 
-        private void RecalculateWorkflow(IList<WfActivityDefinition> activityDefinitions, RuleConstants ruleConstants, WfWorkflow wf)
+        private void RecalculateWorkflow(IList<WfActivityDefinition> activityDefinitions, RuleConstants ruleConstants, WfWorkflow wf, IDictionary<int, List<RuleDefinition>> dicRules, IDictionary<int, List<RuleConditionDefinition>> dicConditions, IDictionary<int, List<SelectorDefinition>> dicSelectors, IDictionary<int, List<RuleFilterDefinition>> dicFilters)
         {
 
             if (activityDefinitions.Count == 0)
@@ -826,7 +853,7 @@ namespace Kinetix.Workflow {
             bool isLastPreviousCurrentActivityReached;
             if (wf.WfaId2 == null)
             {
-                //If the first(s) manual Activity(ies) has(ve) been deleted, the workflow don't have a curreent activity.
+                //If the first(s) manual Activity(ies) has(ve) been deleted, the workflow don't have a current activity.
                 currentActivity = null;
                 isLastPreviousCurrentActivityReached = true;
             }
@@ -844,7 +871,8 @@ namespace Kinetix.Workflow {
                 WfActivity activity;
                 activities.TryGetValue(actDefId, out activity);
 
-                bool isRuleValid = _ruleManager.IsRuleValid(actDefId, obj, ruleConstants);
+                //bool isRuleValid = _ruleManager.IsRuleValid(actDefId, obj, ruleConstants);
+                bool isRuleValid = _ruleManager.IsRuleValid(actDefId, obj, ruleConstants, dicRules, dicConditions);
 
                 if (activity != null && currentActivity != null && activityDefinition.WfadId.Equals(currentActivity.WfadId))
                 {
@@ -858,6 +886,7 @@ namespace Kinetix.Workflow {
                     //This activity need a validation
 
                     //We need to check if there is at least one user allowed to validate
+                    //IList<AccountUser> accounts = _ruleManager.SelectAccounts(actDefId, obj, ruleConstants);
                     IList<AccountUser> accounts = _ruleManager.SelectAccounts(actDefId, obj, ruleConstants);
 
                     if (accounts.Count > 0)
@@ -969,6 +998,7 @@ namespace Kinetix.Workflow {
                 //EndInstance(wf);
             }
         }
+        #endregion
 
         #region Custom Methods
 

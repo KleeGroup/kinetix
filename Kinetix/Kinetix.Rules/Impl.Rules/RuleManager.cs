@@ -79,6 +79,20 @@ namespace Kinetix.Rules
             return _ruleValidatorPlugin.IsRuleValid(rules, context);
         }
 
+        public bool IsRuleValid(int idActivityDefinition, object item, RuleConstants constants, IDictionary<int, List<RuleDefinition>> dicRules, IDictionary<int, List<RuleConditionDefinition>> dicConditions)
+        {
+            RuleContext context = new RuleContext(item, constants);
+            List<RuleDefinition> rules;
+            dicRules.TryGetValue(idActivityDefinition, out rules);
+
+            if (rules == null)
+            {
+                rules = new List<RuleDefinition>();
+            }
+
+            return _ruleValidatorPlugin.IsRuleValid(rules, dicConditions, context);
+        }
+
         public void RemoveCondition(RuleConditionDefinition ruleConditionDefinition)
         {
             _ruleStorePlugin.RemoveCondition(ruleConditionDefinition);
@@ -105,6 +119,20 @@ namespace Kinetix.Rules
             RuleContext context = new RuleContext(item, constants);
 
             return _ruleSelectorPlugin.SelectAccounts(selectors, context);
+        }
+
+        public IList<AccountUser> SelectAccounts(int idActivityDefinition, object item, RuleConstants constants, IDictionary<int, List<SelectorDefinition>> dicSelectors, IDictionary<int, List<RuleFilterDefinition>> dicFilters)
+        {
+            RuleContext context = new RuleContext(item, constants);
+            List<SelectorDefinition> selectors;
+            dicSelectors.TryGetValue(idActivityDefinition, out selectors);
+
+            if (selectors == null)
+            {
+                selectors = new List<SelectorDefinition>();
+            }
+
+            return _ruleSelectorPlugin.SelectAccounts(selectors, dicFilters, context);
         }
 
         public IList<AccountGroup> SelectGroups(int idActivityDefinition, object item, RuleConstants constants)
@@ -153,5 +181,7 @@ namespace Kinetix.Rules
             IList<int> ids = selectorDefinitions.Where(s => s.Id != null).Select(s => s.Id).Cast<int>().ToList();
             _ruleStorePlugin.RemoveSelectors(ids);
         }
+
+
     }
 }
