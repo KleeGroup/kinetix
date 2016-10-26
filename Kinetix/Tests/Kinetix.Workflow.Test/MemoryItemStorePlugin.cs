@@ -1,4 +1,5 @@
-﻿using System.Collections.Concurrent;
+﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 
 namespace Kinetix.Workflow.Test
@@ -15,6 +16,11 @@ namespace Kinetix.Workflow.Test
         public object ReadItem(int itemId)
         {
             return inMemoryItemStore[itemId];
+        }
+
+        public IDictionary<int, object> ReadItems(IList<int> itemIds)
+        {
+            return inMemoryItemStore;
         }
     }
 }

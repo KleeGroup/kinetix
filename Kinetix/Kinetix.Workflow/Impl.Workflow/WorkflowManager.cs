@@ -818,26 +818,32 @@ namespace Kinetix.Workflow {
             IList<SelectorDefinition> selectors = _workflowStorePlugin.FindAllSelectorsByWorkflowDefinitionId(wfWorkflowDefinition.WfwdId.Value);
             IList<RuleFilterDefinition> filters = _workflowStorePlugin.FindAllFiltersByWorkflowDefinitionId(wfWorkflowDefinition.WfwdId.Value);
 
-            //Build a dictionary from the : WfadId => List<RuleDefinition>
+            //Build a list of items Ids 
+            List<int> itemIds = wfWorfklows.Select(w => w.ItemId.Value).ToList();
+            IDictionary<int, object> dicObjects = _itemStorePlugin.ReadItems(itemIds);
+
+
+            //Build a dictionary from the rules: WfadId => List<RuleDefinition>
             IDictionary<int, List<RuleDefinition>> dicRules = rules.GroupBy(c => c.ItemId.Value).ToDictionary(d => d.Key, e => e.ToList());
 
-            //Build a dictionary from the : RudId => List<RuleConditionDefinition>
+            //Build a dictionary from the conditions: RudId => List<RuleConditionDefinition>
             IDictionary<int, List<RuleConditionDefinition>> dicConditions = conditions.GroupBy(c => c.RudId.Value).ToDictionary(d => d.Key, e => e.ToList());
 
-            //Build a dictionary from the : WfadId => List<SelectorDefinition>
+            //Build a dictionary from the selectors: WfadId => List<SelectorDefinition>
             IDictionary<int, List<SelectorDefinition>> dicSelectors = selectors.GroupBy(c => c.ItemId.Value).ToDictionary(d => d.Key, e => e.ToList());
 
-            //Build a dictionary from the : SelId => List<RuleFilterDefinition>
+            //Build a dictionary from the filters: SelId => List<RuleFilterDefinition>
             IDictionary<int, List<RuleFilterDefinition>> dicFilters = filters.GroupBy(c => c.SelId.Value).ToDictionary(d => d.Key, e => e.ToList());
+
 
             foreach (WfWorkflow wfWorfklow in wfWorfklows)
             {
-                RecalculateWorkflow(activityDefinitions, ruleConstants, wfWorfklow, dicRules, dicConditions, dicSelectors, dicFilters);
+                RecalculateWorkflow(activityDefinitions, ruleConstants, wfWorfklow, dicRules, dicConditions, dicSelectors, dicFilters, dicObjects);
             }
         }
 
 
-        private void RecalculateWorkflow(IList<WfActivityDefinition> activityDefinitions, RuleConstants ruleConstants, WfWorkflow wf, IDictionary<int, List<RuleDefinition>> dicRules, IDictionary<int, List<RuleConditionDefinition>> dicConditions, IDictionary<int, List<SelectorDefinition>> dicSelectors, IDictionary<int, List<RuleFilterDefinition>> dicFilters)
+        private void RecalculateWorkflow(IList<WfActivityDefinition> activityDefinitions, RuleConstants ruleConstants, WfWorkflow wf, IDictionary<int, List<RuleDefinition>> dicRules, IDictionary<int, List<RuleConditionDefinition>> dicConditions, IDictionary<int, List<SelectorDefinition>> dicSelectors, IDictionary<int, List<RuleFilterDefinition>> dicFilters, IDictionary<int, object> dicObjects)
         {
 
             if (activityDefinitions.Count == 0)
@@ -846,7 +852,16 @@ namespace Kinetix.Workflow {
                 return;
             }
 
-            object obj = _itemStorePlugin.ReadItem(wf.ItemId.Value);
+            object obj;
+            dicObjects.TryGetValue(wf.ItemId.Value, out obj);
+
+            if (obj == null)
+            {
+                // No item associated to this workflow.
+                return;
+            }
+
+
             IList<WfActivity> allActivities = _workflowStorePlugin.FindActivitiesByWorkflowId(wf);
             IDictionary<int, WfActivity> activities = allActivities.ToDictionary(a => a.WfadId);
             WfActivity currentActivity;
@@ -887,7 +902,7 @@ namespace Kinetix.Workflow {
 
                     //We need to check if there is at least one user allowed to validate
                     //IList<AccountUser> accounts = _ruleManager.SelectAccounts(actDefId, obj, ruleConstants);
-                    IList<AccountUser> accounts = _ruleManager.SelectAccounts(actDefId, obj, ruleConstants);
+                    IList<AccountUser> accounts = _ruleManager.SelectAccounts(actDefId, obj, ruleConstants, dicSelectors, dicFilters);
 
                     if (accounts.Count > 0)
                     {
