@@ -351,6 +351,28 @@ namespace Kinetix.Workflow
             return wfActivities;
         }
 
+        public IList<WfActivity> FindAllActivitiesByWorkflowDefinitionId(WfWorkflowDefinition wfWorkflowDefinition)
+        {
+            Debug.Assert(wfWorkflowDefinition != null);
+            //---
+            IList<WfActivity> wfActivities = new List<WfActivity>();
+
+            IList<WfActivityDefinition> activityDefinitions =  FindAllDefaultActivityDefinitions(wfWorkflowDefinition);
+
+            foreach (WfActivity wfActivity in inMemoryActivityStore.Values)
+            {
+                foreach (WfActivityDefinition wdActivityDefinition in activityDefinitions)
+                {
+                    if (wdActivityDefinition.WfadId.Equals(wfActivity.WfadId))
+                    {
+                        wfActivities.Add(wfActivity);
+                    }
+                }
+            }
+
+            return wfActivities;
+        }
+
         public IList<WfDecision> FindDecisionsByWorkflowId(WfWorkflow wfWorkflow)
         {
 
@@ -517,6 +539,13 @@ namespace Kinetix.Workflow
         {
             throw new NotImplementedException();
         }
+
+        public IList<WfDecision> FindAllDecisionsByWorkflowDefinitionId(WfWorkflowDefinition wfWorkflowDefinition)
+        {
+            throw new NotImplementedException();
+        }
+
+
         #endregion
 
     }

@@ -257,6 +257,24 @@ namespace Kinetix.Workflow {
             return new List<WfActivity>(BrokerManager.GetBroker<WfActivity>().GetAllByCriteria(filterCriteria));
         }
 
+        public IList<WfActivity> FindAllActivitiesByWorkflowDefinitionId(WfWorkflowDefinition wfWorkflowDefinition)
+        {
+            Debug.Assert(wfWorkflowDefinition != null);
+            //--
+            var cmd = GetSqlServerCommand("FindAllActivitiesByWorkflowDefinitionId.sql");
+            cmd.Parameters.AddWithValue(WfWorkflowDefinition.Cols.WFWD_ID, wfWorkflowDefinition.WfwdId.Value);
+            return new List<WfActivity>(cmd.ReadList<WfActivity>());
+        }
+
+        public IList<WfDecision> FindAllDecisionsByWorkflowDefinitionId(WfWorkflowDefinition wfWorkflowDefinition)
+        {
+            Debug.Assert(wfWorkflowDefinition != null);
+            //--
+            var cmd = GetSqlServerCommand("FindAllDecisionsByWorkflowDefinitionId.sql");
+            cmd.Parameters.AddWithValue(WfWorkflowDefinition.Cols.WFWD_ID, wfWorkflowDefinition.WfwdId.Value);
+            return new List<WfDecision>(cmd.ReadList<WfDecision>());
+        }
+
         public IList<WfDecision> FindDecisionsByWorkflowId(WfWorkflow wfWorkflow)
         {
             Debug.Assert(wfWorkflow != null);
@@ -334,7 +352,7 @@ namespace Kinetix.Workflow {
         }
 
 
-        #region directAccesRules
+        #region Direct Acces Rules
         public IList<RuleDefinition> FindAllRulesByWorkflowDefinitionId(int wfwdId)
         {
             var cmd = GetSqlServerCommand("FindAllRulesByWorkflowDefinitionId.sql");
@@ -362,6 +380,8 @@ namespace Kinetix.Workflow {
             cmd.Parameters.AddWithValue(WfWorkflow.Cols.WFWD_ID, wfwdId);
             return new List<RuleFilterDefinition>(cmd.ReadList<RuleFilterDefinition>());
         }
+
+
         #endregion
     }
 }

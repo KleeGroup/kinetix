@@ -111,6 +111,12 @@
     <Content Include="generated.sql" />
     <Content Include="Init\WF_MULTIPLICITY_DEFINITION.insert.sql" />
     <Content Include="Init\WF_STATUS.insert.sql" />
+    <EmbeddedResource Include="SQLResources\FindAllDecisionsByWorkflowDefinitionId.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SQLResources\FindAllActivitiesByWorkflowDefinitionId.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
     <EmbeddedResource Include="SQLResources\FindAllFiltersByWorkflowDefinitionId.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>

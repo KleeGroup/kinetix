@@ -290,6 +290,22 @@ namespace Kinetix.Workflow
         WfActivityDefinition FindNextActivity(int wfadId, String transitionName);
 
         /// <summary>
+        /// Find all activities for a workflow definition.
+        /// This method must be only used for the workflow recalculation
+        /// </summary>
+        /// <param name="wfWorkflowDefinition">wfWorkflowDefinition</param>
+        /// <returns></returns>
+        IList<WfActivity> FindAllActivitiesByWorkflowDefinitionId(WfWorkflowDefinition wfWorkflowDefinition);
+
+        /// <summary>
+        /// Find all decisions for a workflow definition.
+        /// This method must be only used for the workflow recalculation
+        /// </summary>
+        /// <param name="wfWorkflowDefinition">wfWorkflowDefinition</param>
+        /// <returns></returns>
+        IList<WfDecision> FindAllDecisionsByWorkflowDefinitionId(WfWorkflowDefinition wfWorkflowDefinition);
+
+        /// <summary>
         /// Find all activities for a workflow
         /// </summary>
         /// <param name="wfWorkflow"></param>
