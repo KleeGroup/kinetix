@@ -1,7 +1,4 @@
-﻿using System;
-using System.Reflection;
-using System.ServiceModel;
-using Kinetix.ServiceModel;
+﻿using System.ServiceModel;
 using Microsoft.Practices.Unity;
 
 namespace Kinetix.ServiceModel {
@@ -18,12 +15,12 @@ namespace Kinetix.ServiceModel {
         public DefaultResourceServiceFactory() {
         }
 
-        /// <inheritDoc cref="IResourceServiceFactory.GetLoaderService" />
+        /// <inheritdoc cref="IResourceServiceFactory.GetLoaderService" />
         public IResourceLoader GetLoaderService() {
             return (IResourceLoader)ServiceManager.Instance.Container.Resolve<IResourceLoader>();
         }
 
-        /// <inheritDoc cref="IResourceServiceFactory.GetWriterService" />
+        /// <inheritdoc cref="IResourceServiceFactory.GetWriterService" />
         public IResourceWriter GetWriterService() {
             return (IResourceWriter)ServiceManager.Instance.Container.Resolve<IResourceWriter>();
         }

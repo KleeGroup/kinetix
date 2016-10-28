@@ -1,7 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Web.UI;
+using Kinetix.Monitoring.Html;
+using Kinetix.Monitoring.Manager;
 using Kinetix.Search.Contract;
+using Kinetix.ServiceModel;
 using log4net;
 
 namespace Kinetix.Search.Broker {
@@ -9,7 +13,7 @@ namespace Kinetix.Search.Broker {
     /// <summary>
     /// Manager pour les brokers de recherche.
     /// </summary>
-    public sealed class SearchBrokerManager {
+    public sealed class SearchBrokerManager : IManager, IManagerDescription {
 
         private static readonly SearchBrokerManager _instance = new SearchBrokerManager();
         private static string _defaultDataSourceName;
@@ -29,6 +33,42 @@ namespace Kinetix.Search.Broker {
         public static SearchBrokerManager Instance {
             get {
                 return _instance;
+            }
+        }
+
+        public IManagerDescription Description {
+            get {
+                return this;
+            }
+        }
+
+        public string Name {
+            get {
+                return "Search";
+            }
+        }
+
+        public string Image {
+            get {
+                return "SEARCHDB.png";
+            }
+        }
+
+        public string ImageMimeType {
+            get {
+                return "image/png";
+            }
+        }
+
+        public byte[] ImageData {
+            get {
+                return IR.Query_png;
+            }
+        }
+
+        public int Priority {
+            get {
+                return 40;
             }
         }
 
@@ -74,6 +114,13 @@ namespace Kinetix.Search.Broker {
             }
 
             _storeMap[dataSourceName] = storeType;
+        }
+
+        public void Close() {
+        }
+
+        public void ToHtml(HtmlTextWriter writer) {
+            HtmlPageRenderer.ToHtml("SEARCHDB", writer);
         }
 
         /// <summary>
