@@ -545,29 +545,42 @@ namespace Kinetix.Workflow
         {
             throw new NotImplementedException();
         }
+        #endregion
 
+        #region Workflow Mass Update/Create
         public void UpdateActivitiesIsAuto(IList<WfActivityUpdate> activities)
         {
-            throw new NotImplementedException();
+            foreach (WfActivityUpdate actUpd in activities)
+            {
+                inMemoryActivityStore[actUpd.WfaId].IsAuto = actUpd.IsAuto;
+            }
         }
 
         public void CreateActiviesAndUpdateWorkflowCurrentActivities(IList<WfActivity> activities)
         {
-            throw new NotImplementedException();
+            foreach (WfActivity activity in activities)
+            {
+                CreateActivity(activity);
+                inMemoryWorkflowInstanceStore[activity.WfwId].WfaId2 = activity.WfaId;
+            }
+
         }
 
-        //public void CreateActivies(IList<WfActivityInsert> activities)
         public void CreateActivies(IList<WfActivity> activities)
         {
-            throw new NotImplementedException();
+            foreach(WfActivity activity in activities)
+            {
+                CreateActivity(activity);
+            }
         }
 
         public void UpdateWorkflowCurrentActivities(IList<WfWorkflowUpdate> worfklows)
         {
-            throw new NotImplementedException();
+            foreach(WfWorkflowUpdate wfUpd in worfklows)
+            {
+                inMemoryWorkflowInstanceStore[wfUpd.WfwId.Value].WfaId2 = wfUpd.WfaId2;
+            }
         }
-
-
         #endregion
 
     }
