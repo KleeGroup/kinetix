@@ -44,7 +44,8 @@ namespace Kinetix.Workflow.Test
                 ConnectionStringSettings conn = new ConnectionStringSettings
                 {
                     Name = DefaultDataSource,
-                    ConnectionString = "Data Source=martha;Initial Catalog=" + dataBaseName + ";User ID=dianeConnection;Password=Puorgeelk23",
+                    // TODO: Change hard coded data-source
+                    ConnectionString = "Data Source=carla;Initial Catalog=" + dataBaseName + ";User ID=dianeConnection;Password=Puorgeelk23",
                     ProviderName = "System.Data.SqlClient"
                 };
 
@@ -1038,7 +1039,7 @@ namespace Kinetix.Workflow.Test
 
             IList<WfWorkflow> allWorkflows = new List<WfWorkflow>();
 
-            int nbWf = 1500;
+            int nbWf = 2500;
 
             for (int i = 0; i < nbWf; i++)
             {
@@ -1050,10 +1051,6 @@ namespace Kinetix.Workflow.Test
 
                 // Starting the workflow
                 _workflowManager.StartInstance(wfWorkflow);
-
-                int currentActivityId = wfWorkflow.WfaId2.Value;
-                WfActivity currentActivity = _workflowManager.GetActivity(currentActivityId);
-                Assert.AreEqual(firstActivity.WfadId, currentActivity.WfadId);
 
                 // We are at the first activity 
                 // This activity is manual, Activity exist but no decision associated

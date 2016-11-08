@@ -1,4 +1,5 @@
 ﻿using Kinetix.Rules;
+using Kinetix.Workflow.Impl.Workflow;
 using Kinetix.Workflow.instance;
 using Kinetix.Workflow.model;
 using Kinetix.Workflow.Workflow;
@@ -356,5 +357,18 @@ namespace Kinetix.Workflow
         IList<RuleFilterDefinition> FindAllFiltersByWorkflowDefinitionId(int wfwdId);
         #endregion
 
+
+        #region Batch Updates / Insert for recalculation
+
+        void UpdateWorkflowCurrentActivities(IList<WfWorkflowUpdate> worfklows);
+
+        void UpdateActivitiesIsAuto(IList<WfActivityUpdate> activities);
+
+        void CreateActiviesAndUpdateWorkflowCurrentActivities(IList<WfActivity> activities);
+
+        //void CreateActivies(IList<WfActivityInsert> activities);
+        void CreateActivies(IList<WfActivity> activities);
+
+        #endregion
     }
 }

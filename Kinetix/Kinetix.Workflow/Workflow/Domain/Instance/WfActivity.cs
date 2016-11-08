@@ -1,9 +1,10 @@
 ﻿using Kinetix.ComponentModel;
 using System;
+using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-
+using System.Runtime.Serialization;
 
 namespace Kinetix.Workflow
 {
@@ -55,6 +56,11 @@ namespace Kinetix.Workflow
             set;
         }
 
+        [Column("INSERT_KEY")]
+        [Domain("DO_X_WORKFLOW_ID")]
+        [DataMember]
+        [GeneratedCode("InsertKey", "")]
+        public int? InsertKey { get; set; }
 
         /// <summary>
         /// Type énuméré présentant les noms des colonnes en base.
@@ -98,6 +104,7 @@ namespace Kinetix.Workflow
             IS_AUTO,
         }
 
+        
     }
 
 }

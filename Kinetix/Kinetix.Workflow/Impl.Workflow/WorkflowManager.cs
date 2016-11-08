@@ -8,7 +8,7 @@ using Kinetix.Workflow.model;
 using System.Linq;
 using Kinetix.Workflow.Workflow;
 using System.ServiceModel;
-
+using Kinetix.Workflow.Impl.Workflow;
 
 namespace Kinetix.Workflow {
     [ServiceBehavior(ConcurrencyMode = ConcurrencyMode.Multiple, InstanceContextMode = InstanceContextMode.PerCall, IncludeExceptionDetailInFaults = true)]
@@ -108,14 +108,20 @@ namespace Kinetix.Workflow {
             }
         }
 
-        private WfActivity CreateActivity(WfActivityDefinition activityDefinition, WfWorkflow wfWorkflow, bool isAuto)
+        private WfActivity GetNewActivity(WfActivityDefinition activityDefinition, WfWorkflow wfWorkflow, bool isAuto)
         {
             WfActivity wfActivity = new WfActivity();
             wfActivity.CreationDate = DateTime.Now;
             wfActivity.WfadId = activityDefinition.WfadId.Value;
             wfActivity.WfwId = wfWorkflow.WfwId.Value;
             wfActivity.IsAuto = isAuto;
+            return wfActivity;
+        }
 
+
+        private WfActivity CreateActivity(WfActivityDefinition activityDefinition, WfWorkflow wfWorkflow, bool isAuto)
+        {
+            WfActivity wfActivity = GetNewActivity(activityDefinition, wfWorkflow, isAuto);
             _workflowStorePlugin.CreateActivity(wfActivity);
             return wfActivity;
         }
@@ -840,7 +846,7 @@ namespace Kinetix.Workflow {
             IDictionary<int, List<RuleFilterDefinition>> dicFilters = filters.GroupBy(c => c.SelId.Value).ToDictionary(d => d.Key, e => e.ToList());
 
             //Build a dictionnary from the workflows: WfwId => List<WfActivity>
-            IDictionary<int, List<WfActivity>> dicActivities = activities.GroupBy(c => c.WfaId.Value).ToDictionary(d => d.Key, e => e.ToList());
+            IDictionary<int, List<WfActivity>> dicActivities = activities.GroupBy(c => c.WfwId).ToDictionary(d => d.Key, e => e.ToList());
 
             //Build a dictionnary from the activities: WfaId => List<WfDecision>
             IDictionary<int, List<WfDecision>> dicDecision = decisions.GroupBy(c => c.WfaId).ToDictionary(d => d.Key, e => e.ToList());
@@ -853,18 +859,47 @@ namespace Kinetix.Workflow {
             sw1.Stop();
             Trace.WriteLine(sw1.ElapsedMilliseconds);
 
+            RecalculationOutput output = new RecalculationOutput();
             foreach (WfWorkflow wfWorfklow in wfWorfklows)
             {
-                Stopwatch sw = new Stopwatch();
-                sw.Start();
-                RecalculateWorkflow(activityDefinitions, ruleConstants, wfWorfklow, dicRules, dicConditions, dicSelectors, dicFilters, dicActivities, dicDecision, dicObjects);
-                sw.Stop();
-                Trace.WriteLine(sw.ElapsedMilliseconds);
+                //Stopwatch sw = new Stopwatch();
+                //sw.Start();
+                RecalculateWorkflow(activityDefinitions, ruleConstants, wfWorfklow, dicRules, dicConditions, dicSelectors, dicFilters, dicActivities, dicDecision, dicObjects, output);
+                //sw.Stop();
+                //Trace.WriteLine(sw.ElapsedMilliseconds);
+            }
+
+            UpdateWorkflows(output);
+        }
+
+        private void UpdateWorkflows(RecalculationOutput output)
+        {
+            //Updating current workflow activities (no new activities)
+            if (output.WorkflowsUpdateCurrentActivity.Count > 0)
+            {
+                _workflowStorePlugin.UpdateWorkflowCurrentActivities(output.WorkflowsUpdateCurrentActivity);
+            }
+            
+            //Updating IsAuto flag on activities
+            if (output.ActivitiesUpdateIsAuto.Count > 0)
+            {
+                _workflowStorePlugin.UpdateActivitiesIsAuto(output.ActivitiesUpdateIsAuto);
+            }
+            
+            //Creating new activities
+            if (output.ActivitiesCreate.Count > 0)
+            {
+                _workflowStorePlugin.CreateActivies(output.ActivitiesCreate);
+            }
+            
+            //Creating new activities and flaging them as current activity
+            if (output.ActivitiesCreateUpdateCurrentActivity.Count > 0)
+            {
+                _workflowStorePlugin.CreateActiviesAndUpdateWorkflowCurrentActivities(output.ActivitiesCreateUpdateCurrentActivity);
             }
         }
 
-
-        private void RecalculateWorkflow(IList<WfActivityDefinition> activityDefinitions, RuleConstants ruleConstants, WfWorkflow wf, IDictionary<int, List<RuleDefinition>> dicRules, IDictionary<int, List<RuleConditionDefinition>> dicConditions, IDictionary<int, List<SelectorDefinition>> dicSelectors, IDictionary<int, List<RuleFilterDefinition>> dicFilters, IDictionary<int, List<WfActivity>> dicActivities, IDictionary<int, List<WfDecision>> dicDecision, IDictionary<int, object> dicObjects)
+        private void RecalculateWorkflow(IList<WfActivityDefinition> activityDefinitions, RuleConstants ruleConstants, WfWorkflow wf, IDictionary<int, List<RuleDefinition>> dicRules, IDictionary<int, List<RuleConditionDefinition>> dicConditions, IDictionary<int, List<SelectorDefinition>> dicSelectors, IDictionary<int, List<RuleFilterDefinition>> dicFilters, IDictionary<int, List<WfActivity>> dicActivities, IDictionary<int, List<WfDecision>> dicDecision, IDictionary<int, object> dicObjects, RecalculationOutput output)
         {
 
             if (activityDefinitions.Count == 0)
@@ -882,9 +917,17 @@ namespace Kinetix.Workflow {
                 return;
             }
 
+            List<WfActivity> allActivities;
+            dicActivities.TryGetValue(wf.WfwId.Value, out allActivities);
 
-            IList<WfActivity> allActivities = _workflowStorePlugin.FindActivitiesByWorkflowId(wf);
+            if (allActivities == null)
+            {
+                // No activity for this workflow.
+                allActivities = new List<WfActivity>();
+            }
+
             IDictionary<int, WfActivity> activities = allActivities.ToDictionary(a => a.WfadId);
+            
             WfActivity currentActivity;
             bool isLastPreviousCurrentActivityReached;
             if (wf.WfaId2 == null)
@@ -935,9 +978,13 @@ namespace Kinetix.Workflow {
                             // - A new activity definition has been inserted in the workflow.
                             // - The previous current activity has been switched to auto.
 
-                            /*WfActivity wfActivity = CreateActivity(activityDefinition, wf, false);
-                            wf.WfaId2 = wfActivity.WfaId;
-                            _workflowStorePlugin.UpdateWorkflowInstance(wf);*/
+                            //WfActivity wfActivity = CreateActivity(activityDefinition, wf, false);
+                            //wf.WfaId2 = wfActivity.WfaId;
+                            //_workflowStorePlugin.UpdateWorkflowInstance(wf);
+
+                            WfActivity wfActivity = GetNewActivity(activityDefinition, wf, false);
+                            output.AddActivitiesCreateUpdateCurrentActivity(wfActivity);
+
                             newCurrentActivityFound = true;
                             break;
                         }
@@ -945,10 +992,13 @@ namespace Kinetix.Workflow {
                         {
                             //The previous validation was auto. This activity should be manually validated.
                             activity.IsAuto = false;
-                            /*_workflowStorePlugin.UpdateActivity(activity);
+                            //_workflowStorePlugin.UpdateActivity(activity);
                             wf.WfaId2 = activity.WfaId;
-                            _workflowStorePlugin.UpdateWorkflowInstance(wf);
-                            newCurrentActivityFound = true;*/
+                            //_workflowStorePlugin.UpdateWorkflowInstance(wf);
+                            output.AddActivitiesUpdateIsAuto(activity);
+                            output.AddWorkflowsUpdateCurrentActivity(wf);
+
+                            newCurrentActivityFound = true;
                             break;
                         }
 
@@ -970,7 +1020,10 @@ namespace Kinetix.Workflow {
                                 // The user previously allowed to validate are no longer selected with the new selectors.
                                 // This activity must be revalidated
                                 wf.WfaId2 = activity.WfaId;
+                                
                                 //_workflowStorePlugin.UpdateWorkflowInstance(wf);
+                                output.AddWorkflowsUpdateCurrentActivity(wf);
+
                                 newCurrentActivityFound = true;
                                 break;
                             }
@@ -991,7 +1044,10 @@ namespace Kinetix.Workflow {
                                 // At least one user previously allowed to validate are no longer selected with the new selectors.
                                 // This activity must be revalidated
                                 wf.WfaId2 = activity.WfaId;
+                                
                                 //_workflowStorePlugin.UpdateWorkflowInstance(wf);
+                                output.AddWorkflowsUpdateCurrentActivity(wf);
+
                                 newCurrentActivityFound = true;
                                 break;
                             }
@@ -1004,7 +1060,10 @@ namespace Kinetix.Workflow {
                         // This activity is now auto.
                         isCurrentActivityAuto = true;
                         activity.IsAuto = true;
+
                         //_workflowStorePlugin.UpdateActivity(activity);
+                        output.AddActivitiesUpdateIsAuto(activity);
+
                     }
                 }
                 else
@@ -1016,13 +1075,17 @@ namespace Kinetix.Workflow {
                         // 2 possibilities : 
                         // - A new activity definition has been inserted in the workflow.
                         // - The previous current activity has been switched to auto.
+                        
                         //WfActivity wfActivity = CreateActivity(activityDefinition, wf, true);
+                        WfActivity wfActivity = GetNewActivity(activityDefinition, wf, true);
+                        output.AddActivitiesCreate(wfActivity);
                     }
                     else if (activity.IsAuto == false)
                     {
                         // The previous activity was manual but now this activity is auto
                         activity.IsAuto = true;
                         //_workflowStorePlugin.UpdateActivity(activity);
+                        output.AddActivitiesUpdateIsAuto(activity);
                     }
                 }
 

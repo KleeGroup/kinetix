@@ -1,0 +1,20 @@
+﻿Declare @WFA_ID_WFW_ID_LIST as table(WFA_ID int, WFW_ID int);	
+
+INSERT INTO WF_ACTIVITY (
+	CREATION_DATE,
+	WFW_ID,
+	WFAD_ID,
+	IS_AUTO
+)
+Output
+	inserted.WFA_ID, inserted.WFW_ID
+into
+	@WFA_ID_WFW_ID_LIST
+Select CREATION_DATE, WFW_ID, WFAD_ID, IS_AUTO
+  FROM @table tab;
+
+UPDATE WFW
+   SET WFA_ID_2 = wfa_wfw.WFA_ID
+  FROM WF_WORKFLOW WFW
+  JOIN @WFA_ID_WFW_ID_LIST wfa_wfw ON (WFW.WFW_ID = wfa_wfw.WFW_ID);
+ 

@@ -8,6 +8,7 @@ using System.Threading;
 using System.Linq;
 using Kinetix.Workflow.Workflow;
 using Kinetix.Rules;
+using Kinetix.Workflow.Impl.Workflow;
 
 namespace Kinetix.Workflow
 {
@@ -541,6 +542,27 @@ namespace Kinetix.Workflow
         }
 
         public IList<WfDecision> FindAllDecisionsByWorkflowDefinitionId(WfWorkflowDefinition wfWorkflowDefinition)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void UpdateActivitiesIsAuto(IList<WfActivityUpdate> activities)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void CreateActiviesAndUpdateWorkflowCurrentActivities(IList<WfActivity> activities)
+        {
+            throw new NotImplementedException();
+        }
+
+        //public void CreateActivies(IList<WfActivityInsert> activities)
+        public void CreateActivies(IList<WfActivity> activities)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void UpdateWorkflowCurrentActivities(IList<WfWorkflowUpdate> worfklows)
         {
             throw new NotImplementedException();
         }
