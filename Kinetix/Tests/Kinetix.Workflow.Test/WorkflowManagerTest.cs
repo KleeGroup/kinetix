@@ -495,6 +495,9 @@ namespace Kinetix.Workflow.Test
             WfWorkflow wfWorkflowFetched5 = _workflowManager.GetWorkflowInstance(wfWorkflow.WfwId.Value);
             //Assert.AreEqual(wfWorkflowFetched5.WfsCode, WfCodeStatusWorkflow.End.ToString());
             Assert.AreEqual(wfWorkflowFetched5.WfsCode, WfCodeStatusWorkflow.Sta.ToString());
+
+            IList<WfListWorkflowDecision> allDecisions = _workflowManager.GetAllWorkflowDecisions(wfWorkflow.WfwdId.Value);
+            Assert.AreEqual(1, allDecisions.Count);
         }
 
         [TestMethod]
@@ -974,8 +977,8 @@ namespace Kinetix.Workflow.Test
             recalculActivityId = wfWorkflowFetched.WfaId2.Value;
             recalculActivity = _workflowManager.GetActivity(recalculActivityId);
             Assert.AreEqual(secondActivity.WfadId, recalculActivity.WfadId);
-
         }
+
         [TestMethod]
         public void TestWorkflowRecalculationMassRecalculation()
         {

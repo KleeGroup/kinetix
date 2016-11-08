@@ -434,7 +434,7 @@ namespace Kinetix.Workflow
             return null;
         }
 
-        public IList<WfWorkflow> FindActiveWorkflows(WfWorkflowDefinition wfWorkflowDefinition)
+        public IList<WfWorkflow> FindActiveWorkflows(WfWorkflowDefinition wfWorkflowDefinition, bool isForUpdate)
         {
             IList<WfWorkflow> collect = new List<WfWorkflow>();
             foreach (WfWorkflow wfWorkflow in inMemoryWorkflowInstanceStore.Values)

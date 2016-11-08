@@ -14,6 +14,7 @@ namespace Kinetix.Workflow {
     public class SqlServerWorkflowStorePlugin : IWorkflowStorePlugin {
 
         private static string ACT_DEF_ID = "ACT_DEF_ID";
+        private static string LOCK = "LOCK";
 
         public void AddTransition(WfTransitionDefinition transition) {
             BrokerManager.GetBroker<WfTransitionDefinition>().Save(transition);
@@ -266,12 +267,13 @@ namespace Kinetix.Workflow {
             return BrokerManager.GetBroker<WfActivity>().FindByCriteria(filterCriteria);
         }
 
-        public IList<WfWorkflow> FindActiveWorkflows(WfWorkflowDefinition wfWorkflowDefinition)
+        public IList<WfWorkflow> FindActiveWorkflows(WfWorkflowDefinition wfWorkflowDefinition,bool isForUpdate)
         {
             Debug.Assert(wfWorkflowDefinition != null);
             //--
             var cmd = GetSqlServerCommand("FindActiveWorkflowsForUpdate.sql");
             cmd.Parameters.AddWithValue(WfWorkflow.Cols.WFWD_ID, wfWorkflowDefinition.WfwdId);
+            cmd.Parameters.AddWithValue(LOCK, isForUpdate);
             return new List<WfWorkflow>(cmd.ReadList<WfWorkflow>());
         }
 

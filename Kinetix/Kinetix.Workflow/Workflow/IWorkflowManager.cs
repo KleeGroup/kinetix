@@ -325,6 +325,13 @@ namespace Kinetix.Workflow
         /// <returns>a List of WfWorkflowDecision</returns>
         IList<WfWorkflowDecision> GetWorkflowDecision(int wfwId);
 
+
+        /// <summary>
+        /// Get a workflow with all the associated elements
+        /// </summary>
+        /// <param name="wfwId">Workflow Definition Id</param>
+        /// <returns>a List of WfWorkflowDecision</returns>
+        IList<WfListWorkflowDecision> GetAllWorkflowDecisions(int wfwdId);
         #endregion
 
     }
