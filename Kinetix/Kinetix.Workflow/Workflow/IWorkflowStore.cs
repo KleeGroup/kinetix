@@ -1,4 +1,6 @@
-﻿using Kinetix.Workflow.instance;
+﻿using Kinetix.Rules;
+using Kinetix.Workflow.Impl.Workflow;
+using Kinetix.Workflow.instance;
 using Kinetix.Workflow.model;
 using Kinetix.Workflow.Workflow;
 using System;
@@ -26,6 +28,20 @@ namespace Kinetix.Workflow
         /// <param name="wfwId">id of the workflow instance.</param>
         /// <returns>the corresponding workflow</returns> 
         WfWorkflow ReadWorkflowInstanceById(int wfwId);
+
+        /// <summary>
+        /// Get and lock a workflow instance.
+        /// </summary>
+        /// <param name="wfwId">id of the workflow instance.</param>
+        /// <returns>the corresponding workflow</returns> 
+        WfWorkflow ReadWorkflowInstanceForUpdateById(int wfwId);
+
+        /// <summary>
+        /// Get and lock all workflows instances for a definition.
+        /// </summary>
+        /// <param name="wfwId">id of the workflow instance.</param>
+        /// <returns>the corresponding workflow</returns> 
+        IList<WfWorkflow> ReadWorkflowsInstanceForUpdateById(int wfwdId);
 
         /// <summary>
         /// Get a workflow instance by an item id.
@@ -275,6 +291,22 @@ namespace Kinetix.Workflow
         WfActivityDefinition FindNextActivity(int wfadId, String transitionName);
 
         /// <summary>
+        /// Find all activities for a workflow definition.
+        /// This method must be only used for the workflow recalculation
+        /// </summary>
+        /// <param name="wfWorkflowDefinition">wfWorkflowDefinition</param>
+        /// <returns></returns>
+        IList<WfActivity> FindAllActivitiesByWorkflowDefinitionId(WfWorkflowDefinition wfWorkflowDefinition);
+
+        /// <summary>
+        /// Find all decisions for a workflow definition.
+        /// This method must be only used for the workflow recalculation
+        /// </summary>
+        /// <param name="wfWorkflowDefinition">wfWorkflowDefinition</param>
+        /// <returns></returns>
+        IList<WfDecision> FindAllDecisionsByWorkflowDefinitionId(WfWorkflowDefinition wfWorkflowDefinition);
+
+        /// <summary>
         /// Find all activities for a workflow
         /// </summary>
         /// <param name="wfWorkflow"></param>
@@ -288,12 +320,55 @@ namespace Kinetix.Workflow
         /// <returns></returns>
         IList<WfDecision> FindDecisionsByWorkflowId(WfWorkflow wfWorkflow);
 
-
         /// <summary>
         /// Reset (set to null) the current activity (wfaid2) of all worklow for the activity linked to the provided activityDefinition
         /// </summary>
         /// <param name="wfActivityDefinition"></param>
         void UnsetCurrentActivity(WfActivityDefinition wfActivityDefinition);
 
+
+        #region Direct Acces To Rules and Selectors
+        /// <summary>
+        /// Find all the rules for a workflow definition
+        /// </summary>
+        /// <param name="wfwdId">Workflow Definition Id</param>
+        /// <returns>a list of rules linked to the workflow definition</returns>
+        IList<RuleDefinition> FindAllRulesByWorkflowDefinitionId(int wfwdId);
+
+        /// <summary>
+        /// Find all the conditions for a workflow definition
+        /// </summary>
+        /// <param name="wfwdId">Workflow Definition Id</param>
+        /// <returns>a list of conditions linked to the workflow definition</returns>
+        IList<RuleConditionDefinition> FindAllConditionsByWorkflowDefinitionId(int wfwdId);
+
+        /// <summary>
+        /// Find all the selectors for a workflow definition
+        /// </summary>
+        /// <param name="wfwdId">Workflow Definition Id</param>
+        /// <returns>a list of selectors linked to the workflow definition</returns>
+        IList<SelectorDefinition> FindAllSelectorsByWorkflowDefinitionId(int wfwdId);
+
+        /// <summary>
+        /// Find all the filters for a workflow definition
+        /// </summary>
+        /// <param name="wfwdId">Workflow Definition Id</param>
+        /// <returns>a list of selectors linked to the workflow definition</returns>
+        IList<RuleFilterDefinition> FindAllFiltersByWorkflowDefinitionId(int wfwdId);
+        #endregion
+
+
+        #region Batch Updates / Insert for recalculation
+
+        void UpdateWorkflowCurrentActivities(IList<WfWorkflowUpdate> worfklows);
+
+        void UpdateActivitiesIsAuto(IList<WfActivityUpdate> activities);
+
+        void CreateActiviesAndUpdateWorkflowCurrentActivities(IList<WfActivity> activities);
+
+        //void CreateActivies(IList<WfActivityInsert> activities);
+        void CreateActivies(IList<WfActivity> activities);
+
+        #endregion
     }
 }

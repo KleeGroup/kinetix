@@ -1,0 +1,4 @@
+﻿UPDATE WFA
+   SET WFA.IS_AUTO = tab.IS_AUTO
+  FROM WF_ACTIVITY WFA
+  JOIN @table tab ON (WFA.WFA_ID = tab.WFA_ID);

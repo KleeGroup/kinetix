@@ -25,69 +25,36 @@ namespace Kinetix.Rules
 
             foreach (SelectorDefinition selectorDefinition in selectors)
             {
-                IList<RuleFilterDefinition> filters = _ruleStorePlugin.FindFiltersBySelectorId((int)selectorDefinition.Id);
+                IList<RuleFilterDefinition> filters = _ruleStorePlugin.FindFiltersBySelectorId(selectorDefinition.Id.Value);
 
-                bool selectorMatch = true;
-                foreach (RuleFilterDefinition ruleFilterDefinition in filters)
-                {
-                    string field = ruleFilterDefinition.Field;
-                    string operat = ruleFilterDefinition.Operator;
-                    string expression = ruleFilterDefinition.Expression;
-
-                    bool result = false;
-                    object fieldToTest;
-                    ruleContext.TryGetValue(field, out fieldToTest);
-                    if (fieldToTest != null)
-                    {
-                        switch (operat)
-                        {
-                            case "=":
-                                result = fieldToTest.Equals(expression);
-                                break;
-                            case "IN":
-                                string[] expressions = expression.Split(',');
-                                if (fieldToTest is IList)
-                                {
-                                    IList<string> valueList = (IList<string>) fieldToTest;
-                                    result = (expressions.Intersect(valueList).Count() > 0);
-                                }
-                                else
-                                {
-                                    string valStr = (string) fieldToTest;
-                                    result = expressions.Contains<string>(valStr);
-                                }
-                                break;
-                            case "<":
-                                double doubleExpressionInf = Double.Parse(expression);
-                                double doubleFieldInf = Double.Parse((string) fieldToTest);
-                                result = doubleFieldInf < doubleExpressionInf;
-                                break;
-                            case ">":
-                                double doubleExpressionSup = Double.Parse(expression);
-                                double doubleFieldSup = Double.Parse((string) fieldToTest);
-                                result = doubleFieldSup > doubleExpressionSup;
-                                break;
-                        }
-
-                        if (!result)
-                        {
-                            selectorMatch = false;
-                        }
-                    }
-                    else
-                    {
-                        selectorMatch = false;
-                    }
-                }
-
+                bool selectorMatch = checkFilters(filters, ruleContext);
                 if (selectorMatch)
                 {
                     collected.Add(selectorDefinition);
                 }
             }
+
             return collected;
         }
 
+
+        private IList<SelectorDefinition> FindMatchingSelectors(IList<SelectorDefinition> selectors, IDictionary<int, List<RuleFilterDefinition>> dicFilters, RuleContext ruleContext)
+        {
+            IList<SelectorDefinition> collected = new List<SelectorDefinition>();
+
+            foreach (SelectorDefinition selectorDefinition in selectors)
+            {
+                IList<RuleFilterDefinition> filters = dicFilters[selectorDefinition.Id.Value];
+
+                bool selectorMatch = checkFilters(filters, ruleContext);
+                if (selectorMatch)
+                {
+                    collected.Add(selectorDefinition);
+                }
+            }
+
+            return collected;
+        }
 
         public IList<AccountUser> SelectAccounts(IList<SelectorDefinition> selectors, RuleContext ruleContext)
         {
@@ -97,6 +64,26 @@ namespace Kinetix.Rules
             IAccountStore accountStore = _accountManager.GetStore();
 
             foreach (SelectorDefinition selectorDefinition in matchingSelectors) { 
+                ISet<string> accounts = accountStore.GetAccountIds(selectorDefinition.GroupId);
+                foreach (string accountId in accounts)
+                {
+                    AccountUser account = accountStore.GetAccount(accountId);
+                    collected.Add(account);
+                }
+            }
+
+            return collected;
+        }
+
+        public IList<AccountUser> SelectAccounts(IList<SelectorDefinition> selectors, IDictionary<int, List<RuleFilterDefinition>> dicFilters, RuleContext ruleContext)
+        {
+            IList<AccountUser> collected = new List<AccountUser>();
+            IList<SelectorDefinition> matchingSelectors = FindMatchingSelectors(selectors, dicFilters, ruleContext);
+
+            IAccountStore accountStore = _accountManager.GetStore();
+
+            foreach (SelectorDefinition selectorDefinition in matchingSelectors)
+            {
                 ISet<string> accounts = accountStore.GetAccountIds(selectorDefinition.GroupId);
                 foreach (string accountId in accounts)
                 {
@@ -125,6 +112,64 @@ namespace Kinetix.Rules
             return collected;
         }
 
-        
+        private bool checkFilters(IList<RuleFilterDefinition> filters, RuleContext ruleContext)
+        {
+            bool selectorMatch = true;
+
+            foreach (RuleFilterDefinition ruleFilterDefinition in filters)
+            {
+                string field = ruleFilterDefinition.Field;
+                string operat = ruleFilterDefinition.Operator;
+                string expression = ruleFilterDefinition.Expression;
+
+                bool result = false;
+                object fieldToTest;
+                ruleContext.TryGetValue(field, out fieldToTest);
+                if (fieldToTest != null)
+                {
+                    switch (operat)
+                    {
+                        case "=":
+                            result = fieldToTest.Equals(expression);
+                            break;
+                        case "IN":
+                            string[] expressions = expression.Split(',');
+                            if (fieldToTest is IList)
+                            {
+                                IList<string> valueList = (IList<string>)fieldToTest;
+                                result = (expressions.Intersect(valueList).Count() > 0);
+                            }
+                            else
+                            {
+                                string valStr = (string)fieldToTest;
+                                result = expressions.Contains<string>(valStr);
+                            }
+                            break;
+                        case "<":
+                            double doubleExpressionInf = Double.Parse(expression);
+                            double doubleFieldInf = Double.Parse((string)fieldToTest);
+                            result = doubleFieldInf < doubleExpressionInf;
+                            break;
+                        case ">":
+                            double doubleExpressionSup = Double.Parse(expression);
+                            double doubleFieldSup = Double.Parse((string)fieldToTest);
+                            result = doubleFieldSup > doubleExpressionSup;
+                            break;
+                    }
+
+                    if (!result)
+                    {
+                        selectorMatch = false;
+                    }
+                }
+                else
+                {
+                    selectorMatch = false;
+                }
+            }
+
+            return selectorMatch;
+        }
+
     }
 }

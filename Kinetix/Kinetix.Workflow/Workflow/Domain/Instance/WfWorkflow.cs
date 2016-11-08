@@ -1,7 +1,9 @@
 ﻿using Kinetix.ComponentModel;
 using System;
+using System.CodeDom.Compiler;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Runtime.Serialization;
 
 namespace Kinetix.Workflow.instance
 {
@@ -192,5 +194,7 @@ namespace Kinetix.Workflow.instance
         /// </summary>
         /// <param name="bean">Source.</param>
         partial void OnCreated(WfWorkflow bean);
+
+
     }
 }

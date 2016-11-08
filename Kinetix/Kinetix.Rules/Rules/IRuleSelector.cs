@@ -18,9 +18,17 @@ namespace Kinetix.Rules
         /// <returns>a list of account.</returns>
         IList<AccountUser> SelectAccounts(IList<SelectorDefinition> selectors, RuleContext ruleContext);
 
+        /// <summary>
+        /// Select accounts for an activity using selectors and filters provided.
+        /// </summary>
+        /// <param name="selectors">selectors</param>
+        /// <param name="dicFilters">filters linked to the selectors</param>
+        /// <param name="ruleContext">ruleContext</param>
+        /// <returns></returns>
+        IList<AccountUser> SelectAccounts(IList<SelectorDefinition> selectors, IDictionary<int, List<RuleFilterDefinition>> dicFilters, RuleContext ruleContext);
 
         /// <summary>
-        /// Select groups mathing the selectors provided from an activity
+        /// Select groups matching the selectors provided from an activity
         /// </summary>
         /// <param name="selectors"></param>
         /// <param name="ruleContext"></param>

@@ -44,7 +44,8 @@ namespace Kinetix.Workflow.Test
                 ConnectionStringSettings conn = new ConnectionStringSettings
                 {
                     Name = DefaultDataSource,
-                    ConnectionString = "Data Source=martha;Initial Catalog=" + dataBaseName + ";User ID=dianeConnection;Password=Puorgeelk23",
+                    // TODO: Change hard coded data-source
+                    ConnectionString = "Data Source=carla;Initial Catalog=" + dataBaseName + ";User ID=dianeConnection;Password=Puorgeelk23",
                     ProviderName = "System.Data.SqlClient"
                 };
 
@@ -86,13 +87,13 @@ namespace Kinetix.Workflow.Test
             container.RegisterType<Kinetix.Rules.IRuleValidatorPlugin, Kinetix.Rules.SimpleRuleValidatorPlugin>();
         }
 
-        private MyDummyDtObject createDummyDtObject()
+        private MyDummyDtObject createDummyDtObject(int itemId)
         {
             var container = GetConfiguredContainer();
             IItemStorePlugin itemStorePlugin = container.Resolve<IItemStorePlugin>();
 
             MyDummyDtObject myDummyDtObject = new MyDummyDtObject();
-            myDummyDtObject.Id = 1;
+            myDummyDtObject.Id = itemId;
             myDummyDtObject.Division = "DIV";
             myDummyDtObject.Entity = "ENT";
             itemStorePlugin.AddItem(myDummyDtObject.Id, myDummyDtObject);
@@ -127,7 +128,7 @@ namespace Kinetix.Workflow.Test
             RuleFilterDefinition filter1 = new RuleFilterDefinition(null, "Entity", "=", "ENT", null);
             _workflowManager.AddSelector(firstActivity, selector1, new List<RuleFilterDefinition>() { filter1 });
 
-            MyDummyDtObject myDummyDtObject = createDummyDtObject();
+            MyDummyDtObject myDummyDtObject = createDummyDtObject(1);
 
             WfWorkflow wfWorkflow = _workflowManager.CreateWorkflowInstance("WorkflowRules", "JUnit", false, myDummyDtObject.Id);
 
@@ -317,7 +318,7 @@ namespace Kinetix.Workflow.Test
             RuleFilterDefinition filter4 = new RuleFilterDefinition(null, "Entity", "=", "ENT", null);
             _workflowManager.AddSelector(fourthActivity, selector41, new List<RuleFilterDefinition>() { filter4 });
 
-            MyDummyDtObject myDummyDtObject = createDummyDtObject();
+            MyDummyDtObject myDummyDtObject = createDummyDtObject(1);
 
             WfWorkflow wfWorkflow = _workflowManager.CreateWorkflowInstance(wfWorkflowDefinition.WfwdId.Value, "JUnit", false, myDummyDtObject.Id);
 
@@ -542,7 +543,7 @@ namespace Kinetix.Workflow.Test
             _workflowManager.AddRule(fourthActivity, rule1Act4, new List<RuleConditionDefinition>() { condition1Rule1Act4 });
             _workflowManager.AddRule(fourthActivity, rule2Act4, new List<RuleConditionDefinition>() { condition1Rule2Act4 });
 
-            MyDummyDtObject myDummyDtObject = createDummyDtObject();
+            MyDummyDtObject myDummyDtObject = createDummyDtObject(1);
 
             WfWorkflow wfWorkflow = _workflowManager.CreateWorkflowInstance(wfWorkflowDefinition.WfwdId.Value, "JUnit", false, myDummyDtObject.Id);
 
@@ -623,7 +624,7 @@ namespace Kinetix.Workflow.Test
             RuleFilterDefinition filter4 = new RuleFilterDefinition(null, "Entity", "=", "ENT", null);
             _workflowManager.AddSelector(fourthActivity, selector41, new List<RuleFilterDefinition>() { filter4 });
 
-            MyDummyDtObject myDummyDtObject = createDummyDtObject();
+            MyDummyDtObject myDummyDtObject = createDummyDtObject(1);
 
             WfWorkflow wfWorkflow = _workflowManager.CreateWorkflowInstance(wfWorkflowDefinition.WfwdId.Value, "JUnit", false, myDummyDtObject.Id);
 
@@ -697,7 +698,7 @@ namespace Kinetix.Workflow.Test
             RuleFilterDefinition filter1 = new RuleFilterDefinition(null, "Entity", "=", "ENT", null);
             _workflowManager.AddSelector(firstActivity, selector1, new List<RuleFilterDefinition>() { filter1 });
 
-            MyDummyDtObject myDummyDtObject = createDummyDtObject();
+            MyDummyDtObject myDummyDtObject = createDummyDtObject(1);
 
             WfWorkflow wfWorkflow = _workflowManager.CreateWorkflowInstance(wfWorkflowDefinition.WfwdId.Value, "JUnit", false, myDummyDtObject.Id);
 
@@ -773,7 +774,6 @@ namespace Kinetix.Workflow.Test
             recalculActivityId = wfWorkflowFetched.WfaId2.Value;
             recalculActivity = _workflowManager.GetActivity(recalculActivityId);
             Assert.AreEqual(firstActivity.WfadId, recalculActivity.WfadId);
-
         }
 
 
@@ -805,7 +805,7 @@ namespace Kinetix.Workflow.Test
             RuleFilterDefinition filter1 = new RuleFilterDefinition(null, "Entity", "=", "ENT", null);
             _workflowManager.AddSelector(firstActivity, selector1, new List<RuleFilterDefinition>() { filter1 });
 
-            MyDummyDtObject myDummyDtObject = createDummyDtObject();
+            MyDummyDtObject myDummyDtObject = createDummyDtObject(1);
 
             WfWorkflow wfWorkflow = _workflowManager.CreateWorkflowInstance(wfWorkflowDefinition.WfwdId.Value, "JUnit", false, myDummyDtObject.Id);
 
@@ -925,7 +925,7 @@ namespace Kinetix.Workflow.Test
             RuleFilterDefinition filter2 = new RuleFilterDefinition(null, "Entity", "=", "ENT", null);
             _workflowManager.AddSelector(secondActivity, selector2, new List<RuleFilterDefinition>() { filter2 });
 
-            MyDummyDtObject myDummyDtObject = createDummyDtObject();
+            MyDummyDtObject myDummyDtObject = createDummyDtObject(1);
 
             WfWorkflow wfWorkflow = _workflowManager.CreateWorkflowInstance(wfWorkflowDefinition.WfwdId.Value, "JUnit", false, myDummyDtObject.Id);
 
@@ -974,6 +974,113 @@ namespace Kinetix.Workflow.Test
             recalculActivityId = wfWorkflowFetched.WfaId2.Value;
             recalculActivity = _workflowManager.GetActivity(recalculActivityId);
             Assert.AreEqual(secondActivity.WfadId, recalculActivity.WfadId);
+
+        }
+        [TestMethod]
+        public void TestWorkflowRecalculationMassRecalculation()
+        {
+            var container = GetConfiguredContainer();
+            IWorkflowManager _workflowManager = container.Resolve<IWorkflowManager>();
+            IAccountManager _accountManager = container.Resolve<IAccountManager>();
+
+            WfWorkflowDefinition wfWorkflowDefinition = new WfWorkflowDefinitionBuilder("WorkflowRules").Build();
+            _workflowManager.CreateWorkflowDefinition(wfWorkflowDefinition);
+
+            WfActivityDefinition firstActivity = new WfActivityDefinitionBuilder("Step 1", wfWorkflowDefinition.WfwdId.Value).Build();
+
+            AccountGroup accountGroup = new AccountGroup("1", "dummy group");
+            AccountUser account = new AccountUserBuilder("Acc1").Build();
+            _accountManager.GetStore().SaveGroup(accountGroup);
+            _accountManager.GetStore().SaveAccounts(new List<AccountUser>() { account });
+            _accountManager.GetStore().Attach(account.Id, accountGroup.Id);
+
+            // Step 1 : 1 rule, 1 condition
+            _workflowManager.AddActivity(wfWorkflowDefinition, firstActivity, 1);
+            RuleDefinition rule1Act1 = new RuleDefinition(null, DateTime.Now, firstActivity.WfadId, "Règle 1");
+            RuleConditionDefinition condition1Rule1Act1 = new RuleConditionDefinition(null, "Entity", "IN", "ENT,FED,GFE", null);
+            _workflowManager.AddRule(firstActivity, rule1Act1, new List<RuleConditionDefinition>() { condition1Rule1Act1 });
+            //Selector/filter to validate the activity (preventing auto validation when no one is linked to an activity)
+            SelectorDefinition selector1 = new SelectorDefinition(null, DateTime.Now, firstActivity.WfadId, accountGroup.Id);
+            RuleFilterDefinition filter1 = new RuleFilterDefinition(null, "Entity", "=", "ENT", null);
+            _workflowManager.AddSelector(firstActivity, selector1, new List<RuleFilterDefinition>() { filter1 });
+
+            // Step 2 : No rules/condition
+            WfActivityDefinition secondActivity = new WfActivityDefinitionBuilder("Step 2", (int)wfWorkflowDefinition.WfwdId).Build();
+            _workflowManager.AddActivity(wfWorkflowDefinition, secondActivity, 2);
+            // Selector/filter to validate the activity (preventing auto validation when no one is linked to an activity)
+            SelectorDefinition selector2 = new SelectorDefinition(null, DateTime.Now, secondActivity.WfadId, accountGroup.Id);
+            _workflowManager.AddSelector(secondActivity, selector2, new List<RuleFilterDefinition>());
+
+            // Step 3 : 1 rule, 2 conditions
+            WfActivityDefinition thirdActivity = new WfActivityDefinitionBuilder("Step 3", (int)wfWorkflowDefinition.WfwdId).Build();
+            _workflowManager.AddActivity(wfWorkflowDefinition, thirdActivity, 3);
+            RuleDefinition rule1Act3 = new RuleDefinition(null, DateTime.Now, thirdActivity.WfadId, "rule 1");
+            RuleConditionDefinition condition1Rule1Act3 = new RuleConditionDefinition(null, "Entity", "=", "ENT", null);
+            RuleConditionDefinition condition2Rule1Act3 = new RuleConditionDefinition(null, "Entity", "=", "ENT", null);
+            _workflowManager.AddRule(thirdActivity, rule1Act3, new List<RuleConditionDefinition>() { condition1Rule1Act3, condition2Rule1Act3 });
+            // Selector/filter to validate the activity (preventing auto validation when no one is linked to an activity)
+            SelectorDefinition selector3 = new SelectorDefinition(null, DateTime.Now, thirdActivity.WfadId, accountGroup.Id);
+            RuleFilterDefinition filter3 = new RuleFilterDefinition(null, "Entity", "=", "ENT", null);
+            _workflowManager.AddSelector(thirdActivity, selector3, new List<RuleFilterDefinition>() { filter3 });
+
+            // Step 4 : 2 rules, 1 condition
+            WfActivityDefinition fourthActivity = new WfActivityDefinitionBuilder("Step 4", (int)wfWorkflowDefinition.WfwdId).Build();
+            _workflowManager.AddActivity(wfWorkflowDefinition, fourthActivity, 4);
+            RuleDefinition rule1Act4 = new RuleDefinition(null, DateTime.Now, fourthActivity.WfadId, "rule 2");
+            RuleConditionDefinition condition1Rule1Act4 = new RuleConditionDefinition(null, "Entity", "=", "ENT", null);
+            RuleDefinition rule2Act4 = new RuleDefinition(null, DateTime.Now, fourthActivity.WfadId, "rule 3");
+            RuleConditionDefinition condition1Rule2Act4 = new RuleConditionDefinition(null, "Entity", "=", "ENT", null);
+            _workflowManager.AddRule(fourthActivity, rule1Act4, new List<RuleConditionDefinition>() { condition1Rule1Act4 });
+            _workflowManager.AddRule(fourthActivity, rule2Act4, new List<RuleConditionDefinition>() { condition1Rule2Act4 });
+            // Selector/filter to validate the activity (preventing auto validation when no one is linked to an activity)
+            SelectorDefinition selector41 = new SelectorDefinition(null, DateTime.Now, fourthActivity.WfadId, accountGroup.Id);
+            RuleFilterDefinition filter4 = new RuleFilterDefinition(null, "Entity", "=", "ENT", null);
+            _workflowManager.AddSelector(fourthActivity, selector41, new List<RuleFilterDefinition>() { filter4 });
+
+            IList<WfWorkflow> allWorkflows = new List<WfWorkflow>();
+
+            int nbWf = 2500;
+
+            for (int i = 0; i < nbWf; i++)
+            {
+                MyDummyDtObject myDummyDtObject = createDummyDtObject(i);
+
+                WfWorkflow wfWorkflow = _workflowManager.CreateWorkflowInstance(wfWorkflowDefinition.WfwdId.Value, "JUnit", false, myDummyDtObject.Id);
+
+                allWorkflows.Add(wfWorkflow);
+
+                // Starting the workflow
+                _workflowManager.StartInstance(wfWorkflow);
+
+                // We are at the first activity 
+                // This activity is manual, Activity exist but no decision associated
+            }
+
+            // Now let's change the rules associated to the first activity definition.
+            // We remove the only rules associated.
+            _workflowManager.RemoveRule(rule1Act1);
+
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+            //We call the Recalculation of the Workflow
+            _workflowManager.RecalculateWorkflowDefinition(wfWorkflowDefinition);
+            sw.Stop();
+
+            Trace.WriteLine(sw.ElapsedMilliseconds);
+            Trace.WriteLine(sw.ElapsedMilliseconds / nbWf);
+
+            Assert.IsTrue(sw.ElapsedMilliseconds < 5000);
+
+            foreach (WfWorkflow wfWorkflow in allWorkflows)
+            {
+                WfWorkflow wfWorkflowFetched = _workflowManager.GetWorkflowInstance(wfWorkflow.WfwId.Value);
+
+                // The first activity should be now auto. The Second Activity was auto.
+                // The current activity should now be the third activity.
+                int recalculActivityId = wfWorkflowFetched.WfaId2.Value;
+                WfActivity recalculActivity = _workflowManager.GetActivity(recalculActivityId);
+                Assert.AreEqual(thirdActivity.WfadId, recalculActivity.WfadId);
+            }
 
         }
     }

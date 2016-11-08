@@ -16,6 +16,18 @@ namespace Kinetix.Rules
         IList<AccountUser> SelectAccounts(int idActivityDefinition, object item, RuleConstants constants);
 
         /// <summary>
+        /// Select accounts an activity using the provided selectors and filters.
+        /// Version without IO, used in workflow recalculation
+        /// </summary>
+        /// <param name="idActivityDefinition">Activity definition id</param>
+        /// <param name="item">Business object</param>
+        /// <param name="constants">constants</param>
+        /// <param name="rules">Rules to use</param>
+        /// <param name="dicConditions">Conditions associated to rules</param>
+        /// <returns></returns>
+        IList<AccountUser> SelectAccounts(int idActivityDefinition, object item, RuleConstants constants, IDictionary<int, List<SelectorDefinition>> dicSelectors, IDictionary<int, List<RuleFilterDefinition>> dicFilters);
+
+        /// <summary>
         /// Select groups matching the selector for an activity.
         /// </summary>
         /// <param name="idActivityDefinition">Activity definition id.</param>
@@ -33,6 +45,17 @@ namespace Kinetix.Rules
         /// <returns>a list of account.</returns>
         bool IsRuleValid(int idActivityDefinition, object item, RuleConstants constants);
 
+        /// <summary>
+        /// Validate a rule for an activity using the provided rules and conditions.
+        /// Version sans IO, optimisée vitesse execution, utilisée dans le cadre d'un recalcul de workflow
+        /// </summary>
+        /// <param name="idActivityDefinition">Activity definition id</param>
+        /// <param name="item">Business object</param>
+        /// <param name="constants">constants</param>
+        /// <param name="dicRules">Rules to use</param>
+        /// <param name="dicConditions">Conditions associated to rules</param>
+        /// <returns></returns>
+        bool IsRuleValid(int idActivityDefinition, object item, RuleConstants constants, IDictionary<int, List<RuleDefinition>> dicRules, IDictionary<int, List<RuleConditionDefinition>> dicConditions);
 
         /// <summary>
         /// Add a new rule.
@@ -162,11 +185,15 @@ namespace Kinetix.Rules
         /// <returns>the constants defined for this key</returns>
         RuleConstants GetConstants(int key);
 
+
         /// <summary>
         /// 
         /// </summary>
         /// <param name="criteria"></param>
         /// <returns></returns>
         IList<int> FindItemsByCriteria(RuleCriteria criteria, IList<int> items);
+
+
+      
     }
 }

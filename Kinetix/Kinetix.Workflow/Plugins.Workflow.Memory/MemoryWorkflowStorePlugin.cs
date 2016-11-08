@@ -7,6 +7,8 @@ using System.Diagnostics;
 using System.Threading;
 using System.Linq;
 using Kinetix.Workflow.Workflow;
+using Kinetix.Rules;
+using Kinetix.Workflow.Impl.Workflow;
 
 namespace Kinetix.Workflow
 {
@@ -259,6 +261,18 @@ namespace Kinetix.Workflow
         {
             return inMemoryWorkflowInstanceStore[wfwId];
         }
+        public WfWorkflow ReadWorkflowInstanceForUpdateById(int wfwId)
+        {
+            //No lock for Memory Plugin
+            return ReadWorkflowInstanceById(wfwId);
+        }
+
+        public IList<WfWorkflow> ReadWorkflowsInstanceForUpdateById(int wfwdId)
+        {
+            //No lock for Memory Plugin
+            return new List<WfWorkflow>(inMemoryWorkflowInstanceStore.Values);
+        }
+
 
         public WfWorkflow ReadWorkflowInstanceByItemId(int wfwdId, int itemId)
         {
@@ -332,6 +346,28 @@ namespace Kinetix.Workflow
                 if (wfWorkflow.WfwId.Equals(wfActivity.WfwId))
                 {
                     wfActivities.Add(wfActivity);
+                }
+            }
+
+            return wfActivities;
+        }
+
+        public IList<WfActivity> FindAllActivitiesByWorkflowDefinitionId(WfWorkflowDefinition wfWorkflowDefinition)
+        {
+            Debug.Assert(wfWorkflowDefinition != null);
+            //---
+            IList<WfActivity> wfActivities = new List<WfActivity>();
+
+            IList<WfActivityDefinition> activityDefinitions =  FindAllDefaultActivityDefinitions(wfWorkflowDefinition);
+
+            foreach (WfActivity wfActivity in inMemoryActivityStore.Values)
+            {
+                foreach (WfActivityDefinition wdActivityDefinition in activityDefinitions)
+                {
+                    if (wdActivityDefinition.WfadId.Equals(wfActivity.WfadId))
+                    {
+                        wfActivities.Add(wfActivity);
+                    }
                 }
             }
 
@@ -483,5 +519,69 @@ namespace Kinetix.Workflow
                 }
             }
         }
+
+        #region directAccesRules
+        public IList<RuleDefinition> FindAllRulesByWorkflowDefinitionId(int wfwdId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IList<RuleConditionDefinition> FindAllConditionsByWorkflowDefinitionId(int wfwdId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IList<SelectorDefinition> FindAllSelectorsByWorkflowDefinitionId(int wfwdId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IList<RuleFilterDefinition> FindAllFiltersByWorkflowDefinitionId(int wfwdId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IList<WfDecision> FindAllDecisionsByWorkflowDefinitionId(WfWorkflowDefinition wfWorkflowDefinition)
+        {
+            throw new NotImplementedException();
+        }
+        #endregion
+
+        #region Workflow Mass Update/Create
+        public void UpdateActivitiesIsAuto(IList<WfActivityUpdate> activities)
+        {
+            foreach (WfActivityUpdate actUpd in activities)
+            {
+                inMemoryActivityStore[actUpd.WfaId].IsAuto = actUpd.IsAuto;
+            }
+        }
+
+        public void CreateActiviesAndUpdateWorkflowCurrentActivities(IList<WfActivity> activities)
+        {
+            foreach (WfActivity activity in activities)
+            {
+                CreateActivity(activity);
+                inMemoryWorkflowInstanceStore[activity.WfwId].WfaId2 = activity.WfaId;
+            }
+
+        }
+
+        public void CreateActivies(IList<WfActivity> activities)
+        {
+            foreach(WfActivity activity in activities)
+            {
+                CreateActivity(activity);
+            }
+        }
+
+        public void UpdateWorkflowCurrentActivities(IList<WfWorkflowUpdate> worfklows)
+        {
+            foreach(WfWorkflowUpdate wfUpd in worfklows)
+            {
+                inMemoryWorkflowInstanceStore[wfUpd.WfwId.Value].WfaId2 = wfUpd.WfaId2;
+            }
+        }
+        #endregion
+
     }
 }

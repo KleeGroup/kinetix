@@ -314,6 +314,7 @@ namespace Kinetix.Workflow
         void RecalculateWorkflowDefinition(WfWorkflowDefinition wfWorkflowDefinition);
 
         #endregion
+        
 
         #region Custom Methods
 
