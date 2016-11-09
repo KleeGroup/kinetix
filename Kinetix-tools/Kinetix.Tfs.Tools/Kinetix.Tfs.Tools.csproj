@@ -36,7 +36,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <CodeAnalysisRuleSet>..\..\Kinetix\RuleSet.Fmk.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>..\..\Kinetix\RuleSet.Kinetix.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Build" />

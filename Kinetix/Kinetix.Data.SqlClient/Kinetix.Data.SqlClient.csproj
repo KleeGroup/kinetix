@@ -38,7 +38,7 @@
     <WarningLevel>4</WarningLevel>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <Prefer32Bit>false</Prefer32Bit>
-    <CodeAnalysisRuleSet>..\RuleSet.Fmk.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>..\RuleSet.Kinetix.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup>
     <RootNamespace>Kinetix.Data.SqlClient</RootNamespace>
