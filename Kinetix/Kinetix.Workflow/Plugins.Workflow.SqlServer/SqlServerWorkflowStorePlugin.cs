@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ServiceModel;
 using Kinetix.Broker;
 using Kinetix.Data.SqlClient;
 using Kinetix.Workflow.instance;
 using Kinetix.Workflow.model;
 using System.Diagnostics;
-using Kinetix.Workflow.Workflow;
 using Kinetix.Rules;
-using Kinetix.Workflow.Impl.Workflow;
 
 namespace Kinetix.Workflow {
     public class SqlServerWorkflowStorePlugin : IWorkflowStorePlugin {

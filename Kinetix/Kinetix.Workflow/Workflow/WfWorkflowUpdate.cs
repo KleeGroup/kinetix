@@ -3,7 +3,7 @@ using System.CodeDom.Compiler;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Runtime.Serialization;
 
-namespace Kinetix.Workflow.Impl.Workflow
+namespace Kinetix.Workflow
 {
 
     [Table("WF_WORKFLOW_UPDATE")]

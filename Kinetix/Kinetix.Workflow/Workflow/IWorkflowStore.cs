@@ -1,8 +1,6 @@
 ﻿using Kinetix.Rules;
-using Kinetix.Workflow.Impl.Workflow;
 using Kinetix.Workflow.instance;
 using Kinetix.Workflow.model;
-using Kinetix.Workflow.Workflow;
 using System;
 using System.Collections.Generic;
 

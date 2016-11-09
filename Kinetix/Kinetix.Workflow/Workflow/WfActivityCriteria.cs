@@ -1,15 +1,11 @@
 ﻿using Kinetix.Rules;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Kinetix.Workflow.Workflow
+namespace Kinetix.Workflow
 {
     public class WfActivityCriteria
     {
-        public IList<RuleConditionCriteria> conditionCriteria
+        public IList<RuleConditionCriteria> ConditionCriteria
         {
             get;
             set;

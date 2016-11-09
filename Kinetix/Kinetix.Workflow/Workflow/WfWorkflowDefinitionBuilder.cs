@@ -1,20 +1,15 @@
 ﻿using Kinetix.Workflow.model;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Kinetix.Workflow.Workflow
+namespace Kinetix.Workflow
 {
     public class WfWorkflowDefinitionBuilder
     {
 
-
-        private string myName;
-        private DateTime myCreationDate;
-        private int? myWfadId;
+        private string MyName;
+        private DateTime MyCreationDate;
+        private int? MyWfadId;
 
         /// <summary>
         /// Builder for Workflow Definition.
@@ -24,8 +19,8 @@ namespace Kinetix.Workflow.Workflow
         {
             Debug.Assert(name != null);
             //---
-            myName = name;
-            myCreationDate = DateTime.Now;
+            MyName = name;
+            MyCreationDate = DateTime.Now;
         }
 
         /// <summary>
@@ -35,16 +30,16 @@ namespace Kinetix.Workflow.Workflow
         /// <returns>The Builder.</returns>
         public WfWorkflowDefinitionBuilder WithFirstActivityDefinitionId(int wfadId)
         {
-            myWfadId = wfadId;
+            MyWfadId = wfadId;
             return this;
         }
 
         public WfWorkflowDefinition Build()
         {
             WfWorkflowDefinition wfTransitionDefinition = new WfWorkflowDefinition();
-            wfTransitionDefinition.WfadId = myWfadId;
-            wfTransitionDefinition.CreationDate = myCreationDate;
-            wfTransitionDefinition.Name = myName;
+            wfTransitionDefinition.WfadId = MyWfadId;
+            wfTransitionDefinition.CreationDate = MyCreationDate;
+            wfTransitionDefinition.Name = MyName;
             return wfTransitionDefinition;
         }
 

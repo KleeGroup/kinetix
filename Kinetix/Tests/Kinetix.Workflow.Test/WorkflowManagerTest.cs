@@ -7,7 +7,6 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Kinetix.Test;
 using Microsoft.Practices.Unity;
 using Kinetix.Workflow.model;
-using Kinetix.Workflow.Workflow;
 using Kinetix.Rules;
 using Kinetix.Workflow.instance;
 using System.Collections.Generic;
@@ -229,31 +228,31 @@ namespace Kinetix.Workflow.Test
 
         private void assertHasOneDecision(WfWorkflowDecision wfWorkflowDecision)
         {
-            Assert.IsNotNull(wfWorkflowDecision.decisions);
-            Assert.AreEqual(1, wfWorkflowDecision.decisions.Count);
+            Assert.IsNotNull(wfWorkflowDecision.Decisions);
+            Assert.AreEqual(1, wfWorkflowDecision.Decisions.Count);
         }
 
         private void assertActivityExist(WfActivityDefinition activityDefinition, WfWorkflowDecision wfWorkflowDecision)
         {
-            Assert.AreEqual(activityDefinition.WfadId, wfWorkflowDecision.activityDefinition.WfadId);
-            Assert.IsNotNull(wfWorkflowDecision.activity);
-            Assert.IsNotNull(wfWorkflowDecision.activity.WfaId);
-            Assert.AreEqual(activityDefinition.WfadId, wfWorkflowDecision.activity.WfadId);
+            Assert.AreEqual(activityDefinition.WfadId, wfWorkflowDecision.ActivityDefinition.WfadId);
+            Assert.IsNotNull(wfWorkflowDecision.Activity);
+            Assert.IsNotNull(wfWorkflowDecision.Activity.WfaId);
+            Assert.AreEqual(activityDefinition.WfadId, wfWorkflowDecision.Activity.WfadId);
         }
 
         private void assertFirstDecisionEquals(WfDecision wfDecisionAct, WfWorkflowDecision wfWorkflowDecision)
         {
-            Assert.AreEqual(wfDecisionAct.WfaId, wfWorkflowDecision.decisions[0].WfaId);
-            Assert.AreEqual(wfDecisionAct.Choice, wfWorkflowDecision.decisions[0].Choice);
-            Assert.AreEqual(wfDecisionAct.Comments, wfWorkflowDecision.decisions[0].Comments);
-            Assert.AreEqual(wfDecisionAct.DecisionDate, wfWorkflowDecision.decisions[0].DecisionDate);
+            Assert.AreEqual(wfDecisionAct.WfaId, wfWorkflowDecision.Decisions[0].WfaId);
+            Assert.AreEqual(wfDecisionAct.Choice, wfWorkflowDecision.Decisions[0].Choice);
+            Assert.AreEqual(wfDecisionAct.Comments, wfWorkflowDecision.Decisions[0].Comments);
+            Assert.AreEqual(wfDecisionAct.DecisionDate, wfWorkflowDecision.Decisions[0].DecisionDate);
         }
 
         private void assertHasOneGroup(AccountGroup accountGroup, WfWorkflowDecision wfWorkflowDecision)
         {
-            Assert.IsNotNull(wfWorkflowDecision.groups);
-            Assert.AreEqual(1, wfWorkflowDecision.groups.Count);
-            Assert.AreEqual(accountGroup.Id, wfWorkflowDecision.groups[0].Id);
+            Assert.IsNotNull(wfWorkflowDecision.Groups);
+            Assert.AreEqual(1, wfWorkflowDecision.Groups.Count);
+            Assert.AreEqual(accountGroup.Id, wfWorkflowDecision.Groups[0].Id);
         }
 
         [TestMethod]
@@ -333,17 +332,17 @@ namespace Kinetix.Workflow.Test
             Assert.AreEqual(workflowDecisions.Count, 3);
             //Check Step 1
             assertActivityExist(firstActivity, workflowDecisions[0]);
-            Assert.IsNull(workflowDecisions[0].decisions);
+            Assert.IsNull(workflowDecisions[0].Decisions);
             assertHasOneGroup(accountGroup, workflowDecisions[0]);
             //Check Step 3
-            Assert.AreEqual(thirdActivity.WfadId, workflowDecisions[1].activityDefinition.WfadId);
-            Assert.IsNull(workflowDecisions[1].activity);
-            Assert.IsNull(workflowDecisions[1].decisions);
+            Assert.AreEqual(thirdActivity.WfadId, workflowDecisions[1].ActivityDefinition.WfadId);
+            Assert.IsNull(workflowDecisions[1].Activity);
+            Assert.IsNull(workflowDecisions[1].Decisions);
             assertHasOneGroup(accountGroup, workflowDecisions[1]);
             //Check Step 4
-            Assert.AreEqual(fourthActivity.WfadId, workflowDecisions[2].activityDefinition.WfadId);
-            Assert.IsNull(workflowDecisions[2].activity);
-            Assert.IsNull(workflowDecisions[2].decisions);
+            Assert.AreEqual(fourthActivity.WfadId, workflowDecisions[2].ActivityDefinition.WfadId);
+            Assert.IsNull(workflowDecisions[2].Activity);
+            Assert.IsNull(workflowDecisions[2].Decisions);
             assertHasOneGroup(accountGroup, workflowDecisions[2]);
 
 
@@ -381,12 +380,12 @@ namespace Kinetix.Workflow.Test
             assertHasOneGroup(accountGroup, workflowDecisions[0]);
             //Check Step 3
             assertActivityExist(thirdActivity, workflowDecisions[1]);
-            Assert.IsNull(workflowDecisions[1].decisions);
+            Assert.IsNull(workflowDecisions[1].Decisions);
             assertHasOneGroup(accountGroup, workflowDecisions[1]);
             //Check Step 4
-            Assert.AreEqual(fourthActivity.WfadId, workflowDecisions[2].activityDefinition.WfadId);
-            Assert.IsNull(workflowDecisions[2].activity);
-            Assert.IsNull(workflowDecisions[2].decisions);
+            Assert.AreEqual(fourthActivity.WfadId, workflowDecisions[2].ActivityDefinition.WfadId);
+            Assert.IsNull(workflowDecisions[2].Activity);
+            Assert.IsNull(workflowDecisions[2].Decisions);
             assertHasOneGroup(accountGroup, workflowDecisions[2]);
 
             // Activity 1 should now be validated.
@@ -431,9 +430,9 @@ namespace Kinetix.Workflow.Test
             assertFirstDecisionEquals(wfDecisionAct3, workflowDecisions[1]);
             assertHasOneGroup(accountGroup, workflowDecisions[1]);
             // Check Step 4
-            Assert.AreEqual(fourthActivity.WfadId, workflowDecisions[2].activityDefinition.WfadId);
-            Assert.IsNotNull(workflowDecisions[2].activity);
-            Assert.IsNull(workflowDecisions[2].decisions);
+            Assert.AreEqual(fourthActivity.WfadId, workflowDecisions[2].ActivityDefinition.WfadId);
+            Assert.IsNotNull(workflowDecisions[2].Activity);
+            Assert.IsNull(workflowDecisions[2].Decisions);
             assertHasOneGroup(accountGroup, workflowDecisions[2]);
 
             // Activity 3 should now be validated.
@@ -479,9 +478,9 @@ namespace Kinetix.Workflow.Test
             assertHasOneDecision(workflowDecisions[2]);
             assertFirstDecisionEquals(wfDecisionAct4, workflowDecisions[2]);
 
-            Assert.IsNotNull(workflowDecisions[2].groups);
-            Assert.AreEqual(1, workflowDecisions[2].groups.Count);
-            Assert.AreEqual(accountGroup.Id, workflowDecisions[2].groups[0].Id);
+            Assert.IsNotNull(workflowDecisions[2].Groups);
+            Assert.AreEqual(1, workflowDecisions[2].Groups.Count);
+            Assert.AreEqual(accountGroup.Id, workflowDecisions[2].Groups[0].Id);
 
             // Activity 4 should now be validated. The current activity is now activity 4, with the end status
             currentActivityId = wfWorkflow.WfaId2.Value;

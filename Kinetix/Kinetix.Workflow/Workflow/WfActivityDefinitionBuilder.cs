@@ -6,10 +6,10 @@ namespace Kinetix.Workflow
 {
     public class WfActivityDefinitionBuilder
     {
-        private int myWfwdId;
-        private string myName;
-	    private int? myLevel;
-        private WfCodeMultiplicityDefinition myWfCodeMultiplicityDefinition;
+        private int MyWfwdId;
+        private string MyName;
+	    private int? MyLevel;
+        private WfCodeMultiplicityDefinition MyWfCodeMultiplicityDefinition;
 
         /// <summary>
         /// Builder for transitions.
@@ -20,9 +20,9 @@ namespace Kinetix.Workflow
         {
             Debug.Assert(name != null);
             //---
-            this.myName = name;
-            this.myWfwdId = wfwdId;
-            myWfCodeMultiplicityDefinition = WfCodeMultiplicityDefinition.Sin;
+            this.MyName = name;
+            this.MyWfwdId = wfwdId;
+            MyWfCodeMultiplicityDefinition = WfCodeMultiplicityDefinition.Sin;
         }
 
         /// <summary>
@@ -32,7 +32,7 @@ namespace Kinetix.Workflow
         /// <returns>The Builder.</returns>
         public WfActivityDefinitionBuilder WithLevel(int level)
         {
-            myLevel = level;
+            MyLevel = level;
             return this;
         }
 
@@ -43,18 +43,18 @@ namespace Kinetix.Workflow
          */
         public WfActivityDefinitionBuilder WithMultiplicity(string wfmdCode)
         {
-            myWfCodeMultiplicityDefinition = (WfCodeMultiplicityDefinition)Enum.Parse(typeof(WfCodeMultiplicityDefinition), wfmdCode);
+            MyWfCodeMultiplicityDefinition = (WfCodeMultiplicityDefinition)Enum.Parse(typeof(WfCodeMultiplicityDefinition), wfmdCode);
             return this;
         }
 
         public WfActivityDefinition Build()
         {
             WfActivityDefinition wfActivityDefinition = new WfActivityDefinition();
-            wfActivityDefinition.Name = myName;
-            wfActivityDefinition.Level = myLevel;
+            wfActivityDefinition.Name = MyName;
+            wfActivityDefinition.Level = MyLevel;
             // Multiplicity : Single by default
-            wfActivityDefinition.WfmdCode = myWfCodeMultiplicityDefinition.ToString();
-            wfActivityDefinition.WfwdId = myWfwdId;
+            wfActivityDefinition.WfmdCode = MyWfCodeMultiplicityDefinition.ToString();
+            wfActivityDefinition.WfwdId = MyWfwdId;
             return wfActivityDefinition;
         }
 

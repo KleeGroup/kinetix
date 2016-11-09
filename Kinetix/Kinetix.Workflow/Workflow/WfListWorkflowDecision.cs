@@ -1,17 +1,14 @@
 ﻿using Kinetix.Workflow.instance;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Kinetix.Workflow.Workflow
+
+namespace Kinetix.Workflow
 {
     public sealed class WfListWorkflowDecision
     {
-        public WfWorkflow wfWorkflow { get; set; }
+        public WfWorkflow WfWorkflow { get; set; }
 
-        public IList<WfWorkflowDecision> workflowDecisions { get; set; } = new List<WfWorkflowDecision>();
+        public IList<WfWorkflowDecision> WorkflowDecisions { get; set; } = new List<WfWorkflowDecision>();
     }
 
 }

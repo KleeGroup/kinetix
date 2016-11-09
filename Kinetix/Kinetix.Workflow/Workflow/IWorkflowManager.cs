@@ -1,7 +1,6 @@
 ﻿using Kinetix.Rules;
 using Kinetix.Workflow.instance;
 using Kinetix.Workflow.model;
-using Kinetix.Workflow.Workflow;
 using System.Collections.Generic;
 
 namespace Kinetix.Workflow
@@ -305,13 +304,13 @@ namespace Kinetix.Workflow
         /// This methode should be called when the item linked to the workflow has changed.
         /// </summary>
         /// <param name="wfworkflow">the workflow to recalculate</param>
-        void RecalculateWorkflow(WfWorkflow wfworkflow);
+        WfRecalculationOutput RecalculateWorkflow(WfWorkflow wfworkflow);
 
         /// <summary>
         /// Recalculate a workflow definition. All the started instances linked to the workflow will be recalculated.
         /// </summary>
         /// <param name="wfWorkflowDefinition"></param>
-        void RecalculateWorkflowDefinition(WfWorkflowDefinition wfWorkflowDefinition);
+        WfRecalculationOutput RecalculateWorkflowDefinition(WfWorkflowDefinition wfWorkflowDefinition);
 
         #endregion
         

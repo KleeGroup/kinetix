@@ -6,9 +6,7 @@ using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Threading;
 using System.Linq;
-using Kinetix.Workflow.Workflow;
 using Kinetix.Rules;
-using Kinetix.Workflow.Impl.Workflow;
 
 namespace Kinetix.Workflow
 {
