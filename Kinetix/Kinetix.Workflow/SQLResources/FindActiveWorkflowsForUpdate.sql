@@ -2,6 +2,8 @@
 	WFW.*
 FROM 
 	WF_WORKFLOW WFW
+[if equals="Lock:True"]
 	WITH (UPDLOCK)
+[/if]
 WHERE WFW.WFWD_ID = @WFWD_ID 
   AND (WFW.WFS_CODE = 'Sta' OR WFW.WFS_CODE = 'Pau');

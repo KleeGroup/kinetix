@@ -6,9 +6,7 @@ using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Threading;
 using System.Linq;
-using Kinetix.Workflow.Workflow;
 using Kinetix.Rules;
-using Kinetix.Workflow.Impl.Workflow;
 
 namespace Kinetix.Workflow
 {
@@ -434,7 +432,7 @@ namespace Kinetix.Workflow
             return null;
         }
 
-        public IList<WfWorkflow> FindActiveWorkflows(WfWorkflowDefinition wfWorkflowDefinition)
+        public IList<WfWorkflow> FindActiveWorkflows(WfWorkflowDefinition wfWorkflowDefinition, bool isForUpdate)
         {
             IList<WfWorkflow> collect = new List<WfWorkflow>();
             foreach (WfWorkflow wfWorkflow in inMemoryWorkflowInstanceStore.Values)

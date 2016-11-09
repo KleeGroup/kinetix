@@ -1,8 +1,6 @@
 ﻿using Kinetix.Rules;
-using Kinetix.Workflow.Impl.Workflow;
 using Kinetix.Workflow.instance;
 using Kinetix.Workflow.model;
-using Kinetix.Workflow.Workflow;
 using System;
 using System.Collections.Generic;
 
@@ -159,8 +157,9 @@ namespace Kinetix.Workflow
         /// Find All active workflow (Started, or Paused)
         /// </summary>
         /// <param name="wfWorkflowDefinition"></param>
+        /// <param name="isForUpdate"></param>
         /// <returns></returns>
-        IList<WfWorkflow> FindActiveWorkflows(WfWorkflowDefinition wfWorkflowDefinition);
+        IList<WfWorkflow> FindActiveWorkflows(WfWorkflowDefinition wfWorkflowDefinition, bool isForUpdate);
 
         // Definition
 
@@ -359,14 +358,29 @@ namespace Kinetix.Workflow
 
 
         #region Batch Updates / Insert for recalculation
-
+        
+        /// <summary>
+        /// Update current activity (wfaId2) for the provided workflows
+        /// </summary>
+        /// <param name="worfklows">worklow to update</param>
         void UpdateWorkflowCurrentActivities(IList<WfWorkflowUpdate> worfklows);
 
+        /// <summary>
+        /// Update IsAuto flag for the provided activities
+        /// </summary>
+        /// <param name="worfklows">Activities to update</param>
         void UpdateActivitiesIsAuto(IList<WfActivityUpdate> activities);
 
+        /// <summary>
+        /// Create activities and define them as the current activity for the linked workflow instance for the provided activitie
+        /// </summary>
+        /// <param name="worfklows">Activities to update</param>
         void CreateActiviesAndUpdateWorkflowCurrentActivities(IList<WfActivity> activities);
 
-        //void CreateActivies(IList<WfActivityInsert> activities);
+        /// <summary>
+        /// Create new activities
+        /// </summary>
+        /// <param name="activities">Activities to create</param>
         void CreateActivies(IList<WfActivity> activities);
 
         #endregion

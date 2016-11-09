@@ -6,9 +6,7 @@ using Kinetix.Rules;
 using Kinetix.Workflow.instance;
 using Kinetix.Workflow.model;
 using System.Linq;
-using Kinetix.Workflow.Workflow;
 using System.ServiceModel;
-using Kinetix.Workflow.Impl.Workflow;
 
 namespace Kinetix.Workflow {
     [ServiceBehavior(ConcurrencyMode = ConcurrencyMode.Multiple, InstanceContextMode = InstanceContextMode.PerCall, IncludeExceptionDetailInFaults = true)]
@@ -796,7 +794,7 @@ namespace Kinetix.Workflow {
 
 
         #region Workflow Recalculation
-        public void RecalculateWorkflow(WfWorkflow wfWorkflow)
+        public WfRecalculationOutput RecalculateWorkflow(WfWorkflow wfWorkflow)
         {
             Debug.Assert(wfWorkflow != null);
             WfWorkflow wfWorkflowFetched = _workflowStorePlugin.ReadWorkflowInstanceForUpdateById(wfWorkflow.WfwId.Value);
@@ -807,44 +805,37 @@ namespace Kinetix.Workflow {
             IList<WfActivity> activities = _workflowStorePlugin.FindActivitiesByWorkflowId(wfWorkflow);
             IList<WfDecision> decisions = _workflowStorePlugin.FindDecisionsByWorkflowId(wfWorkflow);
 
-            RecalculateWorkflows(new List<WfWorkflow>() { wfWorkflowFetched}, wfWorkflowDefinition, activities, decisions);
+            return RecalculateWorkflows(new List<WfWorkflow>() { wfWorkflowFetched}, wfWorkflowDefinition, activities, decisions);
         }
 
-        public void RecalculateWorkflowDefinition(WfWorkflowDefinition wfWorkflowDefinition)
+        public WfRecalculationOutput RecalculateWorkflowDefinition(WfWorkflowDefinition wfWorkflowDefinition)
         {
-            IList<WfWorkflow> workflows = _workflowStorePlugin.FindActiveWorkflows(wfWorkflowDefinition);
+            IList<WfWorkflow> workflows = _workflowStorePlugin.FindActiveWorkflows(wfWorkflowDefinition, true);
             IList<WfActivity> allActivities = _workflowStorePlugin.FindAllActivitiesByWorkflowDefinitionId(wfWorkflowDefinition);
             IList<WfDecision> allDecisions = _workflowStorePlugin.FindAllDecisionsByWorkflowDefinitionId(wfWorkflowDefinition);
-            RecalculateWorkflows(workflows, wfWorkflowDefinition, allActivities, allDecisions);
+            return RecalculateWorkflows(workflows, wfWorkflowDefinition, allActivities, allDecisions);
         }
 
 
-        private void RecalculateWorkflows(IList<WfWorkflow> wfWorfklows, WfWorkflowDefinition wfWorkflowDefinition, IList<WfActivity> activities, IList<WfDecision> decisions)
+        private WfRecalculationOutput RecalculateWorkflows(IList<WfWorkflow> wfWorfklows, WfWorkflowDefinition wfWorkflowDefinition, IList<WfActivity> activities, IList<WfDecision> decisions)
         {
-            Stopwatch sw1 = new Stopwatch();
-            sw1.Start();
-
             IList<WfActivityDefinition> activityDefinitions = _workflowStorePlugin.FindAllDefaultActivityDefinitions(wfWorkflowDefinition);
 
-            RuleConstants ruleConstants = _ruleManager.GetConstants(wfWorkflowDefinition.WfwdId.Value);
+            int wfwdId = wfWorkflowDefinition.WfwdId.Value;
 
-            IList<RuleDefinition> rules = _workflowStorePlugin.FindAllRulesByWorkflowDefinitionId(wfWorkflowDefinition.WfwdId.Value);
-            IList<RuleConditionDefinition> conditions = _workflowStorePlugin.FindAllConditionsByWorkflowDefinitionId(wfWorkflowDefinition.WfwdId.Value);
-
-            IList<SelectorDefinition> selectors = _workflowStorePlugin.FindAllSelectorsByWorkflowDefinitionId(wfWorkflowDefinition.WfwdId.Value);
-            IList<RuleFilterDefinition> filters = _workflowStorePlugin.FindAllFiltersByWorkflowDefinitionId(wfWorkflowDefinition.WfwdId.Value);
+            RuleConstants ruleConstants = _ruleManager.GetConstants(wfwdId);
 
             //Build a dictionary from the rules: WfadId => List<RuleDefinition>
-            IDictionary<int, List<RuleDefinition>> dicRules = rules.GroupBy(c => c.ItemId.Value).ToDictionary(d => d.Key, e => e.ToList());
+            IDictionary<int, List<RuleDefinition>> dicRules = constructDicRulesForWorkflowDefinition(wfwdId);
 
             //Build a dictionary from the conditions: RudId => List<RuleConditionDefinition>
-            IDictionary<int, List<RuleConditionDefinition>> dicConditions = conditions.GroupBy(c => c.RudId.Value).ToDictionary(d => d.Key, e => e.ToList());
+            IDictionary<int, List<RuleConditionDefinition>> dicConditions = constructDicConditionsForWorkflowDefinition(wfwdId);
 
             //Build a dictionary from the selectors: WfadId => List<SelectorDefinition>
-            IDictionary<int, List<SelectorDefinition>> dicSelectors = selectors.GroupBy(c => c.ItemId.Value).ToDictionary(d => d.Key, e => e.ToList());
+            IDictionary<int, List<SelectorDefinition>> dicSelectors = constructDicSelectorsForWorkflowDefinition(wfwdId);
 
             //Build a dictionary from the filters: SelId => List<RuleFilterDefinition>
-            IDictionary<int, List<RuleFilterDefinition>> dicFilters = filters.GroupBy(c => c.SelId.Value).ToDictionary(d => d.Key, e => e.ToList());
+            IDictionary<int, List<RuleFilterDefinition>> dicFilters = constructDicFiltersForWorkflowDefinition(wfwdId);
 
             //Build a dictionnary from the workflows: WfwId => List<WfActivity>
             IDictionary<int, List<WfActivity>> dicActivities = activities.GroupBy(c => c.WfwId).ToDictionary(d => d.Key, e => e.ToList());
@@ -856,24 +847,17 @@ namespace Kinetix.Workflow {
             List<int> itemIds = wfWorfklows.Select(w => w.ItemId.Value).ToList();
             IDictionary<int, object> dicObjects = _itemStorePlugin.ReadItems(itemIds);
 
-
-            sw1.Stop();
-            Trace.WriteLine(sw1.ElapsedMilliseconds);
-
-            RecalculationOutput output = new RecalculationOutput();
+            WfRecalculationOutput output = new WfRecalculationOutput();
             foreach (WfWorkflow wfWorfklow in wfWorfklows)
             {
-                //Stopwatch sw = new Stopwatch();
-                //sw.Start();
                 RecalculateWorkflow(activityDefinitions, ruleConstants, wfWorfklow, dicRules, dicConditions, dicSelectors, dicFilters, dicActivities, dicDecision, dicObjects, output);
-                //sw.Stop();
-                //Trace.WriteLine(sw.ElapsedMilliseconds);
             }
 
             UpdateWorkflows(output);
+            return output;
         }
 
-        private void UpdateWorkflows(RecalculationOutput output)
+        private void UpdateWorkflows(WfRecalculationOutput output)
         {
             //Updating current workflow activities (no new activities)
             if (output.WorkflowsUpdateCurrentActivity.Count > 0)
@@ -900,7 +884,7 @@ namespace Kinetix.Workflow {
             }
         }
 
-        private void RecalculateWorkflow(IList<WfActivityDefinition> activityDefinitions, RuleConstants ruleConstants, WfWorkflow wf, IDictionary<int, List<RuleDefinition>> dicRules, IDictionary<int, List<RuleConditionDefinition>> dicConditions, IDictionary<int, List<SelectorDefinition>> dicSelectors, IDictionary<int, List<RuleFilterDefinition>> dicFilters, IDictionary<int, List<WfActivity>> dicActivities, IDictionary<int, List<WfDecision>> dicDecision, IDictionary<int, object> dicObjects, RecalculationOutput output)
+        private void RecalculateWorkflow(IList<WfActivityDefinition> activityDefinitions, RuleConstants ruleConstants, WfWorkflow wf, IDictionary<int, List<RuleDefinition>> dicRules, IDictionary<int, List<RuleConditionDefinition>> dicConditions, IDictionary<int, List<SelectorDefinition>> dicSelectors, IDictionary<int, List<RuleFilterDefinition>> dicFilters, IDictionary<int, List<WfActivity>> dicActivities, IDictionary<int, List<WfDecision>> dicDecision, IDictionary<int, object> dicObjects, WfRecalculationOutput output)
         {
 
             if (activityDefinitions.Count == 0)
@@ -966,7 +950,6 @@ namespace Kinetix.Workflow {
                     //This activity need a validation
 
                     //We need to check if there is at least one user allowed to validate
-                    //IList<AccountUser> accounts = _ruleManager.SelectAccounts(actDefId, obj, ruleConstants);
                     IList<AccountUser> accounts = _ruleManager.SelectAccounts(actDefId, obj, ruleConstants, dicSelectors, dicFilters);
 
                     if (accounts.Count > 0)
@@ -979,10 +962,6 @@ namespace Kinetix.Workflow {
                             // - A new activity definition has been inserted in the workflow.
                             // - The previous current activity has been switched to auto.
 
-                            //WfActivity wfActivity = CreateActivity(activityDefinition, wf, false);
-                            //wf.WfaId2 = wfActivity.WfaId;
-                            //_workflowStorePlugin.UpdateWorkflowInstance(wf);
-
                             WfActivity wfActivity = GetNewActivity(activityDefinition, wf, false);
                             output.AddActivitiesCreateUpdateCurrentActivity(wfActivity);
 
@@ -993,9 +972,7 @@ namespace Kinetix.Workflow {
                         {
                             //The previous validation was auto. This activity should be manually validated.
                             activity.IsAuto = false;
-                            //_workflowStorePlugin.UpdateActivity(activity);
                             wf.WfaId2 = activity.WfaId;
-                            //_workflowStorePlugin.UpdateWorkflowInstance(wf);
                             output.AddActivitiesUpdateIsAuto(activity);
                             output.AddWorkflowsUpdateCurrentActivity(wf);
 
@@ -1032,8 +1009,6 @@ namespace Kinetix.Workflow {
                         }
                         else
                         {
-
-                            //IList<WfDecision> decisions = GetDecisions(activity);
                             List<WfDecision> decisions;
                             dicDecision.TryGetValue(activity.WfaId.Value, out decisions);
 
@@ -1046,7 +1021,6 @@ namespace Kinetix.Workflow {
                                 // This activity must be revalidated
                                 wf.WfaId2 = activity.WfaId;
                                 
-                                //_workflowStorePlugin.UpdateWorkflowInstance(wf);
                                 output.AddWorkflowsUpdateCurrentActivity(wf);
 
                                 newCurrentActivityFound = true;
@@ -1062,9 +1036,7 @@ namespace Kinetix.Workflow {
                         isCurrentActivityAuto = true;
                         activity.IsAuto = true;
 
-                        //_workflowStorePlugin.UpdateActivity(activity);
                         output.AddActivitiesUpdateIsAuto(activity);
-
                     }
                 }
                 else
@@ -1077,7 +1049,6 @@ namespace Kinetix.Workflow {
                         // - A new activity definition has been inserted in the workflow.
                         // - The previous current activity has been switched to auto.
                         
-                        //WfActivity wfActivity = CreateActivity(activityDefinition, wf, true);
                         WfActivity wfActivity = GetNewActivity(activityDefinition, wf, true);
                         output.AddActivitiesCreate(wfActivity);
                     }
@@ -1085,7 +1056,6 @@ namespace Kinetix.Workflow {
                     {
                         // The previous activity was manual but now this activity is auto
                         activity.IsAuto = true;
-                        //_workflowStorePlugin.UpdateActivity(activity);
                         output.AddActivitiesUpdateIsAuto(activity);
                     }
                 }
@@ -1110,6 +1080,38 @@ namespace Kinetix.Workflow {
                 //EndInstance(wf);
             }
         }
+
+        private IDictionary<int, List<RuleDefinition>> constructDicRulesForWorkflowDefinition(int wfwdId)
+        {
+            IList<RuleDefinition> rules = _workflowStorePlugin.FindAllRulesByWorkflowDefinitionId(wfwdId);
+            //Build a dictionary from the rules: WfadId => List<RuleDefinition>
+            IDictionary<int, List<RuleDefinition>> dicRules = rules.GroupBy(c => c.ItemId.Value).ToDictionary(d => d.Key, e => e.ToList());
+            return dicRules;
+        }
+
+        private IDictionary<int, List<RuleConditionDefinition>> constructDicConditionsForWorkflowDefinition(int wfwdId)
+        {
+            IList<RuleConditionDefinition> conditions = _workflowStorePlugin.FindAllConditionsByWorkflowDefinitionId(wfwdId);
+            //Build a dictionary from the conditions: RudId => List<RuleConditionDefinition>
+            IDictionary<int, List<RuleConditionDefinition>> dicConditions = conditions.GroupBy(c => c.RudId.Value).ToDictionary(d => d.Key, e => e.ToList());
+            return dicConditions;
+        }
+
+        private IDictionary<int, List<SelectorDefinition>> constructDicSelectorsForWorkflowDefinition(int wfwdId)
+        {
+            IList<SelectorDefinition> selectors = _workflowStorePlugin.FindAllSelectorsByWorkflowDefinitionId(wfwdId);
+            //Build a dictionary from the selectors: WfadId => List<SelectorDefinition>
+            IDictionary<int, List<SelectorDefinition>> dicSelectors = selectors.GroupBy(c => c.ItemId.Value).ToDictionary(d => d.Key, e => e.ToList());
+            return dicSelectors;
+        }
+
+        private IDictionary<int, List<RuleFilterDefinition>> constructDicFiltersForWorkflowDefinition(int wfwdId)
+        {
+            IList<RuleFilterDefinition> filters = _workflowStorePlugin.FindAllFiltersByWorkflowDefinitionId(wfwdId);
+            //Build a dictionary from the filters: SelId => List<RuleFilterDefinition>
+            IDictionary<int, List<RuleFilterDefinition>> dicFilters = filters.GroupBy(c => c.SelId.Value).ToDictionary(d => d.Key, e => e.ToList());
+            return dicFilters;
+        }
         #endregion
 
         #region Custom Methods
@@ -1119,8 +1121,9 @@ namespace Kinetix.Workflow {
             //Get the workflow from id
             WfWorkflow wfWorkflow = _workflowStorePlugin.ReadWorkflowInstanceById(wfwId);
 
+            int wfwdId = wfWorkflow.WfwdId.Value;
             //Get the definition
-            WfWorkflowDefinition wfDefinition = _workflowStorePlugin.ReadWorkflowDefinition(wfWorkflow.WfwdId.Value);
+            WfWorkflowDefinition wfDefinition = _workflowStorePlugin.ReadWorkflowDefinition(wfwdId);
 
             //Get all the activity definitions for the workflow definition
             IList<WfActivityDefinition> activityDefinitions = _workflowStorePlugin.FindAllDefaultActivityDefinitions(wfDefinition);
@@ -1133,20 +1136,26 @@ namespace Kinetix.Workflow {
             //Build a dictionary from the decisions: WfaId => List<WfDecision>
             IDictionary<int, List<WfDecision>> dicDecision = allDecisions.GroupBy(d => d.WfaId).ToDictionary(d => d.Key, e => e.ToList());
 
+            IDictionary<int, List<RuleDefinition>> dicRules = constructDicRulesForWorkflowDefinition(wfwdId);
+            IDictionary<int, List<RuleConditionDefinition>> dicConditions = constructDicConditionsForWorkflowDefinition(wfwdId);
+            IDictionary<int, List<SelectorDefinition>> dicSelectors = constructDicSelectorsForWorkflowDefinition(wfwdId);
+            IDictionary<int, List<RuleFilterDefinition>> dicFilters = constructDicFiltersForWorkflowDefinition(wfwdId);
+
             // Fetch the object linked to the workflow instance.
             object obj = _itemStorePlugin.ReadItem(wfWorkflow.ItemId.Value);
 
-            RuleConstants ruleConstants = _ruleManager.GetConstants(wfDefinition.WfwdId.Value);
+            RuleConstants ruleConstants = _ruleManager.GetConstants(wfwdId);
 
             IList<WfWorkflowDecision> workflowDecisions = new List<WfWorkflowDecision>();
 
             foreach (WfActivityDefinition activityDefinition in activityDefinitions)
             {
-                bool ruleValid = _ruleManager.IsRuleValid(activityDefinition.WfadId.Value, obj, ruleConstants);
+                int actDefId = activityDefinition.WfadId.Value;
+                bool ruleValid = _ruleManager.IsRuleValid(actDefId, obj, ruleConstants, dicRules, dicConditions);
 
                 if (ruleValid)
                 {
-                    IList<AccountGroup> groups = _ruleManager.SelectGroups(activityDefinition.WfadId.Value, obj, ruleConstants);
+                    IList<AccountGroup> groups = _ruleManager.SelectGroups(actDefId, obj, ruleConstants, dicSelectors, dicFilters);
                     int nbAccount = 0;
                     bool atLeatOnePerson = false;
                     foreach (AccountGroup accountGroup in groups)
@@ -1163,16 +1172,16 @@ namespace Kinetix.Workflow {
                     if (atLeatOnePerson)
                     {
                         WfWorkflowDecision wfWorkflowDecision = new WfWorkflowDecision();
-                        wfWorkflowDecision.activityDefinition = activityDefinition;
+                        wfWorkflowDecision.ActivityDefinition = activityDefinition;
                         WfActivity wfActivity;
                         dicActivities.TryGetValue(activityDefinition.WfadId.Value, out wfActivity);
-                        wfWorkflowDecision.activity = wfActivity;
-                        wfWorkflowDecision.groups = groups;
+                        wfWorkflowDecision.Activity = wfActivity;
+                        wfWorkflowDecision.Groups = groups;
                         List<WfDecision> decisions;
                         if (wfActivity != null)
                         {
                             dicDecision.TryGetValue(wfActivity.WfaId.Value, out decisions);
-                            wfWorkflowDecision.decisions = decisions;
+                            wfWorkflowDecision.Decisions = decisions;
                         }
                         workflowDecisions.Add(wfWorkflowDecision);
                     }
@@ -1181,6 +1190,139 @@ namespace Kinetix.Workflow {
 
 
             return workflowDecisions;
+        }
+
+
+        public IList<WfListWorkflowDecision> GetAllWorkflowDecisions(int wfwdId)
+        {
+            //Get the definition
+            WfWorkflowDefinition wfWorkflowDefinition = _workflowStorePlugin.ReadWorkflowDefinition(wfwdId);
+
+            //Get all the activity definitions for the workflow definition
+            IList<WfActivityDefinition> activityDefinitions = _workflowStorePlugin.FindAllDefaultActivityDefinitions(wfWorkflowDefinition);
+
+            IList<WfActivity> allActivities = _workflowStorePlugin.FindAllActivitiesByWorkflowDefinitionId(wfWorkflowDefinition);
+            IList<WfDecision> allDecisions = _workflowStorePlugin.FindAllDecisionsByWorkflowDefinitionId(wfWorkflowDefinition);
+
+            //Build a dictionnary from the workflows: WfwId => List<WfActivity>
+            IDictionary<int, List<WfActivity>> dicAllActivities = allActivities.GroupBy(c => c.WfwId).ToDictionary(d => d.Key, e => e.ToList());
+
+            //Build a dictionary from the decisions: WfaId => List<WfDecision>
+            IDictionary<int, List<WfDecision>> dicDecision = allDecisions.GroupBy(d => d.WfaId).ToDictionary(d => d.Key, e => e.ToList());
+
+            IDictionary<int, List<RuleDefinition>> dicRules = constructDicRulesForWorkflowDefinition(wfwdId);
+            IDictionary<int, List<RuleConditionDefinition>> dicConditions = constructDicConditionsForWorkflowDefinition(wfwdId);
+            IDictionary<int, List<SelectorDefinition>> dicSelectors = constructDicSelectorsForWorkflowDefinition(wfwdId);
+            IDictionary<int, List<RuleFilterDefinition>> dicFilters = constructDicFiltersForWorkflowDefinition(wfwdId);
+
+            IList<WfWorkflow> workflows = _workflowStorePlugin.FindActiveWorkflows(wfWorkflowDefinition, false);
+
+            List<int> itemIds = workflows.Select(w => w.ItemId.Value).ToList();
+            IDictionary<int, object> dicObjects = _itemStorePlugin.ReadItems(itemIds);
+
+            RuleConstants ruleConstants = _ruleManager.GetConstants(wfwdId);
+
+            IList<WfListWorkflowDecision> ret = new List<WfListWorkflowDecision>();
+
+            foreach (WfWorkflow wf in workflows)
+            {
+                IList<WfWorkflowDecision> workflowDecisions = new List<WfWorkflowDecision>();
+
+                object obj;
+                dicObjects.TryGetValue(wf.ItemId.Value, out obj);
+
+                List<WfActivity> activities;
+                dicAllActivities.TryGetValue(wf.WfwId.Value, out activities);
+
+                if (activities == null)
+                {
+                    // No activity for this workflow.
+                    activities = new List<WfActivity>();
+                }
+
+                IDictionary<int, WfActivity> dicActivities = allActivities.ToDictionary(a => a.WfadId);
+
+                foreach (WfActivityDefinition activityDefinition in activityDefinitions)
+                {
+                    int actDefId = activityDefinition.WfadId.Value;
+                    bool ruleValid = _ruleManager.IsRuleValid(actDefId, obj, ruleConstants, dicRules, dicConditions);
+
+                    if (ruleValid)
+                    {
+                        IList<AccountGroup> groups = _ruleManager.SelectGroups(actDefId, obj, ruleConstants, dicSelectors, dicFilters);
+                        int nbAccount = 0;
+                        bool atLeatOnePerson = false;
+                        foreach (AccountGroup accountGroup in groups)
+                        {
+                            ISet<string> accounts = _accountManager.GetStore().GetAccountIds(accountGroup.Id);
+                            nbAccount += accounts.Count;
+                            if (nbAccount > 0)
+                            {
+                                atLeatOnePerson = true;
+                                break;
+                            }
+                        }
+
+                        if (atLeatOnePerson)
+                        {
+                            WfWorkflowDecision wfWorkflowDecision = new WfWorkflowDecision();
+                            wfWorkflowDecision.ActivityDefinition = activityDefinition;
+                            WfActivity wfActivity;
+                            dicActivities.TryGetValue(activityDefinition.WfadId.Value, out wfActivity);
+                            wfWorkflowDecision.Activity = wfActivity;
+                            wfWorkflowDecision.Groups = groups;
+                            List<WfDecision> decisions;
+                            if (wfActivity != null)
+                            {
+                                dicDecision.TryGetValue(wfActivity.WfaId.Value, out decisions);
+                                wfWorkflowDecision.Decisions = decisions;
+                            }
+                            workflowDecisions.Add(wfWorkflowDecision);
+                        }
+                    }
+                }
+
+                WfListWorkflowDecision collected = new WfListWorkflowDecision();
+
+                collected.WfWorkflow = wf;
+                collected.WorkflowDecisions = workflowDecisions;
+                ret.Add(collected);
+            }
+
+            return ret;
+        }
+        #endregion
+
+        #region FindAll*ByWorkflowDefinition methods
+
+        public IList<WfActivity> FindAllActivitiesByWorkflowDefinition(WfWorkflowDefinition wfWorkflowDefinition)
+        {
+            return _workflowStorePlugin.FindAllActivitiesByWorkflowDefinitionId(wfWorkflowDefinition);
+        }
+
+        public IList<WfDecision> FindAllDecisionsByWorkflowDefinition(WfWorkflowDefinition wfWorkflowDefinition)
+        {
+            return _workflowStorePlugin.FindAllDecisionsByWorkflowDefinitionId(wfWorkflowDefinition);
+        }
+
+        public IList<RuleDefinition> FindAllRulesDecisionsByWorkflowDefinition(WfWorkflowDefinition wfWorkflowDefinition)
+        {
+            return _workflowStorePlugin.FindAllRulesByWorkflowDefinitionId(wfWorkflowDefinition.WfwdId.Value);
+        }
+
+        public IList<RuleConditionDefinition> FindAllConditionsDecisionsByWorkflowDefinition(WfWorkflowDefinition wfWorkflowDefinition)
+        {
+            return _workflowStorePlugin.FindAllConditionsByWorkflowDefinitionId(wfWorkflowDefinition.WfwdId.Value);
+        }
+
+        public IList<SelectorDefinition> FindAllSelectorsDecisionsByWorkflowDefinition(WfWorkflowDefinition wfWorkflowDefinition)
+        {
+            return _workflowStorePlugin.FindAllSelectorsByWorkflowDefinitionId(wfWorkflowDefinition.WfwdId.Value);
+        }
+
+        public IList<RuleFilterDefinition> FindAllFiltersByWorkflowDefinition(WfWorkflowDefinition wfWorkflowDefinition)
+        {
+            return _workflowStorePlugin.FindAllFiltersByWorkflowDefinitionId(wfWorkflowDefinition.WfwdId.Value);
         }
 
         #endregion

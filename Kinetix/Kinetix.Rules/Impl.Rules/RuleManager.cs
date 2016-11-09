@@ -143,6 +143,20 @@ namespace Kinetix.Rules
             return _ruleSelectorPlugin.SelectGroups(selectors, context);
         }
 
+        public IList<AccountGroup> SelectGroups(int idActivityDefinition, object item, RuleConstants constants, IDictionary<int, List<SelectorDefinition>> dicSelectors, IDictionary<int, List<RuleFilterDefinition>> dicFilters)
+        {
+            RuleContext context = new RuleContext(item, constants);
+            List<SelectorDefinition> selectors;
+            dicSelectors.TryGetValue(idActivityDefinition, out selectors);
+
+            if (selectors == null)
+            {
+                selectors = new List<SelectorDefinition>();
+            }
+
+            return _ruleSelectorPlugin.SelectGroups(selectors, dicFilters, context);
+        }
+
         public void UpdateCondition(RuleConditionDefinition ruleConditionDefinition)
         {
             _ruleStorePlugin.UpdateCondition(ruleConditionDefinition);

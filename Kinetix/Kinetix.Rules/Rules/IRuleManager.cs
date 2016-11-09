@@ -12,7 +12,7 @@ namespace Kinetix.Rules
         /// <param name="idActivityDefinition">Activity definition id.</param>
         /// <param name="item">Business object.</param>
         /// <param name="constants">constants</param>
-        /// <returns>a list of account.</returns>
+        /// <returns>a list of accounts.</returns>
         IList<AccountUser> SelectAccounts(int idActivityDefinition, object item, RuleConstants constants);
 
         /// <summary>
@@ -22,9 +22,9 @@ namespace Kinetix.Rules
         /// <param name="idActivityDefinition">Activity definition id</param>
         /// <param name="item">Business object</param>
         /// <param name="constants">constants</param>
-        /// <param name="rules">Rules to use</param>
-        /// <param name="dicConditions">Conditions associated to rules</param>
-        /// <returns></returns>
+        /// <param name="dicSelectors">Selectors to use</param>
+        /// <param name="dicFilters">Filters associated to Selectors</param>
+        /// <returns>a list of accounts</returns>
         IList<AccountUser> SelectAccounts(int idActivityDefinition, object item, RuleConstants constants, IDictionary<int, List<SelectorDefinition>> dicSelectors, IDictionary<int, List<RuleFilterDefinition>> dicFilters);
 
         /// <summary>
@@ -33,8 +33,19 @@ namespace Kinetix.Rules
         /// <param name="idActivityDefinition">Activity definition id.</param>
         /// <param name="item">Business object.</param>
         /// <param name="constants">constants</param>
-        /// <returns>a list of account.</returns>
+        /// <returns>a list of groups.</returns>
         IList<AccountGroup> SelectGroups(int idActivityDefinition, object item, RuleConstants constants);
+
+        /// <summary>
+        /// Select groups matching the selector for an activity.
+        /// </summary>
+        /// <param name="idActivityDefinition">Activity definition id.</param>
+        /// <param name="item">Business object.</param>
+        /// <param name="constants">constants</param>
+        /// <param name="dicSelectors">Selectors to use</param>
+        /// <param name="dicFilters">Filters associated to Selectors</param>
+        /// <returns>a list of groups.</returns>
+        IList<AccountGroup> SelectGroups(int idActivityDefinition, object item, RuleConstants constants, IDictionary<int, List<SelectorDefinition>> dicSelectors, IDictionary<int, List<RuleFilterDefinition>> dicFilters);
 
         /// <summary>
         /// Validate a rule for an activity.

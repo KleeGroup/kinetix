@@ -1,5 +1,4 @@
 ﻿
-
 namespace Kinetix.Workflow
 {
     public enum WfCodeTransition

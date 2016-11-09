@@ -48,9 +48,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Impl.Workflow\IItemStorePlugin.cs" />
-    <Compile Include="Workflow\RecalculationOutput.cs" />
+    <Compile Include="Workflow\WfRecalculationOutput.cs" />
     <Compile Include="Plugins.Workflow.SqlServer\SqlServerWorkflowStorePlugin.cs" />
     <Compile Include="Workflow\WfActivityUpdate.cs" />
+    <Compile Include="Workflow\WfListWorkflowDecision.cs" />
     <Compile Include="Workflow\WfWorkflowUpdate.cs" />
     <EmbeddedResource Include="SQLResources\DeleteActivitiesByDefinitionIds.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

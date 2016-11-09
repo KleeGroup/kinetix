@@ -112,6 +112,21 @@ namespace Kinetix.Rules
             return collected;
         }
 
+        public IList<AccountGroup> SelectGroups(IList<SelectorDefinition> selectors, IDictionary<int, List<RuleFilterDefinition>> dicFilters, RuleContext ruleContext)
+        {
+            IList<AccountGroup> collected = new List<AccountGroup>();
+            IList<SelectorDefinition> matchingSelectors = FindMatchingSelectors(selectors, dicFilters, ruleContext);
+
+            IAccountStore accountStore = _accountManager.GetStore();
+
+            foreach (SelectorDefinition selectorDefinition in matchingSelectors)
+            {
+                collected.Add(accountStore.GetGroup(selectorDefinition.GroupId));
+            }
+
+            return collected;
+        }
+
         private bool checkFilters(IList<RuleFilterDefinition> filters, RuleContext ruleContext)
         {
             bool selectorMatch = true;
