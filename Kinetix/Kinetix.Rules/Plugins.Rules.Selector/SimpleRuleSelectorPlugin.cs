@@ -42,7 +42,13 @@ namespace Kinetix.Rules
 
             foreach (SelectorDefinition selectorDefinition in selectors)
             {
-                IList<RuleFilterDefinition> filters = dicFilters[selectorDefinition.Id.Value];
+
+                List<RuleFilterDefinition> filters;
+                dicFilters.TryGetValue(selectorDefinition.Id.Value, out filters);
+                if (filters == null)
+                {
+                    filters = new List<RuleFilterDefinition>();
+                }
 
                 bool selectorMatch = checkFilters(filters, ruleContext);
                 if (selectorMatch)
