@@ -611,7 +611,6 @@ namespace Kinetix.Workflow {
                 RuleConstants ruleConstants = _ruleManager.GetConstants((int)wfWorkflow.WfwdId);
                 IList<AccountUser> accounts = _ruleManager.SelectAccounts(currentActivity.WfadId, obj, ruleConstants);
 
-                //TODO : better impl than O(n²)
                 int match = 0;
                 foreach (AccountUser account in accounts) {
                     foreach (WfDecision decision in wfDecisions) {
@@ -935,7 +934,6 @@ namespace Kinetix.Workflow {
                 WfActivity activity;
                 activities.TryGetValue(actDefId, out activity);
 
-                //bool isRuleValid = _ruleManager.IsRuleValid(actDefId, obj, ruleConstants);
                 bool isRuleValid = _ruleManager.IsRuleValid(actDefId, obj, ruleConstants, dicRules, dicConditions);
 
                 if (activity != null && currentActivity != null && activityDefinition.WfadId.Equals(currentActivity.WfadId))
@@ -985,8 +983,6 @@ namespace Kinetix.Workflow {
                         WfCodeMultiplicityDefinition multiplicity = (WfCodeMultiplicityDefinition)Enum.Parse(typeof(WfCodeMultiplicityDefinition), activityDefinition.WfmdCode, true);
                         if (multiplicity == WfCodeMultiplicityDefinition.Sin)
                         {
-
-                            //WfDecision decision = GetDecision(activity);
                             List<WfDecision> decisions;
                             dicDecision.TryGetValue(activity.WfaId.Value, out decisions);
                             WfDecision decision = decisions?.FirstOrDefault();
@@ -999,7 +995,6 @@ namespace Kinetix.Workflow {
                                 // This activity must be revalidated
                                 wf.WfaId2 = activity.WfaId;
                                 
-                                //_workflowStorePlugin.UpdateWorkflowInstance(wf);
                                 output.AddWorkflowsUpdateCurrentActivity(wf);
 
                                 newCurrentActivityFound = true;

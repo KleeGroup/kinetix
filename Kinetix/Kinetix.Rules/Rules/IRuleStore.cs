@@ -122,5 +122,12 @@ namespace Kinetix.Rules
         /// </summary>
         /// <param name="list">list of ids</param>
         void RemoveSelectors(IList<int> list);
+
+
+        /// <summary>
+        /// Removes all Selectors and linked filters associated to the provided groupId
+        /// </summary>
+        /// <param name="groupId">groupId</param>
+        void RemoveSelectorsFiltersByGroupId(string groupId);
     }
 }

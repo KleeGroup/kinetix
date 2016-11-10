@@ -369,7 +369,6 @@ namespace Kinetix.Workflow {
             cmd.ExecuteNonQuery();
         }
 
-        //public void CreateActivies(IList<WfActivityInsert> activities)
         public void CreateActivies(IList<WfActivity> activities)
         {
             BrokerManager.GetBroker<WfActivity>().InsertAll(activities);

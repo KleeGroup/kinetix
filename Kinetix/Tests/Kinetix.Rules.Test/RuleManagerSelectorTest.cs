@@ -38,7 +38,7 @@ namespace Kinetix.Rules.Test
             ConnectionStringSettings conn = new ConnectionStringSettings
             {
                 Name = DefaultDataSource,
-                ConnectionString = "Data Source=martha;Initial Catalog=" + dataBaseName + ";User ID=dianeConnection;Password=Puorgeelk23",
+                ConnectionString = "Data Source=carla;Initial Catalog=" + dataBaseName + ";User ID=dianeConnection;Password=Puorgeelk23",
                 ProviderName = "System.Data.SqlClient"
             };
 
@@ -142,6 +142,78 @@ namespace Kinetix.Rules.Test
 
             Assert.IsNotNull(rulesFetch_2_0);
             Assert.AreEqual(rulesFetch_2_0.Count, 0);
+        }
+
+
+        /// <summary>
+        /// Add/Update/Delete Rules for RulesManager
+        /// </summary>
+        [TestMethod]
+        public void TestDeleteSelectorsByGroupIds()
+        {
+            string groupIdToDelete = "10000";
+            string groupIdToKeep = "20000";
+
+            int item1 = 10000;
+            int item2 = 20000;
+            int item3 = 30000;
+
+            var container = GetConfiguredContainer();
+            IRuleManager ruleManager = container.Resolve<IRuleManager>();
+
+            // Rule created to Item 1
+            SelectorDefinition selector1 = new SelectorDefinition(null, DateTime.Now, item1, groupIdToDelete);
+            SelectorDefinition selector2 = new SelectorDefinition(null, DateTime.Now, item1, groupIdToDelete);
+            SelectorDefinition selector3 = new SelectorDefinition(null, DateTime.Now, item2, groupIdToDelete);
+            SelectorDefinition selector4 = new SelectorDefinition(null, DateTime.Now, item1, groupIdToKeep);
+            SelectorDefinition selector5 = new SelectorDefinition(null, DateTime.Now, item2, groupIdToKeep);
+            SelectorDefinition selector6 = new SelectorDefinition(null, DateTime.Now, item3, groupIdToKeep);
+            ruleManager.AddSelector(selector1);
+            ruleManager.AddSelector(selector2);
+            ruleManager.AddSelector(selector3);
+            ruleManager.AddSelector(selector4);
+            ruleManager.AddSelector(selector5);
+            ruleManager.AddSelector(selector6);
+
+            IList<SelectorDefinition> rulesFetch_1_1 = ruleManager.GetSelectorsForItemId(item1);
+
+            Assert.IsNotNull(rulesFetch_1_1);
+            Assert.AreEqual(3, rulesFetch_1_1.Count);
+            Assert.IsTrue(rulesFetch_1_1.SequenceEqual(new List<SelectorDefinition>() { selector1, selector2, selector4 }, new SelectorEqualityComparer()));
+
+            IList<SelectorDefinition> rulesFetch_1_2 = ruleManager.GetSelectorsForItemId(item2);
+
+            Assert.IsNotNull(rulesFetch_1_2);
+            Assert.AreEqual(2, rulesFetch_1_2.Count);
+            Assert.IsTrue(rulesFetch_1_2.SequenceEqual(new List<SelectorDefinition>() { selector3, selector5 }, new SelectorEqualityComparer()));
+
+            IList<SelectorDefinition> rulesFetch_1_3 = ruleManager.GetSelectorsForItemId(item3);
+
+            Assert.IsNotNull(rulesFetch_1_3);
+            Assert.AreEqual(1, rulesFetch_1_3.Count);
+            Assert.IsTrue(rulesFetch_1_3.SequenceEqual(new List<SelectorDefinition>() { selector6 }, new SelectorEqualityComparer()));
+
+            // Update rule. This is now associated with Item 2
+            ruleManager.RemoveSelectorsFiltersByGroupId(groupIdToDelete);
+
+            IList<SelectorDefinition> rulesFetch_2_1 = ruleManager.GetSelectorsForItemId(item1);
+
+            Assert.IsNotNull(rulesFetch_2_1);
+            Assert.AreEqual(1, rulesFetch_2_1.Count);
+            Assert.IsTrue(rulesFetch_2_1.SequenceEqual(new List<SelectorDefinition>() { selector4 }, new SelectorEqualityComparer()));
+
+            IList<SelectorDefinition> rulesFetch_2_2 = ruleManager.GetSelectorsForItemId(item2);
+
+            Assert.IsNotNull(rulesFetch_2_2);
+            Assert.AreEqual(1, rulesFetch_2_2.Count);
+            Assert.IsTrue(rulesFetch_2_2.SequenceEqual(new List<SelectorDefinition>() { selector5 }, new SelectorEqualityComparer()));
+
+            IList<SelectorDefinition> rulesFetch_2_3 = ruleManager.GetSelectorsForItemId(item3);
+
+            Assert.IsNotNull(rulesFetch_2_3);
+            Assert.AreEqual(1, rulesFetch_2_3.Count);
+            Assert.IsTrue(rulesFetch_2_3.SequenceEqual(new List<SelectorDefinition>() { selector6 }, new SelectorEqualityComparer()));
+
         }
 
         /// <summary>
@@ -340,6 +412,9 @@ namespace Kinetix.Rules.Test
 
         }
 
+
+
+        
     }
 
 }

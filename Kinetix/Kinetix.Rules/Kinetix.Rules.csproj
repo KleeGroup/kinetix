@@ -91,6 +91,9 @@
     <Content Include="dbo\RULE_CONDITION_DEFINITION.sql" />
     <Content Include="dbo\SELECTOR_DEFINITION.sql" />
     <Content Include="dbo\RULE_DEFINITION.sql" />
+    <EmbeddedResource Include="SQLResources\DeleteSelectorsFiltersByGroupIds.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
     <EmbeddedResource Include="SQLResources\DeleteSelectorsByIds.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>

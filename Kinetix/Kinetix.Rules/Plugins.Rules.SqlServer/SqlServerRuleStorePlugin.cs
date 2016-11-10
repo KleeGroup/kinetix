@@ -157,5 +157,13 @@ namespace Kinetix.Rules {
 
             cmd.ExecuteNonQuery();
         }
+
+        public void RemoveSelectorsFiltersByGroupId(string groupId)
+        {
+            var cmd = GetSqlServerCommand("DeleteSelectorsFiltersByGroupIds.sql");
+            cmd.Parameters.AddWithValue(SelectorDefinition.Cols.GROUP_ID, groupId);
+
+            cmd.ExecuteNonQuery();
+        }
     }
 }
