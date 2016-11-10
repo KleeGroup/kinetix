@@ -9,7 +9,7 @@ namespace Kinetix.Account
     {
 
         /// <summary>
-        /// AccountUser construcutor
+        /// AccountUser constructor
         /// </summary>
         /// <param name="id"></param>
         /// <param name="name"></param>
