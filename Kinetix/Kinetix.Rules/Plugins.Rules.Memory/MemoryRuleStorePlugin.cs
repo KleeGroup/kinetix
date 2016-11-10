@@ -209,5 +209,24 @@ namespace Kinetix.Rules
                 inMemorySelectorStore.Remove(id);
             }
         }
+
+        public void RemoveSelectorsFiltersByGroupId(string groupId)
+        {
+            foreach (SelectorDefinition sel in inMemorySelectorStore.Values)
+            {
+                if (sel.GroupId.Equals(groupId))
+                {
+                    foreach(RuleFilterDefinition filter in inMemoryFilterStore.Values)
+                    {
+                        if (filter.SelId.Equals(sel.Id))
+                        {
+                            inMemoryFilterStore.Remove(filter.Id.Value);
+                        }
+                    }
+                }
+
+            }
+
+        }
     }
 }

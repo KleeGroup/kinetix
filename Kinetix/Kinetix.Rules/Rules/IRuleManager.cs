@@ -198,13 +198,19 @@ namespace Kinetix.Rules
 
 
         /// <summary>
-        /// 
+        /// Find itemIds using the specified criteria and in the specified sublist itemsIds
         /// </summary>
-        /// <param name="criteria"></param>
+        /// <param name="criteria">rules criteria</param>
+        /// <param name="items">sublist of itemsId</param>
         /// <returns></returns>
         IList<int> FindItemsByCriteria(RuleCriteria criteria, IList<int> items);
 
+        /// <summary>
+        /// Remove all selectors and filters for a specified groupId
+        /// </summary>
+        /// <param name="groupId">groupId</param>
+        void RemoveSelectorsFiltersByGroupId(string groupId);
 
-      
+
     }
 }

@@ -42,6 +42,7 @@ namespace Kinetix.Rules {
             this.Id = bean.Id;
             this.CreationDate = bean.CreationDate;
             this.ItemId = bean.ItemId;
+            this.GroupId = bean.GroupId;
 
             this.OnCreated(bean);
         }
@@ -73,6 +74,13 @@ namespace Kinetix.Rules {
             [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", Justification = "Correspondance schéma persistence")]
             [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1707:IdentifiersShouldNotContainUnderscores", Justification = "Correspondance schéma persistence")]
             ITEM_ID,
+
+            /// <summary>
+            /// Nom de la colonne en base associée à la propriété .
+            /// </summary>
+            [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", Justification = "Correspondance schéma persistence")]
+            [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1707:IdentifiersShouldNotContainUnderscores", Justification = "Correspondance schéma persistence")]
+            GROUP_ID,
         }
 
         #endregion

@@ -1,8 +1,6 @@
 ﻿using Kinetix.Account;
-using Kinetix.Rules;
 using System.Linq;
 using System.Collections.Generic;
-using System;
 
 namespace Kinetix.Rules
 {
@@ -196,6 +194,11 @@ namespace Kinetix.Rules
             _ruleStorePlugin.RemoveSelectors(ids);
         }
 
+
+        public void RemoveSelectorsFiltersByGroupId(string groupId)
+        {
+            _ruleStorePlugin.RemoveSelectorsFiltersByGroupId(groupId);
+        }
 
     }
 }

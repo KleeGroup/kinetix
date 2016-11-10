@@ -39,7 +39,7 @@ namespace Kinetix.Rules.Test
                 ConnectionStringSettings conn = new ConnectionStringSettings
                 {
                     Name = DefaultDataSource,
-                    ConnectionString = "Data Source=martha;Initial Catalog=" + dataBaseName + ";User ID=dianeConnection;Password=Puorgeelk23",
+                    ConnectionString = "Data Source=carla;Initial Catalog=" + dataBaseName + ";User ID=dianeConnection;Password=Puorgeelk23",
                     ProviderName = "System.Data.SqlClient"
                 };
 
