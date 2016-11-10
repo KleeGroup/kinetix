@@ -70,27 +70,30 @@ namespace Kinetix.Rules.Test
         [TestMethod]
         public void TestAddRule()
         {
+            int item1 = 10000;
+            int item2 = 20000;
+
             var container = GetConfiguredContainer();
             IRuleManager ruleManager = container.Resolve<IRuleManager>();
 
             DateTime now = DateTime.Now;
-            SelectorDefinition rule1 = new SelectorDefinition(null, now, 1, "1");
-            SelectorDefinition rule2 = new SelectorDefinition(null, now, 2, "2");
-            SelectorDefinition rule3 = new SelectorDefinition(null, now, 2, "3");
+            SelectorDefinition rule1 = new SelectorDefinition(null, now, item1, "1");
+            SelectorDefinition rule2 = new SelectorDefinition(null, now, item2, "2");
+            SelectorDefinition rule3 = new SelectorDefinition(null, now, item2, "3");
 
             ruleManager.AddSelector(rule1);
             ruleManager.AddSelector(rule2);
             ruleManager.AddSelector(rule3);
 
             // Only 1 rule
-            IList<SelectorDefinition> selectorFetch1 = ruleManager.GetSelectorsForItemId(1);
+            IList<SelectorDefinition> selectorFetch1 = ruleManager.GetSelectorsForItemId(item1);
 
             Assert.IsNotNull(selectorFetch1);
             Assert.AreEqual(selectorFetch1.Count, 1);
             Assert.IsTrue(selectorFetch1.SequenceEqual(new List<SelectorDefinition>() { rule1 }, new SelectorEqualityComparer()));
 
             // 2 rules
-            IList<SelectorDefinition> selectorFetch2 = ruleManager.GetSelectorsForItemId(2);
+            IList<SelectorDefinition> selectorFetch2 = ruleManager.GetSelectorsForItemId(item2);
 
             Assert.IsNotNull(selectorFetch2);
             Assert.AreEqual(selectorFetch2.Count, 2);
@@ -104,31 +107,34 @@ namespace Kinetix.Rules.Test
         [TestMethod]
         public void TestAddUpdateDelete()
         {
+            int item1 = 10000;
+            int item2 = 20000;
+
             var container = GetConfiguredContainer();
             IRuleManager ruleManager = container.Resolve<IRuleManager>();
 
             // Rule created to Item 1
-            SelectorDefinition selector = new SelectorDefinition(null, DateTime.Now, 1, "1");
+            SelectorDefinition selector = new SelectorDefinition(null, DateTime.Now, item1, "1");
             ruleManager.AddSelector(selector);
 
-            IList<SelectorDefinition> rulesFetch_1_1 = ruleManager.GetSelectorsForItemId(1);
+            IList<SelectorDefinition> rulesFetch_1_1 = ruleManager.GetSelectorsForItemId(item1);
 
             Assert.IsNotNull(rulesFetch_1_1);
             Assert.AreEqual(rulesFetch_1_1.Count, 1);
             Assert.IsTrue(rulesFetch_1_1.SequenceEqual(new List<SelectorDefinition>() { selector }, new SelectorEqualityComparer()));
 
             // Update rule. This is now associated with Item 2
-            selector.ItemId = 2;
+            selector.ItemId = item2;
             ruleManager.UpdateSelector(selector);
 
             // The rule is not associated to item 1 anymore
-            IList<SelectorDefinition> rulesFetch_1_0 = ruleManager.GetSelectorsForItemId(1);
+            IList<SelectorDefinition> rulesFetch_1_0 = ruleManager.GetSelectorsForItemId(item1);
 
             Assert.IsNotNull(rulesFetch_1_0);
             Assert.AreEqual(rulesFetch_1_0.Count, 0);
 
             // The rule should be associated with item 2
-            IList<SelectorDefinition> rulesFetch_2_1 = ruleManager.GetSelectorsForItemId(2);
+            IList<SelectorDefinition> rulesFetch_2_1 = ruleManager.GetSelectorsForItemId(item2);
 
             Assert.IsNotNull(rulesFetch_2_1);
             Assert.AreEqual(rulesFetch_2_1.Count, 1);
@@ -138,7 +144,7 @@ namespace Kinetix.Rules.Test
             ruleManager.RemoveSelector(selector);
 
             // No rule should be associated with item 2
-            IList<RuleDefinition> rulesFetch_2_0 = ruleManager.GetRulesForItemId(2);
+            IList<RuleDefinition> rulesFetch_2_0 = ruleManager.GetRulesForItemId(item2);
 
             Assert.IsNotNull(rulesFetch_2_0);
             Assert.AreEqual(rulesFetch_2_0.Count, 0);

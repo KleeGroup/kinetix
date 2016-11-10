@@ -73,20 +73,23 @@ namespace Kinetix.Rules.Test
         [TestMethod]
         public void TestAddRule()
         {
+            int item1 = 10000;
+            int item2 = 20000;
+
             var container = GetConfiguredContainer();
             IRuleManager ruleManager = container.Resolve<IRuleManager>();
 
             DateTime now = DateTime.Now;
-            RuleDefinition rule1 = new RuleDefinition(null, now, 1, "My Rule 1");
-            RuleDefinition rule2 = new RuleDefinition(null, now, 2, "My Rule 2");
-            RuleDefinition rule3 = new RuleDefinition(null, now, 2, "My Rule 3");
+            RuleDefinition rule1 = new RuleDefinition(null, now, item1, "My Rule 1");
+            RuleDefinition rule2 = new RuleDefinition(null, now, item2, "My Rule 2");
+            RuleDefinition rule3 = new RuleDefinition(null, now, item2, "My Rule 3");
 
             ruleManager.AddRule(rule1);
             ruleManager.AddRule(rule2);
             ruleManager.AddRule(rule3);
 
             // Only 1 rule
-            IList<RuleDefinition> rulesFetch1 = ruleManager.GetRulesForItemId(1);
+            IList<RuleDefinition> rulesFetch1 = ruleManager.GetRulesForItemId(item1);
 
             Assert.IsNotNull(rulesFetch1);
             Assert.AreEqual(rulesFetch1.Count, 1);
@@ -94,7 +97,7 @@ namespace Kinetix.Rules.Test
             Assert.IsTrue(rulesFetch1.SequenceEqual(new List<RuleDefinition>() { rule1 }, new RuleEqualityComparer()));
 
             // 2 rules
-            IList<RuleDefinition> rulesFetch2 = ruleManager.GetRulesForItemId(2);
+            IList<RuleDefinition> rulesFetch2 = ruleManager.GetRulesForItemId(item2);
 
             Assert.IsNotNull(rulesFetch2);
             Assert.AreEqual(rulesFetch2.Count, 2);
@@ -104,6 +107,9 @@ namespace Kinetix.Rules.Test
         [TestMethod]
         public void TestAddUpdateDelete()
         {
+            int item1 = 10000;
+            int item2 = 20000;
+
             var container = GetConfiguredContainer();
             IRuleManager ruleManager = container.Resolve<IRuleManager>();
 
@@ -118,17 +124,17 @@ namespace Kinetix.Rules.Test
             Assert.IsTrue(rulesFetch_1_1.SequenceEqual(new List<RuleDefinition>() { rule }, new RuleEqualityComparer()));
 
             // Update rule. This is now associated with Item 2
-            rule.ItemId = 2;
+            rule.ItemId = item2;
             ruleManager.UpdateRule(rule);
 
             // The rule is not associated to item 1 anymore
-            IList<RuleDefinition> rulesFetch_1_0 = ruleManager.GetRulesForItemId(1);
+            IList<RuleDefinition> rulesFetch_1_0 = ruleManager.GetRulesForItemId(item1);
 
             Assert.IsNotNull(rulesFetch_1_0);
             Assert.AreEqual(rulesFetch_1_0.Count, 0);
 
             // The rule should be associated with item 2
-            IList<RuleDefinition> rulesFetch_2_1 = ruleManager.GetRulesForItemId(2);
+            IList<RuleDefinition> rulesFetch_2_1 = ruleManager.GetRulesForItemId(item2);
 
             Assert.IsNotNull(rulesFetch_2_1);
             Assert.AreEqual(rulesFetch_2_1.Count, 1);
@@ -138,7 +144,7 @@ namespace Kinetix.Rules.Test
             ruleManager.RemoveRule(rule);
 
             // No rule should be associated with item 2
-            IList<RuleDefinition> rulesFetch_2_0 = ruleManager.GetRulesForItemId(2);
+            IList<RuleDefinition> rulesFetch_2_0 = ruleManager.GetRulesForItemId(item2);
 
             Assert.IsNotNull(rulesFetch_2_0);
             Assert.AreEqual(rulesFetch_2_0.Count, 0);
