@@ -17,5 +17,10 @@ create nonclustered index [IDX_SELECTOR_DEFINITION_ITEM_ID]
 	on [dbo].[SELECTOR_DEFINITION] ([ITEM_ID] ASC)
 go
 
+/* Index on foreign key column for SELECTOR_DEFINITION.GROUP_ID */
+create nonclustered index [IDX_SELECTOR_DEFINITION_GROUP_ID]
+	on [dbo].[SELECTOR_DEFINITION] ([GROUP_ID] ASC)
+go
+
 /* Description property. */
 EXECUTE sp_addextendedproperty 'Description', 'SelectorDefinition', 'SCHEMA', 'dbo', 'TABLE', 'SELECTOR_DEFINITION';
