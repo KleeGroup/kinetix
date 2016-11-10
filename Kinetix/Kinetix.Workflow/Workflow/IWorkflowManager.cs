@@ -331,6 +331,14 @@ namespace Kinetix.Workflow
         /// <param name="wfwId">Workflow Definition Id</param>
         /// <returns>a List of WfWorkflowDecision</returns>
         IList<WfListWorkflowDecision> GetAllWorkflowDecisions(int wfwdId);
+
+
+        /// <summary>
+        /// Remove all selectors and filters for a specified groupId
+        /// </summary>
+        /// <param name="groupId">groupId</param>
+        void RemoveSelectorsFiltersByGroupId(string groupId);
+
         #endregion
 
     }

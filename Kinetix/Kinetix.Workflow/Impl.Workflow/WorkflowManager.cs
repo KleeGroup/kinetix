@@ -1286,6 +1286,14 @@ namespace Kinetix.Workflow {
 
             return ret;
         }
+
+        public void RemoveSelectorsFiltersByGroupId(string groupId)
+        {
+            Debug.Assert(groupId != null);
+            //---
+            _ruleManager.RemoveSelectorsFiltersByGroupId(groupId);
+        }
+
         #endregion
 
         #region FindAll*ByWorkflowDefinition methods
