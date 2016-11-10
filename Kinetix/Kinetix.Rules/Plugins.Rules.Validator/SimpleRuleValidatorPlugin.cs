@@ -34,7 +34,13 @@ namespace Kinetix.Rules
         {
             foreach (RuleDefinition ruleDefinition in rules)
             {
-                List<RuleConditionDefinition> conditions = dicConditions[ruleDefinition.Id.Value];
+                List<RuleConditionDefinition> conditions;
+                dicConditions.TryGetValue(ruleDefinition.Id.Value, out conditions);
+                if (conditions == null)
+                {
+                    conditions = new List<RuleConditionDefinition>();
+                }
+
                 bool ruleValid = checkRules(conditions, ruleContext);
 
                 if (ruleValid)
