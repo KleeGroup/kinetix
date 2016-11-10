@@ -10,7 +10,7 @@ namespace Kinetix.Account
     {
 
         /// <summary>
-        /// Get the numbers of accounts Search an audit trail.
+        /// Get the numbers of accounts.
         /// </summary>
         /// <returns>The numbers of accounts.</returns>
         long GetAccountsCount();
@@ -63,6 +63,24 @@ namespace Kinetix.Account
         ISet<string> GetAccountIds(string groupId);
 
         /// <summary>
+        /// Gets the photo of an account defined by its Id.
+        /// </summary>
+        /// <param name="accountId">the account defined by its Id.</param>
+        /// <returns>the photo.</returns>
+        byte[] GetPhoto(string accountId);
+
+        #region write
+
+        /// <summary>
+        /// Reset:
+        /// - All the accounts
+        /// - All the groups
+        /// - All the links accounts-group
+        /// - All the Photos
+        /// </summary>
+        void Reset();
+
+        /// <summary>
         /// Saves a group.
         /// </summary>
         /// <param name="group">the group.</param>
@@ -76,25 +94,13 @@ namespace Kinetix.Account
         void Attach(string accountId, string groupId);
 
         /// <summary>
-        /// Detaches an account from a group.
-        /// </summary>
-        /// <param name="accountId">the account defined by its Id.</param>
-        /// <param name="groupId">the group defined by its Id.</param>
-        void Detach(string accountId, string groupId);
-
-        /// <summary>
         /// Defines a photo to an account.
         /// </summary>
         /// <param name="accountId">the account defined by its Id.</param>
         /// <param name="photo">the photo.</param>
         void SetPhoto(string accountId, byte[] photo);
 
-        /// <summary>
-        /// Gets the photo of an account defined by its Id.
-        /// </summary>
-        /// <param name="accountId">the account defined by its Id.</param>
-        /// <returns>the photo.</returns>
-        byte[] GetPhoto(string accountId);
+        #endregion
 
     }
 }

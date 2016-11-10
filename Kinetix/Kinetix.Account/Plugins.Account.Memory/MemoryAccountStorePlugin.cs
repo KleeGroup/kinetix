@@ -27,16 +27,6 @@ namespace Kinetix.Account
         }
 
         [MethodImpl(MethodImplOptions.Synchronized)]
-        public void Detach(string accountId, string groupId)
-        {
-            HashSet<string> groups = GroupByAccountId[accountId];
-            groups.Remove(groupId);
-
-            HashSet<string> accounts = AccountByGroupID[groupId];
-            accounts.Remove(accountId);
-        }
-
-        [MethodImpl(MethodImplOptions.Synchronized)]
         public AccountUser GetAccount(string accountId)
         {
             return AccountById[accountId];
@@ -84,6 +74,8 @@ namespace Kinetix.Account
             return PhotoByAccountIds[accountId];
         }
 
+        #region Write
+
         private void SaveAccount(AccountUser Account)
         {
             bool AccountExists = AccountById.ContainsKey(Account.Id);
@@ -115,5 +107,16 @@ namespace Kinetix.Account
         {
             PhotoByAccountIds[accountId] = photo;
         }
+
+        public void Reset()
+        {
+            PhotoByAccountIds.Clear();
+            AccountByGroupID.Clear();
+            AccountById.Clear();
+            GroupByAccountId.Clear();
+            GroupById.Clear();
+        }
+
+        #endregion
     }
 }
