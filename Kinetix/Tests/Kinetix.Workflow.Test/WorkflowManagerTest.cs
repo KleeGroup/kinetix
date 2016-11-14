@@ -1135,6 +1135,52 @@ namespace Kinetix.Workflow.Test
         }
 
 
+        [TestMethod]
+        public void TestWorkflowMove3Activities()
+        {
+            var container = GetConfiguredContainer();
+            IWorkflowManager _workflowManager = container.Resolve<IWorkflowManager>();
+            IAccountManager _accountManager = container.Resolve<IAccountManager>();
+
+            WfWorkflowDefinition wfWorkflowDefinition = new WfWorkflowDefinitionBuilder("WorkflowRules").Build();
+            _workflowManager.CreateWorkflowDefinition(wfWorkflowDefinition);
+
+            AccountGroup accountGroup = new AccountGroup("1", "dummy group");
+            AccountUser account = new AccountUserBuilder("100").Build();
+            _accountManager.GetStore().SaveGroup(accountGroup);
+            _accountManager.GetStore().SaveAccounts(new List<AccountUser>() { account });
+            _accountManager.GetStore().Attach(account.Id, accountGroup.Id);
+
+            // Step 1
+            WfActivityDefinition firstActivity = new WfActivityDefinitionBuilder("Step 1", wfWorkflowDefinition.WfwdId.Value).Build();
+            _workflowManager.AddActivity(wfWorkflowDefinition, firstActivity, 1);
+
+            // Step 2
+            WfActivityDefinition secondActivity = new WfActivityDefinitionBuilder("Step 2", wfWorkflowDefinition.WfwdId.Value).Build();
+            _workflowManager.AddActivity(wfWorkflowDefinition, secondActivity, 2);
+
+            // Step 3
+            WfActivityDefinition thirdActivity = new WfActivityDefinitionBuilder("Step 3", wfWorkflowDefinition.WfwdId.Value).Build();
+            _workflowManager.AddActivity(wfWorkflowDefinition, thirdActivity, 3);
+
+            IList<WfActivityDefinition> activities = _workflowManager.GetAllDefaultActivities(wfWorkflowDefinition);
+
+            Assert.AreEqual(3, activities.Count);
+            Assert.AreEqual(firstActivity.WfadId, activities[0].WfadId);
+            Assert.AreEqual(secondActivity.WfadId, activities[1].WfadId);
+            Assert.AreEqual(thirdActivity.WfadId, activities[2].WfadId);
+
+            _workflowManager.MoveActivity(wfWorkflowDefinition, 2, 1, false);
+
+            IList<WfActivityDefinition> activities2 = _workflowManager.GetAllDefaultActivities(wfWorkflowDefinition);
+
+            // We should have 2,1,3
+            Assert.AreEqual(3, activities2.Count);
+            Assert.AreEqual(secondActivity.WfadId, activities2[0].WfadId);
+            Assert.AreEqual(firstActivity.WfadId, activities2[1].WfadId);
+            Assert.AreEqual(thirdActivity.WfadId, activities2[2].WfadId);
+        }
+
 
         [TestMethod]
         public void TestWorkflowMoveActivity5ActivitiesWorkflow()
@@ -1187,7 +1233,7 @@ namespace Kinetix.Workflow.Test
 
             IList<WfActivityDefinition> activities2 = _workflowManager.GetAllDefaultActivities(wfWorkflowDefinition);
             // We should have 1,3,4,2,5
-            Assert.AreEqual(5, activities.Count);
+            Assert.AreEqual(5, activities2.Count);
             Assert.AreEqual(firstActivity.WfadId, activities2[0].WfadId);
             Assert.AreEqual(thirdActivity.WfadId, activities2[1].WfadId);
             Assert.AreEqual(fourthActivity.WfadId, activities2[2].WfadId);
@@ -1199,7 +1245,7 @@ namespace Kinetix.Workflow.Test
 
             IList<WfActivityDefinition> activities3 = _workflowManager.GetAllDefaultActivities(wfWorkflowDefinition);
             // We should have 1,2,3,4,5
-            Assert.AreEqual(5, activities.Count);
+            Assert.AreEqual(5, activities3.Count);
             Assert.AreEqual(firstActivity.WfadId, activities3[0].WfadId);
             Assert.AreEqual(secondActivity.WfadId, activities3[1].WfadId);
             Assert.AreEqual(thirdActivity.WfadId, activities3[2].WfadId);
@@ -1211,7 +1257,7 @@ namespace Kinetix.Workflow.Test
 
             IList<WfActivityDefinition> activities4 = _workflowManager.GetAllDefaultActivities(wfWorkflowDefinition);
             // We should have 2,3,4,5,1
-            Assert.AreEqual(5, activities.Count);
+            Assert.AreEqual(5, activities4.Count);
             Assert.AreEqual(secondActivity.WfadId, activities4[0].WfadId);
             Assert.AreEqual(thirdActivity.WfadId, activities4[1].WfadId);
             Assert.AreEqual(fourthActivity.WfadId, activities4[2].WfadId);
@@ -1223,7 +1269,7 @@ namespace Kinetix.Workflow.Test
 
             IList<WfActivityDefinition> activities5 = _workflowManager.GetAllDefaultActivities(wfWorkflowDefinition);
             // We should have 1,2,3,4,5,
-            Assert.AreEqual(5, activities.Count);
+            Assert.AreEqual(5, activities5.Count);
             Assert.AreEqual(firstActivity.WfadId, activities5[0].WfadId);
             Assert.AreEqual(secondActivity.WfadId, activities5[1].WfadId);
             Assert.AreEqual(thirdActivity.WfadId, activities5[2].WfadId);
@@ -1235,7 +1281,7 @@ namespace Kinetix.Workflow.Test
 
             IList<WfActivityDefinition> activities6 = _workflowManager.GetAllDefaultActivities(wfWorkflowDefinition);
             // We should have 1,2,4,3,5
-            Assert.AreEqual(5, activities.Count);
+            Assert.AreEqual(5, activities6.Count);
             Assert.AreEqual(firstActivity.WfadId, activities6[0].WfadId);
             Assert.AreEqual(secondActivity.WfadId, activities6[1].WfadId);
             Assert.AreEqual(fourthActivity.WfadId, activities6[2].WfadId);

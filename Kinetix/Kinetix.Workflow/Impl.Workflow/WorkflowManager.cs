@@ -321,12 +321,10 @@ namespace Kinetix.Workflow {
                 if (after)
                 {
                     posStart = wfActivityReferential.Level.Value + 1;
-                    wfActivityToMove.Level = wfActivityReferential.Level.Value + 1;
                 }
                 else
                 {
                     posStart = wfActivityReferential.Level.Value;
-                    wfActivityToMove.Level = wfActivityReferential.Level.Value;
                 }
                 wfActivityToMove.Level = posStart;
             }
@@ -438,15 +436,6 @@ namespace Kinetix.Workflow {
                 _workflowStorePlugin.UpdateTransition(trToRef);
             }
 
-            // Update T2
-            //If there is no Activity after the activity to move. No transition should be modified
-            if (trFromMove != null)
-            {
-                // Moving T2
-                trFromMove.WfadIdTo = wfActivityReferential.WfadId.Value;
-                _workflowStorePlugin.UpdateTransition(trToRef);
-            }
-
             // Update T3
             if (trToMove == null)
             {
@@ -469,6 +458,17 @@ namespace Kinetix.Workflow {
 
                 _workflowStorePlugin.UpdateTransition(trToMove);
             }
+
+            // Update T2
+            //If there is no Activity after the activity to move. No transition should be modified
+            if (trFromMove != null)
+            {
+                // Moving T2
+                trFromMove.WfadIdTo = wfActivityReferential.WfadId.Value;
+                _workflowStorePlugin.UpdateTransition(trFromMove);
+            }
+
+           
         }
 
         public void MoveActivity(WfWorkflowDefinition wfWorkflowDefinition, int src, int dst, bool after) {
