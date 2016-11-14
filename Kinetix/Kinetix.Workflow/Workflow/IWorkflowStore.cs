@@ -104,6 +104,15 @@ namespace Kinetix.Workflow
         void IncrementActivityDefinitionPositionsAfter(int wfwdId, int position);
 
         /// <summary>
+        /// Shift position number between 2 positions
+        /// </summary>
+        /// <param name="wfwdId"></param>
+        /// <param name="posStart"></param>
+        /// <param name="posEnd"></param>
+        /// <param name="shift"></param>
+        void ShiftActivityDefinitionPositionsBetween(int wfwdId, int posStart, int posEnd, int shift);
+
+        /// <summary>
         /// Create a new decision
         /// </summary>
         /// <param name="wfDecision">wfDecision</param>

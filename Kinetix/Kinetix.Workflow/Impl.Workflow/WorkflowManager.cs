@@ -283,8 +283,8 @@ namespace Kinetix.Workflow {
 
         public void MoveActivity(WfWorkflowDefinition wfWorkflowDefinition, WfActivityDefinition wfActivityToMove, WfActivityDefinition wfActivityReferential, bool after)
         {
-            Debug.Assert(wfActivityToMove.WfadId != null);
-            Debug.Assert(wfActivityReferential.WfadId != null);
+            Debug.Assert(wfActivityToMove?.WfadId != null);
+            Debug.Assert(wfActivityReferential?.WfadId != null);
             Debug.Assert(!wfActivityToMove.WfadId.Equals(wfActivityReferential.WfadId));
             //---
             if (after)
@@ -295,6 +295,44 @@ namespace Kinetix.Workflow {
             {
                 MoveActivityBefore(wfWorkflowDefinition, wfActivityToMove, wfActivityReferential);
             }
+
+            //Shifting position number
+            int shift;
+            int posStart;
+            int posEnd;
+            if (wfActivityToMove.Level.Value < wfActivityReferential.Level.Value)
+            {
+                shift = -1;
+                posStart = wfActivityToMove.Level.Value;
+                if (after)
+                {
+                    posEnd = wfActivityReferential.Level.Value;
+                }
+                else
+                {
+                    posEnd = wfActivityReferential.Level.Value - 1;
+                }
+                wfActivityToMove.Level = posEnd;
+            }
+            else
+            {
+                shift = 1;
+                posEnd = wfActivityToMove.Level.Value - 1;
+                if (after)
+                {
+                    posStart = wfActivityReferential.Level.Value + 1;
+                    wfActivityToMove.Level = wfActivityReferential.Level.Value + 1;
+                }
+                else
+                {
+                    posStart = wfActivityReferential.Level.Value;
+                    wfActivityToMove.Level = wfActivityReferential.Level.Value;
+                }
+                wfActivityToMove.Level = posStart;
+            }
+
+            _workflowStorePlugin.ShiftActivityDefinitionPositionsBetween(wfWorkflowDefinition.WfwdId.Value, posStart, posEnd, shift);
+            _workflowStorePlugin.UpdateActivityDefinition(wfActivityToMove);
         }
 
         private void MoveActivityAfter(WfWorkflowDefinition wfWorkflowDefinition, WfActivityDefinition wfActivityToMove, WfActivityDefinition wfActivityReferential)
@@ -320,7 +358,7 @@ namespace Kinetix.Workflow {
 
             // T3
             WfTransitionCriteria critTrToMove = new WfTransitionCriteria();
-            critTrToMove.WfadIdFrom = wfActivityToMove.WfadId;
+            critTrToMove.WfadIdTo = wfActivityToMove.WfadId;
             critTrToMove.TransitionName = WfCodeTransition.Default.ToString();
             WfTransitionDefinition trToMove = _workflowStorePlugin.FindTransition(critTrToMove);
 
@@ -382,7 +420,7 @@ namespace Kinetix.Workflow {
 
             // T3
             WfTransitionCriteria critTrToMove = new WfTransitionCriteria();
-            critTrToMove.WfadIdFrom = wfActivityToMove.WfadId;
+            critTrToMove.WfadIdTo = wfActivityToMove.WfadId;
             critTrToMove.TransitionName = WfCodeTransition.Default.ToString();
             WfTransitionDefinition trToMove = _workflowStorePlugin.FindTransition(critTrToMove);
 
@@ -419,7 +457,16 @@ namespace Kinetix.Workflow {
             else
             {
                 // Moving T3
-                trToMove.WfadIdTo = trFromMove.WfadIdTo;
+                if (trFromMove == null)
+                {
+                    trToMove.WfadIdFrom = wfActivityToMove.WfadId.Value;
+                    trToMove.WfadIdTo = wfActivityReferential.WfadId.Value;
+                }
+                else
+                {
+                    trToMove.WfadIdTo = trFromMove.WfadIdTo;
+                }
+
                 _workflowStorePlugin.UpdateTransition(trToMove);
             }
         }

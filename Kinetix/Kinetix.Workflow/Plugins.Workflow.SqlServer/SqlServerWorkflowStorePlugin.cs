@@ -12,6 +12,9 @@ namespace Kinetix.Workflow {
 
         private static string ACT_DEF_ID = "ACT_DEF_ID";
         private static string LOCK = "LOCK";
+        private static string LEVEL_START = "LEVEL_START";
+        private static string LEVEL_END = "LEVEL_END";
+        private static string SHIFT = "SHIFT";
 
         public void AddTransition(WfTransitionDefinition transition) {
             BrokerManager.GetBroker<WfTransitionDefinition>().Save(transition);
@@ -304,6 +307,17 @@ namespace Kinetix.Workflow {
             cmd.ExecuteNonQuery();
         }
 
+        public void ShiftActivityDefinitionPositionsBetween(int wfwdId, int posStart, int posEnd, int shift)
+        {
+            var cmd = GetSqlServerCommand("ShiftActivityDefinitionPositionsBetween.sql");
+            cmd.Parameters.AddWithValue(WfActivityDefinition.Cols.WFWD_ID, wfwdId);
+            cmd.Parameters.AddWithValue(LEVEL_START, posStart);
+            cmd.Parameters.AddWithValue(LEVEL_END, posEnd);
+            cmd.Parameters.AddWithValue(SHIFT, shift);
+            cmd.ExecuteNonQuery();
+        }
+
+
         public void DeleteActivities(int wfadId)
         {
             var cmd = GetSqlServerCommand("DeleteActivitiesByDefinitionIds.sql");
@@ -373,6 +387,7 @@ namespace Kinetix.Workflow {
         {
             BrokerManager.GetBroker<WfActivity>().InsertAll(activities);
         }
+
 
         #endregion
     }

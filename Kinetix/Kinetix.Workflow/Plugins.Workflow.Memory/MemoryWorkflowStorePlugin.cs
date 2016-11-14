@@ -484,6 +484,11 @@ namespace Kinetix.Workflow
 
         }
 
+        public void ShiftActivityDefinitionPositionsBetween(int wfwdId, int posStart, int posEnd, int shift)
+        {
+            throw new NotImplementedException();
+        }
+
         public void DeleteActivities(int wfadId)
         {
             IList<int> wfaIds = new List<int>();
@@ -579,6 +584,8 @@ namespace Kinetix.Workflow
                 inMemoryWorkflowInstanceStore[wfUpd.WfwId.Value].WfaId2 = wfUpd.WfaId2;
             }
         }
+
+
         #endregion
 
     }
