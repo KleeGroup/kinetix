@@ -16,7 +16,9 @@ namespace Kinetix.Workflow {
         private readonly IRuleManager _ruleManager;
         private readonly IAccountManager _accountManager;
 
-        private static readonly string USER_AUTO = "auto";
+        //private static readonly string USER_AUTO = "auto";
+        // Lors d'une validation auto, on ne précise plus un user automatique "auto".
+        private static readonly string USER_AUTO = null;
 
         public WorkflowManager(IWorkflowStorePlugin workflowStorePlugin, IItemStorePlugin itemStorePlugin, IRuleManager ruleManager, IAccountManager accountManager) {
             _workflowStorePlugin = workflowStorePlugin;
@@ -370,7 +372,16 @@ namespace Kinetix.Workflow {
             else
             {
                 // Update T3
-                trToMove.WfadIdTo = trFromMove.WfadIdTo;
+                if (trFromMove == null)
+                {
+                    trToMove.WfadIdFrom = wfActivityToMove.WfadId.Value;
+                    trToMove.WfadIdTo = trFromRef.WfadIdTo;
+                }
+                else
+                {
+                    trToMove.WfadIdTo = trFromMove.WfadIdTo;
+                }
+                // Moving T3
                 _workflowStorePlugin.UpdateTransition(trToMove);
             }
 
@@ -385,8 +396,12 @@ namespace Kinetix.Workflow {
             else
             {
                 // Moving T2
-                trFromMove.WfadIdTo = trFromRef.WfadIdTo;
-                _workflowStorePlugin.UpdateTransition(trFromMove);
+                //If there is no Activity after the activity to move. No transition should be modified
+                if (trFromMove != null)
+                {
+                    trFromMove.WfadIdTo = trFromRef.WfadIdTo;
+                    _workflowStorePlugin.UpdateTransition(trFromMove);
+                }
 
                 // Moving T1
                 trFromRef.WfadIdTo = wfActivityToMove.WfadId.Value;
@@ -440,7 +455,8 @@ namespace Kinetix.Workflow {
             if (trToMove == null)
             {
                 //No transition before T3. Move is the first Activity of the WorkflowDefinition
-                wfWorkflowDefinition.WfadId = wfActivityToMove.WfadId.Value;
+                //wfWorkflowDefinition.WfadId = wfActivityToMove.WfadId.Value;
+                wfWorkflowDefinition.WfadId = trFromMove.WfadIdTo;
                 _workflowStorePlugin.UpdateWorkflowDefinition(wfWorkflowDefinition);
             }
             else
