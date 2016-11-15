@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
+using System.ServiceModel;
 using Kinetix.Account;
 using Kinetix.Rules;
 using Kinetix.Workflow.instance;
 using Kinetix.Workflow.model;
-using System.Linq;
-using System.ServiceModel;
 
 namespace Kinetix.Workflow {
     [ServiceBehavior(ConcurrencyMode = ConcurrencyMode.Multiple, InstanceContextMode = InstanceContextMode.PerCall, IncludeExceptionDetailInFaults = true)]
@@ -61,21 +61,18 @@ namespace Kinetix.Workflow {
 
                 // Inserting an activity inside the default activities "linked list"
                 _workflowStorePlugin.CreateActivityDefinition(wfWorkflowDefinition, wfActivityDefinitionToAdd);
-                
-                if (position > 1)
-                {
+
+                if (position > 1) {
                     // Automatically move the next activity after the newly created
                     InsertActivityBefore(wfWorkflowDefinition, wfActivityDefinitionToAdd, wfActivityDefinition);
-                }
-                else
-                {
+                } else {
                     // position == 1
                     WfTransitionDefinition wfTransitionDefinition = new WfTransitionBuilder(wfWorkflowDefinition.WfwdId, wfActivityDefinitionToAdd.WfadId, wfActivityDefinition.WfadId).Build();
                     _workflowStorePlugin.AddTransition(wfTransitionDefinition);
                     wfWorkflowDefinition.WfadId = wfActivityDefinitionToAdd.WfadId;
                     _workflowStorePlugin.UpdateWorkflowDefinition(wfWorkflowDefinition);
                 }
-                
+
             }
 
         }
@@ -108,8 +105,7 @@ namespace Kinetix.Workflow {
             }
         }
 
-        private WfActivity GetNewActivity(WfActivityDefinition activityDefinition, WfWorkflow wfWorkflow, bool isAuto)
-        {
+        private WfActivity GetNewActivity(WfActivityDefinition activityDefinition, WfWorkflow wfWorkflow, bool isAuto) {
             WfActivity wfActivity = new WfActivity();
             wfActivity.CreationDate = DateTime.Now;
             wfActivity.WfadId = activityDefinition.WfadId.Value;
@@ -119,39 +115,32 @@ namespace Kinetix.Workflow {
         }
 
 
-        private WfActivity CreateActivity(WfActivityDefinition activityDefinition, WfWorkflow wfWorkflow, bool isAuto)
-        {
+        private WfActivity CreateActivity(WfActivityDefinition activityDefinition, WfWorkflow wfWorkflow, bool isAuto) {
             WfActivity wfActivity = GetNewActivity(activityDefinition, wfWorkflow, isAuto);
             _workflowStorePlugin.CreateActivity(wfActivity);
             return wfActivity;
         }
 
-        public bool AutoValidateNextActivities(WfWorkflow wfWorkflow, WfActivity currentActivity, int wfActivityDefinitionId)
-        {
+        public bool AutoValidateNextActivities(WfWorkflow wfWorkflow, WfActivity currentActivity, int wfActivityDefinitionId) {
             WfActivityDefinition activityDefinition = _workflowStorePlugin.ReadActivityDefinition(wfActivityDefinitionId);
 
             object obj = _itemStorePlugin.ReadItem(wfWorkflow.ItemId.Value);
             int? wfCurrentActivityId = null;
             bool endReached = false;
             WfActivity wfActivityCurrent = currentActivity;
-            while (CanAutoValidateActivity(activityDefinition, obj))
-            {
+            while (CanAutoValidateActivity(activityDefinition, obj)) {
                 AutoValidateDecision(wfActivityCurrent);
 
-                if (_workflowStorePlugin.HasNextActivity(wfActivityCurrent) == false)
-                {
+                if (_workflowStorePlugin.HasNextActivity(wfActivityCurrent) == false) {
                     endReached = true;
                     break;
                 }
                 activityDefinition = _workflowStorePlugin.FindNextActivity(wfActivityCurrent.WfadId);
 
                 WfActivity nextActivity = _workflowStorePlugin.FindActivityByDefinitionWorkflow(wfWorkflow, activityDefinition);
-                if (nextActivity == null)
-                {
+                if (nextActivity == null) {
                     wfActivityCurrent = CreateActivity(activityDefinition, wfWorkflow, false);
-                }
-                else
-                {
+                } else {
                     wfActivityCurrent = nextActivity;
                 }
 
@@ -159,23 +148,21 @@ namespace Kinetix.Workflow {
             }
 
             // Remove this workflow update ?
-            if (wfCurrentActivityId != null)
-            {
+            if (wfCurrentActivityId != null) {
                 wfWorkflow.WfaId2 = wfCurrentActivityId;
                 _workflowStorePlugin.UpdateWorkflowInstance(wfWorkflow);
             }
             return endReached;
         }
 
-        private void AutoValidateDecision(WfActivity wfActivityCurrent)
-        {
+        private void AutoValidateDecision(WfActivity wfActivityCurrent) {
 
             wfActivityCurrent.IsAuto = true;
             _workflowStorePlugin.UpdateActivity(wfActivityCurrent);
 
             WfDecision decision = new WfDecision();
             decision.Username = USER_AUTO;
-            decision.DecisionDate = DateTime.Now; 
+            decision.DecisionDate = DateTime.Now;
             decision.WfaId = wfActivityCurrent.WfaId.Value;
 
             _workflowStorePlugin.CreateDecision(decision);
@@ -200,8 +187,7 @@ namespace Kinetix.Workflow {
         }
 
 
-        public WfWorkflow CreateWorkflowInstance(int wfwdId, string username, bool userLogic, int item)
-        {
+        public WfWorkflow CreateWorkflowInstance(int wfwdId, string username, bool userLogic, int item) {
             WfWorkflow wfWorkflow = new WfWorkflow();
             wfWorkflow.CreationDate = DateTime.Now;
             wfWorkflow.ItemId = item;
@@ -225,8 +211,7 @@ namespace Kinetix.Workflow {
 
         public void EndInstance(WfWorkflow wfWorkflow) {
             Debug.Assert(wfWorkflow != null);
-            if (!(WfCodeStatusWorkflow.Sta.ToString().Equals(wfWorkflow.WfsCode) || WfCodeStatusWorkflow.Pau.ToString().Equals(wfWorkflow.WfsCode)))
-            {
+            if (!(WfCodeStatusWorkflow.Sta.ToString().Equals(wfWorkflow.WfsCode) || WfCodeStatusWorkflow.Pau.ToString().Equals(wfWorkflow.WfsCode))) {
                 throw new System.InvalidOperationException("A workflow must be started or paused before ending");
             }
             //---
@@ -241,10 +226,8 @@ namespace Kinetix.Workflow {
             object obj = _itemStorePlugin.ReadItem((int)wfWorkflow.ItemId);
 
             IList<WfActivityDefinition> ret = new List<WfActivityDefinition>();
-            foreach (WfActivityDefinition activity in activities)
-            {
-                if (CanAutoValidateActivity(activity, obj) == false)
-                {
+            foreach (WfActivityDefinition activity in activities) {
+                if (CanAutoValidateActivity(activity, obj) == false) {
                     ret.Add(activity);
                 }
             }
@@ -253,13 +236,11 @@ namespace Kinetix.Workflow {
         }
 
 
-        public IList<WfActivity> GetActivities(WfWorkflow wfWorkflow, IList<int> wfadId)
-        {
+        public IList<WfActivity> GetActivities(WfWorkflow wfWorkflow, IList<int> wfadId) {
             return _workflowStorePlugin.FindActivitiesByDefinitionId(wfWorkflow, wfadId);
         }
 
-        public IList<WfActivityDefinition> GetAllDefaultActivities(WfWorkflowDefinition wfWorkflowDefinition)
-        {
+        public IList<WfActivityDefinition> GetAllDefaultActivities(WfWorkflowDefinition wfWorkflowDefinition) {
             return _workflowStorePlugin.FindAllDefaultActivityDefinitions(wfWorkflowDefinition);
         }
 
@@ -268,8 +249,7 @@ namespace Kinetix.Workflow {
             return _workflowStorePlugin.ReadWorkflowInstanceById(wfwId);
         }
 
-        private void InsertActivityBefore(WfWorkflowDefinition wfWorkflowDefinition, WfActivityDefinition wfActivityToAdd, WfActivityDefinition wfActivityReferential)
-        {
+        private void InsertActivityBefore(WfWorkflowDefinition wfWorkflowDefinition, WfActivityDefinition wfActivityToAdd, WfActivityDefinition wfActivityReferential) {
             WfTransitionCriteria wfTransitionCriteria = new WfTransitionCriteria();
             wfTransitionCriteria.TransitionName = WfCodeTransition.Default.ToString();
             wfTransitionCriteria.WfadIdTo = wfActivityReferential.WfadId.Value;
@@ -283,18 +263,14 @@ namespace Kinetix.Workflow {
             _workflowStorePlugin.AddTransition(wfTransitionDefinition);
         }
 
-        public void MoveActivity(WfWorkflowDefinition wfWorkflowDefinition, WfActivityDefinition wfActivityToMove, WfActivityDefinition wfActivityReferential, bool after)
-        {
+        public void MoveActivity(WfWorkflowDefinition wfWorkflowDefinition, WfActivityDefinition wfActivityToMove, WfActivityDefinition wfActivityReferential, bool after) {
             Debug.Assert(wfActivityToMove?.WfadId != null);
             Debug.Assert(wfActivityReferential?.WfadId != null);
             Debug.Assert(!wfActivityToMove.WfadId.Equals(wfActivityReferential.WfadId));
             //---
-            if (after)
-            {
+            if (after) {
                 MoveActivityAfter(wfWorkflowDefinition, wfActivityToMove, wfActivityReferential);
-            }
-            else
-            {
+            } else {
                 MoveActivityBefore(wfWorkflowDefinition, wfActivityToMove, wfActivityReferential);
             }
 
@@ -302,30 +278,21 @@ namespace Kinetix.Workflow {
             int shift;
             int posStart;
             int posEnd;
-            if (wfActivityToMove.Level.Value < wfActivityReferential.Level.Value)
-            {
+            if (wfActivityToMove.Level.Value < wfActivityReferential.Level.Value) {
                 shift = -1;
                 posStart = wfActivityToMove.Level.Value;
-                if (after)
-                {
+                if (after) {
                     posEnd = wfActivityReferential.Level.Value;
-                }
-                else
-                {
+                } else {
                     posEnd = wfActivityReferential.Level.Value - 1;
                 }
                 wfActivityToMove.Level = posEnd;
-            }
-            else
-            {
+            } else {
                 shift = 1;
                 posEnd = wfActivityToMove.Level.Value - 1;
-                if (after)
-                {
+                if (after) {
                     posStart = wfActivityReferential.Level.Value + 1;
-                }
-                else
-                {
+                } else {
                     posStart = wfActivityReferential.Level.Value;
                 }
                 wfActivityToMove.Level = posStart;
@@ -335,16 +302,14 @@ namespace Kinetix.Workflow {
             _workflowStorePlugin.UpdateActivityDefinition(wfActivityToMove);
         }
 
-        private void MoveActivityAfter(WfWorkflowDefinition wfWorkflowDefinition, WfActivityDefinition wfActivityToMove, WfActivityDefinition wfActivityReferential)
-        {
+        private void MoveActivityAfter(WfWorkflowDefinition wfWorkflowDefinition, WfActivityDefinition wfActivityToMove, WfActivityDefinition wfActivityReferential) {
             // T1
             WfTransitionCriteria critTrFromRef = new WfTransitionCriteria();
             critTrFromRef.WfadIdFrom = wfActivityReferential.WfadId;
             critTrFromRef.TransitionName = WfCodeTransition.Default.ToString();
             WfTransitionDefinition trFromRef = _workflowStorePlugin.FindTransition(critTrFromRef);
 
-            if (trFromRef != null && trFromRef.WfadIdTo.Equals(wfActivityToMove.WfadId))
-            {
+            if (trFromRef != null && trFromRef.WfadIdTo.Equals(wfActivityToMove.WfadId)) {
                 // The activity is already positonned after the ref activity.
                 // Nothing to do in that case.
                 return;
@@ -363,22 +328,16 @@ namespace Kinetix.Workflow {
             WfTransitionDefinition trToMove = _workflowStorePlugin.FindTransition(critTrToMove);
 
             // Update T3
-            if (trToMove == null)
-            {
+            if (trToMove == null) {
                 //No transition before Move. Move is the first Activity of the WorkflowDefinition
                 wfWorkflowDefinition.WfadId = trFromMove.WfadIdTo;
                 _workflowStorePlugin.UpdateWorkflowDefinition(wfWorkflowDefinition);
-            }
-            else
-            {
+            } else {
                 // Update T3
-                if (trFromMove == null)
-                {
+                if (trFromMove == null) {
                     trToMove.WfadIdFrom = wfActivityToMove.WfadId.Value;
                     trToMove.WfadIdTo = trFromRef.WfadIdTo;
-                }
-                else
-                {
+                } else {
                     trToMove.WfadIdTo = trFromMove.WfadIdTo;
                 }
                 // Moving T3
@@ -386,19 +345,15 @@ namespace Kinetix.Workflow {
             }
 
             // Update T1/T2
-            if (trFromRef == null)
-            {
+            if (trFromRef == null) {
                 //No transition after T1. 
                 trFromMove.WfadIdFrom = wfActivityReferential.WfadId.Value;
                 trFromMove.WfadIdTo = wfActivityToMove.WfadId.Value;
                 _workflowStorePlugin.UpdateTransition(trFromMove);
-            }
-            else
-            {
+            } else {
                 // Moving T2
                 //If there is no Activity after the activity to move. No transition should be modified
-                if (trFromMove != null)
-                {
+                if (trFromMove != null) {
                     trFromMove.WfadIdTo = trFromRef.WfadIdTo;
                     _workflowStorePlugin.UpdateTransition(trFromMove);
                 }
@@ -418,8 +373,7 @@ namespace Kinetix.Workflow {
             critTrToRef.TransitionName = WfCodeTransition.Default.ToString();
             WfTransitionDefinition trToRef = _workflowStorePlugin.FindTransition(critTrToRef);
 
-            if (trToRef != null && trToRef.WfadIdFrom.Equals(wfActivityToMove.WfadId))
-            {
+            if (trToRef != null && trToRef.WfadIdFrom.Equals(wfActivityToMove.WfadId)) {
                 //The activity is already positonned before the ref activity.
                 // Nothing to do in that case.
                 return;
@@ -438,37 +392,28 @@ namespace Kinetix.Workflow {
             WfTransitionDefinition trToMove = _workflowStorePlugin.FindTransition(critTrToMove);
 
             // Update T1
-            if (trToRef == null)
-            {
+            if (trToRef == null) {
                 //No transition before Ref. Ref is the first Activity of the WorkflowDefinition
                 wfWorkflowDefinition.WfadId = wfActivityToMove.WfadId.Value;
                 _workflowStorePlugin.UpdateWorkflowDefinition(wfWorkflowDefinition);
-            }
-            else
-            {
+            } else {
                 // Moving T1
                 trToRef.WfadIdTo = wfActivityToMove.WfadId.Value;
                 _workflowStorePlugin.UpdateTransition(trToRef);
             }
 
             // Update T3
-            if (trToMove == null)
-            {
+            if (trToMove == null) {
                 //No transition before T3. Move is the first Activity of the WorkflowDefinition
                 //wfWorkflowDefinition.WfadId = wfActivityToMove.WfadId.Value;
                 wfWorkflowDefinition.WfadId = trFromMove.WfadIdTo;
                 _workflowStorePlugin.UpdateWorkflowDefinition(wfWorkflowDefinition);
-            }
-            else
-            {
+            } else {
                 // Moving T3
-                if (trFromMove == null)
-                {
+                if (trFromMove == null) {
                     trToMove.WfadIdFrom = wfActivityToMove.WfadId.Value;
                     trToMove.WfadIdTo = wfActivityReferential.WfadId.Value;
-                }
-                else
-                {
+                } else {
                     trToMove.WfadIdTo = trFromMove.WfadIdTo;
                 }
 
@@ -477,14 +422,13 @@ namespace Kinetix.Workflow {
 
             // Update T2
             //If there is no Activity after the activity to move. No transition should be modified
-            if (trFromMove != null)
-            {
+            if (trFromMove != null) {
                 // Moving T2
                 trFromMove.WfadIdTo = wfActivityReferential.WfadId.Value;
                 _workflowStorePlugin.UpdateTransition(trFromMove);
             }
 
-           
+
         }
 
         public void MoveActivity(WfWorkflowDefinition wfWorkflowDefinition, int src, int dst, bool after) {
@@ -496,8 +440,7 @@ namespace Kinetix.Workflow {
 
         public void PauseInstance(WfWorkflow wfWorkflow) {
             Debug.Assert(wfWorkflow != null);
-            if (!WfCodeStatusWorkflow.Sta.ToString().Equals(wfWorkflow.WfsCode))
-            {
+            if (!WfCodeStatusWorkflow.Sta.ToString().Equals(wfWorkflow.WfsCode)) {
                 throw new System.InvalidOperationException("A workflow must be started before pausing");
             }
             //---
@@ -524,34 +467,27 @@ namespace Kinetix.Workflow {
             critFrom.TransitionName = WfCodeTransition.Default.ToString();
             WfTransitionDefinition transitionFrom = _workflowStorePlugin.FindTransition(critFrom);
 
-            if (wfD.WfwdId.Equals(wfActivityDefinition.WfwdId))
-            {
+            if (wfD.WfwdId.Equals(wfActivityDefinition.WfwdId)) {
                 //The Activity Definition to remove is the start activity
 
-                if (transitionFrom != null)
-                {
+                if (transitionFrom != null) {
                     // The first activity definition will be the next definition
                     wfD.WfadId = transitionFrom.WfadIdTo;
                     _workflowStorePlugin.UpdateWorkflowDefinition(wfD);
                     _workflowStorePlugin.RemoveTransition(transitionFrom);
                 }
-            }
-            else
-            {
+            } else {
                 //The Activity Definition to remove is NOT the start activity
                 WfTransitionCriteria critTo = new WfTransitionCriteria();
                 critTo.WfadIdFrom = wfActivityDefinition.WfadId;
                 critTo.TransitionName = WfCodeTransition.Default.ToString();
                 WfTransitionDefinition transitionTo = _workflowStorePlugin.FindTransition(critTo);
 
-                if (transitionFrom != null)
-                {
+                if (transitionFrom != null) {
                     _workflowStorePlugin.RemoveTransition(transitionFrom);
                     transitionTo.WfadIdTo = transitionFrom.WfadIdTo;
                     _workflowStorePlugin.UpdateTransition(transitionTo);
-                }
-                else
-                {
+                } else {
                     // Last acitivity
                     _workflowStorePlugin.RemoveTransition(transitionFrom);
                     transitionTo.WfadIdTo = transitionFrom.WfadIdTo;
@@ -572,8 +508,7 @@ namespace Kinetix.Workflow {
 
         public void ResumeInstance(WfWorkflow wfWorkflow) {
             Debug.Assert(wfWorkflow != null);
-            if (!WfCodeStatusWorkflow.Pau.ToString().Equals(wfWorkflow.WfsCode))
-            {
+            if (!WfCodeStatusWorkflow.Pau.ToString().Equals(wfWorkflow.WfsCode)) {
                 throw new InvalidOperationException("A workflow must be paused before resuming");
             }
             //---
@@ -582,15 +517,13 @@ namespace Kinetix.Workflow {
         }
 
         public void SaveDecision(WfWorkflow wfWorkflow, WfDecision wfDecision) {
-            if (!WfCodeStatusWorkflow.Sta.ToString().Equals(wfWorkflow.WfsCode))
-            {
+            if (!WfCodeStatusWorkflow.Sta.ToString().Equals(wfWorkflow.WfsCode)) {
                 throw new InvalidOperationException("A workflow must be started before saving decision");
             }
             //---
             WfWorkflow wfWorkflowFetch = _workflowStorePlugin.ReadWorkflowInstanceForUpdateById(wfWorkflow.WfwId.Value);
 
-            if (wfWorkflowFetch.WfaId2 != null && !wfWorkflow.WfaId2.Equals(wfWorkflow.WfaId2))
-            {
+            if (wfWorkflowFetch.WfaId2 != null && !wfWorkflow.WfaId2.Equals(wfWorkflow.WfaId2)) {
                 throw new InvalidOperationException("Concurrent workflow modification");
             }
 
@@ -601,47 +534,37 @@ namespace Kinetix.Workflow {
             _workflowStorePlugin.UpdateActivity(currentActivity);
 
             wfDecision.WfaId = currentActivity.WfaId.Value;
-            if (wfDecision.Id == null)
-            {
+            if (wfDecision.Id == null) {
                 _workflowStorePlugin.CreateDecision(wfDecision);
-            }
-            else
-            {
+            } else {
                 _workflowStorePlugin.UpdateDecision(wfDecision);
             }
         }
 
-        public WfDecision GetDecision(WfActivity wfActivity)
-        {
-            Debug.Assert(wfActivity != null);
-            //---
-            WfActivityDefinition wfActivityDefinition = _workflowStorePlugin.ReadActivityDefinition(wfActivity.WfadId);
-            WfCodeMultiplicityDefinition multiplicity = (WfCodeMultiplicityDefinition) Enum.Parse(typeof(WfCodeMultiplicityDefinition), wfActivityDefinition.WfmdCode, true);
-
-            if (multiplicity != WfCodeMultiplicityDefinition.Sin)
-            {
-                throw new InvalidOperationException();
-            }
-            IList<WfDecision> decision = _workflowStorePlugin.ReadDecisionsByActivityId(wfActivity.WfaId.Value);
-            if (decision.Count == 0)
-            {
-                return null;
-            }
-            else
-            {
-                return decision[0];
-            }
-        }
-
-        public IList<WfDecision> GetDecisions(WfActivity wfActivity)
-        {
+        public WfDecision GetDecision(WfActivity wfActivity) {
             Debug.Assert(wfActivity != null);
             //---
             WfActivityDefinition wfActivityDefinition = _workflowStorePlugin.ReadActivityDefinition(wfActivity.WfadId);
             WfCodeMultiplicityDefinition multiplicity = (WfCodeMultiplicityDefinition)Enum.Parse(typeof(WfCodeMultiplicityDefinition), wfActivityDefinition.WfmdCode, true);
 
-            if (multiplicity != WfCodeMultiplicityDefinition.Mul)
-            {
+            if (multiplicity != WfCodeMultiplicityDefinition.Sin) {
+                throw new InvalidOperationException();
+            }
+            IList<WfDecision> decision = _workflowStorePlugin.ReadDecisionsByActivityId(wfActivity.WfaId.Value);
+            if (decision.Count == 0) {
+                return null;
+            } else {
+                return decision[0];
+            }
+        }
+
+        public IList<WfDecision> GetDecisions(WfActivity wfActivity) {
+            Debug.Assert(wfActivity != null);
+            //---
+            WfActivityDefinition wfActivityDefinition = _workflowStorePlugin.ReadActivityDefinition(wfActivity.WfadId);
+            WfCodeMultiplicityDefinition multiplicity = (WfCodeMultiplicityDefinition)Enum.Parse(typeof(WfCodeMultiplicityDefinition), wfActivityDefinition.WfmdCode, true);
+
+            if (multiplicity != WfCodeMultiplicityDefinition.Mul) {
                 throw new InvalidOperationException();
             }
             return _workflowStorePlugin.ReadDecisionsByActivityId(wfActivity.WfaId.Value);
@@ -652,8 +575,7 @@ namespace Kinetix.Workflow {
         }
 
         public void SaveDecisionAndGoToNextActivity(WfWorkflow wfWorkflow, string transitionName, WfDecision wfDecision) {
-            if (!WfCodeStatusWorkflow.Sta.ToString().Equals(wfWorkflow.WfsCode))
-            {
+            if (!WfCodeStatusWorkflow.Sta.ToString().Equals(wfWorkflow.WfsCode)) {
                 throw new System.InvalidOperationException("A workflow must be started before saving a decision");
             }
             //---
@@ -698,8 +620,7 @@ namespace Kinetix.Workflow {
                     WfActivityDefinition nextActivityDefinition = _workflowStorePlugin.FindNextActivity(currentActivity.WfadId, transitionName);
 
                     WfActivity nextActivity = _workflowStorePlugin.FindActivityByDefinitionWorkflow(wfWorkflow, nextActivityDefinition);
-                    if (nextActivity == null)
-                    {
+                    if (nextActivity == null) {
                         nextActivity = new WfActivity();
                     }
                     // Creating the next activity to validate.
@@ -707,15 +628,12 @@ namespace Kinetix.Workflow {
                     nextActivity.WfadId = nextActivityDefinition.WfadId.Value;
                     nextActivity.WfwId = wfWorkflow.WfwId.Value;
                     nextActivity.IsAuto = false;
-                    if (nextActivity.WfaId == null)
-                    {
+                    if (nextActivity.WfaId == null) {
                         _workflowStorePlugin.CreateActivity(nextActivity);
-                    }
-                    else
-                    {
+                    } else {
                         _workflowStorePlugin.UpdateActivity(nextActivity);
                     }
-                    
+
 
                     wfWorkflow.WfaId2 = nextActivity.WfaId;
                     _workflowStorePlugin.UpdateWorkflowInstance(wfWorkflow);
@@ -723,13 +641,12 @@ namespace Kinetix.Workflow {
                     //Autovalidating next activities
                     bool endReached = AutoValidateNextActivities(wfWorkflow, nextActivity, nextActivityDefinition.WfadId.Value);
 
-                    if (endReached)
-                    {
+                    if (endReached) {
                         // Stepping back : No Automatic ending. 
                         // TODO: Remove the commented code when the behavior will be validated
                         //EndInstance(wfWorkflow);
                     }
-                   
+
                 } else {
                     // No next activity to go. Ending the workflow
 
@@ -740,11 +657,9 @@ namespace Kinetix.Workflow {
             }
         }
 
-        public void StartInstance(WfWorkflow wfWorkflow)
-        {
+        public void StartInstance(WfWorkflow wfWorkflow) {
             Debug.Assert(wfWorkflow != null);
-            if (!WfCodeStatusWorkflow.Cre.ToString().Equals(wfWorkflow.WfsCode))
-            {
+            if (!WfCodeStatusWorkflow.Cre.ToString().Equals(wfWorkflow.WfsCode)) {
                 throw new System.InvalidOperationException("A workflow must be created before starting");
             }
             //---
@@ -763,8 +678,7 @@ namespace Kinetix.Workflow {
 
             bool endReached = AutoValidateNextActivities(wfWorkflow, wfActivityCurrent, (int)wfWorkflowDefinition.WfadId);
 
-            if (endReached)
-            {
+            if (endReached) {
                 // Stepping back : No Automatic ending. 
                 // TODO: Remove the commented code when the behavior will be validated
                 //EndInstance(wfWorkflow);
@@ -775,8 +689,7 @@ namespace Kinetix.Workflow {
         /// Find the workflow by itemId
         /// </summary>
         /// <param name="criteria"></param>
-        public WfWorkflow GetWorkflowInstanceByItemId(int wfwdId, int itemId)
-        {
+        public WfWorkflow GetWorkflowInstanceByItemId(int wfwdId, int itemId) {
             return _workflowStorePlugin.ReadWorkflowInstanceByItemId(wfwdId, itemId);
         }
 
@@ -784,80 +697,67 @@ namespace Kinetix.Workflow {
         /// Find activities matching the criteria in parameters
         /// </summary>
         /// <param name="criteria"></param>
-        public IList<WfActivityDefinition> FindActivitiesByCriteria(RuleCriteria criteria)
-        {
+        public IList<WfActivityDefinition> FindActivitiesByCriteria(RuleCriteria criteria) {
             WfWorkflowDefinition workflow = new WfWorkflowDefinition() { WfwdId = criteria.WfwdId };
 
             IList<WfActivityDefinition> activities = GetAllDefaultActivities(workflow);
             IDictionary<int?, WfActivityDefinition> dicAct = activities.ToDictionary<WfActivityDefinition, int?>(a => a.WfadId);
-            
+
             IList<int> matchingActivities = _ruleManager.FindItemsByCriteria(criteria, dicAct.Keys.Cast<int>().ToList());
 
             return matchingActivities.Select(act => dicAct[act]).ToList();
         }
 
-        public WfActivity GetActivity(int wfaId)
-        {
+        public WfActivity GetActivity(int wfaId) {
             return _workflowStorePlugin.ReadActivity(wfaId);
         }
 
-        public IList<RuleConditionDefinition> GetConditionsForRuleId(int ruleId)
-        {
+        public IList<RuleConditionDefinition> GetConditionsForRuleId(int ruleId) {
             return _ruleManager.GetConditionsForRuleId(ruleId);
         }
 
-        public IList<RuleFilterDefinition> GetFiltersForSelectorId(int selectorId)
-        {
+        public IList<RuleFilterDefinition> GetFiltersForSelectorId(int selectorId) {
             return _ruleManager.GetFiltersForSelectorId(selectorId);
         }
 
-        public IList<RuleDefinition> GetRulesForActivityDefinition(int wfadId)
-        {
+        public IList<RuleDefinition> GetRulesForActivityDefinition(int wfadId) {
             return _ruleManager.GetRulesForItemId(wfadId);
         }
 
-        public IList<SelectorDefinition> GetSelectorsForActivityDefinition(int wfadId)
-        {
+        public IList<SelectorDefinition> GetSelectorsForActivityDefinition(int wfadId) {
             return _ruleManager.GetSelectorsForItemId(wfadId);
         }
 
-        public WfWorkflowDefinition GetWorkflowDefinition(int wfwdId)
-        {
+        public WfWorkflowDefinition GetWorkflowDefinition(int wfwdId) {
             return _workflowStorePlugin.ReadWorkflowDefinition(wfwdId);
         }
 
-        public WfWorkflowDefinition GetWorkflowDefinition(string wfdName)
-        {
+        public WfWorkflowDefinition GetWorkflowDefinition(string wfdName) {
             return _workflowStorePlugin.ReadWorkflowDefinition(wfdName);
         }
 
-        public void RemoveRules(IList<RuleDefinition> rules)
-        {
+        public void RemoveRules(IList<RuleDefinition> rules) {
             _ruleManager.RemoveRules(rules);
         }
 
-        public void RemoveSelectors(IList<SelectorDefinition> selectors)
-        {
+        public void RemoveSelectors(IList<SelectorDefinition> selectors) {
             _ruleManager.RemoveSelectors(selectors);
         }
 
-        public void DeleteDecision(WfDecision wfDecision)
-        {
+        public void DeleteDecision(WfDecision wfDecision) {
             Debug.Assert(wfDecision != null);
             Debug.Assert(wfDecision.Id != null);
             //---
             _workflowStorePlugin.DeleteDecision(wfDecision);
         }
 
-        public WfActivity GetActivity(WfWorkflow wfWorkflow, WfActivityDefinition wfActivityDefinition)
-        {
+        public WfActivity GetActivity(WfWorkflow wfWorkflow, WfActivityDefinition wfActivityDefinition) {
             return _workflowStorePlugin.FindActivityByDefinitionWorkflow(wfWorkflow, wfActivityDefinition);
         }
 
 
         #region Workflow Recalculation
-        public WfRecalculationOutput RecalculateWorkflow(WfWorkflow wfWorkflow)
-        {
+        public WfRecalculationOutput RecalculateWorkflow(WfWorkflow wfWorkflow) {
             Debug.Assert(wfWorkflow != null);
             WfWorkflow wfWorkflowFetched = _workflowStorePlugin.ReadWorkflowInstanceForUpdateById(wfWorkflow.WfwId.Value);
             Debug.Assert(WfCodeStatusWorkflow.Sta.ToString().Equals(wfWorkflowFetched.WfsCode) || WfCodeStatusWorkflow.Pau.ToString().Equals(wfWorkflowFetched.WfsCode), "A workflow must be started or paused before ending");
@@ -867,11 +767,10 @@ namespace Kinetix.Workflow {
             IList<WfActivity> activities = _workflowStorePlugin.FindActivitiesByWorkflowId(wfWorkflow);
             IList<WfDecision> decisions = _workflowStorePlugin.FindDecisionsByWorkflowId(wfWorkflow);
 
-            return RecalculateWorkflows(new List<WfWorkflow>() { wfWorkflowFetched}, wfWorkflowDefinition, activities, decisions);
+            return RecalculateWorkflows(new List<WfWorkflow>() { wfWorkflowFetched }, wfWorkflowDefinition, activities, decisions);
         }
 
-        public WfRecalculationOutput RecalculateWorkflowDefinition(WfWorkflowDefinition wfWorkflowDefinition)
-        {
+        public WfRecalculationOutput RecalculateWorkflowDefinition(WfWorkflowDefinition wfWorkflowDefinition) {
             IList<WfWorkflow> workflows = _workflowStorePlugin.FindActiveWorkflows(wfWorkflowDefinition, true);
             IList<WfActivity> allActivities = _workflowStorePlugin.FindAllActivitiesByWorkflowDefinitionId(wfWorkflowDefinition);
             IList<WfDecision> allDecisions = _workflowStorePlugin.FindAllDecisionsByWorkflowDefinitionId(wfWorkflowDefinition);
@@ -879,8 +778,7 @@ namespace Kinetix.Workflow {
         }
 
 
-        private WfRecalculationOutput RecalculateWorkflows(IList<WfWorkflow> wfWorfklows, WfWorkflowDefinition wfWorkflowDefinition, IList<WfActivity> activities, IList<WfDecision> decisions)
-        {
+        private WfRecalculationOutput RecalculateWorkflows(IList<WfWorkflow> wfWorfklows, WfWorkflowDefinition wfWorkflowDefinition, IList<WfActivity> activities, IList<WfDecision> decisions) {
             IList<WfActivityDefinition> activityDefinitions = _workflowStorePlugin.FindAllDefaultActivityDefinitions(wfWorkflowDefinition);
 
             int wfwdId = wfWorkflowDefinition.WfwdId.Value;
@@ -910,8 +808,7 @@ namespace Kinetix.Workflow {
             IDictionary<int, object> dicObjects = _itemStorePlugin.ReadItems(itemIds);
 
             WfRecalculationOutput output = new WfRecalculationOutput();
-            foreach (WfWorkflow wfWorfklow in wfWorfklows)
-            {
+            foreach (WfWorkflow wfWorfklow in wfWorfklows) {
                 RecalculateWorkflow(activityDefinitions, ruleConstants, wfWorfklow, dicRules, dicConditions, dicSelectors, dicFilters, dicActivities, dicDecision, dicObjects, output);
             }
 
@@ -919,38 +816,31 @@ namespace Kinetix.Workflow {
             return output;
         }
 
-        private void UpdateWorkflows(WfRecalculationOutput output)
-        {
+        private void UpdateWorkflows(WfRecalculationOutput output) {
             //Updating current workflow activities (no new activities)
-            if (output.WorkflowsUpdateCurrentActivity.Count > 0)
-            {
+            if (output.WorkflowsUpdateCurrentActivity.Count > 0) {
                 _workflowStorePlugin.UpdateWorkflowCurrentActivities(output.WorkflowsUpdateCurrentActivity);
             }
-            
+
             //Updating IsAuto flag on activities
-            if (output.ActivitiesUpdateIsAuto.Count > 0)
-            {
+            if (output.ActivitiesUpdateIsAuto.Count > 0) {
                 _workflowStorePlugin.UpdateActivitiesIsAuto(output.ActivitiesUpdateIsAuto);
             }
-            
+
             //Creating new activities
-            if (output.ActivitiesCreate.Count > 0)
-            {
+            if (output.ActivitiesCreate.Count > 0) {
                 _workflowStorePlugin.CreateActivies(output.ActivitiesCreate);
             }
-            
+
             //Creating new activities and flaging them as current activity
-            if (output.ActivitiesCreateUpdateCurrentActivity.Count > 0)
-            {
+            if (output.ActivitiesCreateUpdateCurrentActivity.Count > 0) {
                 _workflowStorePlugin.CreateActiviesAndUpdateWorkflowCurrentActivities(output.ActivitiesCreateUpdateCurrentActivity);
             }
         }
 
-        private void RecalculateWorkflow(IList<WfActivityDefinition> activityDefinitions, RuleConstants ruleConstants, WfWorkflow wf, IDictionary<int, List<RuleDefinition>> dicRules, IDictionary<int, List<RuleConditionDefinition>> dicConditions, IDictionary<int, List<SelectorDefinition>> dicSelectors, IDictionary<int, List<RuleFilterDefinition>> dicFilters, IDictionary<int, List<WfActivity>> dicActivities, IDictionary<int, List<WfDecision>> dicDecision, IDictionary<int, object> dicObjects, WfRecalculationOutput output)
-        {
+        private void RecalculateWorkflow(IList<WfActivityDefinition> activityDefinitions, RuleConstants ruleConstants, WfWorkflow wf, IDictionary<int, List<RuleDefinition>> dicRules, IDictionary<int, List<RuleConditionDefinition>> dicConditions, IDictionary<int, List<SelectorDefinition>> dicSelectors, IDictionary<int, List<RuleFilterDefinition>> dicFilters, IDictionary<int, List<WfActivity>> dicActivities, IDictionary<int, List<WfDecision>> dicDecision, IDictionary<int, object> dicObjects, WfRecalculationOutput output) {
 
-            if (activityDefinitions.Count == 0)
-            {
+            if (activityDefinitions.Count == 0) {
                 // If the workflow don't have any activity definition, no need to recalculate.
                 return;
             }
@@ -958,8 +848,7 @@ namespace Kinetix.Workflow {
             object obj;
             dicObjects.TryGetValue(wf.ItemId.Value, out obj);
 
-            if (obj == null)
-            {
+            if (obj == null) {
                 // No item associated to this workflow.
                 return;
             }
@@ -967,57 +856,48 @@ namespace Kinetix.Workflow {
             List<WfActivity> allActivities;
             dicActivities.TryGetValue(wf.WfwId.Value, out allActivities);
 
-            if (allActivities == null)
-            {
+            if (allActivities == null) {
                 // No activity for this workflow.
                 allActivities = new List<WfActivity>();
             }
 
             IDictionary<int, WfActivity> activities = allActivities.ToDictionary(a => a.WfadId);
-            
+
             WfActivity currentActivity;
             bool isLastPreviousCurrentActivityReached;
-            if (wf.WfaId2 == null)
-            {
+            if (wf.WfaId2 == null) {
                 //If the first(s) manual Activity(ies) has(ve) been deleted, the workflow don't have a current activity.
                 currentActivity = null;
                 isLastPreviousCurrentActivityReached = true;
-            }
-            else
-            {
+            } else {
                 currentActivity = allActivities.Where(a => a.WfaId.Equals(wf.WfaId2.Value)).First();
                 isLastPreviousCurrentActivityReached = false;
             }
-            
+
             bool newCurrentActivityFound = false;
 
-            foreach (WfActivityDefinition activityDefinition in activityDefinitions)
-            {
+            foreach (WfActivityDefinition activityDefinition in activityDefinitions) {
                 int actDefId = activityDefinition.WfadId.Value;
                 WfActivity activity;
                 activities.TryGetValue(actDefId, out activity);
 
                 bool isRuleValid = _ruleManager.IsRuleValid(actDefId, obj, ruleConstants, dicRules, dicConditions);
 
-                if (activity != null && currentActivity != null && activityDefinition.WfadId.Equals(currentActivity.WfadId))
-                {
+                if (activity != null && currentActivity != null && activityDefinition.WfadId.Equals(currentActivity.WfadId)) {
                     isLastPreviousCurrentActivityReached = true;
                 }
 
                 bool isCurrentActivityAuto = false;
 
-                if (isRuleValid)
-                {
+                if (isRuleValid) {
                     //This activity need a validation
 
                     //We need to check if there is at least one user allowed to validate
                     IList<AccountUser> accounts = _ruleManager.SelectAccounts(actDefId, obj, ruleConstants, dicSelectors, dicFilters);
 
-                    if (accounts.Count > 0)
-                    {
+                    if (accounts.Count > 0) {
                         //There is at least one user allowed to validate.
-                        if (activity == null)
-                        {
+                        if (activity == null) {
                             // No activity linked to this definition was found. 
                             // 2 possibilities : 
                             // - A new activity definition has been inserted in the workflow.
@@ -1028,9 +908,7 @@ namespace Kinetix.Workflow {
 
                             newCurrentActivityFound = true;
                             break;
-                        }
-                        else if (activity.IsAuto)
-                        {
+                        } else if (activity.IsAuto) {
                             //The previous validation was auto. This activity should be manually validated.
                             activity.IsAuto = false;
                             wf.WfaId2 = activity.WfaId;
@@ -1044,41 +922,43 @@ namespace Kinetix.Workflow {
                         // No new activity. The previous activity was manual too.
                         // We need to check if all the users are still allowed to validate.
                         WfCodeMultiplicityDefinition multiplicity = (WfCodeMultiplicityDefinition)Enum.Parse(typeof(WfCodeMultiplicityDefinition), activityDefinition.WfmdCode, true);
-                        if (multiplicity == WfCodeMultiplicityDefinition.Sin)
-                        {
+                        if (multiplicity == WfCodeMultiplicityDefinition.Sin) {
                             List<WfDecision> decisions;
                             dicDecision.TryGetValue(activity.WfaId.Value, out decisions);
                             WfDecision decision = decisions?.FirstOrDefault();
 
-                            IList <string> accountIds = accounts.Select(a => a.Id).ToList();
+                            IList<string> accountIds = accounts.Select(a => a.Id).ToList();
 
-                            if (decision == null || !accountIds.Contains(decision.Username))
-                            {
+                            if (decision == null || !accountIds.Contains(decision.Username)) {
                                 // The user previously allowed to validate are no longer selected with the new selectors.
                                 // This activity must be revalidated
                                 wf.WfaId2 = activity.WfaId;
-                                
+
                                 output.AddWorkflowsUpdateCurrentActivity(wf);
 
                                 newCurrentActivityFound = true;
                                 break;
                             }
-                            
-                        }
-                        else
-                        {
+
+                        } else {
                             List<WfDecision> decisions;
                             dicDecision.TryGetValue(activity.WfaId.Value, out decisions);
 
                             IList<string> accountIds = accounts.Select(a => a.Id).ToList();
-                            IList<string> decisionUsernames = decisions.Select(d => d.Username).ToList();
-                            IList<string> matches = accountIds.Intersect(decisionUsernames).ToList();
-                            if (matches.Count < decisionUsernames.Count)
-                            {
+                            bool decisionMissing;
+                            if (decisions != null) {
+                                IList<string> decisionUsernames = decisions.Select(d => d.Username).ToList();
+                                IList<string> matches = accountIds.Intersect(decisionUsernames).ToList();
+                                decisionMissing = matches.Count < decisionUsernames.Count;
+                            } else {
+                                decisionMissing = true;
+                            }
+
+                            if (decisionMissing) {
                                 // At least one user previously allowed to validate are no longer selected with the new selectors.
                                 // This activity must be revalidated
                                 wf.WfaId2 = activity.WfaId;
-                                
+
                                 output.AddWorkflowsUpdateCurrentActivity(wf);
 
                                 newCurrentActivityFound = true;
@@ -1086,40 +966,43 @@ namespace Kinetix.Workflow {
                             }
 
                         }
-                    }
-                    else
-                    {
+                    } else {
                         // There is no users allowed to validate.
                         // This activity is now auto.
                         isCurrentActivityAuto = true;
-                        activity.IsAuto = true;
 
-                        output.AddActivitiesUpdateIsAuto(activity);
+                        if (activity == null) {
+                            // No activity linked to this definition was found. 
+                            // 2 possibilities : 
+                            // - A new activity definition has been inserted in the workflow.
+                            // - The previous current activity has been switched to auto.
+                            WfActivity wfActivity = GetNewActivity(activityDefinition, wf, true);
+                            output.AddActivitiesCreate(wfActivity);
+
+                        } else {
+                            activity.IsAuto = true;
+                            output.AddActivitiesUpdateIsAuto(activity);
+                        }
+
                     }
-                }
-                else
-                {
+                } else {
                     isCurrentActivityAuto = true;
-                    if (activity == null)
-                    {
+                    if (activity == null) {
                         // No activity linked to this definition was found. 
                         // 2 possibilities : 
                         // - A new activity definition has been inserted in the workflow.
                         // - The previous current activity has been switched to auto.
-                        
+
                         WfActivity wfActivity = GetNewActivity(activityDefinition, wf, true);
                         output.AddActivitiesCreate(wfActivity);
-                    }
-                    else if (activity.IsAuto == false)
-                    {
+                    } else if (activity.IsAuto == false) {
                         // The previous activity was manual but now this activity is auto
                         activity.IsAuto = true;
                         output.AddActivitiesUpdateIsAuto(activity);
                     }
                 }
 
-                if (isLastPreviousCurrentActivityReached && isCurrentActivityAuto == false)
-                {
+                if (isLastPreviousCurrentActivityReached && isCurrentActivityAuto == false) {
                     // The last activity has been reached.
                     newCurrentActivityFound = true;
                     break;
@@ -1128,8 +1011,7 @@ namespace Kinetix.Workflow {
 
             }
 
-            if (newCurrentActivityFound == false)
-            {
+            if (newCurrentActivityFound == false) {
                 // All the definitions have been iterated until the end.
                 // The workflow must be ended.
 
@@ -1139,32 +1021,28 @@ namespace Kinetix.Workflow {
             }
         }
 
-        private IDictionary<int, List<RuleDefinition>> constructDicRulesForWorkflowDefinition(int wfwdId)
-        {
+        private IDictionary<int, List<RuleDefinition>> constructDicRulesForWorkflowDefinition(int wfwdId) {
             IList<RuleDefinition> rules = _workflowStorePlugin.FindAllRulesByWorkflowDefinitionId(wfwdId);
             //Build a dictionary from the rules: WfadId => List<RuleDefinition>
             IDictionary<int, List<RuleDefinition>> dicRules = rules.GroupBy(c => c.ItemId.Value).ToDictionary(d => d.Key, e => e.ToList());
             return dicRules;
         }
 
-        private IDictionary<int, List<RuleConditionDefinition>> constructDicConditionsForWorkflowDefinition(int wfwdId)
-        {
+        private IDictionary<int, List<RuleConditionDefinition>> constructDicConditionsForWorkflowDefinition(int wfwdId) {
             IList<RuleConditionDefinition> conditions = _workflowStorePlugin.FindAllConditionsByWorkflowDefinitionId(wfwdId);
             //Build a dictionary from the conditions: RudId => List<RuleConditionDefinition>
             IDictionary<int, List<RuleConditionDefinition>> dicConditions = conditions.GroupBy(c => c.RudId.Value).ToDictionary(d => d.Key, e => e.ToList());
             return dicConditions;
         }
 
-        private IDictionary<int, List<SelectorDefinition>> constructDicSelectorsForWorkflowDefinition(int wfwdId)
-        {
+        private IDictionary<int, List<SelectorDefinition>> constructDicSelectorsForWorkflowDefinition(int wfwdId) {
             IList<SelectorDefinition> selectors = _workflowStorePlugin.FindAllSelectorsByWorkflowDefinitionId(wfwdId);
             //Build a dictionary from the selectors: WfadId => List<SelectorDefinition>
             IDictionary<int, List<SelectorDefinition>> dicSelectors = selectors.GroupBy(c => c.ItemId.Value).ToDictionary(d => d.Key, e => e.ToList());
             return dicSelectors;
         }
 
-        private IDictionary<int, List<RuleFilterDefinition>> constructDicFiltersForWorkflowDefinition(int wfwdId)
-        {
+        private IDictionary<int, List<RuleFilterDefinition>> constructDicFiltersForWorkflowDefinition(int wfwdId) {
             IList<RuleFilterDefinition> filters = _workflowStorePlugin.FindAllFiltersByWorkflowDefinitionId(wfwdId);
             //Build a dictionary from the filters: SelId => List<RuleFilterDefinition>
             IDictionary<int, List<RuleFilterDefinition>> dicFilters = filters.GroupBy(c => c.SelId.Value).ToDictionary(d => d.Key, e => e.ToList());
@@ -1174,8 +1052,7 @@ namespace Kinetix.Workflow {
 
         #region Custom Methods
 
-        public IList<WfWorkflowDecision> GetWorkflowDecision(int wfwId)
-        {
+        public IList<WfWorkflowDecision> GetWorkflowDecision(int wfwId) {
             //Get the workflow from id
             WfWorkflow wfWorkflow = _workflowStorePlugin.ReadWorkflowInstanceById(wfwId);
 
@@ -1206,29 +1083,24 @@ namespace Kinetix.Workflow {
 
             IList<WfWorkflowDecision> workflowDecisions = new List<WfWorkflowDecision>();
 
-            foreach (WfActivityDefinition activityDefinition in activityDefinitions)
-            {
+            foreach (WfActivityDefinition activityDefinition in activityDefinitions) {
                 int actDefId = activityDefinition.WfadId.Value;
                 bool ruleValid = _ruleManager.IsRuleValid(actDefId, obj, ruleConstants, dicRules, dicConditions);
 
-                if (ruleValid)
-                {
+                if (ruleValid) {
                     IList<AccountGroup> groups = _ruleManager.SelectGroups(actDefId, obj, ruleConstants, dicSelectors, dicFilters);
                     int nbAccount = 0;
                     bool atLeatOnePerson = false;
-                    foreach (AccountGroup accountGroup in groups)
-                    {
+                    foreach (AccountGroup accountGroup in groups) {
                         ISet<string> accounts = _accountManager.GetStore().GetAccountIds(accountGroup.Id);
                         nbAccount += accounts.Count;
-                        if (nbAccount > 0)
-                        {
+                        if (nbAccount > 0) {
                             atLeatOnePerson = true;
                             break;
                         }
                     }
 
-                    if (atLeatOnePerson)
-                    {
+                    if (atLeatOnePerson) {
                         WfWorkflowDecision wfWorkflowDecision = new WfWorkflowDecision();
                         wfWorkflowDecision.ActivityDefinition = activityDefinition;
                         WfActivity wfActivity;
@@ -1236,8 +1108,7 @@ namespace Kinetix.Workflow {
                         wfWorkflowDecision.Activity = wfActivity;
                         wfWorkflowDecision.Groups = groups;
                         List<WfDecision> decisions;
-                        if (wfActivity != null)
-                        {
+                        if (wfActivity != null) {
                             dicDecision.TryGetValue(wfActivity.WfaId.Value, out decisions);
                             wfWorkflowDecision.Decisions = decisions;
                         }
@@ -1251,8 +1122,7 @@ namespace Kinetix.Workflow {
         }
 
 
-        public IList<WfListWorkflowDecision> GetAllWorkflowDecisions(int wfwdId)
-        {
+        public IList<WfListWorkflowDecision> GetAllWorkflowDecisions(int wfwdId) {
             //Get the definition
             WfWorkflowDefinition wfWorkflowDefinition = _workflowStorePlugin.ReadWorkflowDefinition(wfwdId);
 
@@ -1282,8 +1152,7 @@ namespace Kinetix.Workflow {
 
             IList<WfListWorkflowDecision> ret = new List<WfListWorkflowDecision>();
 
-            foreach (WfWorkflow wf in workflows)
-            {
+            foreach (WfWorkflow wf in workflows) {
                 IList<WfWorkflowDecision> workflowDecisions = new List<WfWorkflowDecision>();
 
                 object obj;
@@ -1292,37 +1161,31 @@ namespace Kinetix.Workflow {
                 List<WfActivity> activities;
                 dicAllActivities.TryGetValue(wf.WfwId.Value, out activities);
 
-                if (activities == null)
-                {
+                if (activities == null) {
                     // No activity for this workflow.
                     activities = new List<WfActivity>();
                 }
 
                 IDictionary<int, WfActivity> dicActivities = allActivities.ToDictionary(a => a.WfadId);
 
-                foreach (WfActivityDefinition activityDefinition in activityDefinitions)
-                {
+                foreach (WfActivityDefinition activityDefinition in activityDefinitions) {
                     int actDefId = activityDefinition.WfadId.Value;
                     bool ruleValid = _ruleManager.IsRuleValid(actDefId, obj, ruleConstants, dicRules, dicConditions);
 
-                    if (ruleValid)
-                    {
+                    if (ruleValid) {
                         IList<AccountGroup> groups = _ruleManager.SelectGroups(actDefId, obj, ruleConstants, dicSelectors, dicFilters);
                         int nbAccount = 0;
                         bool atLeatOnePerson = false;
-                        foreach (AccountGroup accountGroup in groups)
-                        {
+                        foreach (AccountGroup accountGroup in groups) {
                             ISet<string> accounts = _accountManager.GetStore().GetAccountIds(accountGroup.Id);
                             nbAccount += accounts.Count;
-                            if (nbAccount > 0)
-                            {
+                            if (nbAccount > 0) {
                                 atLeatOnePerson = true;
                                 break;
                             }
                         }
 
-                        if (atLeatOnePerson)
-                        {
+                        if (atLeatOnePerson) {
                             WfWorkflowDecision wfWorkflowDecision = new WfWorkflowDecision();
                             wfWorkflowDecision.ActivityDefinition = activityDefinition;
                             WfActivity wfActivity;
@@ -1330,8 +1193,7 @@ namespace Kinetix.Workflow {
                             wfWorkflowDecision.Activity = wfActivity;
                             wfWorkflowDecision.Groups = groups;
                             List<WfDecision> decisions;
-                            if (wfActivity != null)
-                            {
+                            if (wfActivity != null) {
                                 dicDecision.TryGetValue(wfActivity.WfaId.Value, out decisions);
                                 wfWorkflowDecision.Decisions = decisions;
                             }
@@ -1350,8 +1212,7 @@ namespace Kinetix.Workflow {
             return ret;
         }
 
-        public void RemoveSelectorsFiltersByGroupId(string groupId)
-        {
+        public void RemoveSelectorsFiltersByGroupId(string groupId) {
             Debug.Assert(groupId != null);
             //---
             _ruleManager.RemoveSelectorsFiltersByGroupId(groupId);
@@ -1361,33 +1222,27 @@ namespace Kinetix.Workflow {
 
         #region FindAll*ByWorkflowDefinition methods
 
-        public IList<WfActivity> FindAllActivitiesByWorkflowDefinition(WfWorkflowDefinition wfWorkflowDefinition)
-        {
+        public IList<WfActivity> FindAllActivitiesByWorkflowDefinition(WfWorkflowDefinition wfWorkflowDefinition) {
             return _workflowStorePlugin.FindAllActivitiesByWorkflowDefinitionId(wfWorkflowDefinition);
         }
 
-        public IList<WfDecision> FindAllDecisionsByWorkflowDefinition(WfWorkflowDefinition wfWorkflowDefinition)
-        {
+        public IList<WfDecision> FindAllDecisionsByWorkflowDefinition(WfWorkflowDefinition wfWorkflowDefinition) {
             return _workflowStorePlugin.FindAllDecisionsByWorkflowDefinitionId(wfWorkflowDefinition);
         }
 
-        public IList<RuleDefinition> FindAllRulesDecisionsByWorkflowDefinition(WfWorkflowDefinition wfWorkflowDefinition)
-        {
+        public IList<RuleDefinition> FindAllRulesDecisionsByWorkflowDefinition(WfWorkflowDefinition wfWorkflowDefinition) {
             return _workflowStorePlugin.FindAllRulesByWorkflowDefinitionId(wfWorkflowDefinition.WfwdId.Value);
         }
 
-        public IList<RuleConditionDefinition> FindAllConditionsDecisionsByWorkflowDefinition(WfWorkflowDefinition wfWorkflowDefinition)
-        {
+        public IList<RuleConditionDefinition> FindAllConditionsDecisionsByWorkflowDefinition(WfWorkflowDefinition wfWorkflowDefinition) {
             return _workflowStorePlugin.FindAllConditionsByWorkflowDefinitionId(wfWorkflowDefinition.WfwdId.Value);
         }
 
-        public IList<SelectorDefinition> FindAllSelectorsDecisionsByWorkflowDefinition(WfWorkflowDefinition wfWorkflowDefinition)
-        {
+        public IList<SelectorDefinition> FindAllSelectorsDecisionsByWorkflowDefinition(WfWorkflowDefinition wfWorkflowDefinition) {
             return _workflowStorePlugin.FindAllSelectorsByWorkflowDefinitionId(wfWorkflowDefinition.WfwdId.Value);
         }
 
-        public IList<RuleFilterDefinition> FindAllFiltersByWorkflowDefinition(WfWorkflowDefinition wfWorkflowDefinition)
-        {
+        public IList<RuleFilterDefinition> FindAllFiltersByWorkflowDefinition(WfWorkflowDefinition wfWorkflowDefinition) {
             return _workflowStorePlugin.FindAllFiltersByWorkflowDefinitionId(wfWorkflowDefinition.WfwdId.Value);
         }
 
