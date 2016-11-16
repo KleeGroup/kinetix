@@ -1069,8 +1069,15 @@ namespace Kinetix.Workflow.Test
             sw.Stop();
 
             Trace.WriteLine(sw.ElapsedMilliseconds);
-            Trace.WriteLine(sw.ElapsedMilliseconds / nbWf);
+            Assert.IsTrue(sw.ElapsedMilliseconds < 5000);
 
+            sw = new Stopwatch();
+            sw.Start();
+            //We call the Recalculation of the Workflow
+            _workflowManager.GetAllWorkflowDecisions(wfWorkflowDefinition.WfwdId.Value);
+            sw.Stop();
+
+            Trace.WriteLine(sw.ElapsedMilliseconds);
             Assert.IsTrue(sw.ElapsedMilliseconds < 5000);
 
             foreach (WfWorkflow wfWorkflow in allWorkflows)
@@ -1085,6 +1092,9 @@ namespace Kinetix.Workflow.Test
             }
 
         }
+
+
+        
 
 
         [TestMethod]
