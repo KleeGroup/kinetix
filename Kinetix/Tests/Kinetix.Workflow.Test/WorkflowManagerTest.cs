@@ -409,7 +409,15 @@ namespace Kinetix.Workflow.Test
             wfDecisionAct3.Username = account.Id;
             wfDecisionAct3.WfaId = currentActivity.WfaId.Value;
 
-            _workflowManager.SaveDecisionAndGoToNextActivity(wfWorkflow, wfDecisionAct3);
+            //Using CanGo, SaveDecision and GoToNext
+            bool canGo = _workflowManager.CanGoToNextActivity(wfWorkflow);
+            Assert.IsFalse(canGo);
+
+            _workflowManager.SaveDecision(wfWorkflow, wfDecisionAct3);
+            canGo = _workflowManager.CanGoToNextActivity(wfWorkflow);
+            Assert.IsTrue(canGo);
+            _workflowManager.CanGoToNextActivity(wfWorkflow);
+            _workflowManager.GoToNextActivity(wfWorkflow);
 
             workflowDecisions = _workflowManager.GetWorkflowDecision(wfWorkflow.WfwId.Value);
 
@@ -574,7 +582,7 @@ namespace Kinetix.Workflow.Test
 
             WfWorkflowDefinition wfWorkflowDefinition = new WfWorkflowDefinitionBuilder("WorkflowRules").Build();
             _workflowManager.CreateWorkflowDefinition(wfWorkflowDefinition);
-
+            
             WfActivityDefinition firstActivity = new WfActivityDefinitionBuilder("Step 1", wfWorkflowDefinition.WfwdId.Value).Build();
 
             AccountGroup accountGroup = new AccountGroup("1", "dummy group");
@@ -1094,9 +1102,6 @@ namespace Kinetix.Workflow.Test
         }
 
 
-        
-
-
         [TestMethod]
         public void TestWorkflowMove2ActivitiesFirstLastPosition()
         {
@@ -1427,6 +1432,9 @@ namespace Kinetix.Workflow.Test
             Assert.AreEqual(thirdActivity.WfadId, activities6[3].WfadId);
             Assert.AreEqual(fifthActivity.WfadId, activities6[4].WfadId);
         }
+
+
+    
 
     }
 }

@@ -69,6 +69,12 @@ namespace Kinetix.Workflow
         void ResumeInstance(WfWorkflow wfWorkflow);
 
         /// <summary>
+        /// Get The User Id used for autovalidating activities.
+        /// </summary>
+        /// <returns>User Id</returns>
+        string GetUserAuto();
+
+        /// <summary>
         /// Get an activity from Id
         /// </summary>
         /// <param name="wfaId">Activity Id</param>
@@ -125,6 +131,24 @@ namespace Kinetix.Workflow
         /// <param name="transitionName">transitionName</param>
         /// <param name="wfDecision">wfDecision</param>
         void SaveDecisionAndGoToNextActivity(WfWorkflow wfWorkflow, string transitionName, WfDecision wfDecision);
+
+        /// <summary>
+        /// Go To the next activity
+        /// </summary>
+        /// <param name="wfWorkflow">workflow</param>
+        void GoToNextActivity(WfWorkflow wfWorkflow);
+
+        /// <summary>
+        /// Predicate method to test if we can go to the next activity.
+        /// </summary>
+        /// <param name="wfWorkflow">wfWorkflow</param>
+        /// <returns>
+        /// For a single activity:
+        ///     True when a decision exist for the current activity, False otherwise
+        /// For a multiple activity:
+        ///     True when all the decisions exist for the accounts linked to this activity, False otherwise
+        /// </returns>
+        bool CanGoToNextActivity(WfWorkflow wfWorkflow);
 
         /// <summary>
         /// Autovalidate all the next activities using the default transition the the provided activity.
