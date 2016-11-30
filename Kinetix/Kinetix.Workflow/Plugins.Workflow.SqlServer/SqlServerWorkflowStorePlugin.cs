@@ -61,7 +61,7 @@ namespace Kinetix.Workflow {
 
         public void DeleteDecision(WfDecision wfDecision)
         {
-            BrokerManager.GetBroker<WfDecision>().Delete(wfDecision);
+            BrokerManager.GetBroker<WfDecision>().Delete(wfDecision.Id.Value);
         }
 
         public void CreateWorkflowDefinition(WfWorkflowDefinition workflowDefinition) {
@@ -75,11 +75,11 @@ namespace Kinetix.Workflow {
         }
 
         public void DeleteActivity(WfActivity wfActivity) {
-            BrokerManager.GetBroker<WfWorkflow>().Delete(wfActivity);
+            BrokerManager.GetBroker<WfWorkflow>().Delete(wfActivity.WfaId.Value);
         }
 
         public void DeleteActivityDefinition(WfActivityDefinition wfActivityDefinition) {
-            BrokerManager.GetBroker<WfActivityDefinition>().Delete(wfActivityDefinition.WfadId);
+            BrokerManager.GetBroker<WfActivityDefinition>().Delete(wfActivityDefinition.WfadId.Value);
         }
 
         public WfActivityDefinition FindActivityDefinitionByPosition(WfWorkflowDefinition wfWorkflowDefinition, int position) {
