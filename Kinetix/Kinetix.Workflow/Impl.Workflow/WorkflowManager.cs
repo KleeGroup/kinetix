@@ -1138,10 +1138,8 @@ namespace Kinetix.Workflow
                             List<WfDecision> decisions;
                             dicDecision.TryGetValue(activity.WfaId.Value, out decisions);
                             WfDecision decision = decisions?.FirstOrDefault();
-
-                            IList<string> accountIds = accounts.Select(a => a.Id).ToList();
-
-                            if (decision == null || !accountIds.Contains(decision.Username))
+                            
+                            if (decision == null)
                             {
                                 // The user previously allowed to validate are no longer selected with the new selectors.
                                 // This activity must be revalidated

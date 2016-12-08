@@ -232,6 +232,8 @@ namespace Kinetix.Rules.Test
             IRuleManager ruleManager = container.Resolve<IRuleManager>();
             IAccountManager accountManager = container.Resolve<IAccountManager>();
 
+            int actId1 = 10000;
+
             AccountGroup accountGroup = new AccountGroup("1", "Group activity 1");
             AccountUser account = new AccountUserBuilder("0").WithDisplayName("User 1")
                     .WithEmail("user1@account.vertigo.io")
@@ -241,7 +243,7 @@ namespace Kinetix.Rules.Test
             accountManager.GetStore().Attach(account.Id, accountGroup.Id);
 
             // Selector created to Item 1
-            SelectorDefinition selector = new SelectorDefinition(null, DateTime.Now, 1, accountGroup.Id);
+            SelectorDefinition selector = new SelectorDefinition(null, DateTime.Now, actId1, accountGroup.Id);
             ruleManager.AddSelector(selector);
 
             RuleFilterDefinition filterDefinition = new RuleFilterDefinition(null, "Division", "=", "BTL", selector.Id);
@@ -250,10 +252,10 @@ namespace Kinetix.Rules.Test
             MyDummyDtObject myDummyDtObject = new MyDummyDtObject();
             myDummyDtObject.Division = "BTL";
 
-            IList<AccountUser> selectedAccounts = ruleManager.SelectAccounts(1, myDummyDtObject, RuleConstants.EmptyRuleConstants);
+            IList<AccountUser> selectedAccounts = ruleManager.SelectAccounts(actId1, myDummyDtObject, RuleConstants.EmptyRuleConstants);
 
             Assert.IsNotNull(selectedAccounts);
-            Assert.AreEqual(selectedAccounts.Count, 1);
+            Assert.AreEqual(1, selectedAccounts.Count);
             Assert.IsTrue(selectedAccounts.SequenceEqual(new List<AccountUser>() { account }, new AccountEqualityComparer()));
         }
 
@@ -267,6 +269,8 @@ namespace Kinetix.Rules.Test
             IRuleManager ruleManager = container.Resolve<IRuleManager>();
             IAccountManager accountManager = container.Resolve<IAccountManager>();
 
+            int actId1 = 10000;
+
             AccountGroup accountGroup = new AccountGroup("1", "Group activity 1");
             AccountUser account = new AccountUserBuilder("0")
                     .WithDisplayName("User 1")
@@ -278,7 +282,7 @@ namespace Kinetix.Rules.Test
             accountManager.GetStore().Attach(account.Id, accountGroup.Id);
 
             // Selector created to Item 1
-            SelectorDefinition selector_1 = new SelectorDefinition(null, DateTime.Now,1, accountGroup.Id);
+            SelectorDefinition selector_1 = new SelectorDefinition(null, DateTime.Now, actId1, accountGroup.Id);
             ruleManager.AddSelector(selector_1);
 
             RuleFilterDefinition filterDefinition_1_1 = new RuleFilterDefinition(null, "Division", "=", "BTL", selector_1.Id);
@@ -291,7 +295,7 @@ namespace Kinetix.Rules.Test
             myDummyDtObject.Division = "BTL";
 
             // The entity is not set to ENT. The selector should not match
-            IList<AccountUser> selectedAccounts_1 = ruleManager.SelectAccounts(1, myDummyDtObject, RuleConstants.EmptyRuleConstants);
+            IList<AccountUser> selectedAccounts_1 = ruleManager.SelectAccounts(actId1, myDummyDtObject, RuleConstants.EmptyRuleConstants);
 
             Assert.IsNotNull(selectedAccounts_1);
             Assert.AreEqual(selectedAccounts_1.Count, 0);
@@ -299,7 +303,7 @@ namespace Kinetix.Rules.Test
             //We set the entity to 'ENT'
             myDummyDtObject.Entity = "ENT";
             // The selector should match now.
-            IList<AccountUser> selectedAccounts_2 = ruleManager.SelectAccounts(1, myDummyDtObject, RuleConstants.EmptyRuleConstants);
+            IList<AccountUser> selectedAccounts_2 = ruleManager.SelectAccounts(actId1, myDummyDtObject, RuleConstants.EmptyRuleConstants);
 
             Assert.IsNotNull(selectedAccounts_2);
             Assert.AreEqual(selectedAccounts_2.Count, 1);
@@ -308,7 +312,7 @@ namespace Kinetix.Rules.Test
             //We set the entity to 'XXX'
             myDummyDtObject.Entity = "XXX";
             // The selector should not match .
-            IList<AccountUser> selectedAccounts_3 = ruleManager.SelectAccounts(1, myDummyDtObject, RuleConstants.EmptyRuleConstants);
+            IList<AccountUser> selectedAccounts_3 = ruleManager.SelectAccounts(actId1, myDummyDtObject, RuleConstants.EmptyRuleConstants);
 
             Assert.IsNotNull(selectedAccounts_3);
             Assert.AreEqual(selectedAccounts_3.Count, 0);
@@ -323,6 +327,8 @@ namespace Kinetix.Rules.Test
             var container = GetConfiguredContainer();
             IRuleManager ruleManager = container.Resolve<IRuleManager>();
             IAccountManager accountManager = container.Resolve<IAccountManager>();
+
+            int actId1 = 10000;
 
             AccountGroup accountGroup_1 = new AccountGroup("1", "Group activity 1");
 
@@ -359,7 +365,7 @@ namespace Kinetix.Rules.Test
             accountManager.GetStore().Attach(account_2_2.Id, accountGroup_2.Id);
 
             // Selector 1 created to Item 1
-            SelectorDefinition selector_1 = new SelectorDefinition(null, DateTime.Now, 1, accountGroup_1.Id);
+            SelectorDefinition selector_1 = new SelectorDefinition(null, DateTime.Now, actId1, accountGroup_1.Id);
             ruleManager.AddSelector(selector_1);
 
             RuleFilterDefinition filterDefinition_1_1 = new RuleFilterDefinition(null, "Division", "=", "BTL", selector_1.Id);
@@ -369,7 +375,7 @@ namespace Kinetix.Rules.Test
             ruleManager.AddFilter(filterDefinition_1_2);
 
             // Selector 2 created to Item 1
-            SelectorDefinition selector_2 = new SelectorDefinition(null, DateTime.Now, 1, accountGroup_2.Id);
+            SelectorDefinition selector_2 = new SelectorDefinition(null, DateTime.Now, actId1, accountGroup_2.Id);
             ruleManager.AddSelector(selector_2);
 
             RuleFilterDefinition filterDefinition_2_1 = new RuleFilterDefinition(null, "Division", "=", "BTL", selector_2.Id);
@@ -383,7 +389,7 @@ namespace Kinetix.Rules.Test
             myDummyDtObject.Division = "BTL";
 
             // The entity only has entity set to ENT. No selectors should match
-            IList<AccountUser> selectedAccounts_1 = ruleManager.SelectAccounts(1, myDummyDtObject, RuleConstants.EmptyRuleConstants);
+            IList<AccountUser> selectedAccounts_1 = ruleManager.SelectAccounts(actId1, myDummyDtObject, RuleConstants.EmptyRuleConstants);
 
             Assert.IsNotNull(selectedAccounts_1);
             Assert.AreEqual(selectedAccounts_1.Count, 0);
@@ -391,7 +397,7 @@ namespace Kinetix.Rules.Test
             // Set entity to ENT
             myDummyDtObject.Entity = "ENT";
             // Only Group 1 should match 
-            IList<AccountUser> selectedAccounts_2 = ruleManager.SelectAccounts(1, myDummyDtObject, RuleConstants.EmptyRuleConstants);
+            IList<AccountUser> selectedAccounts_2 = ruleManager.SelectAccounts(actId1, myDummyDtObject, RuleConstants.EmptyRuleConstants);
 
             Assert.IsNotNull(selectedAccounts_2);
             Assert.AreEqual(selectedAccounts_2.Count, 2);
@@ -401,7 +407,7 @@ namespace Kinetix.Rules.Test
             myDummyDtObject.Entity = "XXX";
             myDummyDtObject.Nom = "DONALD";
             // Only Group 2 should match 
-            IList<AccountUser> selectedAccounts_3 = ruleManager.SelectAccounts(1, myDummyDtObject, RuleConstants.EmptyRuleConstants);
+            IList<AccountUser> selectedAccounts_3 = ruleManager.SelectAccounts(actId1, myDummyDtObject, RuleConstants.EmptyRuleConstants);
 
             Assert.IsNotNull(selectedAccounts_3);
             Assert.AreEqual(selectedAccounts_3.Count, 2);
@@ -410,7 +416,7 @@ namespace Kinetix.Rules.Test
             // Set entity to ENT
             myDummyDtObject.Entity = "ENT";
             // Group 1 and Group 2 should match 
-            IList<AccountUser> selectedAccounts_4 = ruleManager.SelectAccounts(1, myDummyDtObject, RuleConstants.EmptyRuleConstants);
+            IList<AccountUser> selectedAccounts_4 = ruleManager.SelectAccounts(actId1, myDummyDtObject, RuleConstants.EmptyRuleConstants);
 
             Assert.IsNotNull(selectedAccounts_4);
             Assert.AreEqual(selectedAccounts_4.Count, 4);

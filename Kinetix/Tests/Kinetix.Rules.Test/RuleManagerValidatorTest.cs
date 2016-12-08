@@ -109,18 +109,18 @@ namespace Kinetix.Rules.Test
         {
             int item1 = 10000;
             int item2 = 20000;
-
+            
             var container = GetConfiguredContainer();
             IRuleManager ruleManager = container.Resolve<IRuleManager>();
 
             // Rule created to Item 1
-            RuleDefinition rule = new RuleDefinition(null, null, 1, "My Rule 1");
+            RuleDefinition rule = new RuleDefinition(null, null, item1, "My Rule 1");
             ruleManager.AddRule(rule);
 
-            IList<RuleDefinition> rulesFetch_1_1 = ruleManager.GetRulesForItemId(1);
+            IList<RuleDefinition> rulesFetch_1_1 = ruleManager.GetRulesForItemId(item1);
 
             Assert.IsNotNull(rulesFetch_1_1);
-            Assert.AreEqual(rulesFetch_1_1.Count, 1);
+            Assert.AreEqual(1, rulesFetch_1_1.Count);
             Assert.IsTrue(rulesFetch_1_1.SequenceEqual(new List<RuleDefinition>() { rule }, new RuleEqualityComparer()));
 
             // Update rule. This is now associated with Item 2
@@ -131,13 +131,13 @@ namespace Kinetix.Rules.Test
             IList<RuleDefinition> rulesFetch_1_0 = ruleManager.GetRulesForItemId(item1);
 
             Assert.IsNotNull(rulesFetch_1_0);
-            Assert.AreEqual(rulesFetch_1_0.Count, 0);
+            Assert.AreEqual(0, rulesFetch_1_0.Count);
 
             // The rule should be associated with item 2
             IList<RuleDefinition> rulesFetch_2_1 = ruleManager.GetRulesForItemId(item2);
 
             Assert.IsNotNull(rulesFetch_2_1);
-            Assert.AreEqual(rulesFetch_2_1.Count, 1);
+            Assert.AreEqual(1, rulesFetch_2_1.Count);
             Assert.IsTrue(rulesFetch_2_1.SequenceEqual(new List<RuleDefinition>() { rule }, new RuleEqualityComparer()));
 
             // Update rule. This is now associated with Item 2
@@ -147,7 +147,7 @@ namespace Kinetix.Rules.Test
             IList<RuleDefinition> rulesFetch_2_0 = ruleManager.GetRulesForItemId(item2);
 
             Assert.IsNotNull(rulesFetch_2_0);
-            Assert.AreEqual(rulesFetch_2_0.Count, 0);
+            Assert.AreEqual(0, rulesFetch_2_0.Count);
         }
 
         [TestMethod]
