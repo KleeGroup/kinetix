@@ -105,6 +105,11 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="dbo\User Defined Types\type_int_int_list.sql" />
+    <Content Include="dbo\User Defined Types\type_int_list.sql" />
+    <Content Include="dbo\User Defined Types\WF_ACTIVITY_TABLE_TYPE.sql" />
+    <Content Include="dbo\User Defined Types\WF_ACTIVITY_UPDATE_TABLE_TYPE.sql" />
+    <Content Include="dbo\User Defined Types\WF_WORKFLOW_UPDATE_TABLE_TYPE.sql" />
     <Content Include="dbo\WF_ACTIVITY.sql" />
     <Content Include="dbo\WF_ACTIVITY_DEFINITION.sql" />
     <Content Include="dbo\WF_DECISION.sql" />
