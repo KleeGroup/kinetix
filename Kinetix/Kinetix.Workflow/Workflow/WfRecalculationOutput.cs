@@ -18,7 +18,7 @@ namespace Kinetix.Workflow
 
         public void AddActivitiesUpdateIsAuto(WfActivity wfAct)
         {
-            ActivitiesUpdateIsAuto.Add(new WfActivityUpdate() { WfaId = wfAct.WfaId, IsAuto = wfAct.IsAuto });
+            ActivitiesUpdateIsAuto.Add(new WfActivityUpdate() { WfaId = wfAct.WfaId, IsAuto = wfAct.IsAuto, IsValid = wfAct.IsValid });
         }
 
         public void AddActivitiesCreate(WfActivity wfAct)

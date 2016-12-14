@@ -1077,7 +1077,7 @@ namespace Kinetix.Workflow.Test
             sw.Stop();
 
             Trace.WriteLine(sw.ElapsedMilliseconds);
-            Assert.IsTrue(sw.ElapsedMilliseconds < 5000);
+            Assert.IsTrue(sw.ElapsedMilliseconds < 1000);
 
             sw = new Stopwatch();
             sw.Start();

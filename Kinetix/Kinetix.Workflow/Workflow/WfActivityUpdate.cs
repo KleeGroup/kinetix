@@ -18,6 +18,10 @@ namespace Kinetix.Workflow
         [Domain("DO_X_WORKFLOW_FLAG")]
         public bool IsAuto { get; set; }
 
+        [Column("IS_VALID")]
+        [Domain("DO_X_WORKFLOW_FLAG")]
+        public bool IsValid { get; set; }
+
         [Column("WFW_INSERT_KEY")]
         [Domain("DO_X_WORKFLOW_ID")]
         [DataMember]

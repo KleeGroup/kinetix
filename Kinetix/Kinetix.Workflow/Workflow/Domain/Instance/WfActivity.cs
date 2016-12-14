@@ -56,6 +56,14 @@ namespace Kinetix.Workflow
             set;
         }
 
+        [Column("IS_VALID")]
+        [Domain("DO_X_WORKFLOW_FLAG")]
+        public bool IsValid
+        {
+            get;
+            set;
+        }
+
         [Column("INSERT_KEY")]
         [Domain("DO_X_WORKFLOW_ID")]
         [DataMember]
@@ -102,6 +110,13 @@ namespace Kinetix.Workflow
             [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", Justification = "Correspondance schéma persistence")]
             [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1707:IdentifiersShouldNotContainUnderscores", Justification = "Correspondance schéma persistence")]
             IS_AUTO,
+
+            /// <summary>
+            /// Nom de la colonne en base associée à la propriété .
+            /// </summary>
+            [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", Justification = "Correspondance schéma persistence")]
+            [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1707:IdentifiersShouldNotContainUnderscores", Justification = "Correspondance schéma persistence")]
+            IS_VALID,
         }
 
         

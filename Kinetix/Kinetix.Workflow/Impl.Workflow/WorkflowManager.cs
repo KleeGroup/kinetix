@@ -128,6 +128,8 @@ namespace Kinetix.Workflow
             wfActivity.WfadId = activityDefinition.WfadId.Value;
             wfActivity.WfwId = wfWorkflow.WfwId.Value;
             wfActivity.IsAuto = isAuto;
+            //IsAuto true, the activity is valid. IsAuto false, the activity is not valid
+            wfActivity.IsValid = isAuto;
             return wfActivity;
         }
 
@@ -184,6 +186,7 @@ namespace Kinetix.Workflow
         {
 
             wfActivityCurrent.IsAuto = true;
+            wfActivityCurrent.IsValid = true;
             _workflowStorePlugin.UpdateActivity(wfActivityCurrent);
 
             WfDecision decision = new WfDecision();
@@ -614,6 +617,11 @@ namespace Kinetix.Workflow
 
         public void SaveDecision(WfWorkflow wfWorkflow, WfDecision wfDecision)
         {
+            SaveDecision(wfWorkflow, wfDecision, false);
+        }
+
+        public void SaveDecision(WfWorkflow wfWorkflow, WfDecision wfDecision, bool forceValid)
+        {
             if (!WfCodeStatusWorkflow.Sta.ToString().Equals(wfWorkflow.WfsCode))
             {
                 throw new InvalidOperationException("A workflow must be started before saving decision");
@@ -630,6 +638,7 @@ namespace Kinetix.Workflow
 
             // Attach decision to the activity
             currentActivity.IsAuto = false;
+            currentActivity.IsValid = true;
             _workflowStorePlugin.UpdateActivity(currentActivity);
 
             wfDecision.WfaId = currentActivity.WfaId.Value;
@@ -679,32 +688,35 @@ namespace Kinetix.Workflow
             return _workflowStorePlugin.ReadDecisionsByActivityId(wfActivity.WfaId.Value);
         }
 
+
         public void SaveDecisionAndGoToNextActivity(WfWorkflow wfWorkflow, WfDecision wfDecision)
         {
-            SaveDecisionAndGoToNextActivity(wfWorkflow, WfCodeTransition.Default.ToString(), wfDecision);
+            SaveDecisionAndGoToNextActivity(wfWorkflow, wfDecision, false);
+        }
+
+        public void SaveDecisionAndGoToNextActivity(WfWorkflow wfWorkflow, WfDecision wfDecision, bool forceValid)
+        {
+            SaveDecisionAndGoToNextActivity(wfWorkflow, WfCodeTransition.Default.ToString(), wfDecision, false);
+        }
+
+        public void SaveDecisionAndGoToNextActivity(WfWorkflow wfWorkflow, string transitionName, WfDecision wfDecision)
+        {
+            SaveDecisionAndGoToNextActivity(wfWorkflow, transitionName, wfDecision, false);
         }
 
         public bool CanGoToNextActivity(WfWorkflow wfWorkflow)
         {
-            WfActivity currentActivity = _workflowStorePlugin.ReadActivity(wfWorkflow.WfaId2.Value);
-            WfActivityDefinition currentActivityDefinition = _workflowStorePlugin.ReadActivityDefinition(currentActivity.WfadId);
-            WfCodeMultiplicityDefinition wfCodeMultiplicityDefinition = (WfCodeMultiplicityDefinition)Enum.Parse(typeof(WfCodeMultiplicityDefinition), currentActivityDefinition.WfmdCode);
-
-            //A refactorer
-            WfDecision wfDecision = null;
-            if (wfCodeMultiplicityDefinition == WfCodeMultiplicityDefinition.Sin)
-            {
-                wfDecision = GetDecision(currentActivity);
-                if (wfDecision == null)
-                {
-                    return false;
-                }
-            }
-
-            return CanGoToNextActivity(wfWorkflow, currentActivity);
+            return CanGoToNextActivity(wfWorkflow, false);
         }
 
-        private bool CanGoToNextActivity(WfWorkflow wfWorkflow, WfActivity currentActivity)
+        public bool CanGoToNextActivity(WfWorkflow wfWorkflow, bool forceValid)
+        {
+            WfActivity currentActivity = _workflowStorePlugin.ReadActivity(wfWorkflow.WfaId2.Value);
+            
+            return CanGoToNextActivity(wfWorkflow, currentActivity, true, forceValid);
+        }
+
+        private bool CanGoToNextActivity(WfWorkflow wfWorkflow, WfActivity currentActivity, bool checkDecisionSingle, bool forceValid)
         {
             WfActivityDefinition currentActivityDefinition = _workflowStorePlugin.ReadActivityDefinition(currentActivity.WfadId);
 
@@ -715,42 +727,69 @@ namespace Kinetix.Workflow
             if (wfCodeMultiplicityDefinition == WfCodeMultiplicityDefinition.Mul)
             {
                 IList<WfDecision> wfDecisions = _workflowStorePlugin.FindAllDecisionByActivity(currentActivity);
-                object obj = _itemStorePlugin.ReadItem(wfWorkflow.ItemId.Value);
-                RuleConstants ruleConstants = _ruleManager.GetConstants(wfWorkflow.WfwdId.Value);
-                IList<AccountUser> accounts = _ruleManager.SelectAccounts(currentActivity.WfadId, obj, ruleConstants);
 
-                int match = 0;
-                foreach (AccountUser account in accounts)
+                if (forceValid)
                 {
-                    foreach (WfDecision decision in wfDecisions)
+                    canGoToNextActivity = wfDecisions.Count > 0;
+                }
+                else
+                {
+                    object obj = _itemStorePlugin.ReadItem(wfWorkflow.ItemId.Value);
+                    RuleConstants ruleConstants = _ruleManager.GetConstants(wfWorkflow.WfwdId.Value);
+                    IList<AccountUser> accounts = _ruleManager.SelectAccounts(currentActivity.WfadId, obj, ruleConstants);
+
+                    int match = 0;
+                    foreach (AccountUser account in accounts)
                     {
-                        if (account.Id.Equals(decision.Username))
+                        foreach (WfDecision decision in wfDecisions)
                         {
-                            match++;
-                            break;
+                            if (account.Id.Equals(decision.Username))
+                            {
+                                match++;
+                                break;
+                            }
                         }
                     }
-                }
 
-                if (match == accounts.Count)
-                {
-                    canGoToNextActivity = true;
+                    if (match == accounts.Count)
+                    {
+                        canGoToNextActivity = true;
+                    }
+
                 }
 
             }
             else
             {
-                canGoToNextActivity = true;
+                if (checkDecisionSingle)
+                {
+                    WfDecision wfDecision = GetDecision(currentActivity);
+                    if (wfDecision != null)
+                    {
+                        canGoToNextActivity = true;
+                    }
+                }
+                else
+                {
+                    canGoToNextActivity = true;
+                }
+                
             }
 
             return canGoToNextActivity;
         }
 
+
         public void GoToNextActivity(WfWorkflow wfWorkflow)
+        {
+            GoToNextActivity(wfWorkflow, false);
+        }
+
+        public void GoToNextActivity(WfWorkflow wfWorkflow, bool forceValid)
         {
             WfActivity currentActivity = _workflowStorePlugin.ReadActivity(wfWorkflow.WfaId2.Value);
 
-            bool canGoToNext = CanGoToNextActivity(wfWorkflow);
+            bool canGoToNext = CanGoToNextActivity(wfWorkflow, forceValid);
             if (!canGoToNext)
             {
                 throw new System.InvalidOperationException("Can't go to the next activity");
@@ -760,8 +799,7 @@ namespace Kinetix.Workflow
         }
 
        
-        private void GoToNextActivity(WfWorkflow wfWorkflow, WfActivity currentActivity, string transitionName)
-        {
+        private void GoToNextActivity(WfWorkflow wfWorkflow, WfActivity currentActivity, string transitionName) {
             if (_workflowStorePlugin.HasNextActivity(currentActivity, transitionName))
             {
                 WfActivityDefinition nextActivityDefinition = _workflowStorePlugin.FindNextActivity(currentActivity.WfadId, transitionName);
@@ -776,6 +814,7 @@ namespace Kinetix.Workflow
                 nextActivity.WfadId = nextActivityDefinition.WfadId.Value;
                 nextActivity.WfwId = wfWorkflow.WfwId.Value;
                 nextActivity.IsAuto = false;
+                nextActivity.IsValid = false;
                 if (nextActivity.WfaId == null)
                 {
                     _workflowStorePlugin.CreateActivity(nextActivity);
@@ -809,7 +848,9 @@ namespace Kinetix.Workflow
                 //EndInstance(wfWorkflow);
             }
         }
-        public void SaveDecisionAndGoToNextActivity(WfWorkflow wfWorkflow, string transitionName, WfDecision wfDecision)
+
+
+        public void SaveDecisionAndGoToNextActivity(WfWorkflow wfWorkflow, string transitionName, WfDecision wfDecision, bool forceValid)
         {
             if (!WfCodeStatusWorkflow.Sta.ToString().Equals(wfWorkflow.WfsCode))
             {
@@ -821,7 +862,7 @@ namespace Kinetix.Workflow
             // Updating the decision
             SaveDecision(wfWorkflow, wfDecision);
 
-            bool canGoToNextActivity = CanGoToNextActivity(wfWorkflow, currentActivity);
+            bool canGoToNextActivity = CanGoToNextActivity(wfWorkflow, currentActivity, false, forceValid);
 
             if (canGoToNextActivity)
             {
@@ -839,18 +880,19 @@ namespace Kinetix.Workflow
             //---
             wfWorkflow.WfsCode = WfCodeStatusWorkflow.Sta.ToString();
 
-            WfWorkflowDefinition wfWorkflowDefinition = _workflowStorePlugin.ReadWorkflowDefinition((int)wfWorkflow.WfwdId);
+            WfWorkflowDefinition wfWorkflowDefinition = _workflowStorePlugin.ReadWorkflowDefinition(wfWorkflow.WfwdId.Value);
 
             WfActivity wfActivityCurrent = new WfActivity();
             wfActivityCurrent.CreationDate = DateTime.Now;
-            wfActivityCurrent.WfadId = (int)wfWorkflowDefinition.WfadId;
-            wfActivityCurrent.WfwId = (int)wfWorkflow.WfwId;
+            wfActivityCurrent.WfadId = wfWorkflowDefinition.WfadId.Value;
+            wfActivityCurrent.WfwId = wfWorkflow.WfwId.Value;
             wfActivityCurrent.IsAuto = false;
+            wfActivityCurrent.IsValid = false;
             _workflowStorePlugin.CreateActivity(wfActivityCurrent);
             wfWorkflow.WfaId2 = wfActivityCurrent.WfaId;
             _workflowStorePlugin.UpdateWorkflowInstance(wfWorkflow);
 
-            bool endReached = AutoValidateNextActivities(wfWorkflow, wfActivityCurrent, (int)wfWorkflowDefinition.WfadId);
+            bool endReached = AutoValidateNextActivities(wfWorkflow, wfActivityCurrent, wfWorkflowDefinition.WfadId.Value);
 
             if (endReached)
             {
@@ -1027,7 +1069,7 @@ namespace Kinetix.Workflow
             {
                 _workflowStorePlugin.CreateActivies(output.ActivitiesCreate);
             }
-
+            
             //Creating new activities and flaging them as current activity
             if (output.ActivitiesCreateUpdateCurrentActivity.Count > 0)
             {
@@ -1122,6 +1164,7 @@ namespace Kinetix.Workflow
                         {
                             //The previous validation was auto. This activity should be manually validated.
                             activity.IsAuto = false;
+                            activity.IsValid = false;
                             wf.WfaId2 = activity.WfaId;
                             output.AddActivitiesUpdateIsAuto(activity);
                             output.AddWorkflowsUpdateCurrentActivity(wf);
@@ -1131,58 +1174,17 @@ namespace Kinetix.Workflow
                         }
 
                         // No new activity. The previous activity was manual too.
-                        // We need to check if all the users are still allowed to validate.
-                        WfCodeMultiplicityDefinition multiplicity = (WfCodeMultiplicityDefinition)Enum.Parse(typeof(WfCodeMultiplicityDefinition), activityDefinition.WfmdCode, true);
-                        if (multiplicity == WfCodeMultiplicityDefinition.Sin)
+                        
+                        if (activity.IsValid == false)
                         {
-                            List<WfDecision> decisions;
-                            dicDecision.TryGetValue(activity.WfaId.Value, out decisions);
-                            WfDecision decision = decisions?.FirstOrDefault();
-                            
-                            if (decision == null)
-                            {
-                                // The user previously allowed to validate are no longer selected with the new selectors.
-                                // This activity must be revalidated
-                                wf.WfaId2 = activity.WfaId;
+                            // This activity must be revalidated
+                            wf.WfaId2 = activity.WfaId;
 
-                                output.AddWorkflowsUpdateCurrentActivity(wf);
+                            output.AddWorkflowsUpdateCurrentActivity(wf);
 
-                                newCurrentActivityFound = true;
-                                break;
-                            }
-
+                            newCurrentActivityFound = true;
                         }
-                        else
-                        {
-                            List<WfDecision> decisions;
-                            dicDecision.TryGetValue(activity.WfaId.Value, out decisions);
 
-                            IList<string> accountIds = accounts.Select(a => a.Id).ToList();
-                            bool decisionMissing;
-                            if (decisions != null)
-                            {
-                                IList<string> decisionUsernames = decisions.Select(d => d.Username).ToList();
-                                IList<string> matches = accountIds.Intersect(decisionUsernames).ToList();
-                                decisionMissing = matches.Count < decisionUsernames.Count;
-                            }
-                            else
-                            {
-                                decisionMissing = true;
-                            }
-
-                            if (decisionMissing)
-                            {
-                                // At least one user previously allowed to validate are no longer selected with the new selectors.
-                                // This activity must be revalidated
-                                wf.WfaId2 = activity.WfaId;
-
-                                output.AddWorkflowsUpdateCurrentActivity(wf);
-
-                                newCurrentActivityFound = true;
-                                break;
-                            }
-
-                        }
                     }
                     else
                     {
@@ -1201,6 +1203,7 @@ namespace Kinetix.Workflow
                         else
                         {
                             activity.IsAuto = true;
+                            activity.IsValid = true;
                             output.AddActivitiesUpdateIsAuto(activity);
                         }
                     }
@@ -1222,6 +1225,7 @@ namespace Kinetix.Workflow
                     {
                         // The previous activity was manual but now this activity is auto
                         activity.IsAuto = true;
+                        activity.IsValid = true;
                         output.AddActivitiesUpdateIsAuto(activity);
                     }
                 }
