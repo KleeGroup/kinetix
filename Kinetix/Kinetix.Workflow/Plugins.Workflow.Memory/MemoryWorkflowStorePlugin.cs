@@ -271,7 +271,6 @@ namespace Kinetix.Workflow
             return new List<WfWorkflow>(inMemoryWorkflowInstanceStore.Values);
         }
 
-
         public WfWorkflow ReadWorkflowInstanceByItemId(int wfwdId, int itemId)
         {
             foreach (WfWorkflow wfWorkflow in inMemoryWorkflowInstanceStore.Values)
@@ -420,7 +419,7 @@ namespace Kinetix.Workflow
 
         public WfActivity FindActivityByDefinitionWorkflow(WfWorkflow wfWorkflow, WfActivityDefinition wfActivityDefinition)
         {
-            IList<WfActivity> collect = new List<WfActivity>();
+
             foreach (WfActivity wfActivity in inMemoryActivityStore.Values)
             {
                 if (wfActivityDefinition.WfadId.Equals(wfActivity.WfadId))
@@ -473,7 +472,6 @@ namespace Kinetix.Workflow
 
         public void IncrementActivityDefinitionPositionsAfter(int wfwdId, int position)
         {
-            IList<WfActivity> collect = new List<WfActivity>();
             foreach (WfActivityDefinition wfActivityDefinition in inMemoryActivityDefinitionStore.Values)
             {
                 if (wfwdId.Equals(wfActivityDefinition.WfwdId) && wfActivityDefinition.Level.Value >= position)

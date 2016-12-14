@@ -98,6 +98,15 @@ namespace Kinetix.Workflow
         void SaveDecision(WfWorkflow wfWorkflow, WfDecision wfDecision);
 
         /// <summary>
+        /// Save the decision for the current activity without moving to the next.
+        /// Use this method when the decision has to be saved before pausing the or ending the worklfow.
+        /// </summary>
+        /// <param name="wfWorkflow">wfWorkflow</param>
+        /// <param name="wfDecision">wfDecision</param>
+        /// <param name="forceValid">Force the current activity to be valid (Mul only)</param>
+        void SaveDecision(WfWorkflow wfWorkflow, WfDecision wfDecision, bool forceValid);
+
+        /// <summary>
         /// Get the decision for a single activity.
         /// </summary>
         /// <param name="wfActivity">Activity</param>
@@ -125,6 +134,14 @@ namespace Kinetix.Workflow
         void SaveDecisionAndGoToNextActivity(WfWorkflow wfWorkflow, WfDecision wfDecision);
 
         /// <summary>
+        /// Save the decision for the current activity and go to the next activity using the default transition
+        /// </summary>
+        /// <param name="wfWorkflow">wfWorkflow</param>
+        /// <param name="wfDecision">wfDecision</param>
+        /// <param name="forceValid">Force the current activity to be valid (Mul only)</param>
+        void SaveDecisionAndGoToNextActivity(WfWorkflow wfWorkflow, WfDecision wfDecision, bool forceValid);
+
+        /// <summary>
         /// Go to the next activity using the provided transition name
         /// </summary>
         /// <param name="wfWorkflow">wfWorkflow</param>
@@ -133,10 +150,26 @@ namespace Kinetix.Workflow
         void SaveDecisionAndGoToNextActivity(WfWorkflow wfWorkflow, string transitionName, WfDecision wfDecision);
 
         /// <summary>
+        /// Go to the next activity using the provided transition name
+        /// </summary>
+        /// <param name="wfWorkflow">wfWorkflow</param>
+        /// <param name="transitionName">transitionName</param>
+        /// <param name="wfDecision">wfDecision</param>
+        /// <param name="forceValid">Force the current activity to be valid (Mul only)</param>
+        void SaveDecisionAndGoToNextActivity(WfWorkflow wfWorkflow, string transitionName, WfDecision wfDecision, bool forceValid);
+
+        /// <summary>
         /// Go To the next activity
         /// </summary>
         /// <param name="wfWorkflow">workflow</param>
         void GoToNextActivity(WfWorkflow wfWorkflow);
+
+        /// <summary>
+        /// Go To next activity
+        /// </summary>
+        /// <param name="wfWorkflow">workflow</param>
+        /// <param name="forceValid">force the current activity to be valid (Mul only)</param>
+        void GoToNextActivity(WfWorkflow wfWorkflow, bool forceValid);
 
         /// <summary>
         /// Predicate method to test if we can go to the next activity.
@@ -149,6 +182,19 @@ namespace Kinetix.Workflow
         ///     True when all the decisions exist for the accounts linked to this activity, False otherwise
         /// </returns>
         bool CanGoToNextActivity(WfWorkflow wfWorkflow);
+
+        /// <summary>
+        /// Predicate method to test if we can go to the next activity.
+        /// </summary>
+        /// <param name="wfWorkflow">wfWorkflow</param>
+        /// <param name="forceValid">force the current activity to be valid (Mul only)</param>
+        /// <returns>
+        /// For a single activity:
+        ///     True when a decision exist for the current activity, False otherwise
+        /// For a multiple activity:
+        ///     True when all the decisions exist for the accounts linked to this activity, False otherwise
+        /// </returns>
+        bool CanGoToNextActivity(WfWorkflow wfWorkflow, bool forceValid);
 
         /// <summary>
         /// Autovalidate all the next activities using the default transition the the provided activity.
