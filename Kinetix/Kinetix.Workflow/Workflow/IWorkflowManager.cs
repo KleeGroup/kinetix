@@ -165,13 +165,6 @@ namespace Kinetix.Workflow
         void GoToNextActivity(WfWorkflow wfWorkflow);
 
         /// <summary>
-        /// Go To next activity
-        /// </summary>
-        /// <param name="wfWorkflow">workflow</param>
-        /// <param name="forceValid">force the current activity to be valid (Mul only)</param>
-        void GoToNextActivity(WfWorkflow wfWorkflow, bool forceValid);
-
-        /// <summary>
         /// Predicate method to test if we can go to the next activity.
         /// </summary>
         /// <param name="wfWorkflow">wfWorkflow</param>
@@ -183,19 +176,7 @@ namespace Kinetix.Workflow
         /// </returns>
         bool CanGoToNextActivity(WfWorkflow wfWorkflow);
 
-        /// <summary>
-        /// Predicate method to test if we can go to the next activity.
-        /// </summary>
-        /// <param name="wfWorkflow">wfWorkflow</param>
-        /// <param name="forceValid">force the current activity to be valid (Mul only)</param>
-        /// <returns>
-        /// For a single activity:
-        ///     True when a decision exist for the current activity, False otherwise
-        /// For a multiple activity:
-        ///     True when all the decisions exist for the accounts linked to this activity, False otherwise
-        /// </returns>
-        bool CanGoToNextActivity(WfWorkflow wfWorkflow, bool forceValid);
-
+       
         /// <summary>
         /// Autovalidate all the next activities using the default transition the the provided activity.
         /// This autovalidation can validate 0, 1 or N activities.
