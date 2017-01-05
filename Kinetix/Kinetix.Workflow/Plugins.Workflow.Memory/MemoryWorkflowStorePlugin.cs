@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.Threading;
 using System.Linq;
 using Kinetix.Rules;
+using Kinetix.Workflow.Workflow;
 
 namespace Kinetix.Workflow
 {
@@ -179,7 +180,7 @@ namespace Kinetix.Workflow
             return wfDecisions;
         }
 
-        public IList<WfActivityDefinition> FindAllDefaultActivityDefinitions(WfWorkflowDefinition wfWorkflowDefinition)
+        public IList<WfActivityDefinition> FindAllDefaultActivityDefinitions(WfWorkflowDefinition wfWorkflowDefinition, int startingPos = 0)
         {
             Debug.Assert(wfWorkflowDefinition != null);
             //---
@@ -581,6 +582,11 @@ namespace Kinetix.Workflow
             {
                 inMemoryWorkflowInstanceStore[wfUpd.WfwId.Value].WfaId2 = wfUpd.WfaId2;
             }
+        }
+
+        public void CreateActivityDecision(IList<WfActivityDecision> activities)
+        {
+            throw new NotImplementedException();
         }
 
 

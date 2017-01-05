@@ -48,6 +48,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Impl.Workflow\IItemStorePlugin.cs" />
+    <Compile Include="Workflow\WfActivityDecision.cs" />
+    <Compile Include="Workflow\WfMassValidation.cs" />
     <Compile Include="Workflow\WfRecalculationOutput.cs" />
     <Compile Include="Plugins.Workflow.SqlServer\SqlServerWorkflowStorePlugin.cs" />
     <Compile Include="Workflow\WfActivityUpdate.cs" />

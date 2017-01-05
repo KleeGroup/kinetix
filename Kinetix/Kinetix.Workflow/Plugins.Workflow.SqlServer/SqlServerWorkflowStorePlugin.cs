@@ -6,6 +6,7 @@ using Kinetix.Workflow.instance;
 using Kinetix.Workflow.model;
 using System.Diagnostics;
 using Kinetix.Rules;
+using Kinetix.Workflow.Workflow;
 
 namespace Kinetix.Workflow {
     public class SqlServerWorkflowStorePlugin : IWorkflowStorePlugin {
@@ -103,10 +104,12 @@ namespace Kinetix.Workflow {
             return ret;
         }
 
-        public IList<WfActivityDefinition> FindAllDefaultActivityDefinitions(WfWorkflowDefinition wfWorkflowDefinition) {
+        public IList<WfActivityDefinition> FindAllDefaultActivityDefinitions(WfWorkflowDefinition wfWorkflowDefinition, int startingPos) {
             var cmd = GetSqlServerCommand("FindAllDefaultActivityDefinitions.sql");
             cmd.Parameters.AddWithValue(WfActivityDefinition.Cols.WFWD_ID, wfWorkflowDefinition.WfwdId);
             cmd.Parameters.AddWithValue(WfActivityDefinition.Cols.NAME, WfCodeTransition.Default.ToString());
+            cmd.Parameters.AddWithValue(WfActivityDefinition.Cols.LEVEL, startingPos);
+
             IList<WfActivityDefinition> activities = new List<WfActivityDefinition>(cmd.ReadList<WfActivityDefinition>());
             return activities;
         }
@@ -386,6 +389,11 @@ namespace Kinetix.Workflow {
         public void CreateActivies(IList<WfActivity> activities)
         {
             BrokerManager.GetBroker<WfActivity>().InsertAll(activities);
+        }
+
+        public void CreateActivityDecision(IList<WfActivityDecision> activities)
+        {
+            throw new NotImplementedException();
         }
 
 

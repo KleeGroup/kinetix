@@ -1,6 +1,7 @@
 ﻿using Kinetix.Rules;
 using Kinetix.Workflow.instance;
 using Kinetix.Workflow.model;
+using Kinetix.Workflow.Workflow;
 using System;
 using System.Collections.Generic;
 
@@ -255,8 +256,9 @@ namespace Kinetix.Workflow
         /// Find the list of all the definitions following the default transitions.
         /// </summary>
         /// <param name="wfWorkflowDefinition">wfWorkflowDefinition.</param>
+        /// <param name="startingPos">startingPos.</param>
         /// <returns>the list of transitions ordered from start to end</returns>
-        IList<WfActivityDefinition> FindAllDefaultActivityDefinitions(WfWorkflowDefinition wfWorkflowDefinition);
+        IList<WfActivityDefinition> FindAllDefaultActivityDefinitions(WfWorkflowDefinition wfWorkflowDefinition, int startingPos = 0);
 
         /// <summary>
         /// Add a transition.
@@ -391,6 +393,8 @@ namespace Kinetix.Workflow
         /// </summary>
         /// <param name="activities">Activities to create</param>
         void CreateActivies(IList<WfActivity> activities);
+
+        void CreateActivityDecision(IList<WfActivityDecision> activities);
 
         #endregion
     }

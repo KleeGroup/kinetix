@@ -7,6 +7,7 @@ using Kinetix.Workflow.instance;
 using Kinetix.Workflow.model;
 using System.Linq;
 using System.ServiceModel;
+using Kinetix.Workflow.Workflow;
 
 namespace Kinetix.Workflow
 {
@@ -141,6 +142,118 @@ namespace Kinetix.Workflow
             return wfActivity;
         }
 
+
+        #region AutovalidateMass
+
+        /// <summary>
+        /// Version ensembliste pour pouvoir autovalider 1400 activitées ...
+        /// </summary>
+        /// <param name="wfWorkflow"></param>
+        /// <param name="currentActivity"></param>
+        /// <param name="wfActivityDefinitionId"></param>
+        /// <returns></returns>
+        public bool AutoValidateNextActivitiesMass(WfWorkflow wfWorkflow, WfActivity currentActivity, int wfActivityDefinitionId)
+        {
+            int wfwdId = wfWorkflow.WfwdId.Value;
+
+            WfActivityDefinition wfActivityDefinition = _workflowStorePlugin.ReadActivityDefinition(wfActivityDefinitionId);
+            WfWorkflowDefinition wfWorkflowDefinition = _workflowStorePlugin.ReadWorkflowDefinition(wfWorkflow.WfwdId.Value);
+
+            IList<WfActivityDefinition> activityDefinitions = _workflowStorePlugin.FindAllDefaultActivityDefinitions(wfWorkflowDefinition, wfActivityDefinition.Level.Value);
+
+            IList<WfActivity> allActivities = _workflowStorePlugin.FindAllActivitiesByWorkflowDefinitionId(wfWorkflowDefinition);
+            IList<WfDecision> allDecisions = _workflowStorePlugin.FindAllDecisionsByWorkflowDefinitionId(wfWorkflowDefinition);
+
+            //Build a dictionary from the rules: WfadId => List<RuleDefinition>
+            IDictionary<int, List<RuleDefinition>> dicRules = constructDicRulesForWorkflowDefinition(wfwdId);
+
+            //Build a dictionary from the conditions: RudId => List<RuleConditionDefinition>
+            IDictionary<int, List<RuleConditionDefinition>> dicConditions = constructDicConditionsForWorkflowDefinition(wfwdId);
+
+            //Build a dictionary from the selectors: WfadId => List<SelectorDefinition>
+            IDictionary<int, List<SelectorDefinition>> dicSelectors = constructDicSelectorsForWorkflowDefinition(wfwdId);
+
+            //Build a dictionary from the filters: SelId => List<RuleFilterDefinition>
+            IDictionary<int, List<RuleFilterDefinition>> dicFilters = constructDicFiltersForWorkflowDefinition(wfwdId);
+
+            //Build a dictionnary from the workflows: WfadId => WfActivity
+            IDictionary<int, WfActivity> dicActivities = allActivities.ToDictionary(a => a.WfadId);
+
+            //Build a dictionnary from the activities: WfaId => List<WfDecision>
+            IDictionary<int, List<WfDecision>> dicDecision = allDecisions.GroupBy(c => c.WfaId).ToDictionary(d => d.Key, e => e.ToList());
+
+            object obj = _itemStorePlugin.ReadItem(wfWorkflow.ItemId.Value);
+            int? wfCurrentActivityId = null;
+            WfActivity wfActivityCurrent = currentActivity;
+            RuleConstants ruleConstants = _ruleManager.GetConstants(wfActivityDefinition.WfwdId);
+            WfMassValidation validation = new WfMassValidation();
+            int i;
+            for (i = 0; i < activityDefinitions.Count; i++)
+            {
+                WfActivityDefinition activityDefinition = activityDefinitions[i];
+
+                if (CanAutoValidateActivity(activityDefinition, obj, ruleConstants, dicRules, dicConditions, dicSelectors, dicFilters))
+                {
+                    if (i > 0)
+                    {
+                        dicActivities.TryGetValue(activityDefinition.WfadId.Value, out wfActivityCurrent);
+
+                        if (wfActivityCurrent == null)
+                        {
+                            wfActivityCurrent = GetNewActivity(activityDefinition, wfWorkflow, true);
+                        }
+                        else
+                        {
+                            wfActivityCurrent.IsAuto = true;
+                            wfActivityCurrent.IsValid = true;
+                        }
+                    }
+
+                    WfDecision decision = new WfDecision();
+                    decision.Username = USER_AUTO;
+                    decision.DecisionDate = DateTime.Now;
+                    decision.WfaId = wfActivityCurrent.WfaId.Value;
+
+                    validation.AddActivityDecision(wfActivityCurrent, decision);
+
+                    wfCurrentActivityId = wfActivityCurrent.WfaId;
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            //Updating current workflow activities (no new activities)
+            if (validation.ActivitiesDecisions.Count > 0)
+            {
+                _workflowStorePlugin.CreateActivityDecision(validation.ActivitiesDecisions);
+            }
+
+            if (wfCurrentActivityId != null)
+            {
+                wfWorkflow.WfaId2 = wfCurrentActivityId;
+                _workflowStorePlugin.UpdateWorkflowInstance(wfWorkflow);
+            }
+
+            return i == activityDefinitions.Count;
+        }
+
+        public bool CanAutoValidateActivity(WfActivityDefinition activityDefinition, object obj, RuleConstants ruleConstants,
+            IDictionary<int, List<RuleDefinition>>  dicRules, IDictionary<int, List<RuleConditionDefinition>> dicConditions,
+            IDictionary<int, List<SelectorDefinition>> dicSelectors, IDictionary<int, List<RuleFilterDefinition>> dicFilters)
+        {
+            bool ruleValid = _ruleManager.IsRuleValid(activityDefinition.WfadId.Value, obj, ruleConstants, dicRules, dicConditions);
+            IList<AccountUser> accounts = _ruleManager.SelectAccounts(activityDefinition.WfadId.Value, obj, ruleConstants, dicSelectors, dicFilters);
+
+            bool atLeastOnePerson = accounts.Count > 0;
+
+            // If no rule is defined for validation or no one can validate this activity, we can autovalidate it.
+            return ruleValid == false || atLeastOnePerson == false;
+        }
+
+        #endregion
+
         public bool AutoValidateNextActivities(WfWorkflow wfWorkflow, WfActivity currentActivity, int wfActivityDefinitionId)
         {
             WfActivityDefinition activityDefinition = _workflowStorePlugin.ReadActivityDefinition(wfActivityDefinitionId);
@@ -261,7 +374,7 @@ namespace Kinetix.Workflow
 
         public IList<WfActivityDefinition> GetActivityDefinitions(WfWorkflow wfWorkflow)
         {
-            WfWorkflowDefinition wfDefinition = _workflowStorePlugin.ReadWorkflowDefinition((int)wfWorkflow.WfwdId);
+            WfWorkflowDefinition wfDefinition = _workflowStorePlugin.ReadWorkflowDefinition(wfWorkflow.WfwdId.Value);
             IList<WfActivityDefinition> activities = _workflowStorePlugin.FindAllDefaultActivityDefinitions(wfDefinition);
 
             object obj = _itemStorePlugin.ReadItem((int)wfWorkflow.ItemId);
@@ -583,10 +696,8 @@ namespace Kinetix.Workflow
                 }
                 else
                 {
-                    // Last acitivity
-                    _workflowStorePlugin.RemoveTransition(transitionFrom);
-                    transitionTo.WfadIdTo = transitionFrom.WfadIdTo;
-                    _workflowStorePlugin.UpdateTransition(transitionTo);
+                    // Last activity
+                    _workflowStorePlugin.RemoveTransition(transitionTo);
                 }
             }
 
@@ -765,7 +876,7 @@ namespace Kinetix.Workflow
 
         public void SaveDecisionAndGoToNextActivity(WfWorkflow wfWorkflow, WfDecision wfDecision, bool forceValid)
         {
-            SaveDecisionAndGoToNextActivity(wfWorkflow, WfCodeTransition.Default.ToString(), wfDecision, false);
+            SaveDecisionAndGoToNextActivity(wfWorkflow, WfCodeTransition.Default.ToString(), wfDecision, forceValid);
         }
 
         public void SaveDecisionAndGoToNextActivity(WfWorkflow wfWorkflow, string transitionName, WfDecision wfDecision)
@@ -831,6 +942,7 @@ namespace Kinetix.Workflow
 
                 //Autovalidating next activities
                 bool endReached = AutoValidateNextActivities(wfWorkflow, nextActivity, nextActivityDefinition.WfadId.Value);
+                //bool endReached = AutoValidateNextActivities(wfWorkflow, nextActivity, nextActivityDefinition.WfadId.Value);
 
                 if (endReached)
                 {
@@ -861,7 +973,9 @@ namespace Kinetix.Workflow
             WfActivity currentActivity = _workflowStorePlugin.ReadActivity(wfWorkflow.WfaId2.Value);
 
             // Updating the decision
-            SaveDecision(wfWorkflow, wfDecision);
+            SaveDecision(wfWorkflow, wfDecision, forceValid);
+
+            currentActivity = _workflowStorePlugin.ReadActivity(wfWorkflow.WfaId2.Value);
 
             bool canGoToNextActivity = CanGoToNextActivity(currentActivity);
 
