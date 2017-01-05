@@ -47,6 +47,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Impl.Rules\IRuleStorePlugin.cs" />
+    <Compile Include="Impl.Rules\RuleCulture.cs" />
     <Compile Include="Plugins.Rules.SqlServer\SqlServerRuleStorePlugin.cs" />
     <Compile Include="Rules\IRuleConstantsStore.cs" />
     <Compile Include="Impl.Rules\IRuleConstantsStorePlugin.cs" />

@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Kinetix.Account;
 using System.Collections;
+using System.Globalization;
+using Kinetix.Rules.Impl.Rules;
 
 namespace Kinetix.Rules
 {
@@ -10,6 +12,8 @@ namespace Kinetix.Rules
     {
         private readonly IRuleStorePlugin _ruleStorePlugin;
         private readonly IAccountManager _accountManager;
+
+        
 
         public SimpleRuleSelectorPlugin(IRuleStorePlugin ruleStorePlugin, IAccountManager accountManager)
         {
@@ -165,13 +169,13 @@ namespace Kinetix.Rules
                             }
                             break;
                         case "<":
-                            double doubleExpressionInf = Double.Parse(expression);
-                            double doubleFieldInf = Double.Parse((string)fieldToTest);
+                            decimal doubleExpressionInf = decimal.Parse(expression, RuleCulture.Culture);
+                            decimal doubleFieldInf = (decimal) fieldToTest;
                             result = doubleFieldInf < doubleExpressionInf;
                             break;
                         case ">":
-                            double doubleExpressionSup = Double.Parse(expression);
-                            double doubleFieldSup = Double.Parse((string)fieldToTest);
+                            decimal doubleExpressionSup = decimal.Parse(expression, RuleCulture.Culture);
+                            decimal doubleFieldSup = (decimal) fieldToTest;
                             result = doubleFieldSup > doubleExpressionSup;
                             break;
                     }

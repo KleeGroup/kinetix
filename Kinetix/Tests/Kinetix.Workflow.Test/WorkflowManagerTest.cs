@@ -18,6 +18,7 @@ using System.Configuration;
 using Kinetix.ComponentModel;
 using Kinetix.Data.SqlClient;
 using Kinetix.Broker;
+using System.Globalization;
 
 namespace Kinetix.Workflow.Test
 {
@@ -95,6 +96,7 @@ namespace Kinetix.Workflow.Test
             myDummyDtObject.Id = itemId;
             myDummyDtObject.Division = "DIV";
             myDummyDtObject.Entity = "ENT";
+            myDummyDtObject.Montant = 199.999m;
             itemStorePlugin.AddItem(myDummyDtObject.Id, myDummyDtObject);
             return myDummyDtObject;
         }
@@ -894,6 +896,58 @@ namespace Kinetix.Workflow.Test
 
         }
 
+
+        [TestMethod]
+        public void TestWorkflowDoubleWithCulture()
+        {
+            var container = GetConfiguredContainer();
+            IWorkflowManager _workflowManager = container.Resolve<IWorkflowManager>();
+            IAccountManager _accountManager = container.Resolve<IAccountManager>();
+
+            WfWorkflowDefinition wfWorkflowDefinition = new WfWorkflowDefinitionBuilder("WorkflowRules").Build();
+            _workflowManager.CreateWorkflowDefinition(wfWorkflowDefinition);
+
+            AccountGroup accountGroup = new AccountGroup("1", "dummy group");
+            AccountUser account = new AccountUserBuilder("100").Build();
+            _accountManager.GetStore().SaveGroup(accountGroup);
+            _accountManager.GetStore().SaveAccounts(new List<AccountUser>() { account });
+            _accountManager.GetStore().Attach(account.Id, accountGroup.Id);
+
+            // Step 1 : 1 rule, 1 condition
+            WfActivityDefinition firstActivity = new WfActivityDefinitionBuilder("Step 1", wfWorkflowDefinition.WfwdId.Value).Build();
+
+            _workflowManager.AddActivity(wfWorkflowDefinition, firstActivity, 1);
+            RuleDefinition rule1Act1 = new RuleDefinition(null, DateTime.Now, firstActivity.WfadId, "Règle 1");
+            RuleConditionDefinition condition1Rule1Act1 = new RuleConditionDefinition(null, "Entity", "IN", "ENT,FED,GFE", null);
+            _workflowManager.AddRule(firstActivity, rule1Act1, new List<RuleConditionDefinition>() { condition1Rule1Act1 });
+            // Selector/filter to validate the activity (preventing auto validation when no one is linked to an activity)
+            SelectorDefinition selector1 = new SelectorDefinition(null, DateTime.Now, firstActivity.WfadId, accountGroup.Id);
+            RuleFilterDefinition filter1 = new RuleFilterDefinition(null, "Montant", "<", "200,001", null);
+            _workflowManager.AddSelector(firstActivity, selector1, new List<RuleFilterDefinition>() { filter1 });
+
+
+            MyDummyDtObject myDummyDtObject = createDummyDtObject(1);
+
+            WfWorkflow wfWorkflow = _workflowManager.CreateWorkflowInstance(wfWorkflowDefinition.WfwdId.Value, "JUnit", false, myDummyDtObject.Id);
+
+            // Starting the workflow
+            _workflowManager.StartInstance(wfWorkflow);
+
+            System.Threading.Thread.CurrentThread.CurrentUICulture = CultureInfo.GetCultureInfo("fr");
+
+            IList<WfWorkflowDecision> workflowDecisions = _workflowManager.GetWorkflowDecision(wfWorkflow.WfwId.Value);
+
+            Assert.IsNotNull(workflowDecisions);
+            Assert.AreEqual(workflowDecisions.Count, 1);
+
+            System.Threading.Thread.CurrentThread.CurrentUICulture = CultureInfo.GetCultureInfo("en");
+
+            workflowDecisions = _workflowManager.GetWorkflowDecision(wfWorkflow.WfwId.Value);
+
+            Assert.IsNotNull(workflowDecisions);
+            Assert.AreEqual(workflowDecisions.Count, 1);
+
+        }
 
         [TestMethod]
         public void TestWorkflowRecalculationRemovingActivityFirstPosition()

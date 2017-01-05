@@ -33,5 +33,11 @@ namespace Kinetix.Workflow.Test
             set;
         }
 
+        public decimal Montant
+        {
+            get;
+            set;
+        }
+
     }
 }

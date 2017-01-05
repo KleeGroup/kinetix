@@ -1,6 +1,8 @@
-﻿using System;
+﻿using Kinetix.Rules.Impl.Rules;
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 
 namespace Kinetix.Rules
@@ -86,13 +88,13 @@ namespace Kinetix.Rules
                             }
                             break;
                         case "<":
-                            double doubleExpressionInf = Double.Parse(expression);
-                            double doubleFieldInf = Double.Parse((string)fieldToTest);
+                            decimal doubleExpressionInf = decimal.Parse(expression, RuleCulture.Culture);
+                            decimal doubleFieldInf = (decimal) fieldToTest;
                             result = doubleFieldInf < doubleExpressionInf;
                             break;
                         case ">":
-                            double doubleExpressionSup = Double.Parse(expression);
-                            double doubleFieldSup = Double.Parse((string)fieldToTest);
+                            decimal doubleExpressionSup = decimal.Parse(expression, RuleCulture.Culture);
+                            decimal doubleFieldSup = (decimal) fieldToTest;
                             result = doubleFieldSup > doubleExpressionSup;
                             break;
                     }

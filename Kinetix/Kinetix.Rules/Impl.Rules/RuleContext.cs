@@ -1,4 +1,5 @@
 ﻿using Kinetix.ComponentModel;
+using Kinetix.Rules.Impl.Rules;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,16 +22,21 @@ namespace Kinetix.Rules
                 object val = bean.GetValue(obj);
                 if (val != null)
                 {
+                    object value;
                     if (val is IList)
                     {
                         IList valList = (IList) val;
-                        context[bean.PropertyName] = valList.Cast<object>().Select(v => v.ToString()).ToList();
+                        value = valList.Cast<object>().Select(v => v.ToString()).ToList();
+                    }
+                    else if (val is decimal)
+                    {
+                        value = val;
                     }
                     else
                     {
-                        context[bean.PropertyName] = val.ToString();
+                        value = val.ToString();
                     }
-                    
+                    context[bean.PropertyName] = value;
                 }
             }
 
