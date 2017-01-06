@@ -1092,7 +1092,11 @@ namespace Kinetix.Workflow
             Debug.Assert(wfDecision != null);
             Debug.Assert(wfDecision.Id != null);
             //---
+            WfActivity wfActivity = _workflowStorePlugin.ReadActivity(wfDecision.WfaId);
             _workflowStorePlugin.DeleteDecision(wfDecision);
+            wfActivity.IsValid = false;
+            _workflowStorePlugin.UpdateActivity(wfActivity);
+
         }
 
         public WfActivity GetActivity(WfWorkflow wfWorkflow, WfActivityDefinition wfActivityDefinition)
