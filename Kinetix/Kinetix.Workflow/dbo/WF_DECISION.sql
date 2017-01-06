@@ -9,6 +9,7 @@ create table [dbo].[WF_DECISION] (
 	[CHOICE] int,
 	[DECISION_DATE] datetime2,
 	[COMMENTS] nvarchar(3000),
+	[INSERT_KEY] int,
 	[WFA_ID] int not null,
 	constraint [PK_WF_DECISION] primary key clustered ([WFE_ID] ASC),
 	constraint [FK_WFE_WFA] foreign key ([WFA_ID]) references [dbo].[WF_ACTIVITY] ([WFA_ID]))

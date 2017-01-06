@@ -589,6 +589,10 @@ namespace Kinetix.Workflow
             throw new NotImplementedException();
         }
 
+        public void CreateDecisions(IList<WfDecision> decisions)
+        {
+            throw new NotImplementedException();
+        }
 
         #endregion
 

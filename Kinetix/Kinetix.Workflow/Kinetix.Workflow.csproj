@@ -48,6 +48,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Impl.Workflow\IItemStorePlugin.cs" />
+    <Compile Include="Workflow\WfActivityUpdateDecision.cs" />
     <Compile Include="Workflow\WfActivityDecision.cs" />
     <Compile Include="Workflow\WfMassValidation.cs" />
     <Compile Include="Workflow\WfRecalculationOutput.cs" />
@@ -123,6 +124,12 @@
     <Content Include="generated.sql" />
     <Content Include="Init\WF_MULTIPLICITY_DEFINITION.insert.sql" />
     <Content Include="Init\WF_STATUS.insert.sql" />
+    <EmbeddedResource Include="SQLResources\UpdateActivityInsertDecision.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SQLResources\CreateActivityDecision.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
     <EmbeddedResource Include="SQLResources\ShiftActivityDefinitionPositionsBetween.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>

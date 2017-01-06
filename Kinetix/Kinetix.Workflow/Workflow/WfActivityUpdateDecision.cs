@@ -2,14 +2,14 @@
 
 namespace Kinetix.Workflow.Workflow
 {
-    public class WfActivityDecision
+    public class WfActivityUpdateDecision
     {
 
         public int WfadId { get; set; }
 
         public WfDecision Decision { get; set; }
 
-        public WfActivity Activity { get; set; }
+        public WfActivityUpdate ActivityUpdate { get; set; }
 
     }
 }

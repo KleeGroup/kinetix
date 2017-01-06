@@ -1,21 +1,31 @@
 ﻿using Kinetix.Workflow.instance;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Kinetix.Workflow.Workflow
 {
     public class WfMassValidation
     {
 
-        public IList<WfActivityDecision> ActivitiesDecisions { get; set; } = new List<WfActivityDecision>();
+        public IList<WfActivityDecision> ActivitiesDecisionsInsert { get; set; } = new List<WfActivityDecision>();
 
+        public IList<WfActivityUpdate> ActivitiesUpdate { get; set; } = new List<WfActivityUpdate>();
 
-        public void AddActivityDecision(WfActivity wfAct, WfDecision wfDecision)
+        public IList<WfDecision> DecisionsInsert { get; set; } = new List<WfDecision>();
+
+        public void AddActivityDecisionInsert(WfActivity wfAct, WfDecision wfDecision)
         {
-            ActivitiesDecisions.Add(new WfActivityDecision() { Activity = wfAct, Decision = wfDecision });
+            ActivitiesDecisionsInsert.Add(new WfActivityDecision() { Activity = wfAct, Decision = wfDecision, WfadId = wfAct.WfadId });
         }
+
+        public void AddActivitiesUpdate(WfActivity wfAct)
+        {
+            ActivitiesUpdate.Add(new WfActivityUpdate() { WfaId = wfAct.WfaId, IsAuto = wfAct.IsAuto, IsValid = wfAct.IsValid});
+        }
+
+        public void AddDecisionsInsert(WfDecision wfDecision)
+        {
+            DecisionsInsert.Add(wfDecision);
+        }
+
     }
 }

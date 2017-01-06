@@ -1,9 +1,11 @@
 ﻿using Kinetix.ComponentModel;
 using System;
+using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -148,6 +150,11 @@ namespace Kinetix.Workflow.instance
             set;
         }
 
+        [Column("INSERT_KEY")]
+        [Domain("DO_X_WORKFLOW_ID")]
+        [DataMember]
+        [GeneratedCode("InsertKey", "")]
+        public int? InsertKey { get; set; }
 
         /// <summary>
         /// Methode d'extensibilité possible pour les constructeurs.

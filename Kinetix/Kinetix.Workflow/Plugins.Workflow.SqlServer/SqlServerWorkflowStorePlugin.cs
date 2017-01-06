@@ -393,9 +393,15 @@ namespace Kinetix.Workflow {
 
         public void CreateActivityDecision(IList<WfActivityDecision> activities)
         {
-            throw new NotImplementedException();
+            var cmd = GetSqlServerCommand("InsertActivityUpdateWorkflow.sql");
+            cmd.Parameters.AddBeanCollectionProperties(activities);
+            cmd.ExecuteNonQuery();
         }
 
+        public void CreateDecisions(IList<WfDecision> decisions)
+        {
+            BrokerManager.GetBroker<WfDecision>().InsertAll(decisions);
+        }
 
         #endregion
     }

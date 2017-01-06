@@ -396,6 +396,9 @@ namespace Kinetix.Workflow
 
         void CreateActivityDecision(IList<WfActivityDecision> activities);
 
+        void CreateDecisions(IList<WfDecision> decisions);
+
+
         #endregion
     }
 }
