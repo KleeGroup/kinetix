@@ -568,7 +568,7 @@ namespace Kinetix.Workflow
 
         }
 
-        public void CreateActivies(IList<WfActivity> activities)
+        public void CreateActivities(IList<WfActivity> activities)
         {
             foreach(WfActivity activity in activities)
             {
@@ -584,14 +584,12 @@ namespace Kinetix.Workflow
             }
         }
 
-        public void CreateActivityDecision(IList<WfActivityDecision> activities)
-        {
-            throw new NotImplementedException();
-        }
-
         public void CreateDecisions(IList<WfDecision> decisions)
         {
-            throw new NotImplementedException();
+            foreach (WfDecision activity in decisions)
+            {
+                CreateDecision(activity);
+            }
         }
 
         #endregion

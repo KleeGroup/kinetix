@@ -18,4 +18,3 @@ UPDATE WFW
    SET WFA_ID_2 = wfa_wfw.WFA_ID
   FROM WF_WORKFLOW WFW
   JOIN @WFA_ID_WFW_ID_LIST wfa_wfw ON (WFW.WFW_ID = wfa_wfw.WFW_ID);
- 

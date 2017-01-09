@@ -6,15 +6,15 @@ namespace Kinetix.Workflow.Workflow
     public class WfMassValidation
     {
 
-        public IList<WfActivityDecision> ActivitiesDecisionsInsert { get; set; } = new List<WfActivityDecision>();
+        public IList<WfDecisionActivityInsert> ActivitiesDecisionsInsert { get; set; } = new List<WfDecisionActivityInsert>();
 
         public IList<WfActivityUpdate> ActivitiesUpdate { get; set; } = new List<WfActivityUpdate>();
 
         public IList<WfDecision> DecisionsInsert { get; set; } = new List<WfDecision>();
 
-        public void AddActivityDecisionInsert(WfActivity wfAct, WfDecision wfDecision)
+        public void AddActivitiesDecisionsInsert(WfActivity wfAct, WfDecision wfDecision)
         {
-            ActivitiesDecisionsInsert.Add(new WfActivityDecision() { Activity = wfAct, Decision = wfDecision, WfadId = wfAct.WfadId });
+            ActivitiesDecisionsInsert.Add(new WfDecisionActivityInsert() {Decision = wfDecision, Activity = wfAct });
         }
 
         public void AddActivitiesUpdate(WfActivity wfAct)

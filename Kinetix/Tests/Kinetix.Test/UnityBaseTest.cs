@@ -76,7 +76,7 @@ namespace Kinetix.Test
             /* Initialise la configuration. */
             ConfigManager.Init();
 
-            _scope = new TransactionScope();
+            _scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.ReadCommitted, Timeout = new TimeSpan(0, 5, 0) });
         }
 
 

@@ -220,7 +220,7 @@ namespace Kinetix.Workflow
                     }
                     else
                     {
-                        validation.AddActivityDecisionInsert(wfActivityCurrent, decision);
+                        validation.AddActivitiesDecisionsInsert(wfActivityCurrent, decision);
                     }
 
                     wfCurrentActivityId = wfActivityCurrent.WfaId;
@@ -231,16 +231,40 @@ namespace Kinetix.Workflow
                 }
             }
 
-            //Updating current workflow activities (no new activities)
+            // Inserting Activities and decisions
             if (validation.ActivitiesDecisionsInsert.Count > 0)
             {
-                _workflowStorePlugin.CreateActivityDecision(validation.ActivitiesDecisionsInsert);
+                IList<WfActivity> acts = validation.ActivitiesDecisionsInsert.Select(ad => ad.Activity).ToList();
+                _workflowStorePlugin.CreateActivities(acts);
+
+                foreach (WfDecisionActivityInsert decisionActivity in validation.ActivitiesDecisionsInsert)
+                {
+                    decisionActivity.Decision.WfaId = decisionActivity.Activity.WfaId.Value;
+                }
+
+                IList<WfDecision> decisions = validation.ActivitiesDecisionsInsert.Select(ad => ad.Decision).ToList();
+
+                _workflowStorePlugin.CreateDecisions(decisions);
             }
 
+            // Updating activities and inserting decisions
             if (validation.ActivitiesUpdate.Count > 0)
             {
                 _workflowStorePlugin.UpdateActivitiesIsAuto(validation.ActivitiesUpdate);
                 _workflowStorePlugin.CreateDecisions(validation.DecisionsInsert);
+            }
+
+            // If at least one activity have been autovalidated and we have not reached the end, we create the next activity without a decision.
+            if (i > 0 && i < activityDefinitions.Count)
+            {
+                WfActivity nextActivity = CreateActivity(activityDefinitions[i], wfWorkflow, false);
+                wfCurrentActivityId = nextActivity.WfaId;
+            }
+            else if (i == activityDefinitions.Count)
+            {
+                //We have reached the end of the workflow and the last activity is autovalidated
+                WfActivity activity = validation.ActivitiesDecisionsInsert.Select(ad => ad.Activity).Last();
+                wfCurrentActivityId = activity.WfaId;
             }
 
             if (wfCurrentActivityId != null)
@@ -1106,7 +1130,11 @@ namespace Kinetix.Workflow
             Debug.Assert(wfDecision != null);
             Debug.Assert(wfDecision.Id != null);
             //---
+            WfActivity wfActivity = _workflowStorePlugin.ReadActivity(wfDecision.WfaId);
             _workflowStorePlugin.DeleteDecision(wfDecision);
+            wfActivity.IsValid = false;
+            _workflowStorePlugin.UpdateActivity(wfActivity);
+
         }
 
         public WfActivity GetActivity(WfWorkflow wfWorkflow, WfActivityDefinition wfActivityDefinition)
@@ -1196,7 +1224,7 @@ namespace Kinetix.Workflow
             //Creating new activities
             if (output.ActivitiesCreate.Count > 0)
             {
-                _workflowStorePlugin.CreateActivies(output.ActivitiesCreate);
+                _workflowStorePlugin.CreateActivities(output.ActivitiesCreate);
             }
             
             //Creating new activities and flaging them as current activity

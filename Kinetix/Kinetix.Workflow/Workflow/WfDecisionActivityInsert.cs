@@ -2,9 +2,10 @@
 
 namespace Kinetix.Workflow.Workflow
 {
-    public class WfActivityDecision
+    public class WfDecisionActivityInsert
     {
         public WfActivity Activity { get; set; }
 
+        public WfDecision Decision { get; set; }
     }
 }

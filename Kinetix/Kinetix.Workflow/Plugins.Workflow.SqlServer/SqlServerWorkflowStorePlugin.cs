@@ -386,16 +386,9 @@ namespace Kinetix.Workflow {
             cmd.ExecuteNonQuery();
         }
 
-        public void CreateActivies(IList<WfActivity> activities)
+        public void CreateActivities(IList<WfActivity> activities)
         {
             BrokerManager.GetBroker<WfActivity>().InsertAll(activities);
-        }
-
-        public void CreateActivityDecision(IList<WfActivityDecision> activities)
-        {
-            var cmd = GetSqlServerCommand("InsertActivityUpdateWorkflow.sql");
-            cmd.Parameters.AddBeanCollectionProperties(activities);
-            cmd.ExecuteNonQuery();
         }
 
         public void CreateDecisions(IList<WfDecision> decisions)

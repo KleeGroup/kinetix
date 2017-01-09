@@ -392,9 +392,7 @@ namespace Kinetix.Workflow
         /// Create new activities
         /// </summary>
         /// <param name="activities">Activities to create</param>
-        void CreateActivies(IList<WfActivity> activities);
-
-        void CreateActivityDecision(IList<WfActivityDecision> activities);
+        void CreateActivities(IList<WfActivity> activities);
 
         void CreateDecisions(IList<WfDecision> decisions);
 
