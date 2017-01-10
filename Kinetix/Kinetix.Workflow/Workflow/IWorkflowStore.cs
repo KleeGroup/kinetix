@@ -98,6 +98,12 @@ namespace Kinetix.Workflow
         void DeleteActivities(int wfadId);
 
         /// <summary>
+        /// Delete a workflow instance
+        /// </summary>
+        /// <param name="wfwId">Workflow id</param>
+        void DeleteWorkflow(int wfwId);
+
+        /// <summary>
         /// Increment position by 1 for all activity definition >= position
         /// </summary>
         /// <param name="wfwdId"></param>

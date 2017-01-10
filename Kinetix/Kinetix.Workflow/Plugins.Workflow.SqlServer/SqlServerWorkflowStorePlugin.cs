@@ -320,6 +320,12 @@ namespace Kinetix.Workflow {
             cmd.ExecuteNonQuery();
         }
 
+        public void DeleteWorkflow(int wfwId)
+        {
+            var cmd = GetSqlServerCommand("DeleteWorkflowByWorkflowId.sql");
+            cmd.Parameters.AddWithValue(WfActivity.Cols.WFW_ID, wfwId);
+            cmd.ExecuteNonQuery();
+        }
 
         public void DeleteActivities(int wfadId)
         {

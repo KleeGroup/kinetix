@@ -6,7 +6,7 @@ namespace Kinetix.Workflow.Test
 {
     public class MemoryItemStorePlugin : IItemStorePlugin
     {
-        private IDictionary<int, object> inMemoryItemStore = new ConcurrentDictionary<int, object>();
+        public IDictionary<int, object> inMemoryItemStore = new ConcurrentDictionary<int, object>();
 
         public void AddItem(int itemId, object item)
         {

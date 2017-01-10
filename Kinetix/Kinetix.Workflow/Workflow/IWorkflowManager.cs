@@ -45,6 +45,12 @@ namespace Kinetix.Workflow
         WfWorkflow GetWorkflowInstanceByItemId(int wfwdId, int itemId);
 
         /// <summary>
+        /// Remove a workflow instance
+        /// </summary>
+        /// <param name="wfwId">Workflow Id</param>
+        void RemoveWorkflow(int wfwId);
+
+        /// <summary>
         /// Start a workflow instance. 
         /// </summary>
         /// <param name="wfWorkflow">wfWorkflow</param>

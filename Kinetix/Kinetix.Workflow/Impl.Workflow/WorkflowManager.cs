@@ -648,6 +648,11 @@ namespace Kinetix.Workflow
             _workflowStorePlugin.UpdateWorkflowInstance(wfWorkflow);
         }
 
+        public void RemoveWorkflow(int wfwId)
+        {
+            _workflowStorePlugin.DeleteWorkflow(wfwId);
+        }
+
         public void RemoveActivity(WfActivityDefinition wfActivityDefinition)
         {
 

@@ -85,6 +85,31 @@ namespace Kinetix.Workflow
             inMemoryActivityStore[generatedId] = wfActivity;
         }
 
+        public void DeleteWorkflow(int wfwId)
+        {
+            IList<int> actIds = new List<int>();
+
+            foreach(WfActivity wfActivity in inMemoryActivityStore.Values)
+            {
+                IList<int> decIds = inMemoryDecisionStore.Where(wfDec => wfDec.Value.WfaId.Equals(wfActivity.WfaId)).Select(wfDec => wfDec.Key.Value).ToList();
+
+                foreach(int decId in decIds)
+                {
+                    inMemoryDecisionStore.Remove(decId);
+                }
+                
+                actIds.Add(wfActivity.WfaId.Value);
+            }
+
+
+            foreach (int actId in actIds)
+            {
+                inMemoryDecisionStore.Remove(actId);
+            }
+
+            inMemoryWorkflowInstanceStore.Remove(wfwId);
+        }
+
         public void CreateActivityDefinition(WfWorkflowDefinition wfWorkflowDefinition, WfActivityDefinition wfActivityDefinition)
         {
             int generatedId = Interlocked.Increment(ref memoryActivityDefinitionSequenceGenerator);
@@ -588,7 +613,6 @@ namespace Kinetix.Workflow
         {
             throw new NotImplementedException();
         }
-
 
         #endregion
 
