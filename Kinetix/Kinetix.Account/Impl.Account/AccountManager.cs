@@ -1,12 +1,13 @@
 ﻿using Kinetix.ComponentModel;
+using Kinetix.Security;
 using System.Diagnostics;
 using System.Web;
+using System.Web.Services;
 
 namespace Kinetix.Account
 {
     public sealed class AccountManager : IAccountManager
     {
-        private readonly string X_ACCOUNT_ID = "X_ACCOUNT_ID";
         private readonly IAccountStorePlugin _accountStorePlugin;
         private readonly DownloadedFile _defaultPhoto = new DownloadedFile();
 
@@ -20,12 +21,13 @@ namespace Kinetix.Account
 
         public void Login(string accountId)
         {
-            HttpContext.Current.Session[X_ACCOUNT_ID] = accountId;
+            //No more direct access in session : using KinetixSecurity
+            //HttpContext.Current.Session[X_ACCOUNT_ID] = accountId;
         }
 
         public string GetLoggedAccount()
         {
-            string accountId = (string) HttpContext.Current.Session[X_ACCOUNT_ID];
+            string accountId = StandardUser.UserId?.ToString();
             Debug.Assert(accountId != null, "Account was not logged");
             return accountId;
         }

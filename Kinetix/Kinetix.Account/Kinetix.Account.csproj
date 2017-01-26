@@ -35,6 +35,7 @@
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
     <Reference Include="System.Web" />
+    <Reference Include="System.Web.Services" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -58,6 +59,10 @@
     <ProjectReference Include="..\Kinetix.ComponentModel\Kinetix.ComponentModel.csproj">
       <Project>{a36239cb-de97-47fb-afe4-4ffbf15a97eb}</Project>
       <Name>Kinetix.ComponentModel</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Kinetix.Security\Kinetix.Security.csproj">
+      <Project>{253EEBFD-7D38-4B89-8B26-DD2667C5FCC2}</Project>
+      <Name>Kinetix.Security</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
