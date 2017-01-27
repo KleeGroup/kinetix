@@ -1111,7 +1111,7 @@ namespace Kinetix.Workflow
 
 
         #region Workflow Recalculation
-        public WfRecalculationOutput RecalculateWorkflow(WfWorkflow wfWorkflow)
+        public WfRecalculationOutput RecalculateWorkflow(WfWorkflow wfWorkflow, bool fetchWorkflowDecisions = false)
         {
             Debug.Assert(wfWorkflow != null);
             WfWorkflow wfWorkflowFetched = _workflowStorePlugin.ReadWorkflowInstanceForUpdateById(wfWorkflow.WfwId.Value);
@@ -1122,19 +1122,19 @@ namespace Kinetix.Workflow
             IList<WfActivity> activities = _workflowStorePlugin.FindActivitiesByWorkflowId(wfWorkflow);
             IList<WfDecision> decisions = _workflowStorePlugin.FindDecisionsByWorkflowId(wfWorkflow);
 
-            return RecalculateWorkflows(new List<WfWorkflow>() { wfWorkflowFetched }, wfWorkflowDefinition, activities, decisions);
+            return RecalculateWorkflows(new List<WfWorkflow>() { wfWorkflowFetched }, wfWorkflowDefinition, activities, decisions, fetchWorkflowDecisions);
         }
 
-        public WfRecalculationOutput RecalculateWorkflowDefinition(WfWorkflowDefinition wfWorkflowDefinition)
+        public WfRecalculationOutput RecalculateWorkflowDefinition(WfWorkflowDefinition wfWorkflowDefinition, bool fetchWorkflowDecisions = false)
         {
             IList<WfWorkflow> workflows = _workflowStorePlugin.FindActiveWorkflows(wfWorkflowDefinition, true);
             IList<WfActivity> allActivities = _workflowStorePlugin.FindAllActivitiesByWorkflowDefinitionId(wfWorkflowDefinition);
             IList<WfDecision> allDecisions = _workflowStorePlugin.FindAllDecisionsByWorkflowDefinitionId(wfWorkflowDefinition);
-            return RecalculateWorkflows(workflows, wfWorkflowDefinition, allActivities, allDecisions);
+            return RecalculateWorkflows(workflows, wfWorkflowDefinition, allActivities, allDecisions, fetchWorkflowDecisions);
         }
 
 
-        private WfRecalculationOutput RecalculateWorkflows(IList<WfWorkflow> wfWorfklows, WfWorkflowDefinition wfWorkflowDefinition, IList<WfActivity> activities, IList<WfDecision> decisions)
+        private WfRecalculationOutput RecalculateWorkflows(IList<WfWorkflow> wfWorfklows, WfWorkflowDefinition wfWorkflowDefinition, IList<WfActivity> activities, IList<WfDecision> decisions, bool fetchWorkflowDecisions)
         {
             IList<WfActivityDefinition> activityDefinitions = _workflowStorePlugin.FindAllDefaultActivityDefinitions(wfWorkflowDefinition);
 
@@ -1168,6 +1168,11 @@ namespace Kinetix.Workflow
             foreach (WfWorkflow wfWorfklow in wfWorfklows)
             {
                 RecalculateWorkflow(activityDefinitions, ruleConstants, wfWorfklow, dicRules, dicConditions, dicSelectors, dicFilters, dicActivities, dicDecision, dicObjects, output);
+                if (fetchWorkflowDecisions)
+                {
+                    WfListWorkflowDecision wfListWorkflowDecision = GetWorkflowDecisions(activityDefinitions, ruleConstants, wfWorfklow, dicRules, dicConditions, dicSelectors, dicFilters, dicActivities, dicDecision, dicObjects);
+                    output.AddWfListWorkflowDecision(wfListWorkflowDecision);
+                }
             }
 
             UpdateWorkflows(output);
@@ -1410,7 +1415,7 @@ namespace Kinetix.Workflow
 
         #region Custom Methods
 
-        public IList<WfWorkflowDecision> GetWorkflowDecision(int wfwId)
+        public IList<WfWorkflowDecision> GetWorkflowDecisions(int wfwId)
         {
             //Get the workflow from id
             WfWorkflow wfWorkflow = _workflowStorePlugin.ReadWorkflowInstanceById(wfwId);
@@ -1487,6 +1492,71 @@ namespace Kinetix.Workflow
         }
 
 
+        private WfListWorkflowDecision GetWorkflowDecisions(IList<WfActivityDefinition> activityDefinitions, RuleConstants ruleConstants, WfWorkflow wfWorkflow, IDictionary<int, List<RuleDefinition>> dicRules, IDictionary<int, List<RuleConditionDefinition>> dicConditions, IDictionary<int, List<SelectorDefinition>> dicSelectors, IDictionary<int, List<RuleFilterDefinition>> dicFilters, IDictionary<int, List<WfActivity>> dicAllActivities, IDictionary<int, List<WfDecision>> dicDecision, IDictionary<int, object> dicObjects)
+        {
+            IList<WfWorkflowDecision> workflowDecisions = new List<WfWorkflowDecision>();
+
+            object obj;
+            dicObjects.TryGetValue(wfWorkflow.ItemId.Value, out obj);
+
+            List<WfActivity> activities;
+            dicAllActivities.TryGetValue(wfWorkflow.WfwId.Value, out activities);
+
+            if (activities == null)
+            {
+                // No activity for this workflow.
+                activities = new List<WfActivity>();
+            }
+
+            IDictionary<int, WfActivity> dicActivities = activities.ToDictionary(a => a.WfadId);
+
+            foreach (WfActivityDefinition activityDefinition in activityDefinitions)
+            {
+                int actDefId = activityDefinition.WfadId.Value;
+                bool ruleValid = _ruleManager.IsRuleValid(actDefId, obj, ruleConstants, dicRules, dicConditions);
+
+                if (ruleValid)
+                {
+                    IList<AccountGroup> groups = _ruleManager.SelectGroups(actDefId, obj, ruleConstants, dicSelectors, dicFilters);
+                    int nbAccount = 0;
+                    bool atLeatOnePerson = false;
+                    foreach (AccountGroup accountGroup in groups)
+                    {
+                        ISet<string> accounts = _accountManager.GetStore().GetAccountIds(accountGroup.Id);
+                        nbAccount += accounts.Count;
+                        if (nbAccount > 0)
+                        {
+                            atLeatOnePerson = true;
+                            break;
+                        }
+                    }
+
+                    if (atLeatOnePerson)
+                    {
+                        WfWorkflowDecision wfWorkflowDecision = new WfWorkflowDecision();
+                        wfWorkflowDecision.ActivityDefinition = activityDefinition;
+                        WfActivity wfActivity;
+                        dicActivities.TryGetValue(activityDefinition.WfadId.Value, out wfActivity);
+                        wfWorkflowDecision.Activity = wfActivity;
+                        wfWorkflowDecision.Groups = groups;
+                        List<WfDecision> decisions;
+                        if (wfActivity != null)
+                        {
+                            dicDecision.TryGetValue(wfActivity.WfaId.Value, out decisions);
+                            wfWorkflowDecision.Decisions = decisions;
+                        }
+                        workflowDecisions.Add(wfWorkflowDecision);
+                    }
+                }
+            }
+
+            WfListWorkflowDecision ret = new WfListWorkflowDecision();
+            ret.WfWorkflow = wfWorkflow;
+            ret.WorkflowDecisions = workflowDecisions;
+
+            return ret;
+        }
+
         public IList<WfListWorkflowDecision> GetAllWorkflowDecisions(int wfwdId)
         {
             //Get the definition
@@ -1518,69 +1588,10 @@ namespace Kinetix.Workflow
 
             IList<WfListWorkflowDecision> ret = new List<WfListWorkflowDecision>();
 
-            foreach (WfWorkflow wf in workflows)
+            foreach (WfWorkflow wfWorkflow in workflows)
             {
-                IList<WfWorkflowDecision> workflowDecisions = new List<WfWorkflowDecision>();
-
-                object obj;
-                dicObjects.TryGetValue(wf.ItemId.Value, out obj);
-
-                List<WfActivity> activities;
-                dicAllActivities.TryGetValue(wf.WfwId.Value, out activities);
-
-                if (activities == null)
-                {
-                    // No activity for this workflow.
-                    activities = new List<WfActivity>();
-                }
-
-                IDictionary<int, WfActivity> dicActivities = activities.ToDictionary(a => a.WfadId);
-
-                foreach (WfActivityDefinition activityDefinition in activityDefinitions)
-                {
-                    int actDefId = activityDefinition.WfadId.Value;
-                    bool ruleValid = _ruleManager.IsRuleValid(actDefId, obj, ruleConstants, dicRules, dicConditions);
-
-                    if (ruleValid)
-                    {
-                        IList<AccountGroup> groups = _ruleManager.SelectGroups(actDefId, obj, ruleConstants, dicSelectors, dicFilters);
-                        int nbAccount = 0;
-                        bool atLeatOnePerson = false;
-                        foreach (AccountGroup accountGroup in groups)
-                        {
-                            ISet<string> accounts = _accountManager.GetStore().GetAccountIds(accountGroup.Id);
-                            nbAccount += accounts.Count;
-                            if (nbAccount > 0)
-                            {
-                                atLeatOnePerson = true;
-                                break;
-                            }
-                        }
-
-                        if (atLeatOnePerson)
-                        {
-                            WfWorkflowDecision wfWorkflowDecision = new WfWorkflowDecision();
-                            wfWorkflowDecision.ActivityDefinition = activityDefinition;
-                            WfActivity wfActivity;
-                            dicActivities.TryGetValue(activityDefinition.WfadId.Value, out wfActivity);
-                            wfWorkflowDecision.Activity = wfActivity;
-                            wfWorkflowDecision.Groups = groups;
-                            List<WfDecision> decisions;
-                            if (wfActivity != null)
-                            {
-                                dicDecision.TryGetValue(wfActivity.WfaId.Value, out decisions);
-                                wfWorkflowDecision.Decisions = decisions;
-                            }
-                            workflowDecisions.Add(wfWorkflowDecision);
-                        }
-                    }
-                }
-
-                WfListWorkflowDecision collected = new WfListWorkflowDecision();
-
-                collected.WfWorkflow = wf;
-                collected.WorkflowDecisions = workflowDecisions;
-                ret.Add(collected);
+                WfListWorkflowDecision wfListWorkflowDecision = GetWorkflowDecisions(activityDefinitions, ruleConstants, wfWorkflow, dicRules, dicConditions, dicSelectors, dicFilters, dicAllActivities, dicDecision, dicObjects);
+                ret.Add(wfListWorkflowDecision);
             }
 
             return ret;
@@ -1627,6 +1638,7 @@ namespace Kinetix.Workflow
             return _workflowStorePlugin.FindAllFiltersByWorkflowDefinitionId(wfWorkflowDefinition.WfwdId.Value);
         }
 
+ 
         #endregion
     }
 }

@@ -361,13 +361,13 @@ namespace Kinetix.Workflow
         /// This methode should be called when the item linked to the workflow has changed.
         /// </summary>
         /// <param name="wfworkflow">the workflow to recalculate</param>
-        WfRecalculationOutput RecalculateWorkflow(WfWorkflow wfworkflow);
+        WfRecalculationOutput RecalculateWorkflow(WfWorkflow wfworkflow, bool fetchWorkflowDecisions = false);
 
         /// <summary>
         /// Recalculate a workflow definition. All the started instances linked to the workflow will be recalculated.
         /// </summary>
         /// <param name="wfWorkflowDefinition"></param>
-        WfRecalculationOutput RecalculateWorkflowDefinition(WfWorkflowDefinition wfWorkflowDefinition);
+        WfRecalculationOutput RecalculateWorkflowDefinition(WfWorkflowDefinition wfWorkflowDefinition, bool fetchWorkflowDecisions = false);
 
         #endregion
         
@@ -379,7 +379,7 @@ namespace Kinetix.Workflow
         /// </summary>
         /// <param name="wfwId">Workflow Id</param>
         /// <returns>a List of WfWorkflowDecision</returns>
-        IList<WfWorkflowDecision> GetWorkflowDecision(int wfwId);
+        IList<WfWorkflowDecision> GetWorkflowDecisions(int wfwId);
 
 
         /// <summary>

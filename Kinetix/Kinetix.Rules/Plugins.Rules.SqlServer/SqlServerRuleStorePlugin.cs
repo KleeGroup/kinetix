@@ -83,12 +83,12 @@ namespace Kinetix.Rules {
 
         public void RemoveCondition(RuleConditionDefinition ruleConditionDefinition) {
             Debug.Assert(ruleConditionDefinition.Id != null);
-            BrokerManager.GetBroker<RuleConditionDefinition>().Delete(ruleConditionDefinition);
+            BrokerManager.GetBroker<RuleConditionDefinition>().Delete(ruleConditionDefinition.Id.Value);
         }
 
         public void RemoveFilter(RuleFilterDefinition ruleFilterDefinition) {
             Debug.Assert(ruleFilterDefinition.Id != null);
-            BrokerManager.GetBroker<RuleFilterDefinition>().Delete(ruleFilterDefinition);
+            BrokerManager.GetBroker<RuleFilterDefinition>().Delete(ruleFilterDefinition.Id.Value);
         }
 
 

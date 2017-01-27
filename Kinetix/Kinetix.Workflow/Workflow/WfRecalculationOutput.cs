@@ -12,6 +12,8 @@ namespace Kinetix.Workflow
         public IList<WfActivity> ActivitiesCreateUpdateCurrentActivity { get; set; } = new List<WfActivity>();
         public IList<WfActivity> ActivitiesCreate { get; set; } = new List<WfActivity>();
 
+        public IList<WfListWorkflowDecision> WfListWorkflowDecision { get; set; } = new List<WfListWorkflowDecision>();
+
         public void AddWorkflowsUpdateCurrentActivity(WfWorkflow wf) {
             WorkflowsUpdateCurrentActivity.Add(new WfWorkflowUpdate() { WfwId = wf.WfwId, WfaId2 = wf.WfaId2 });
         }
@@ -31,5 +33,9 @@ namespace Kinetix.Workflow
             ActivitiesCreateUpdateCurrentActivity.Add(wfAct);
         }
 
+        public void AddWfListWorkflowDecision(WfListWorkflowDecision wfListWorkflowDecision)
+        {
+            WfListWorkflowDecision.Add(wfListWorkflowDecision);
+        }
     }
 }

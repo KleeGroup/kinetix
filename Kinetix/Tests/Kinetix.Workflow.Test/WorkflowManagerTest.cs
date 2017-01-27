@@ -317,7 +317,7 @@ namespace Kinetix.Workflow.Test
             // Starting the workflow
             _workflowManager.StartInstance(wfWorkflow);
 
-            IList<WfWorkflowDecision> workflowDecisions = _workflowManager.GetWorkflowDecision(wfWorkflow.WfwId.Value);
+            IList<WfWorkflowDecision> workflowDecisions = _workflowManager.GetWorkflowDecisions(wfWorkflow.WfwId.Value);
 
             int currentActivityId = wfWorkflow.WfaId2.Value;
             WfActivity currentActivity = _workflowManager.GetActivity(currentActivityId);
@@ -424,7 +424,7 @@ namespace Kinetix.Workflow.Test
             // Starting the workflow
             _workflowManager.StartInstance(wfWorkflow);
 
-            IList<WfWorkflowDecision> workflowDecisions = _workflowManager.GetWorkflowDecision(wfWorkflow.WfwId.Value);
+            IList<WfWorkflowDecision> workflowDecisions = _workflowManager.GetWorkflowDecisions(wfWorkflow.WfwId.Value);
 
             int currentActivityId = wfWorkflow.WfaId2.Value;
             WfActivity currentActivity = _workflowManager.GetActivity(currentActivityId);
@@ -587,7 +587,7 @@ namespace Kinetix.Workflow.Test
             // Starting the workflow
             _workflowManager.StartInstance(wfWorkflow);
 
-            IList<WfWorkflowDecision> workflowDecisions = _workflowManager.GetWorkflowDecision(wfWorkflow.WfwId.Value);
+            IList<WfWorkflowDecision> workflowDecisions = _workflowManager.GetWorkflowDecisions(wfWorkflow.WfwId.Value);
 
             int currentActivityId = wfWorkflow.WfaId2.Value;
             WfActivity currentActivity = _workflowManager.GetActivity(currentActivityId);
@@ -607,7 +607,7 @@ namespace Kinetix.Workflow.Test
 
             _workflowManager.RecalculateWorkflow(wfWorkflow);
 
-            workflowDecisions = _workflowManager.GetWorkflowDecision(wfWorkflow.WfwId.Value);
+            workflowDecisions = _workflowManager.GetWorkflowDecisions(wfWorkflow.WfwId.Value);
 
             WfWorkflow wfWorkflowFetched = _workflowManager.GetWorkflowInstance(wfWorkflow.WfwId.Value);
 
@@ -947,7 +947,7 @@ namespace Kinetix.Workflow.Test
             // Starting the workflow
             _workflowManager.StartInstance(wfWorkflow);
 
-            IList<WfWorkflowDecision> workflowDecisions = _workflowManager.GetWorkflowDecision(wfWorkflow.WfwId.Value);
+            IList<WfWorkflowDecision> workflowDecisions = _workflowManager.GetWorkflowDecisions(wfWorkflow.WfwId.Value);
 
             //Step 1,3,4 should be Manual, Step 2 should be auto 
             // No decisons for now
@@ -989,7 +989,7 @@ namespace Kinetix.Workflow.Test
 
             _workflowManager.SaveDecisionAndGoToNextActivity(wfWorkflow, decision);
 
-            workflowDecisions = _workflowManager.GetWorkflowDecision(wfWorkflow.WfwId.Value);
+            workflowDecisions = _workflowManager.GetWorkflowDecisions(wfWorkflow.WfwId.Value);
 
             // Step 1,3,4 should be Manual, Step 2 should be auto 
             // 1 Decisions for Step 1
@@ -1042,7 +1042,7 @@ namespace Kinetix.Workflow.Test
             _workflowManager.CanGoToNextActivity(wfWorkflow);
             _workflowManager.GoToNextActivity(wfWorkflow);
 
-            workflowDecisions = _workflowManager.GetWorkflowDecision(wfWorkflow.WfwId.Value);
+            workflowDecisions = _workflowManager.GetWorkflowDecisions(wfWorkflow.WfwId.Value);
 
             // Step 1,3,4 should be Manual, Step 2 should be auto 
             // Decisions for Step 1, Step 3
@@ -1085,7 +1085,7 @@ namespace Kinetix.Workflow.Test
             wfDecisionAct4.Username = account.Id;
             _workflowManager.SaveDecisionAndGoToNextActivity(wfWorkflow, wfDecisionAct4);
 
-            workflowDecisions = _workflowManager.GetWorkflowDecision(wfWorkflow.WfwId.Value);
+            workflowDecisions = _workflowManager.GetWorkflowDecisions(wfWorkflow.WfwId.Value);
 
             // Step 1,3,4 should be Manual, Step 2 should be auto 
             // Decisions for Step 1, Step 3
@@ -1185,7 +1185,7 @@ namespace Kinetix.Workflow.Test
             // Starting the workflow
             _workflowManager.StartInstance(wfWorkflow);
 
-            IList<WfWorkflowDecision> workflowDecisions1 = _workflowManager.GetWorkflowDecision(wfWorkflow.WfwId.Value);
+            IList<WfWorkflowDecision> workflowDecisions1 = _workflowManager.GetWorkflowDecisions(wfWorkflow.WfwId.Value);
 
             // Entry actions should validate all activities (because no group have been associated).
             int currentActivityId = wfWorkflow.WfaId2.Value;
@@ -1558,14 +1558,14 @@ namespace Kinetix.Workflow.Test
 
             System.Threading.Thread.CurrentThread.CurrentUICulture = CultureInfo.GetCultureInfo("fr");
 
-            IList<WfWorkflowDecision> workflowDecisions = _workflowManager.GetWorkflowDecision(wfWorkflow.WfwId.Value);
+            IList<WfWorkflowDecision> workflowDecisions = _workflowManager.GetWorkflowDecisions(wfWorkflow.WfwId.Value);
 
             Assert.IsNotNull(workflowDecisions);
             Assert.AreEqual(workflowDecisions.Count, 1);
 
             System.Threading.Thread.CurrentThread.CurrentUICulture = CultureInfo.GetCultureInfo("en");
 
-            workflowDecisions = _workflowManager.GetWorkflowDecision(wfWorkflow.WfwId.Value);
+            workflowDecisions = _workflowManager.GetWorkflowDecisions(wfWorkflow.WfwId.Value);
 
             Assert.IsNotNull(workflowDecisions);
             Assert.AreEqual(workflowDecisions.Count, 1);
@@ -1750,7 +1750,8 @@ namespace Kinetix.Workflow.Test
             Stopwatch sw = new Stopwatch();
             sw.Start();
             //We call the Recalculation of the Workflow
-            _workflowManager.RecalculateWorkflowDefinition(wfWorkflowDefinition);
+            WfRecalculationOutput output = _workflowManager.RecalculateWorkflowDefinition(wfWorkflowDefinition, true);
+
             sw.Stop();
 
             Trace.WriteLine(sw.ElapsedMilliseconds);
@@ -1759,11 +1760,13 @@ namespace Kinetix.Workflow.Test
             sw = new Stopwatch();
             sw.Start();
             //We call the Recalculation of the Workflow
-            _workflowManager.GetAllWorkflowDecisions(wfWorkflowDefinition.WfwdId.Value);
+            IList<WfListWorkflowDecision> allDecisions = _workflowManager.GetAllWorkflowDecisions(wfWorkflowDefinition.WfwdId.Value);
             sw.Stop();
 
             Trace.WriteLine(sw.ElapsedMilliseconds);
             Assert.IsTrue(sw.ElapsedMilliseconds < 5000);
+
+//            Assert.AreEqual(output.WfListWorkflowDecision.Count, allDecisions.Count);
 
             foreach (WfWorkflow wfWorkflow in allWorkflows)
             {
