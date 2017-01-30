@@ -122,22 +122,21 @@ namespace Kinetix.Workflow
             }
         }
 
-        private WfActivity GetNewActivity(WfActivityDefinition activityDefinition, WfWorkflow wfWorkflow, bool isAuto)
+        private WfActivity GetNewActivity(WfActivityDefinition activityDefinition, WfWorkflow wfWorkflow, bool isAuto, bool isValid)
         {
             WfActivity wfActivity = new WfActivity();
             wfActivity.CreationDate = DateTime.Now;
             wfActivity.WfadId = activityDefinition.WfadId.Value;
             wfActivity.WfwId = wfWorkflow.WfwId.Value;
             wfActivity.IsAuto = isAuto;
-            //IsAuto true, the activity is valid. IsAuto false, the activity is not valid
-            wfActivity.IsValid = isAuto;
+            wfActivity.IsValid = isValid;
             return wfActivity;
         }
 
 
-        private WfActivity CreateActivity(WfActivityDefinition activityDefinition, WfWorkflow wfWorkflow, bool isAuto)
+        private WfActivity CreateActivity(WfActivityDefinition activityDefinition, WfWorkflow wfWorkflow, bool isAuto, bool isValid)
         {
-            WfActivity wfActivity = GetNewActivity(activityDefinition, wfWorkflow, isAuto);
+            WfActivity wfActivity = GetNewActivity(activityDefinition, wfWorkflow, isAuto, isValid);
             _workflowStorePlugin.CreateActivity(wfActivity);
             return wfActivity;
         }
@@ -200,12 +199,13 @@ namespace Kinetix.Workflow
 
                         if (wfActivityCurrent == null)
                         {
-                            wfActivityCurrent = GetNewActivity(activityDefinition, wfWorkflow, true);
+                            wfActivityCurrent = GetNewActivity(activityDefinition, wfWorkflow, true, false);
                         }
                         else
                         {
                             wfActivityCurrent.IsAuto = true;
-                            wfActivityCurrent.IsValid = true;
+                            // We keep the previous value of IsValid
+                            //wfActivityCurrent.IsValid = true;
                         }
                     }
 
@@ -276,7 +276,7 @@ namespace Kinetix.Workflow
                 WfActivity nextActivity = _workflowStorePlugin.FindActivityByDefinitionWorkflow(wfWorkflow, activityDefinition);
                 if (nextActivity == null)
                 {
-                    wfActivityCurrent = CreateActivity(activityDefinition, wfWorkflow, false);
+                    wfActivityCurrent = CreateActivity(activityDefinition, wfWorkflow, false, false);
                 }
                 else
                 {
@@ -299,7 +299,8 @@ namespace Kinetix.Workflow
         {
 
             wfActivityCurrent.IsAuto = true;
-            wfActivityCurrent.IsValid = true;
+            // We keep the previous value of IsValid
+            //wfActivityCurrent.IsValid = true;
             _workflowStorePlugin.UpdateActivity(wfActivityCurrent);
 
             WfDecision decision = new WfDecision();
@@ -931,9 +932,9 @@ namespace Kinetix.Workflow
                 nextActivity.WfadId = nextActivityDefinition.WfadId.Value;
                 nextActivity.WfwId = wfWorkflow.WfwId.Value;
                 nextActivity.IsAuto = false;
-                nextActivity.IsValid = false;
                 if (nextActivity.WfaId == null)
                 {
+                    nextActivity.IsValid = false;
                     _workflowStorePlugin.CreateActivity(nextActivity);
                 }
                 else
@@ -1283,7 +1284,7 @@ namespace Kinetix.Workflow
                             // - A new activity definition has been inserted in the workflow.
                             // - The previous current activity has been switched to auto.
 
-                            WfActivity wfActivity = GetNewActivity(activityDefinition, wf, false);
+                            WfActivity wfActivity = GetNewActivity(activityDefinition, wf, false, false);
                             output.AddActivitiesCreateUpdateCurrentActivity(wfActivity);
 
                             newCurrentActivityFound = true;
@@ -1293,24 +1294,28 @@ namespace Kinetix.Workflow
                         {
                             //The previous validation was auto. This activity should be manually validated.
                             activity.IsAuto = false;
-                            activity.IsValid = false;
-                            wf.WfaId2 = activity.WfaId;
-                            output.AddActivitiesUpdateIsAuto(activity);
-                            output.AddWorkflowsUpdateCurrentActivity(wf);
 
-                            newCurrentActivityFound = true;
-                            break;
+                            output.AddActivitiesUpdateIsAuto(activity);
+
+                            if (activity.IsValid == false)
+                            {
+                                wf.WfaId2 = activity.WfaId;
+                                output.AddWorkflowsUpdateCurrentActivity(wf);
+                                newCurrentActivityFound = true;
+                                break;
+                            }
+                            else
+                            {
+                                output.AddActivitiesUpdateIsAuto(activity);
+                            }
                         }
 
                         // No new activity. The previous activity was manual too.
-                        
                         if (activity.IsValid == false)
                         {
                             // This activity must be revalidated
                             wf.WfaId2 = activity.WfaId;
-
                             output.AddWorkflowsUpdateCurrentActivity(wf);
-
                             newCurrentActivityFound = true;
                         }
 
@@ -1326,13 +1331,14 @@ namespace Kinetix.Workflow
                             // 2 possibilities : 
                             // - A new activity definition has been inserted in the workflow.
                             // - The previous current activity has been switched to auto.
-                            WfActivity wfActivity = GetNewActivity(activityDefinition, wf, true);
+                            WfActivity wfActivity = GetNewActivity(activityDefinition, wf, true, false);
                             output.AddActivitiesCreate(wfActivity);
                         }
                         else
                         {
                             activity.IsAuto = true;
-                            activity.IsValid = true;
+                            // We keep the previous IsValid flag
+                            //activity.IsValid = true;
                             output.AddActivitiesUpdateIsAuto(activity);
                         }
                     }
@@ -1347,14 +1353,15 @@ namespace Kinetix.Workflow
                         // - A new activity definition has been inserted in the workflow.
                         // - The previous current activity has been switched to auto.
 
-                        WfActivity wfActivity = GetNewActivity(activityDefinition, wf, true);
+                        WfActivity wfActivity = GetNewActivity(activityDefinition, wf, true, false);
                         output.AddActivitiesCreate(wfActivity);
                     }
                     else if (activity.IsAuto == false)
                     {
                         // The previous activity was manual but now this activity is auto
                         activity.IsAuto = true;
-                        activity.IsValid = true;
+                        // We keep the previous IsValid flag
+                        // activity.IsValid = true;
                         output.AddActivitiesUpdateIsAuto(activity);
                     }
                 }
