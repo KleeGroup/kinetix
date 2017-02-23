@@ -1,7 +1,6 @@
 ﻿using Kinetix.Rules;
 using Kinetix.Workflow.instance;
 using Kinetix.Workflow.model;
-using Kinetix.Workflow.Workflow;
 using System;
 using System.Collections.Generic;
 
@@ -380,7 +379,7 @@ namespace Kinetix.Workflow
         /// Update current activity (wfaId2) for the provided workflows
         /// </summary>
         /// <param name="worfklows">worklow to update</param>
-        void UpdateWorkflowCurrentActivities(IList<WfWorkflowUpdate> worfklows);
+        void UpdateWorkflowCurrentActivities(ICollection<WfWorkflowUpdate> worfklows);
 
         /// <summary>
         /// Update IsAuto flag for the provided activities

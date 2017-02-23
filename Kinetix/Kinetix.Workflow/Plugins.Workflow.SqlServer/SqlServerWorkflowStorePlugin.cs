@@ -6,7 +6,6 @@ using Kinetix.Workflow.instance;
 using Kinetix.Workflow.model;
 using System.Diagnostics;
 using Kinetix.Rules;
-using Kinetix.Workflow.Workflow;
 
 namespace Kinetix.Workflow {
     public class SqlServerWorkflowStorePlugin : IWorkflowStorePlugin {
@@ -371,7 +370,7 @@ namespace Kinetix.Workflow {
             return new List<RuleFilterDefinition>(cmd.ReadList<RuleFilterDefinition>());
         }
 
-        public void UpdateWorkflowCurrentActivities(IList<WfWorkflowUpdate> worfklows)
+        public void UpdateWorkflowCurrentActivities(ICollection<WfWorkflowUpdate> worfklows)
         {
             var cmd = GetSqlServerCommand("UpdateWorkflowCurrentActivities.sql");
             cmd.Parameters.AddBeanCollectionProperties(worfklows);

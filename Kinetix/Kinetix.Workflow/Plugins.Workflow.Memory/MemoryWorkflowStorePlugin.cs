@@ -7,7 +7,6 @@ using System.Diagnostics;
 using System.Threading;
 using System.Linq;
 using Kinetix.Rules;
-using Kinetix.Workflow.Workflow;
 
 namespace Kinetix.Workflow
 {
@@ -601,7 +600,7 @@ namespace Kinetix.Workflow
             }
         }
 
-        public void UpdateWorkflowCurrentActivities(IList<WfWorkflowUpdate> worfklows)
+        public void UpdateWorkflowCurrentActivities(ICollection<WfWorkflowUpdate> worfklows)
         {
             foreach(WfWorkflowUpdate wfUpd in worfklows)
             {

@@ -1726,7 +1726,7 @@ namespace Kinetix.Workflow.Test
 
             IList<WfWorkflow> allWorkflows = new List<WfWorkflow>();
 
-            int nbWf = 2500;
+            int nbWf = 2000;
 
             for (int i = 0; i < nbWf; i++)
             {
@@ -1755,7 +1755,7 @@ namespace Kinetix.Workflow.Test
             sw.Stop();
 
             Trace.WriteLine(sw.ElapsedMilliseconds);
-            Assert.IsTrue(sw.ElapsedMilliseconds < 1000);
+            Assert.IsTrue(sw.ElapsedMilliseconds < 2000);
 
             sw = new Stopwatch();
             sw.Start();
@@ -1766,7 +1766,7 @@ namespace Kinetix.Workflow.Test
             Trace.WriteLine(sw.ElapsedMilliseconds);
             Assert.IsTrue(sw.ElapsedMilliseconds < 5000);
 
-//            Assert.AreEqual(output.WfListWorkflowDecision.Count, allDecisions.Count);
+            Assert.AreEqual(output.WfListWorkflowDecision.Count, allDecisions.Count);
 
             foreach (WfWorkflow wfWorkflow in allWorkflows)
             {
@@ -2158,7 +2158,7 @@ namespace Kinetix.Workflow.Test
             // Step 3 : 1 rule, 1 conditions
             WfActivityDefinition thirdActivity = new WfActivityDefinitionBuilder("Step 3", (int)wfWorkflowDefinition.WfwdId).Build();
             _workflowManager.AddActivity(wfWorkflowDefinition, thirdActivity, 3);
-            RuleDefinition rule1Act3 = new RuleDefinition(null, DateTime.Now, firstActivity.WfadId, "Règle 2");
+            RuleDefinition rule1Act3 = new RuleDefinition(null, DateTime.Now, thirdActivity.WfadId, "Règle 2");
             RuleConditionDefinition condition1Rule1Act3 = new RuleConditionDefinition(null, "Entity", "IN", "ENT,FED,GFE", null);
             _workflowManager.AddRule(thirdActivity, rule1Act3, new List<RuleConditionDefinition>() { condition1Rule1Act3 });
             //Selector/filter to validate the activity (preventing auto validation when no one is linked to an activity)
@@ -2191,6 +2191,8 @@ namespace Kinetix.Workflow.Test
             _workflowManager.SaveDecisionAndGoToNextActivity(wfWorkflow, wfDecision);
 
             workflowDecisions = _workflowManager.GetWorkflowDecisions(wfWorkflow.WfwId.Value);
+
+            wfWorkflow = _workflowManager.GetWorkflowInstance(wfWorkflow.WfwId.Value);
 
             currentActivityId = wfWorkflow.WfaId2.Value;
             currentActivity = _workflowManager.GetActivity(currentActivityId);
@@ -2238,6 +2240,156 @@ namespace Kinetix.Workflow.Test
 
         }
 
+        [TestMethod]
+        public void TestWorkflowChangingManualToAutoToManualWithCustomRecalculation()
+        {
+            var container = GetConfiguredContainer();
+            container.RegisterType<Kinetix.Workflow.IWorkflowRecalculationPlugin, Kinetix.Workflow.ValidateExistingDecisionsRecalculationPlugin>("ValidateExistingDecisionsRecalculationPlugin");
+
+            IWorkflowManager _workflowManager = container.Resolve<IWorkflowManager>();
+            IAccountManager _accountManager = container.Resolve<IAccountManager>();
+
+            WfWorkflowDefinition wfWorkflowDefinition = new WfWorkflowDefinitionBuilder("WorkflowRules").Build();
+            _workflowManager.CreateWorkflowDefinition(wfWorkflowDefinition);
+
+            WfActivityDefinition firstActivity = new WfActivityDefinitionBuilder("Step 1", wfWorkflowDefinition.WfwdId.Value)
+                .Build();
+
+            AccountGroup accountGroup = new AccountGroup("1", "dummy group");
+            AccountUser account = new AccountUserBuilder("Acc1").Build();
+            _accountManager.GetStore().SaveGroup(accountGroup);
+            _accountManager.GetStore().SaveAccounts(new List<AccountUser>() { account });
+            _accountManager.GetStore().Attach(account.Id, accountGroup.Id);
+
+            // Step 1 : 1 rule, 1 condition
+            _workflowManager.AddActivity(wfWorkflowDefinition, firstActivity, 1);
+            RuleDefinition rule1Act1 = new RuleDefinition(null, DateTime.Now, firstActivity.WfadId, "Règle 1");
+            RuleConditionDefinition condition1Rule1Act1 = new RuleConditionDefinition(null, "Entity", "IN", "ENT,FED,GFE", null);
+            _workflowManager.AddRule(firstActivity, rule1Act1, new List<RuleConditionDefinition>() { condition1Rule1Act1 });
+            //Selector/filter to validate the activity (preventing auto validation when no one is linked to an activity)
+            SelectorDefinition selector1 = new SelectorDefinition(null, DateTime.Now, firstActivity.WfadId, accountGroup.Id);
+            RuleFilterDefinition filter1 = new RuleFilterDefinition(null, "Entity", "=", "ENT", null);
+            _workflowManager.AddSelector(firstActivity, selector1, new List<RuleFilterDefinition>() { filter1 });
+
+            // Step 2 : 1 rule, 1 condition
+            WfActivityDefinition secondActivity = new WfActivityDefinitionBuilder("Step 2", (int)wfWorkflowDefinition.WfwdId).Build();
+            _workflowManager.AddActivity(wfWorkflowDefinition, secondActivity, 2);
+            RuleDefinition rule1Act2 = new RuleDefinition(null, DateTime.Now, secondActivity.WfadId, "Règle 2");
+            RuleConditionDefinition condition1Rule1Act2 = new RuleConditionDefinition(null, "Entity", "IN", "ENT,FED,GFE", null);
+            _workflowManager.AddRule(secondActivity, rule1Act2, new List<RuleConditionDefinition>() { condition1Rule1Act2 });
+            //Selector/filter to validate the activity (preventing auto validation when no one is linked to an activity)
+            SelectorDefinition selector2 = new SelectorDefinition(null, DateTime.Now, secondActivity.WfadId, accountGroup.Id);
+            RuleFilterDefinition filter2 = new RuleFilterDefinition(null, "Entity", "=", "ENT", null);
+            _workflowManager.AddSelector(secondActivity, selector2, new List<RuleFilterDefinition>() { filter2 });
+
+            // Step 3 : 1 rule, 1 conditions
+            WfActivityDefinition thirdActivity = new WfActivityDefinitionBuilder("Step 3", (int)wfWorkflowDefinition.WfwdId).Build();
+            _workflowManager.AddActivity(wfWorkflowDefinition, thirdActivity, 3);
+            RuleDefinition rule1Act3 = new RuleDefinition(null, DateTime.Now, thirdActivity.WfadId, "Règle 2");
+            RuleConditionDefinition condition1Rule1Act3 = new RuleConditionDefinition(null, "Entity", "IN", "ENT,FED,GFE", null);
+            _workflowManager.AddRule(thirdActivity, rule1Act3, new List<RuleConditionDefinition>() { condition1Rule1Act3 });
+            //Selector/filter to validate the activity (preventing auto validation when no one is linked to an activity)
+            SelectorDefinition selector3 = new SelectorDefinition(null, DateTime.Now, thirdActivity.WfadId, accountGroup.Id);
+            RuleFilterDefinition filter3 = new RuleFilterDefinition(null, "Entity", "IN", "ENT", null);
+            _workflowManager.AddSelector(thirdActivity, selector3, new List<RuleFilterDefinition>() { filter3 });
+
+            MyDummyDtObject myDummyDtObject = createDummyDtObject(1, "ENT");
+
+            WfWorkflow wfWorkflow = _workflowManager.CreateWorkflowInstance(wfWorkflowDefinition.WfwdId.Value, "JUnit", false, myDummyDtObject.Id);
+
+            // Starting the workflow
+            _workflowManager.StartInstance(wfWorkflow);
+
+            IList<WfWorkflowDecision> workflowDecisions = _workflowManager.GetWorkflowDecisions(wfWorkflow.WfwId.Value);
+
+            int currentActivityId = wfWorkflow.WfaId2.Value;
+            WfActivity currentActivity = _workflowManager.GetActivity(currentActivityId);
+            Assert.AreEqual(currentActivity.WfadId, firstActivity.WfadId);
+
+            Assert.AreEqual(3, workflowDecisions.Count);
+            Assert.IsFalse(workflowDecisions[0].Activity.IsAuto);
+            Assert.IsFalse(workflowDecisions[0].Activity.IsValid);
+            Assert.AreEqual(firstActivity.WfadId, workflowDecisions[0].ActivityDefinition.WfadId);
+            Assert.IsNull(workflowDecisions[1].Activity);
+            Assert.AreEqual(secondActivity.WfadId, workflowDecisions[1].ActivityDefinition.WfadId);
+            Assert.IsNull(workflowDecisions[2].Activity);
+            Assert.AreEqual(thirdActivity.WfadId, workflowDecisions[2].ActivityDefinition.WfadId);
+
+            WfDecision wfDecision = new WfDecision();
+            wfDecision.Choice = 1;
+            wfDecision.Username = "junit";
+            _workflowManager.SaveDecisionAndGoToNextActivity(wfWorkflow, wfDecision);
+
+            workflowDecisions = _workflowManager.GetWorkflowDecisions(wfWorkflow.WfwId.Value);
+
+            wfWorkflow = _workflowManager.GetWorkflowInstance(wfWorkflow.WfwId.Value);
+
+            currentActivityId = wfWorkflow.WfaId2.Value;
+            currentActivity = _workflowManager.GetActivity(currentActivityId);
+            Assert.AreEqual(currentActivity.WfadId, secondActivity.WfadId);
+
+            Assert.AreEqual(3, workflowDecisions.Count);
+            Assert.IsFalse(workflowDecisions[0].Activity.IsAuto);
+            Assert.IsTrue(workflowDecisions[0].Activity.IsValid);
+            Assert.AreEqual(firstActivity.WfadId, workflowDecisions[0].ActivityDefinition.WfadId);
+            Assert.IsFalse(workflowDecisions[1].Activity.IsAuto);
+            Assert.IsFalse(workflowDecisions[1].Activity.IsValid);
+            Assert.AreEqual(secondActivity.WfadId, workflowDecisions[1].ActivityDefinition.WfadId);
+            Assert.IsNull(workflowDecisions[2].Activity);
+            Assert.AreEqual(thirdActivity.WfadId, workflowDecisions[2].ActivityDefinition.WfadId);
+
+            WfDecision wfDecision2 = new WfDecision();
+            wfDecision2.Choice = 1;
+            wfDecision2.Username = "junit";
+            _workflowManager.SaveDecision(wfWorkflow, wfDecision2);
+
+            _workflowManager.MoveActivity(wfWorkflowDefinition, 2, 1, false);
+
+            _workflowManager.RecalculateWorkflow(wfWorkflow);
+
+            workflowDecisions = _workflowManager.GetWorkflowDecisions(wfWorkflow.WfwId.Value);
+
+            WfWorkflow wfWorkflowFetched = _workflowManager.GetWorkflowInstance(wfWorkflow.WfwId.Value);
+
+            currentActivityId = wfWorkflowFetched.WfaId2.Value;
+            currentActivity = _workflowManager.GetActivity(currentActivityId);
+            Assert.AreEqual(currentActivity.WfadId, thirdActivity.WfadId);
+
+            Assert.AreEqual(3, workflowDecisions.Count);
+            Assert.IsFalse(workflowDecisions[0].Activity.IsAuto);
+            Assert.IsTrue(workflowDecisions[0].Activity.IsValid);
+            Assert.AreEqual(secondActivity.WfadId, workflowDecisions[0].ActivityDefinition.WfadId);
+            Assert.IsFalse(workflowDecisions[1].Activity.IsAuto);
+            Assert.IsTrue(workflowDecisions[1].Activity.IsValid);
+            Assert.AreEqual(firstActivity.WfadId, workflowDecisions[1].ActivityDefinition.WfadId);
+            Assert.IsFalse(workflowDecisions[2].Activity.IsAuto);
+            Assert.IsFalse(workflowDecisions[2].Activity.IsValid);
+            Assert.AreEqual(thirdActivity.WfadId, workflowDecisions[2].ActivityDefinition.WfadId);
+
+            _workflowManager.MoveActivity(wfWorkflowDefinition, 1, 2, true);
+
+            _workflowManager.RecalculateWorkflow(wfWorkflowFetched);
+
+            workflowDecisions = _workflowManager.GetWorkflowDecisions(wfWorkflow.WfwId.Value);
+
+            wfWorkflowFetched = _workflowManager.GetWorkflowInstance(wfWorkflow.WfwId.Value);
+
+            currentActivityId = wfWorkflowFetched.WfaId2.Value;
+            currentActivity = _workflowManager.GetActivity(currentActivityId);
+            //Assert.AreEqual(firstActivity.WfadId, currentActivity.WfadId);
+            Assert.AreEqual(thirdActivity.WfadId, currentActivity.WfadId);
+
+            Assert.IsFalse(workflowDecisions[0].Activity.IsAuto);
+            Assert.IsTrue(workflowDecisions[0].Activity.IsValid);
+            Assert.AreEqual(firstActivity.WfadId, workflowDecisions[0].ActivityDefinition.WfadId);
+            Assert.IsFalse(workflowDecisions[1].Activity.IsAuto);
+            Assert.IsTrue(workflowDecisions[1].Activity.IsValid);
+            Assert.AreEqual(secondActivity.WfadId, workflowDecisions[1].ActivityDefinition.WfadId);
+            Assert.IsFalse(workflowDecisions[2].Activity.IsAuto);
+            Assert.IsFalse(workflowDecisions[2].Activity.IsValid);
+            Assert.AreEqual(thirdActivity.WfadId, workflowDecisions[2].ActivityDefinition.WfadId);
+
+        }
 
     }
 }

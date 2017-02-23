@@ -7,7 +7,7 @@ using Kinetix.Workflow.instance;
 using Kinetix.Workflow.model;
 using System.Linq;
 using System.ServiceModel;
-using Kinetix.Workflow.Workflow;
+using Kinetix.Workflow;
 
 namespace Kinetix.Workflow
 {
@@ -19,14 +19,17 @@ namespace Kinetix.Workflow
         private readonly IRuleManager _ruleManager;
         private readonly IAccountManager _accountManager;
 
+        private readonly IList<IWorkflowRecalculationPlugin> _customsRecalculations;
+
         public static readonly string USER_AUTO = "<AUTO>";
 
-        public WorkflowManager(IWorkflowStorePlugin workflowStorePlugin, IItemStorePlugin itemStorePlugin, IRuleManager ruleManager, IAccountManager accountManager)
+        public WorkflowManager(IWorkflowStorePlugin workflowStorePlugin, IItemStorePlugin itemStorePlugin, IRuleManager ruleManager, IAccountManager accountManager, IWorkflowRecalculationPlugin[] customsRecalculations)
         {
             _workflowStorePlugin = workflowStorePlugin;
             _itemStorePlugin = itemStorePlugin;
             _ruleManager = ruleManager;
             _accountManager = accountManager;
+            _customsRecalculations = customsRecalculations;
         }
 
 
@@ -317,12 +320,18 @@ namespace Kinetix.Workflow
             RuleConstants ruleConstants = _ruleManager.GetConstants(activityDefinition.WfwdId);
 
             bool ruleValid = _ruleManager.IsRuleValid(activityDefinition.WfadId.Value, obj, ruleConstants);
+
+            if (ruleValid == false)
+            {
+                return true;
+            }
+
             IList<AccountUser> accounts = _ruleManager.SelectAccounts(activityDefinition.WfadId.Value, obj, ruleConstants);
 
             bool atLeastOnePerson = accounts.Count > 0;
 
             // If no rule is defined for validation or no one can validate this activity, we can autovalidate it.
-            return ruleValid == false || atLeastOnePerson == false;
+            return atLeastOnePerson == false;
         }
 
 
@@ -1169,6 +1178,12 @@ namespace Kinetix.Workflow
             foreach (WfWorkflow wfWorfklow in wfWorfklows)
             {
                 RecalculateWorkflow(activityDefinitions, ruleConstants, wfWorfklow, dicRules, dicConditions, dicSelectors, dicFilters, dicActivities, dicDecision, dicObjects, output);
+
+                foreach (IWorkflowRecalculationPlugin customRecalculation in _customsRecalculations)
+                {
+                    customRecalculation.CustomRecalculation(activityDefinitions, ruleConstants, wfWorfklow, dicRules, dicConditions, dicSelectors, dicFilters, dicActivities, dicDecision, dicObjects, output);
+                }
+
                 if (fetchWorkflowDecisions)
                 {
                     WfListWorkflowDecision wfListWorkflowDecision = GetWorkflowDecisions(activityDefinitions, ruleConstants, wfWorfklow, dicRules, dicConditions, dicSelectors, dicFilters, dicActivities, dicDecision, dicObjects);
@@ -1185,7 +1200,7 @@ namespace Kinetix.Workflow
             //Updating current workflow activities (no new activities)
             if (output.WorkflowsUpdateCurrentActivity.Count > 0)
             {
-                _workflowStorePlugin.UpdateWorkflowCurrentActivities(output.WorkflowsUpdateCurrentActivity);
+                _workflowStorePlugin.UpdateWorkflowCurrentActivities(output.WorkflowsUpdateCurrentActivity.Values);
             }
 
             //Updating IsAuto flag on activities
@@ -1297,17 +1312,6 @@ namespace Kinetix.Workflow
 
                             output.AddActivitiesUpdateIsAuto(activity);
 
-                            if (activity.IsValid == false)
-                            {
-                                wf.WfaId2 = activity.WfaId;
-                                output.AddWorkflowsUpdateCurrentActivity(wf);
-                                newCurrentActivityFound = true;
-                                break;
-                            }
-                            else
-                            {
-                                output.AddActivitiesUpdateIsAuto(activity);
-                            }
                         }
 
                         // No new activity. The previous activity was manual too.
@@ -1317,6 +1321,7 @@ namespace Kinetix.Workflow
                             wf.WfaId2 = activity.WfaId;
                             output.AddWorkflowsUpdateCurrentActivity(wf);
                             newCurrentActivityFound = true;
+                            break;
                         }
 
                     }
