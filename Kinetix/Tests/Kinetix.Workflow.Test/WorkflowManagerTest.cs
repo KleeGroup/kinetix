@@ -66,6 +66,8 @@ namespace Kinetix.Workflow.Test
 
             container.RegisterType<Kinetix.Workflow.IWorkflowManager, Kinetix.Workflow.WorkflowManager>();
 
+            container.RegisterType<Kinetix.Workflow.IWorkflowPredicateAutoValidatePlugin, Kinetix.Workflow.SelectorRuleWorkflowPredicateAutoValidatePlugin>();
+
             if (SqlServer)
             {
                 container.RegisterType<Kinetix.Workflow.IWorkflowStorePlugin, Kinetix.Workflow.SqlServerWorkflowStorePlugin>();
@@ -129,7 +131,7 @@ namespace Kinetix.Workflow.Test
             RuleFilterDefinition filter1 = new RuleFilterDefinition(null, "Entity", "=", "ENT", null);
             _workflowManager.AddSelector(firstActivity, selector1, new List<RuleFilterDefinition>() { filter1 });
 
-            MyDummyDtObject myDummyDtObject = createDummyDtObject(1);
+            MyDummyDtObject myDummyDtObject = createDummyDtObject(1 + 100000);
 
             WfWorkflow wfWorkflow = _workflowManager.CreateWorkflowInstance("WorkflowRules", "JUnit", false, myDummyDtObject.Id);
 
@@ -207,7 +209,9 @@ namespace Kinetix.Workflow.Test
             // A workflow started can be ended
             _workflowManager.EndInstance(wfWorkflow);
 
-            WfWorkflow wfWorkflow2 = _workflowManager.CreateWorkflowInstance("WorkflowRules", "JUnit", false, myDummyDtObject.Id);
+            MyDummyDtObject myDummyDtObject2 = createDummyDtObject(2 + 100000);
+
+            WfWorkflow wfWorkflow2 = _workflowManager.CreateWorkflowInstance("WorkflowRules", "JUnit", false, myDummyDtObject2.Id);
 
             Assert.IsNotNull(wfWorkflow2);
             Assert.AreEqual(wfWorkflow2.WfsCode, WfCodeStatusWorkflow.Cre.ToString());
@@ -1730,7 +1734,7 @@ namespace Kinetix.Workflow.Test
 
             for (int i = 0; i < nbWf; i++)
             {
-                MyDummyDtObject myDummyDtObject = createDummyDtObject(i);
+                MyDummyDtObject myDummyDtObject = createDummyDtObject(i + 100000);
 
                 WfWorkflow wfWorkflow = _workflowManager.CreateWorkflowInstance(wfWorkflowDefinition.WfwdId.Value, "JUnit", false, myDummyDtObject.Id);
 

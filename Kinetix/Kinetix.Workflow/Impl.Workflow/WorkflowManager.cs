@@ -7,7 +7,6 @@ using Kinetix.Workflow.instance;
 using Kinetix.Workflow.model;
 using System.Linq;
 using System.ServiceModel;
-using Kinetix.Workflow;
 
 namespace Kinetix.Workflow
 {
@@ -18,17 +17,18 @@ namespace Kinetix.Workflow
         private readonly IItemStorePlugin _itemStorePlugin;
         private readonly IRuleManager _ruleManager;
         private readonly IAccountManager _accountManager;
-
+        private readonly IWorkflowPredicateAutoValidatePlugin _selectorRuleWorkflowPredicateAutoValidatePlugin;
         private readonly IList<IWorkflowRecalculationPlugin> _customsRecalculations;
 
         public static readonly string USER_AUTO = "<AUTO>";
 
-        public WorkflowManager(IWorkflowStorePlugin workflowStorePlugin, IItemStorePlugin itemStorePlugin, IRuleManager ruleManager, IAccountManager accountManager, IWorkflowRecalculationPlugin[] customsRecalculations)
+        public WorkflowManager(IWorkflowStorePlugin workflowStorePlugin, IItemStorePlugin itemStorePlugin, IRuleManager ruleManager, IAccountManager accountManager, IWorkflowPredicateAutoValidatePlugin workflowPredicateAutoValidatePlugin, IWorkflowRecalculationPlugin[] customsRecalculations)
         {
             _workflowStorePlugin = workflowStorePlugin;
             _itemStorePlugin = itemStorePlugin;
             _ruleManager = ruleManager;
             _accountManager = accountManager;
+            _selectorRuleWorkflowPredicateAutoValidatePlugin = workflowPredicateAutoValidatePlugin;
             _customsRecalculations = customsRecalculations;
         }
 
@@ -246,13 +246,7 @@ namespace Kinetix.Workflow
             IDictionary<int, List<RuleDefinition>>  dicRules, IDictionary<int, List<RuleConditionDefinition>> dicConditions,
             IDictionary<int, List<SelectorDefinition>> dicSelectors, IDictionary<int, List<RuleFilterDefinition>> dicFilters)
         {
-            bool ruleValid = _ruleManager.IsRuleValid(activityDefinition.WfadId.Value, obj, ruleConstants, dicRules, dicConditions);
-            IList<AccountUser> accounts = _ruleManager.SelectAccounts(activityDefinition.WfadId.Value, obj, ruleConstants, dicSelectors, dicFilters);
-
-            bool atLeastOnePerson = accounts.Count > 0;
-
-            // If no rule is defined for validation or no one can validate this activity, we can autovalidate it.
-            return ruleValid == false || atLeastOnePerson == false;
+            return _selectorRuleWorkflowPredicateAutoValidatePlugin.CanAutoValidateActivity(activityDefinition, obj, ruleConstants, dicRules, dicConditions, dicSelectors, dicFilters);
         }
 
         #endregion
@@ -317,23 +311,8 @@ namespace Kinetix.Workflow
 
         public bool CanAutoValidateActivity(WfActivityDefinition activityDefinition, object obj)
         {
-            RuleConstants ruleConstants = _ruleManager.GetConstants(activityDefinition.WfwdId);
-
-            bool ruleValid = _ruleManager.IsRuleValid(activityDefinition.WfadId.Value, obj, ruleConstants);
-
-            if (ruleValid == false)
-            {
-                return true;
-            }
-
-            IList<AccountUser> accounts = _ruleManager.SelectAccounts(activityDefinition.WfadId.Value, obj, ruleConstants);
-
-            bool atLeastOnePerson = accounts.Count > 0;
-
-            // If no rule is defined for validation or no one can validate this activity, we can autovalidate it.
-            return atLeastOnePerson == false;
+            return _selectorRuleWorkflowPredicateAutoValidatePlugin.CanAutoValidateActivity(activityDefinition, obj);
         }
-
 
         public void CreateWorkflowDefinition(WfWorkflowDefinition wfWorkflowDefinition)
         {

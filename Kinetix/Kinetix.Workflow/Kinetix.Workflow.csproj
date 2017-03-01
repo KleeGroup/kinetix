@@ -48,8 +48,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Impl.Workflow\IItemStorePlugin.cs" />
+    <Compile Include="Impl.Workflow\IWorkflowPredicateAutoValidatePlugin.cs" />
     <Compile Include="Impl.Workflow\IWorkflowRecalculationPlugin.cs" />
     <Compile Include="Plugins.Workflow.Recalculation\ValidateExistingDecisionsRecalculationPlugin.cs" />
+    <Compile Include="Plugins.Workflow.Validate\SelectorRuleWorkflowPredicateAutoValidatePlugin.cs" />
     <Compile Include="Workflow\IWorkflowCustomRecalculation.cs" />
     <Compile Include="Workflow\WfActivityDecision.cs" />
     <Compile Include="Workflow\WfMassValidation.cs" />
