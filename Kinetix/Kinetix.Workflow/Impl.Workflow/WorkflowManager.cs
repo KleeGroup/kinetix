@@ -887,7 +887,12 @@ namespace Kinetix.Workflow
 
         private bool CanGoToNextActivity(WfActivity currentActivity)
         {
-            return currentActivity.IsValid;
+            if (!currentActivity.IsValid)
+            {
+                return false;
+            }
+
+            return _workflowStorePlugin.HasNextActivity(currentActivity);
         }
 
 

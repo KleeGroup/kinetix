@@ -434,6 +434,8 @@ namespace Kinetix.Workflow.Test
             WfActivity currentActivity = _workflowManager.GetActivity(currentActivityId);
             Assert.AreEqual(currentActivity.WfadId, firstActivity.WfadId);
 
+            Assert.IsFalse(_workflowManager.CanGoToNextActivity(wfWorkflow));
+
             // 
             WfDecision decision = new WfDecision();
             decision.Choice = 1;
@@ -446,6 +448,8 @@ namespace Kinetix.Workflow.Test
             currentActivityId = wfWorkflow.WfaId2.Value;
             currentActivity = _workflowManager.GetActivity(currentActivityId);
             Assert.AreEqual(currentActivity.WfadId, firstActivity.WfadId);
+
+            Assert.IsFalse(_workflowManager.CanGoToNextActivity(wfWorkflow));
 
             // 
             decision = new WfDecision();
@@ -460,6 +464,8 @@ namespace Kinetix.Workflow.Test
             currentActivity = _workflowManager.GetActivity(currentActivityId);
             Assert.AreEqual(currentActivity.WfadId, firstActivity.WfadId);
 
+            Assert.IsFalse(_workflowManager.CanGoToNextActivity(wfWorkflow));
+
             // 
             decision = new WfDecision();
             decision.Choice = 1;
@@ -467,11 +473,18 @@ namespace Kinetix.Workflow.Test
             decision.Username = "Acc3";
             decision.DecisionDate = DateTime.Now;
 
-            _workflowManager.SaveDecisionAndGoToNextActivity(wfWorkflow, decision);
+            _workflowManager.SaveDecision(wfWorkflow, decision);
+
+            Assert.IsTrue(_workflowManager.CanGoToNextActivity(wfWorkflow));
+
+            _workflowManager.GoToNextActivity(wfWorkflow);
 
             currentActivityId = wfWorkflow.WfaId2.Value;
             currentActivity = _workflowManager.GetActivity(currentActivityId);
             Assert.AreEqual(currentActivity.WfadId, thirdActivity.WfadId);
+
+            Assert.IsFalse(_workflowManager.CanGoToNextActivity(wfWorkflow));
+
         }
 
         [TestMethod]
@@ -991,6 +1004,8 @@ namespace Kinetix.Workflow.Test
             decision.Username = "AA";
             decision.DecisionDate = DateTime.Now;
 
+            Assert.IsFalse(_workflowManager.CanGoToNextActivity(wfWorkflowFetched));
+
             _workflowManager.SaveDecisionAndGoToNextActivity(wfWorkflow, decision);
 
             workflowDecisions = _workflowManager.GetWorkflowDecisions(wfWorkflow.WfwId.Value);
@@ -1029,7 +1044,6 @@ namespace Kinetix.Workflow.Test
             currentActivity = _workflowManager.GetActivity(currentActivityId);
             Assert.AreEqual(currentActivity.WfadId, thirdActivity.WfadId);
 
-
             //Manually validating activity 3
             WfDecision wfDecisionAct3 = new WfDecision();
             wfDecisionAct3.Choice = 1;
@@ -1037,7 +1051,7 @@ namespace Kinetix.Workflow.Test
             wfDecisionAct3.WfaId = currentActivity.WfaId.Value;
 
             //Using CanGo, SaveDecision and GoToNext
-            bool canGo = _workflowManager.CanGoToNextActivity(wfWorkflow);
+            bool canGo = _workflowManager.CanGoToNextActivity(wfWorkflowFetched2);
             Assert.IsFalse(canGo);
 
             _workflowManager.SaveDecision(wfWorkflow, wfDecisionAct3);
@@ -1121,6 +1135,9 @@ namespace Kinetix.Workflow.Test
             currentActivityId = wfWorkflow.WfaId2.Value;
             currentActivity = _workflowManager.GetActivity(currentActivityId);
             Assert.AreEqual(currentActivity.WfadId, fourthActivity.WfadId);
+
+            //Last Activity. No next activity
+            Assert.IsFalse(_workflowManager.CanGoToNextActivity(wfWorkflowFetched3));
 
             // No Automatic ending.
             //Assert.AreEqual(wfWorkflow.WfsCode, WfCodeStatusWorkflow.End.ToString());
@@ -1521,7 +1538,10 @@ namespace Kinetix.Workflow.Test
             recalculActivity = _workflowManager.GetActivity(recalculActivityId);
             Assert.AreEqual(activityEnd.WfadId, recalculActivity.WfadId);
 
+            Assert.IsFalse(_workflowManager.CanGoToNextActivity(wfWorkflowFetched));
+
         }
+
 
 
         [TestMethod]
