@@ -17,15 +17,16 @@ namespace Kinetix.Workflow
         public bool CanAutoValidateActivity(WfActivityDefinition activityDefinition, object obj)
         {
             RuleConstants ruleConstants = _ruleManager.GetConstants(activityDefinition.WfwdId);
+            RuleContext ruleContext = new RuleContext(obj, ruleConstants);
 
-            bool ruleValid = _ruleManager.IsRuleValid(activityDefinition.WfadId.Value, obj, ruleConstants);
+            bool ruleValid = _ruleManager.IsRuleValid(activityDefinition.WfadId.Value, ruleContext);
 
             if (ruleValid == false)
             {
                 return true;
             }
 
-            IList<AccountUser> accounts = _ruleManager.SelectAccounts(activityDefinition.WfadId.Value, obj, ruleConstants);
+            IList<AccountUser> accounts = _ruleManager.SelectAccounts(activityDefinition.WfadId.Value, ruleContext);
 
             bool atLeastOnePerson = accounts.Count > 0;
 
@@ -33,16 +34,16 @@ namespace Kinetix.Workflow
             return atLeastOnePerson == false;
         }
 
-        public bool CanAutoValidateActivity(WfActivityDefinition activityDefinition, object obj, RuleConstants ruleConstants, IDictionary<int, List<RuleDefinition>> dicRules, IDictionary<int, List<RuleConditionDefinition>> dicConditions, IDictionary<int, List<SelectorDefinition>> dicSelectors, IDictionary<int, List<RuleFilterDefinition>> dicFilters)
+        public bool CanAutoValidateActivity(WfActivityDefinition activityDefinition, RuleContext ruleContext, IDictionary<int, List<RuleDefinition>> dicRules, IDictionary<int, List<RuleConditionDefinition>> dicConditions, IDictionary<int, List<SelectorDefinition>> dicSelectors, IDictionary<int, List<RuleFilterDefinition>> dicFilters)
         {
-            bool ruleValid = _ruleManager.IsRuleValid(activityDefinition.WfadId.Value, obj, ruleConstants, dicRules, dicConditions);
+            bool ruleValid = _ruleManager.IsRuleValid(activityDefinition.WfadId.Value, ruleContext, dicRules, dicConditions);
 
             if (ruleValid == false)
             {
                 return true;
             }
 
-            IList<AccountUser> accounts = _ruleManager.SelectAccounts(activityDefinition.WfadId.Value, obj, ruleConstants, dicSelectors, dicFilters);
+            IList<AccountUser> accounts = _ruleManager.SelectAccounts(activityDefinition.WfadId.Value, ruleContext, dicSelectors, dicFilters);
 
             bool atLeastOnePerson = accounts.Count > 0;
 

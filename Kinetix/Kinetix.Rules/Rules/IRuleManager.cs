@@ -10,42 +10,39 @@ namespace Kinetix.Rules
         /// Select accounts matching the selector for an activity.
         /// </summary>
         /// <param name="idActivityDefinition">Activity definition id.</param>
-        /// <param name="item">Business object.</param>
-        /// <param name="constants">constants</param>
+        /// <param name="context">Context</param>
         /// <returns>a list of accounts.</returns>
-        IList<AccountUser> SelectAccounts(int idActivityDefinition, object item, RuleConstants constants);
+        IList<AccountUser> SelectAccounts(int idActivityDefinition, RuleContext context);
 
         /// <summary>
         /// Select accounts an activity using the provided selectors and filters.
         /// Version without IO, used in workflow recalculation
         /// </summary>
         /// <param name="idActivityDefinition">Activity definition id</param>
-        /// <param name="item">Business object</param>
-        /// <param name="constants">constants</param>
+        /// <param name="context">Context</param>
         /// <param name="dicSelectors">Selectors to use</param>
         /// <param name="dicFilters">Filters associated to Selectors</param>
         /// <returns>a list of accounts</returns>
-        IList<AccountUser> SelectAccounts(int idActivityDefinition, object item, RuleConstants constants, IDictionary<int, List<SelectorDefinition>> dicSelectors, IDictionary<int, List<RuleFilterDefinition>> dicFilters);
+        IList<AccountUser> SelectAccounts(int idActivityDefinition, RuleContext context, IDictionary<int, List<SelectorDefinition>> dicSelectors, IDictionary<int, List<RuleFilterDefinition>> dicFilters);
 
         /// <summary>
         /// Select groups matching the selector for an activity.
         /// </summary>
         /// <param name="idActivityDefinition">Activity definition id.</param>
         /// <param name="item">Business object.</param>
-        /// <param name="constants">constants</param>
+        /// <param name="context">Context</param>
         /// <returns>a list of groups.</returns>
-        IList<AccountGroup> SelectGroups(int idActivityDefinition, object item, RuleConstants constants);
+        IList<AccountGroup> SelectGroups(int idActivityDefinition, RuleContext context);
 
         /// <summary>
         /// Select groups matching the selector for an activity.
         /// </summary>
         /// <param name="idActivityDefinition">Activity definition id.</param>
-        /// <param name="item">Business object.</param>
-        /// <param name="constants">constants</param>
+        /// <param name="context">Context</param>
         /// <param name="dicSelectors">Selectors to use</param>
         /// <param name="dicFilters">Filters associated to Selectors</param>
         /// <returns>a list of groups.</returns>
-        IList<AccountGroup> SelectGroups(int idActivityDefinition, object item, RuleConstants constants, IDictionary<int, List<SelectorDefinition>> dicSelectors, IDictionary<int, List<RuleFilterDefinition>> dicFilters);
+        IList<AccountGroup> SelectGroups(int idActivityDefinition, RuleContext context, IDictionary<int, List<SelectorDefinition>> dicSelectors, IDictionary<int, List<RuleFilterDefinition>> dicFilters);
 
         /// <summary>
         /// Validate a rule for an activity.
@@ -54,19 +51,18 @@ namespace Kinetix.Rules
         /// <param name="item">Business object.</param>
         /// <param name="constants">constants</param>
         /// <returns>a list of account.</returns>
-        bool IsRuleValid(int idActivityDefinition, object item, RuleConstants constants);
+        bool IsRuleValid(int idActivityDefinition, RuleContext context);
 
         /// <summary>
         /// Validate a rule for an activity using the provided rules and conditions.
         /// Version sans IO, optimisée vitesse execution, utilisée dans le cadre d'un recalcul de workflow
         /// </summary>
         /// <param name="idActivityDefinition">Activity definition id</param>
-        /// <param name="item">Business object</param>
-        /// <param name="constants">constants</param>
+        /// <param name="context">Context</param>
         /// <param name="dicRules">Rules to use</param>
         /// <param name="dicConditions">Conditions associated to rules</param>
         /// <returns></returns>
-        bool IsRuleValid(int idActivityDefinition, object item, RuleConstants constants, IDictionary<int, List<RuleDefinition>> dicRules, IDictionary<int, List<RuleConditionDefinition>> dicConditions);
+        bool IsRuleValid(int idActivityDefinition, RuleContext context, IDictionary<int, List<RuleDefinition>> dicRules, IDictionary<int, List<RuleConditionDefinition>> dicConditions);
 
         /// <summary>
         /// Add a new rule.

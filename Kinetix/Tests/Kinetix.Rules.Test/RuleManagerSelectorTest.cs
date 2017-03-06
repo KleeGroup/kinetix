@@ -251,8 +251,8 @@ namespace Kinetix.Rules.Test
 
             MyDummyDtObject myDummyDtObject = new MyDummyDtObject();
             myDummyDtObject.Division = "BTL";
-
-            IList<AccountUser> selectedAccounts = ruleManager.SelectAccounts(actId1, myDummyDtObject, RuleConstants.EmptyRuleConstants);
+            RuleContext ruleContext = new RuleContext(myDummyDtObject, RuleConstants.EmptyRuleConstants);
+            IList<AccountUser> selectedAccounts = ruleManager.SelectAccounts(actId1, ruleContext);
 
             Assert.IsNotNull(selectedAccounts);
             Assert.AreEqual(1, selectedAccounts.Count);
@@ -294,16 +294,19 @@ namespace Kinetix.Rules.Test
             MyDummyDtObject myDummyDtObject = new MyDummyDtObject();
             myDummyDtObject.Division = "BTL";
 
+            RuleContext ruleContext = new RuleContext(myDummyDtObject, RuleConstants.EmptyRuleConstants);
+
             // The entity is not set to ENT. The selector should not match
-            IList<AccountUser> selectedAccounts_1 = ruleManager.SelectAccounts(actId1, myDummyDtObject, RuleConstants.EmptyRuleConstants);
+            IList<AccountUser> selectedAccounts_1 = ruleManager.SelectAccounts(actId1, ruleContext);
 
             Assert.IsNotNull(selectedAccounts_1);
             Assert.AreEqual(selectedAccounts_1.Count, 0);
 
             //We set the entity to 'ENT'
             myDummyDtObject.Entity = "ENT";
+            ruleContext = new RuleContext(myDummyDtObject, RuleConstants.EmptyRuleConstants);
             // The selector should match now.
-            IList<AccountUser> selectedAccounts_2 = ruleManager.SelectAccounts(actId1, myDummyDtObject, RuleConstants.EmptyRuleConstants);
+            IList<AccountUser> selectedAccounts_2 = ruleManager.SelectAccounts(actId1, ruleContext);
 
             Assert.IsNotNull(selectedAccounts_2);
             Assert.AreEqual(selectedAccounts_2.Count, 1);
@@ -311,8 +314,9 @@ namespace Kinetix.Rules.Test
 
             //We set the entity to 'XXX'
             myDummyDtObject.Entity = "XXX";
+            ruleContext = new RuleContext(myDummyDtObject, RuleConstants.EmptyRuleConstants);
             // The selector should not match .
-            IList<AccountUser> selectedAccounts_3 = ruleManager.SelectAccounts(actId1, myDummyDtObject, RuleConstants.EmptyRuleConstants);
+            IList<AccountUser> selectedAccounts_3 = ruleManager.SelectAccounts(actId1, ruleContext);
 
             Assert.IsNotNull(selectedAccounts_3);
             Assert.AreEqual(selectedAccounts_3.Count, 0);
@@ -387,17 +391,19 @@ namespace Kinetix.Rules.Test
             // 
             MyDummyDtObject myDummyDtObject = new MyDummyDtObject();
             myDummyDtObject.Division = "BTL";
+            RuleContext ruleContext = new RuleContext(myDummyDtObject, RuleConstants.EmptyRuleConstants);
 
             // The entity only has entity set to ENT. No selectors should match
-            IList<AccountUser> selectedAccounts_1 = ruleManager.SelectAccounts(actId1, myDummyDtObject, RuleConstants.EmptyRuleConstants);
+            IList<AccountUser> selectedAccounts_1 = ruleManager.SelectAccounts(actId1, ruleContext);
 
             Assert.IsNotNull(selectedAccounts_1);
             Assert.AreEqual(selectedAccounts_1.Count, 0);
 
             // Set entity to ENT
             myDummyDtObject.Entity = "ENT";
+            ruleContext = new RuleContext(myDummyDtObject, RuleConstants.EmptyRuleConstants);
             // Only Group 1 should match 
-            IList<AccountUser> selectedAccounts_2 = ruleManager.SelectAccounts(actId1, myDummyDtObject, RuleConstants.EmptyRuleConstants);
+            IList<AccountUser> selectedAccounts_2 = ruleManager.SelectAccounts(actId1, ruleContext);
 
             Assert.IsNotNull(selectedAccounts_2);
             Assert.AreEqual(selectedAccounts_2.Count, 2);
@@ -406,8 +412,9 @@ namespace Kinetix.Rules.Test
             // Set entity to XXX
             myDummyDtObject.Entity = "XXX";
             myDummyDtObject.Nom = "DONALD";
+            ruleContext = new RuleContext(myDummyDtObject, RuleConstants.EmptyRuleConstants);
             // Only Group 2 should match 
-            IList<AccountUser> selectedAccounts_3 = ruleManager.SelectAccounts(actId1, myDummyDtObject, RuleConstants.EmptyRuleConstants);
+            IList<AccountUser> selectedAccounts_3 = ruleManager.SelectAccounts(actId1, ruleContext);
 
             Assert.IsNotNull(selectedAccounts_3);
             Assert.AreEqual(selectedAccounts_3.Count, 2);
@@ -415,8 +422,9 @@ namespace Kinetix.Rules.Test
 
             // Set entity to ENT
             myDummyDtObject.Entity = "ENT";
+            ruleContext = new RuleContext(myDummyDtObject, RuleConstants.EmptyRuleConstants);
             // Group 1 and Group 2 should match 
-            IList<AccountUser> selectedAccounts_4 = ruleManager.SelectAccounts(actId1, myDummyDtObject, RuleConstants.EmptyRuleConstants);
+            IList<AccountUser> selectedAccounts_4 = ruleManager.SelectAccounts(actId1, ruleContext);
 
             Assert.IsNotNull(selectedAccounts_4);
             Assert.AreEqual(selectedAccounts_4.Count, 4);

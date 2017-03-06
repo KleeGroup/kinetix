@@ -70,17 +70,15 @@ namespace Kinetix.Rules
             return _ruleStorePlugin.FindSelectorsByItemId(itemId);
         }
 
-        public bool IsRuleValid(int idActivityDefinition, object item, RuleConstants constants)
+        public bool IsRuleValid(int idActivityDefinition, RuleContext ruleContext)
         {
             IList<RuleDefinition> rules = _ruleStorePlugin.FindRulesByItemId(idActivityDefinition);
-            RuleContext context = new RuleContext(item, constants);
 
-            return _ruleValidatorPlugin.IsRuleValid(rules, context);
+            return _ruleValidatorPlugin.IsRuleValid(rules, ruleContext);
         }
 
-        public bool IsRuleValid(int idActivityDefinition, object item, RuleConstants constants, IDictionary<int, List<RuleDefinition>> dicRules, IDictionary<int, List<RuleConditionDefinition>> dicConditions)
+        public bool IsRuleValid(int idActivityDefinition, RuleContext ruleContext, IDictionary<int, List<RuleDefinition>> dicRules, IDictionary<int, List<RuleConditionDefinition>> dicConditions)
         {
-            RuleContext context = new RuleContext(item, constants);
             List<RuleDefinition> rules;
             dicRules.TryGetValue(idActivityDefinition, out rules);
 
@@ -89,7 +87,7 @@ namespace Kinetix.Rules
                 rules = new List<RuleDefinition>();
             }
 
-            return _ruleValidatorPlugin.IsRuleValid(rules, dicConditions, context);
+            return _ruleValidatorPlugin.IsRuleValid(rules, dicConditions, ruleContext);
         }
 
         public void RemoveCondition(RuleConditionDefinition ruleConditionDefinition)
@@ -112,17 +110,15 @@ namespace Kinetix.Rules
             RemoveSelectors(new List<SelectorDefinition>(){ selectorDefinition });
         }
 
-        public IList<AccountUser> SelectAccounts(int idActivityDefinition, object item, RuleConstants constants)
+        public IList<AccountUser> SelectAccounts(int idActivityDefinition, RuleContext context)
         {
             IList<SelectorDefinition> selectors = _ruleStorePlugin.FindSelectorsByItemId(idActivityDefinition);
-            RuleContext context = new RuleContext(item, constants);
 
             return _ruleSelectorPlugin.SelectAccounts(selectors, context);
         }
 
-        public IList<AccountUser> SelectAccounts(int idActivityDefinition, object item, RuleConstants constants, IDictionary<int, List<SelectorDefinition>> dicSelectors, IDictionary<int, List<RuleFilterDefinition>> dicFilters)
+        public IList<AccountUser> SelectAccounts(int idActivityDefinition, RuleContext context, IDictionary<int, List<SelectorDefinition>> dicSelectors, IDictionary<int, List<RuleFilterDefinition>> dicFilters)
         {
-            RuleContext context = new RuleContext(item, constants);
             List<SelectorDefinition> selectors;
             dicSelectors.TryGetValue(idActivityDefinition, out selectors);
 
@@ -134,17 +130,15 @@ namespace Kinetix.Rules
             return _ruleSelectorPlugin.SelectAccounts(selectors, dicFilters, context);
         }
 
-        public IList<AccountGroup> SelectGroups(int idActivityDefinition, object item, RuleConstants constants)
+        public IList<AccountGroup> SelectGroups(int idActivityDefinition, RuleContext context)
         {
             IList<SelectorDefinition> selectors = _ruleStorePlugin.FindSelectorsByItemId(idActivityDefinition);
-            RuleContext context = new RuleContext(item, constants);
 
             return _ruleSelectorPlugin.SelectGroups(selectors, context);
         }
 
-        public IList<AccountGroup> SelectGroups(int idActivityDefinition, object item, RuleConstants constants, IDictionary<int, List<SelectorDefinition>> dicSelectors, IDictionary<int, List<RuleFilterDefinition>> dicFilters)
+        public IList<AccountGroup> SelectGroups(int idActivityDefinition, RuleContext context, IDictionary<int, List<SelectorDefinition>> dicSelectors, IDictionary<int, List<RuleFilterDefinition>> dicFilters)
         {
-            RuleContext context = new RuleContext(item, constants);
             List<SelectorDefinition> selectors;
             dicSelectors.TryGetValue(idActivityDefinition, out selectors);
 

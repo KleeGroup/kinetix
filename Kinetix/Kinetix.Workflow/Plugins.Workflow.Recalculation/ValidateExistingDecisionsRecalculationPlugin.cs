@@ -63,17 +63,19 @@ namespace Kinetix.Workflow
                 nextActivityDefinitions = activityDefinitions;
             }
 
+            RuleContext ruleContext = new RuleContext(obj, ruleConstants);
+
             foreach (WfActivityDefinition ad in nextActivityDefinitions)
             {
                 WfActivity activity;
                 activities.TryGetValue(ad.WfadId.Value, out activity);
                 int actDefId = ad.WfadId.Value;
 
-                bool isManual = _ruleManager.IsRuleValid(actDefId, obj, ruleConstants, dicRules, dicConditions);
+                bool isManual = _ruleManager.IsRuleValid(actDefId, ruleContext, dicRules, dicConditions);
 
                 if (isManual)
                 {
-                    IList<AccountUser> accounts = _ruleManager.SelectAccounts(actDefId, obj, ruleConstants, dicSelectors, dicFilters);
+                    IList<AccountUser> accounts = _ruleManager.SelectAccounts(actDefId, ruleContext, dicSelectors, dicFilters);
                     isManual = accounts.Count > 0;
                 }
 

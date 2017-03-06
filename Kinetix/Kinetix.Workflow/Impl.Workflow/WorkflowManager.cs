@@ -188,13 +188,14 @@ namespace Kinetix.Workflow
             int? wfCurrentActivityId = null;
             WfActivity wfActivityCurrent = currentActivity;
             RuleConstants ruleConstants = _ruleManager.GetConstants(wfActivityDefinition.WfwdId);
+            RuleContext ruleContext = new RuleContext(obj, ruleConstants);
             WfMassValidation validation = new WfMassValidation();
             int i;
             for (i = 0; i < activityDefinitions.Count; i++)
             {
                 WfActivityDefinition activityDefinition = activityDefinitions[i];
 
-                if (CanAutoValidateActivity(activityDefinition, obj, ruleConstants, dicRules, dicConditions, dicSelectors, dicFilters))
+                if (CanAutoValidateActivity(activityDefinition, ruleContext, dicRules, dicConditions, dicSelectors, dicFilters))
                 {
                     if (i > 0)
                     {
@@ -242,11 +243,11 @@ namespace Kinetix.Workflow
             return i == activityDefinitions.Count;
         }
 
-        public bool CanAutoValidateActivity(WfActivityDefinition activityDefinition, object obj, RuleConstants ruleConstants,
+        public bool CanAutoValidateActivity(WfActivityDefinition activityDefinition, RuleContext ruleContext,
             IDictionary<int, List<RuleDefinition>>  dicRules, IDictionary<int, List<RuleConditionDefinition>> dicConditions,
             IDictionary<int, List<SelectorDefinition>> dicSelectors, IDictionary<int, List<RuleFilterDefinition>> dicFilters)
         {
-            return _selectorRuleWorkflowPredicateAutoValidatePlugin.CanAutoValidateActivity(activityDefinition, obj, ruleConstants, dicRules, dicConditions, dicSelectors, dicFilters);
+            return _selectorRuleWorkflowPredicateAutoValidatePlugin.CanAutoValidateActivity(activityDefinition, ruleContext, dicRules, dicConditions, dicSelectors, dicFilters);
         }
 
         #endregion
@@ -783,7 +784,8 @@ namespace Kinetix.Workflow
                 {
                     object obj = _itemStorePlugin.ReadItem(wfWorkflow.ItemId.Value);
                     RuleConstants ruleConstants = _ruleManager.GetConstants(wfWorkflow.WfwdId.Value);
-                    IList<AccountUser> accounts = _ruleManager.SelectAccounts(currentActivity.WfadId, obj, ruleConstants);
+                    RuleContext ruleContext = new RuleContext(obj, ruleConstants);
+                    IList<AccountUser> accounts = _ruleManager.SelectAccounts(currentActivity.WfadId, ruleContext);
 
                     int match = 0;
                     foreach (AccountUser account in accounts)
@@ -1251,13 +1253,15 @@ namespace Kinetix.Workflow
 
             bool newCurrentActivityFound = false;
 
+            RuleContext ruleContext = new RuleContext(obj, ruleConstants);
+
             foreach (WfActivityDefinition activityDefinition in activityDefinitions)
             {
                 int actDefId = activityDefinition.WfadId.Value;
                 WfActivity activity;
                 activities.TryGetValue(actDefId, out activity);
 
-                bool isRuleValid = _ruleManager.IsRuleValid(actDefId, obj, ruleConstants, dicRules, dicConditions);
+                bool isRuleValid = _ruleManager.IsRuleValid(actDefId, ruleContext, dicRules, dicConditions);
 
                 if (activity != null && currentActivity != null && activityDefinition.WfadId.Equals(currentActivity.WfadId))
                 {
@@ -1271,7 +1275,7 @@ namespace Kinetix.Workflow
                     //This activity need a validation
 
                     //We need to check if there is at least one user allowed to validate
-                    IList<AccountUser> accounts = _ruleManager.SelectAccounts(actDefId, obj, ruleConstants, dicSelectors, dicFilters);
+                    IList<AccountUser> accounts = _ruleManager.SelectAccounts(actDefId, ruleContext, dicSelectors, dicFilters);
 
                     if (accounts.Count > 0)
                     {
@@ -1440,17 +1444,18 @@ namespace Kinetix.Workflow
             object obj = _itemStorePlugin.ReadItem(wfWorkflow.ItemId.Value);
 
             RuleConstants ruleConstants = _ruleManager.GetConstants(wfwdId);
+            RuleContext ruleContext = new RuleContext(obj, ruleConstants);
 
             IList<WfWorkflowDecision> workflowDecisions = new List<WfWorkflowDecision>();
 
             foreach (WfActivityDefinition activityDefinition in activityDefinitions)
             {
                 int actDefId = activityDefinition.WfadId.Value;
-                bool ruleValid = _ruleManager.IsRuleValid(actDefId, obj, ruleConstants, dicRules, dicConditions);
+                bool ruleValid = _ruleManager.IsRuleValid(actDefId, ruleContext, dicRules, dicConditions);
 
                 if (ruleValid)
                 {
-                    IList<AccountGroup> groups = _ruleManager.SelectGroups(actDefId, obj, ruleConstants, dicSelectors, dicFilters);
+                    IList<AccountGroup> groups = _ruleManager.SelectGroups(actDefId, ruleContext, dicSelectors, dicFilters);
                     int nbAccount = 0;
                     bool atLeatOnePerson = false;
                     foreach (AccountGroup accountGroup in groups)
@@ -1506,14 +1511,16 @@ namespace Kinetix.Workflow
 
             IDictionary<int, WfActivity> dicActivities = activities.ToDictionary(a => a.WfadId);
 
+            RuleContext ruleContext = new RuleContext(obj, ruleConstants);
+
             foreach (WfActivityDefinition activityDefinition in activityDefinitions)
             {
                 int actDefId = activityDefinition.WfadId.Value;
-                bool ruleValid = _ruleManager.IsRuleValid(actDefId, obj, ruleConstants, dicRules, dicConditions);
+                bool ruleValid = _ruleManager.IsRuleValid(actDefId, ruleContext, dicRules, dicConditions);
 
                 if (ruleValid)
                 {
-                    IList<AccountGroup> groups = _ruleManager.SelectGroups(actDefId, obj, ruleConstants, dicSelectors, dicFilters);
+                    IList<AccountGroup> groups = _ruleManager.SelectGroups(actDefId, ruleContext, dicSelectors, dicFilters);
                     int nbAccount = 0;
                     bool atLeatOnePerson = false;
                     foreach (AccountGroup accountGroup in groups)

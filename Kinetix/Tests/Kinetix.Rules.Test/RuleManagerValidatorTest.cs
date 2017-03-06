@@ -164,16 +164,18 @@ namespace Kinetix.Rules.Test
             ruleManager.AddCondition(condition);
 
             MyDummyDtObject myDummyDtObject = new MyDummyDtObject();
+            RuleContext ruleContext = new RuleContext(myDummyDtObject, RuleConstants.EmptyRuleConstants);
 
             //The division field is null here
-            bool isValid = ruleManager.IsRuleValid(1, myDummyDtObject, RuleConstants.EmptyRuleConstants);
+            bool isValid = ruleManager.IsRuleValid(1, ruleContext);
             //The rule should NOT be valid here.
             Assert.IsFalse(isValid);
 
             //The division is set to "BTL" here
             myDummyDtObject.Division = "BTL";
+            ruleContext = new RuleContext(myDummyDtObject, RuleConstants.EmptyRuleConstants);
             //The rule should be valid now
-            isValid = ruleManager.IsRuleValid(1, myDummyDtObject, RuleConstants.EmptyRuleConstants);
+            isValid = ruleManager.IsRuleValid(1, ruleContext);
             Assert.IsTrue(isValid);
         }
 
@@ -188,22 +190,23 @@ namespace Kinetix.Rules.Test
 
             // Rule created to Item 1
             MyDummyDtObject myDummyDtObject = new MyDummyDtObject();
+            RuleContext ruleContext = new RuleContext(myDummyDtObject, RuleConstants.EmptyRuleConstants);
 
             //The division field is null here
-            bool isValid = ruleManager.IsRuleValid(1, myDummyDtObject, RuleConstants.EmptyRuleConstants);
+            bool isValid = ruleManager.IsRuleValid(1, ruleContext);
             //The rule should NOT be valid here.
             Assert.IsFalse(isValid);
 
             //The division is set to "BTL" here
             myDummyDtObject.Division = "BTL";
             //The rule should NOT be valid too
-            isValid = ruleManager.IsRuleValid(1, myDummyDtObject, RuleConstants.EmptyRuleConstants);
+            isValid = ruleManager.IsRuleValid(1, ruleContext);
             Assert.IsFalse(isValid);
 
             //The division is set to "ABC" here
             myDummyDtObject.Division = "ABC";
             //The rule should be valid too
-            isValid = ruleManager.IsRuleValid(1, myDummyDtObject, RuleConstants.EmptyRuleConstants);
+            isValid = ruleManager.IsRuleValid(1, ruleContext);
             Assert.IsFalse(isValid);
         }
 
@@ -227,28 +230,32 @@ namespace Kinetix.Rules.Test
             ruleManager.AddCondition(condition2);
 
             MyDummyDtObject myDummyDtObject = new MyDummyDtObject();
+            RuleContext ruleContext = new RuleContext(myDummyDtObject, RuleConstants.EmptyRuleConstants);
 
             //The division field is null here
-            bool isValid = ruleManager.IsRuleValid(1, myDummyDtObject, RuleConstants.EmptyRuleConstants);
+            bool isValid = ruleManager.IsRuleValid(1, ruleContext);
             //The rule should NOT be valid here.
             Assert.IsFalse(isValid);
 
             //The division is set to "BTL" here
             myDummyDtObject.Division = "BTL";
+            ruleContext = new RuleContext(myDummyDtObject, RuleConstants.EmptyRuleConstants);
             //The rule should NOT be valid (no entity defined)
-            isValid = ruleManager.IsRuleValid(1, myDummyDtObject, RuleConstants.EmptyRuleConstants);
+            isValid = ruleManager.IsRuleValid(1, ruleContext);
             Assert.IsFalse(isValid);
 
             //The entity is set to "ENT_1" here
             myDummyDtObject.Entity = "ENT_1";
+            ruleContext = new RuleContext(myDummyDtObject, RuleConstants.EmptyRuleConstants);
             //The rule should be valid now
-            isValid = ruleManager.IsRuleValid(1, myDummyDtObject, RuleConstants.EmptyRuleConstants);
+            isValid = ruleManager.IsRuleValid(1, ruleContext);
             Assert.IsTrue(isValid);
 
             //The division is set to "UNKNOWN_ENT" here
             myDummyDtObject.Entity = "UNKNOWN_ENT";
+            ruleContext = new RuleContext(myDummyDtObject, RuleConstants.EmptyRuleConstants);
             //The rule should NOT be valid anymore
-            isValid = ruleManager.IsRuleValid(1, myDummyDtObject, RuleConstants.EmptyRuleConstants);
+            isValid = ruleManager.IsRuleValid(1, ruleContext);
             Assert.IsFalse(isValid);
         }
 
@@ -275,29 +282,33 @@ namespace Kinetix.Rules.Test
             ruleManager.AddCondition(condition_2);
 
             MyDummyDtObject myDummyDtObject = new MyDummyDtObject();
+            RuleContext ruleContext = new RuleContext(myDummyDtObject, RuleConstants.EmptyRuleConstants);
 
             //The division and entity field are null here
-            bool isValid = ruleManager.IsRuleValid(1, myDummyDtObject, RuleConstants.EmptyRuleConstants);
+            bool isValid = ruleManager.IsRuleValid(1, ruleContext);
             //The rule should NOT be valid here.
             Assert.IsFalse(isValid);
 
             //The division is set to "BTL" here
             myDummyDtObject.Division = "BTL";
+            ruleContext = new RuleContext(myDummyDtObject, RuleConstants.EmptyRuleConstants);
             //The rule should be valid as it match 1 rule
-            isValid = ruleManager.IsRuleValid(1, myDummyDtObject, RuleConstants.EmptyRuleConstants);
+            isValid = ruleManager.IsRuleValid(1, ruleContext);
             Assert.IsTrue(isValid);
 
             //The entity is set to "ENT_1" here
             myDummyDtObject.Entity = "ENT_1";
+            ruleContext = new RuleContext(myDummyDtObject, RuleConstants.EmptyRuleConstants);
             //The rule should be valid now (2 rules valid)
-            isValid = ruleManager.IsRuleValid(1, myDummyDtObject, RuleConstants.EmptyRuleConstants);
+            isValid = ruleManager.IsRuleValid(1, ruleContext);
             Assert.IsTrue(isValid);
 
             //The division is set to "UNKNOWN_ENT" here
             myDummyDtObject.Entity = "UNKNOWN_ENT";
             myDummyDtObject.Division = "DIV";
+            ruleContext = new RuleContext(myDummyDtObject, RuleConstants.EmptyRuleConstants);
             //The rule should NOT be valid anymore
-            isValid = ruleManager.IsRuleValid(1, myDummyDtObject, RuleConstants.EmptyRuleConstants);
+            isValid = ruleManager.IsRuleValid(1, ruleContext);
             Assert.IsFalse(isValid);
         }
 
@@ -330,35 +341,40 @@ namespace Kinetix.Rules.Test
             ruleManager.AddCondition(condition_2_2);
 
             MyDummyDtObject myDummyDtObject = new MyDummyDtObject();
+            RuleContext ruleContext = new RuleContext(myDummyDtObject, RuleConstants.EmptyRuleConstants);
 
             //The division and entity field are null here
-            bool isValid = ruleManager.IsRuleValid(1, myDummyDtObject, RuleConstants.EmptyRuleConstants);
+            bool isValid = ruleManager.IsRuleValid(1, ruleContext);
             //The rule should be valid here.
             Assert.IsFalse(isValid);
 
             //The division is set to "BTL" here
             myDummyDtObject.Division = "BTL";
+            ruleContext = new RuleContext(myDummyDtObject, RuleConstants.EmptyRuleConstants);
             //The rule should NOT be valid as no rule match
-            isValid = ruleManager.IsRuleValid(1, myDummyDtObject, RuleConstants.EmptyRuleConstants);
+            isValid = ruleManager.IsRuleValid(1, ruleContext);
             Assert.IsFalse(isValid);
 
             //The entity is set to "MAR" here
             myDummyDtObject.Entity = "MAR";
+            ruleContext = new RuleContext(myDummyDtObject, RuleConstants.EmptyRuleConstants);
             //The rule should NOT be valid (only one condition in each rules is valid)
-            isValid = ruleManager.IsRuleValid(1, myDummyDtObject, RuleConstants.EmptyRuleConstants);
+            isValid = ruleManager.IsRuleValid(1, ruleContext);
             Assert.IsFalse(isValid);
 
             //The entity is set to "ENT" here
             myDummyDtObject.Entity = "ENT";
+            ruleContext = new RuleContext(myDummyDtObject, RuleConstants.EmptyRuleConstants);
             //The rule should be valid (match all conditions of rule 1)
-            isValid = ruleManager.IsRuleValid(1, myDummyDtObject, RuleConstants.EmptyRuleConstants);
+            isValid = ruleManager.IsRuleValid(1, ruleContext);
             Assert.IsTrue(isValid);
 
             //The division is set to "UNKNOWN_ENT" here
             myDummyDtObject.Entity = "UNKNOWN_ENT";
             myDummyDtObject.Division = "DIV";
+            ruleContext = new RuleContext(myDummyDtObject, RuleConstants.EmptyRuleConstants);
             //The rule should NOT be valid anymore
-            isValid = ruleManager.IsRuleValid(1, myDummyDtObject, RuleConstants.EmptyRuleConstants);
+            isValid = ruleManager.IsRuleValid(1, ruleContext);
             Assert.IsFalse(isValid);
         }
 

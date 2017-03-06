@@ -1750,7 +1750,7 @@ namespace Kinetix.Workflow.Test
 
             IList<WfWorkflow> allWorkflows = new List<WfWorkflow>();
 
-            int nbWf = 2000;
+            int nbWf = 2500;
 
             for (int i = 0; i < nbWf; i++)
             {
@@ -1779,7 +1779,7 @@ namespace Kinetix.Workflow.Test
             sw.Stop();
 
             Trace.WriteLine(sw.ElapsedMilliseconds);
-            Assert.IsTrue(sw.ElapsedMilliseconds < 2000);
+            Assert.IsTrue(sw.ElapsedMilliseconds < 1000);
 
             sw = new Stopwatch();
             sw.Start();

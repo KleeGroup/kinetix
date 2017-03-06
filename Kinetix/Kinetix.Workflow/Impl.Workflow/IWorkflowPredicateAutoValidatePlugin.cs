@@ -20,7 +20,7 @@ namespace Kinetix.Workflow
         /// <param name="dicSelectors"></param>
         /// <param name="dicFilters"></param>
         /// <returns></returns>
-        bool CanAutoValidateActivity(WfActivityDefinition activityDefinition, object obj, RuleConstants ruleConstants,
+        bool CanAutoValidateActivity(WfActivityDefinition activityDefinition, RuleContext ruleContext,
             IDictionary<int, List<RuleDefinition>> dicRules, IDictionary<int, List<RuleConditionDefinition>> dicConditions,
             IDictionary<int, List<SelectorDefinition>> dicSelectors, IDictionary<int, List<RuleFilterDefinition>> dicFilters);
 
