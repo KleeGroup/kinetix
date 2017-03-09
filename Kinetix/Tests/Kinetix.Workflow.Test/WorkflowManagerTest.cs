@@ -1291,6 +1291,9 @@ namespace Kinetix.Workflow.Test
             WfActivity currentActivity = _workflowManager.GetActivity(currentActivityId);
             Assert.AreEqual(firstActivity.WfadId, currentActivity.WfadId);
 
+            IList<WfActivity> activities = _workflowManager.GetActivities(wfWorkflow, new List<int>() { currentActivity.WfadId });
+            Assert.AreEqual(1, activities.Count);
+
             // We are at the first activity 
             // This activity is manual, Activity exist but no decision associated
 
@@ -1309,6 +1312,9 @@ namespace Kinetix.Workflow.Test
             WfActivity recalculActivity = _workflowManager.GetActivity(recalculActivityId);
             Assert.AreEqual(thirdActivity.WfadId, recalculActivity.WfadId);
 
+            activities = _workflowManager.GetActivities(wfWorkflowFetched, new List<int>() { recalculActivity.WfadId });
+            Assert.AreEqual(1, activities.Count);
+
             // We add back the rule removed
             rule1Act1.Id = null;
             condition1Rule1Act1.Id = null;
@@ -1323,6 +1329,9 @@ namespace Kinetix.Workflow.Test
             recalculActivityId = wfWorkflowFetched.WfaId2.Value;
             recalculActivity = _workflowManager.GetActivity(recalculActivityId);
             Assert.AreEqual(firstActivity.WfadId, recalculActivity.WfadId);
+
+            activities = _workflowManager.GetActivities(wfWorkflowFetched, new List<int>() { recalculActivity.WfadId });
+            Assert.AreEqual(1, activities.Count);
 
         }
 
@@ -1430,6 +1439,9 @@ namespace Kinetix.Workflow.Test
             recalculActivityId = wfWorkflowFetched.WfaId2.Value;
             recalculActivity = _workflowManager.GetActivity(recalculActivityId);
             Assert.AreEqual(firstActivity.WfadId, recalculActivity.WfadId);
+
+            IList<WfActivity> activities = _workflowManager.GetActivities(wfWorkflowFetched, new List<int>() { recalculActivity.WfadId });
+            Assert.AreEqual(1, activities.Count);
         }
 
 
@@ -1498,6 +1510,9 @@ namespace Kinetix.Workflow.Test
             WfActivity recalculActivity = _workflowManager.GetActivity(recalculActivityId);
             Assert.AreEqual(firstActivity.WfadId, recalculActivity.WfadId);
 
+            IList<WfActivity> activities = _workflowManager.GetActivities(wfWorkflowFetched, new List<int>() { recalculActivity.WfadId });
+            Assert.AreEqual(1, activities.Count);
+
             WfDecision wfDecision = new WfDecision();
             wfDecision.WfaId = recalculActivity.WfaId.Value;
             wfDecision.Username = "100";
@@ -1513,6 +1528,9 @@ namespace Kinetix.Workflow.Test
             recalculActivity = _workflowManager.GetActivity(recalculActivityId);
             Assert.AreEqual(activityEnd.WfadId, recalculActivity.WfadId);
 
+            activities = _workflowManager.GetActivities(wfWorkflowFetched, new List<int>() { recalculActivity.WfadId });
+            Assert.AreEqual(1, activities.Count);
+
             // No Modification of the definition and we call the Recalculation of the Workflow.
             _workflowManager.RecalculateWorkflowDefinition(wfWorkflowDefinition);
             // The workflow must be on the same activity
@@ -1522,6 +1540,9 @@ namespace Kinetix.Workflow.Test
             recalculActivityId = wfWorkflowFetched.WfaId2.Value;
             recalculActivity = _workflowManager.GetActivity(recalculActivityId);
             Assert.AreEqual(activityEnd.WfadId, recalculActivity.WfadId);
+
+            activities = _workflowManager.GetActivities(wfWorkflowFetched, new List<int>() { recalculActivity.WfadId });
+            Assert.AreEqual(1, activities.Count);
 
             // Removing the selector of the first activity.
             // No selector nor rule. The activity zero should be autovalidated.
@@ -1537,6 +1558,9 @@ namespace Kinetix.Workflow.Test
             recalculActivityId = wfWorkflowFetched.WfaId2.Value;
             recalculActivity = _workflowManager.GetActivity(recalculActivityId);
             Assert.AreEqual(activityEnd.WfadId, recalculActivity.WfadId);
+
+            activities = _workflowManager.GetActivities(wfWorkflowFetched, new List<int>() { recalculActivity.WfadId });
+            Assert.AreEqual(1, activities.Count);
 
             Assert.IsFalse(_workflowManager.CanGoToNextActivity(wfWorkflowFetched));
 

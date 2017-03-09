@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Kinetix.Account;
 using System.Collections;
-using System.Globalization;
 using Kinetix.Rules.Impl.Rules;
 
 namespace Kinetix.Rules
@@ -12,8 +10,6 @@ namespace Kinetix.Rules
     {
         private readonly IRuleStorePlugin _ruleStorePlugin;
         private readonly IAccountManager _accountManager;
-
-        
 
         public SimpleRuleSelectorPlugin(IRuleStorePlugin ruleStorePlugin, IAccountManager accountManager)
         {
@@ -160,7 +156,8 @@ namespace Kinetix.Rules
                             if (fieldToTest is IList)
                             {
                                 IList<string> valueList = (IList<string>)fieldToTest;
-                                result = (expressions.Intersect(valueList).Count() > 0);
+                                // Intersect is O(N)
+                                result = expressions.Intersect(valueList).Any();
                             }
                             else
                             {

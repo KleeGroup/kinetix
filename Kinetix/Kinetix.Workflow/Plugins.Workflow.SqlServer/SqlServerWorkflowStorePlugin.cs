@@ -140,8 +140,8 @@ namespace Kinetix.Workflow {
             return hasNext;
         }
 
-        public WfActivity ReadActivity(int wfadId) {
-            return BrokerManager.GetBroker<WfActivity>().Get(wfadId);
+        public WfActivity ReadActivity(int wfaId) {
+            return BrokerManager.GetBroker<WfActivity>().Get(wfaId);
         }
 
         public WfActivityDefinition ReadActivityDefinition(int wfadId) {
@@ -377,26 +377,26 @@ namespace Kinetix.Workflow {
             cmd.ExecuteNonQuery();
         }
 
-        public void UpdateActivitiesIsAuto(IList<WfActivityUpdate> activities)
+        public void UpdateActivitiesIsAuto(ICollection<WfActivityUpdate> activities)
         {
             var cmd = GetSqlServerCommand("UpdateActivitiesIsAuto.sql");
             cmd.Parameters.AddBeanCollectionProperties(activities);
             cmd.ExecuteNonQuery();
         }
 
-        public void CreateActiviesAndUpdateWorkflowCurrentActivities(IList<WfActivity> activities)
+        public void CreateActiviesAndUpdateWorkflowCurrentActivities(ICollection<WfActivity> activities)
         {
             var cmd = GetSqlServerCommand("InsertActivityUpdateWorkflow.sql");
             cmd.Parameters.AddBeanCollectionProperties(activities);
             cmd.ExecuteNonQuery();
         }
 
-        public void CreateActivies(IList<WfActivity> activities)
+        public void CreateActivies(ICollection<WfActivity> activities)
         {
             BrokerManager.GetBroker<WfActivity>().InsertAll(activities);
         }
 
-        public void CreateActivityDecision(IList<WfActivityDecision> activities)
+        public void CreateActivityDecision(ICollection<WfActivityDecision> activities)
         {
             throw new NotImplementedException();
         }

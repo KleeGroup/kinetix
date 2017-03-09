@@ -1,8 +1,6 @@
 ﻿using Kinetix.Rules.Impl.Rules;
-using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 
 namespace Kinetix.Rules
@@ -79,7 +77,8 @@ namespace Kinetix.Rules
                             if (fieldToTest is IList)
                             {
                                 IList<string> valueList = (IList<string>)fieldToTest;
-                                result = (expressions.Intersect(valueList).Count() > 0);
+                                // Intersect is O(N)
+                                result = expressions.Intersect(valueList).Any();
                             }
                             else
                             {

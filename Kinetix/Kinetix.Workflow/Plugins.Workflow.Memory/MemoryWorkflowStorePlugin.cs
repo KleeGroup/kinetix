@@ -574,7 +574,7 @@ namespace Kinetix.Workflow
         #endregion
 
         #region Workflow Mass Update/Create
-        public void UpdateActivitiesIsAuto(IList<WfActivityUpdate> activities)
+        public void UpdateActivitiesIsAuto(ICollection<WfActivityUpdate> activities)
         {
             foreach (WfActivityUpdate actUpd in activities)
             {
@@ -582,7 +582,7 @@ namespace Kinetix.Workflow
             }
         }
 
-        public void CreateActiviesAndUpdateWorkflowCurrentActivities(IList<WfActivity> activities)
+        public void CreateActiviesAndUpdateWorkflowCurrentActivities(ICollection<WfActivity> activities)
         {
             foreach (WfActivity activity in activities)
             {
@@ -592,7 +592,7 @@ namespace Kinetix.Workflow
 
         }
 
-        public void CreateActivies(IList<WfActivity> activities)
+        public void CreateActivies(ICollection<WfActivity> activities)
         {
             foreach(WfActivity activity in activities)
             {
@@ -608,9 +608,15 @@ namespace Kinetix.Workflow
             }
         }
 
-        public void CreateActivityDecision(IList<WfActivityDecision> activities)
+        public void CreateActivityDecision(ICollection<WfActivityDecision> activities)
         {
-            throw new NotImplementedException();
+            foreach (WfActivityDecision activity in activities)
+            {
+                CreateActivity(activity.Activity);
+                activity.Decision.WfaId = activity.Activity.WfaId.Value;
+                CreateDecision(activity.Decision);
+            }
+
         }
 
         #endregion

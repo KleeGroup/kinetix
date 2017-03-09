@@ -1192,19 +1192,19 @@ namespace Kinetix.Workflow
             //Updating IsAuto flag on activities
             if (output.ActivitiesUpdateIsAuto.Count > 0)
             {
-                _workflowStorePlugin.UpdateActivitiesIsAuto(output.ActivitiesUpdateIsAuto);
+                _workflowStorePlugin.UpdateActivitiesIsAuto(output.ActivitiesUpdateIsAuto.Values);
             }
 
             //Creating new activities
             if (output.ActivitiesCreate.Count > 0)
             {
-                _workflowStorePlugin.CreateActivies(output.ActivitiesCreate);
+                _workflowStorePlugin.CreateActivies(output.ActivitiesCreate.Values);
             }
             
             //Creating new activities and flaging them as current activity
             if (output.ActivitiesCreateUpdateCurrentActivity.Count > 0)
             {
-                _workflowStorePlugin.CreateActiviesAndUpdateWorkflowCurrentActivities(output.ActivitiesCreateUpdateCurrentActivity);
+                _workflowStorePlugin.CreateActiviesAndUpdateWorkflowCurrentActivities(output.ActivitiesCreateUpdateCurrentActivity.Values);
             }
         }
 
@@ -1297,9 +1297,7 @@ namespace Kinetix.Workflow
                         {
                             //The previous validation was auto. This activity should be manually validated.
                             activity.IsAuto = false;
-
                             output.AddActivitiesUpdateIsAuto(activity);
-
                         }
 
                         // No new activity. The previous activity was manual too.
@@ -1330,8 +1328,6 @@ namespace Kinetix.Workflow
                         else
                         {
                             activity.IsAuto = true;
-                            // We keep the previous IsValid flag
-                            //activity.IsValid = true;
                             output.AddActivitiesUpdateIsAuto(activity);
                         }
                     }
@@ -1353,8 +1349,6 @@ namespace Kinetix.Workflow
                     {
                         // The previous activity was manual but now this activity is auto
                         activity.IsAuto = true;
-                        // We keep the previous IsValid flag
-                        // activity.IsValid = true;
                         output.AddActivitiesUpdateIsAuto(activity);
                     }
                 }
@@ -1365,8 +1359,6 @@ namespace Kinetix.Workflow
                     newCurrentActivityFound = true;
                     break;
                 }
-
-
             }
 
             if (newCurrentActivityFound == false)

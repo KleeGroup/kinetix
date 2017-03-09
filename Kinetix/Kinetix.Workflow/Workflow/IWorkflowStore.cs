@@ -385,21 +385,25 @@ namespace Kinetix.Workflow
         /// Update IsAuto flag for the provided activities
         /// </summary>
         /// <param name="worfklows">Activities to update</param>
-        void UpdateActivitiesIsAuto(IList<WfActivityUpdate> activities);
+        void UpdateActivitiesIsAuto(ICollection<WfActivityUpdate> activities);
 
         /// <summary>
         /// Create activities and define them as the current activity for the linked workflow instance for the provided activitie
         /// </summary>
         /// <param name="worfklows">Activities to update</param>
-        void CreateActiviesAndUpdateWorkflowCurrentActivities(IList<WfActivity> activities);
+        void CreateActiviesAndUpdateWorkflowCurrentActivities(ICollection<WfActivity> activities);
 
         /// <summary>
         /// Create new activities
         /// </summary>
         /// <param name="activities">Activities to create</param>
-        void CreateActivies(IList<WfActivity> activities);
+        void CreateActivies(ICollection<WfActivity> activities);
 
-        void CreateActivityDecision(IList<WfActivityDecision> activities);
+        /// <summary>
+        /// Create new Activities and Decisions
+        /// </summary>
+        /// <param name="activities"></param>
+        void CreateActivityDecision(ICollection<WfActivityDecision> activities);
 
         #endregion
     }
