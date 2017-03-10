@@ -2,6 +2,7 @@
 using Kinetix.Rules.Impl.Rules;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 
 namespace Kinetix.Rules
@@ -14,12 +15,12 @@ namespace Kinetix.Rules
         {
             context = new Dictionary<string, object>();
 
-            BeanDefinition definition = BeanDescriptor.GetDefinition(obj.GetType());
-            BeanPropertyDescriptorCollection properties = definition.Properties;
+            PropertyDescriptorCollection pdc = TypeDescriptor.GetProperties(obj);
 
-            foreach (BeanPropertyDescriptor bean in properties)
+            foreach(PropertyDescriptor propDesc in pdc)
             {
-                object val = bean.GetValue(obj);
+                object val = propDesc.GetValue(obj);
+
                 if (val != null)
                 {
                     object value;
@@ -36,7 +37,7 @@ namespace Kinetix.Rules
                     {
                         value = val.ToString();
                     }
-                    context[bean.PropertyName] = value;
+                    context[propDesc.Name] = value;
                 }
             }
 

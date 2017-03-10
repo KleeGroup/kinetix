@@ -73,9 +73,10 @@ namespace Kinetix.Rules
                             result = fieldToTest.Equals(expression);
                             break;
                         case "IN":
-                            string[] expressions = expression.Split(',');
                             if (fieldToTest is IList)
                             {
+                                //Split is O(N), but in 2 pass
+                                string[] expressions = expression.Split(',');
                                 IList<string> valueList = (IList<string>)fieldToTest;
                                 // Intersect is O(N)
                                 result = expressions.Intersect(valueList).Any();
@@ -83,7 +84,22 @@ namespace Kinetix.Rules
                             else
                             {
                                 string valStr = (string)fieldToTest;
-                                result = expressions.Contains<string>(valStr);
+
+                                if (expression.Length == valStr.Length)
+                                {
+                                    result = expression.Equals(valStr);
+                                }
+                                else
+                                {
+                                    if (expression.IndexOf("," + valStr + ",") != -1)
+                                    {
+                                        result = true;
+                                    }
+                                    else
+                                    {
+                                        result = expression.StartsWith(valStr + ",") || expression.EndsWith("," + valStr);
+                                    }
+                                }
                             }
                             break;
                         case "<":

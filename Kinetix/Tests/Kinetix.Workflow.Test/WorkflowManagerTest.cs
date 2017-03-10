@@ -1812,7 +1812,7 @@ namespace Kinetix.Workflow.Test
             sw.Stop();
 
             Trace.WriteLine(sw.ElapsedMilliseconds);
-            Assert.IsTrue(sw.ElapsedMilliseconds < 5000);
+            Assert.IsTrue(sw.ElapsedMilliseconds < 1000);
 
             Assert.AreEqual(output.WfListWorkflowDecision.Count, allDecisions.Count);
 
@@ -1874,7 +1874,6 @@ namespace Kinetix.Workflow.Test
             Assert.AreEqual(2, activities3.Count);
             Assert.AreEqual(firstActivity.WfadId, activities3[0].WfadId);
             Assert.AreEqual(secondActivity.WfadId, activities3[1].WfadId);
-
         }
 
 
