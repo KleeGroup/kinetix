@@ -181,10 +181,20 @@ namespace Kinetix.Rules
                                 }
                             }
                             break;
+                        case "<=":
+                            decimal doubleExpressionInfEgal = decimal.Parse(expression, RuleCulture.Culture);
+                            decimal doubleFieldInfEgal = (decimal)fieldToTest;
+                            result = doubleFieldInfEgal < doubleExpressionInfEgal;
+                            break;
                         case "<":
                             decimal doubleExpressionInf = decimal.Parse(expression, RuleCulture.Culture);
                             decimal doubleFieldInf = (decimal) fieldToTest;
                             result = doubleFieldInf < doubleExpressionInf;
+                            break;
+                        case ">=":
+                            decimal doubleExpressionSupEgal = decimal.Parse(expression, RuleCulture.Culture);
+                            decimal doubleFieldSupEgal = (decimal)fieldToTest;
+                            result = doubleFieldSupEgal > doubleExpressionSupEgal;
                             break;
                         case ">":
                             decimal doubleExpressionSup = decimal.Parse(expression, RuleCulture.Culture);
