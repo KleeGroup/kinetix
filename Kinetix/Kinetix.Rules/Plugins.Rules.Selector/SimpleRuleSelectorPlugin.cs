@@ -184,7 +184,7 @@ namespace Kinetix.Rules
                         case "<=":
                             decimal doubleExpressionInfEgal = decimal.Parse(expression, RuleCulture.Culture);
                             decimal doubleFieldInfEgal = (decimal)fieldToTest;
-                            result = doubleFieldInfEgal < doubleExpressionInfEgal;
+                            result = doubleFieldInfEgal <= doubleExpressionInfEgal;
                             break;
                         case "<":
                             decimal doubleExpressionInf = decimal.Parse(expression, RuleCulture.Culture);
@@ -194,7 +194,7 @@ namespace Kinetix.Rules
                         case ">=":
                             decimal doubleExpressionSupEgal = decimal.Parse(expression, RuleCulture.Culture);
                             decimal doubleFieldSupEgal = (decimal)fieldToTest;
-                            result = doubleFieldSupEgal > doubleExpressionSupEgal;
+                            result = doubleFieldSupEgal >= doubleExpressionSupEgal;
                             break;
                         case ">":
                             decimal doubleExpressionSup = decimal.Parse(expression, RuleCulture.Culture);
