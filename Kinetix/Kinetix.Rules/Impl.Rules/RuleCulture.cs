@@ -1,6 +1,6 @@
 ﻿using System.Globalization;
 
-namespace Kinetix.Rules.Impl.Rules
+namespace Kinetix.Rules
 {
     public class RuleCulture
     {

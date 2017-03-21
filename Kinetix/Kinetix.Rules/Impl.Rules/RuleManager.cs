@@ -1,7 +1,6 @@
 ﻿using Kinetix.Account;
 using System.Linq;
 using System.Collections.Generic;
-using System.Globalization;
 
 namespace Kinetix.Rules
 {

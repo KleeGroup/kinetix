@@ -2,7 +2,6 @@
 using System.Linq;
 using Kinetix.Account;
 using System.Collections;
-using Kinetix.Rules.Impl.Rules;
 
 namespace Kinetix.Rules
 {

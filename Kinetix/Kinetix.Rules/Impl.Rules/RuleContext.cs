@@ -1,6 +1,4 @@
-﻿using Kinetix.ComponentModel;
-using Kinetix.Rules.Impl.Rules;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;

@@ -1,5 +1,4 @@
-﻿using Kinetix.Rules.Impl.Rules;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -15,7 +14,7 @@ namespace Kinetix.Rules
         }
 
         public bool IsRuleValid(IList<RuleDefinition> rules, RuleContext ruleContext)
-        {
+        {   
             foreach (RuleDefinition ruleDefinition in rules)
             {
                 IList<RuleConditionDefinition> conditions = _ruleStorePlugin.FindConditionByRuleId(ruleDefinition.Id.Value);

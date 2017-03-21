@@ -5,7 +5,6 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 #endif
 using Kinetix.Test;
-using Microsoft.Practices.Unity;
 using Kinetix.Workflow.model;
 using Kinetix.Rules;
 using Kinetix.Workflow.instance;
