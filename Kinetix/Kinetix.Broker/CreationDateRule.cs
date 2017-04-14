@@ -19,7 +19,7 @@ namespace Kinetix.Broker {
         /// <param name="fieldValue">Valeur du champ.</param>
         /// <returns>La valeur du champ et le type d'action attendu.</returns>
         public override ValueRule GetInsertValue(object fieldValue) {
-            return new ValueRule(DateTime.Now, ActionRule.Update);
+            return new ValueRule(DateTime.UtcNow, ActionRule.Update);
         }
     }
 }
