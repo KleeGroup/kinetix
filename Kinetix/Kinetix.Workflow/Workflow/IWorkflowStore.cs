@@ -103,6 +103,13 @@ namespace Kinetix.Workflow
         void DeleteWorkflow(int wfwId);
 
         /// <summary>
+        /// Decrement position by 1 for all activity definition >= position
+        /// </summary>
+        /// <param name="wfwdId"></param>
+        /// <param name="position"></param>
+        void DecrementActivityDefinitionPositionsAfter(int wfwdId, int position);
+
+        /// <summary>
         /// Increment position by 1 for all activity definition >= position
         /// </summary>
         /// <param name="wfwdId"></param>

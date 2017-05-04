@@ -309,6 +309,14 @@ namespace Kinetix.Workflow {
             cmd.ExecuteNonQuery();
         }
 
+        public void DecrementActivityDefinitionPositionsAfter(int wfwdId, int position)
+        {
+            var cmd = GetSqlServerCommand("DecrementActivityDefinitionPositionsAfter.sql");
+            cmd.Parameters.AddWithValue(WfActivityDefinition.Cols.WFWD_ID, wfwdId);
+            cmd.Parameters.AddWithValue(WfActivityDefinition.Cols.LEVEL, position);
+            cmd.ExecuteNonQuery();
+        }
+
         public void ShiftActivityDefinitionPositionsBetween(int wfwdId, int posStart, int posEnd, int shift)
         {
             var cmd = GetSqlServerCommand("ShiftActivityDefinitionPositionsBetween.sql");

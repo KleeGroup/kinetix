@@ -8,16 +8,15 @@ using Kinetix.Account;
 using System.Security.Principal;
 using System.Configuration;
 using Kinetix.Broker;
-using Kinetix.Workflow;
 using Kinetix.ComponentModel;
 using Kinetix.Data.SqlClient;
-using Kinetix.ServiceModel;
 #if NUnit
     using NUnit.Framework; 
 #else
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using TestFixtureAttribute = Microsoft.VisualStudio.TestTools.UnitTesting.TestClassAttribute;
+using TestAttribute = Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute;
 #endif
-
 namespace Kinetix.Rules.Test
 {
     [TestClass]
@@ -67,7 +66,7 @@ namespace Kinetix.Rules.Test
         /// <summary>
         /// Add/Find Rules for RulesManager
         /// </summary>
-        [TestMethod]
+        [Test]
         public void TestAddRule()
         {
             int item1 = 10000;
@@ -104,7 +103,7 @@ namespace Kinetix.Rules.Test
         /// <summary>
         /// Add/Update/Delete Rules for RulesManager
         /// </summary>
-        [TestMethod]
+        [Test]
         public void TestAddUpdateDelete()
         {
             int item1 = 10000;
@@ -154,7 +153,7 @@ namespace Kinetix.Rules.Test
         /// <summary>
         /// Add/Update/Delete Rules for RulesManager
         /// </summary>
-        [TestMethod]
+        [Test]
         public void TestDeleteSelectorsByGroupIds()
         {
             string groupIdToDelete = "10000";
@@ -225,7 +224,7 @@ namespace Kinetix.Rules.Test
         /// <summary>
         /// One simple selector for RulesManager
         /// </summary>
-        [TestMethod]
+        [Test]
         public void TestValidationOneSelectorOneFilter()
         {
             var container = GetConfiguredContainer();
@@ -262,7 +261,7 @@ namespace Kinetix.Rules.Test
         /// <summary>
         /// One simple selector with many filters for RulesManager
         /// </summary>
-        [TestMethod]
+        [Test]
         public void TestValidationOneSelectorManyFilters()
         {
             var container = GetConfiguredContainer();
@@ -325,7 +324,7 @@ namespace Kinetix.Rules.Test
         /// <summary>
         /// Many selectors with many filters for RulesManager
         /// </summary>
-        [TestMethod]
+        [Test]
         public void TestValidationManySelectorsManyFilters()
         {
             var container = GetConfiguredContainer();

@@ -497,19 +497,34 @@ namespace Kinetix.Workflow
 
         public void IncrementActivityDefinitionPositionsAfter(int wfwdId, int position)
         {
+            ShiftLevelAfter(wfwdId, position, 1);
+        }
+
+        public void DecrementActivityDefinitionPositionsAfter(int wfwdId, int position)
+        {
+            ShiftLevelAfter(wfwdId, position, -1);
+        }
+
+        private void ShiftLevelAfter(int wfwdId, int position, int shift)
+        {
             foreach (WfActivityDefinition wfActivityDefinition in inMemoryActivityDefinitionStore.Values)
             {
                 if (wfwdId.Equals(wfActivityDefinition.WfwdId) && wfActivityDefinition.Level.Value >= position)
                 {
-                    wfActivityDefinition.Level = wfActivityDefinition.Level.Value + 1;
+                    wfActivityDefinition.Level = wfActivityDefinition.Level.Value + shift;
                 }
             }
-
         }
 
         public void ShiftActivityDefinitionPositionsBetween(int wfwdId, int posStart, int posEnd, int shift)
         {
-            throw new NotImplementedException();
+            foreach (WfActivityDefinition wfActivityDefinition in inMemoryActivityDefinitionStore.Values)
+            {
+                if (wfwdId.Equals(wfActivityDefinition.WfwdId) && wfActivityDefinition.Level.Value >= posStart && wfActivityDefinition.Level.Value <= posEnd)
+                {
+                    wfActivityDefinition.Level = wfActivityDefinition.Level.Value + shift;
+                }
+            }
         }
 
         public void DeleteActivities(int wfadId)

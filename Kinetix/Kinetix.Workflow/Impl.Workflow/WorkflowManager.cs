@@ -663,7 +663,7 @@ namespace Kinetix.Workflow
             critFrom.TransitionName = WfCodeTransition.Default.ToString();
             WfTransitionDefinition transitionFrom = _workflowStorePlugin.FindTransition(critFrom);
 
-            if (wfD.WfwdId.Equals(wfActivityDefinition.WfwdId))
+            if (wfD.WfadId.Equals(wfActivityDefinition.WfadId))
             {
                 //The Activity Definition to remove is the start activity
 
@@ -679,7 +679,7 @@ namespace Kinetix.Workflow
             {
                 //The Activity Definition to remove is NOT the start activity
                 WfTransitionCriteria critTo = new WfTransitionCriteria();
-                critTo.WfadIdFrom = wfActivityDefinition.WfadId;
+                critTo.WfadIdTo = wfActivityDefinition.WfadId;
                 critTo.TransitionName = WfCodeTransition.Default.ToString();
                 WfTransitionDefinition transitionTo = _workflowStorePlugin.FindTransition(critTo);
 
@@ -697,6 +697,7 @@ namespace Kinetix.Workflow
             }
 
             _workflowStorePlugin.DeleteActivityDefinition(wfActivityDefinition);
+            _workflowStorePlugin.DecrementActivityDefinitionPositionsAfter(wfD.WfwdId.Value, wfActivityDefinition.Level.Value);
         }
 
         public void RemoveRule(RuleDefinition rule)
@@ -1241,9 +1242,10 @@ namespace Kinetix.Workflow
             bool isLastPreviousCurrentActivityReached;
             if (wf.WfaId2 == null)
             {
-                //If the first(s) manual Activity(ies) has(ve) been deleted, the workflow don't have a current activity.
+                //If the first(s) manual Activity(ies) has(ve) been deleted, the workflow doesn't have a current activity.
                 currentActivity = null;
-                isLastPreviousCurrentActivityReached = true;
+                //isLastPreviousCurrentActivityReached = true;
+                isLastPreviousCurrentActivityReached = false;
             }
             else
             {

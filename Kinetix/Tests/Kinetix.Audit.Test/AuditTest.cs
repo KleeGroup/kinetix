@@ -3,6 +3,8 @@
     using NUnit.Framework; 
 #else
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using TestFixtureAttribute = Microsoft.VisualStudio.TestTools.UnitTesting.TestClassAttribute;
+using TestAttribute = Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute;
 #endif
 using Kinetix.Audit.Audit;
 using System.Collections.Generic;
@@ -25,7 +27,7 @@ namespace Kinetix.Audit.Test
             container.RegisterType<Kinetix.Audit.IAuditTraceStorePlugin, Kinetix.Audit.MemoryAuditTraceStorePlugin>();
         }
 
-        [TestMethod]
+        [Test]
         public void TestAddAuditTrace()
         {
             var container = GetConfiguredContainer();
@@ -43,7 +45,7 @@ namespace Kinetix.Audit.Test
             Assert.AreEqual(auditTrace.Item, auditFetch.Item);
         }
 
-        [TestMethod]
+        [Test]
         public void TestFindAuditTrace()
         {
             var container = GetConfiguredContainer();

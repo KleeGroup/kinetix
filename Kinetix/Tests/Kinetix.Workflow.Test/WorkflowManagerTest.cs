@@ -3,6 +3,8 @@
     using NUnit.Framework; 
 #else
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using TestFixtureAttribute = Microsoft.VisualStudio.TestTools.UnitTesting.TestClassAttribute;
+using TestAttribute = Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute;
 #endif
 using Kinetix.Test;
 using Kinetix.Workflow.model;
@@ -18,10 +20,11 @@ using Kinetix.ComponentModel;
 using Kinetix.Data.SqlClient;
 using Kinetix.Broker;
 using System.Globalization;
+using Microsoft.Practices.Unity;
 
 namespace Kinetix.Workflow.Test
 {
-    [TestClass]
+    [TestFixture]
     public class WorkflowManagerTest : UnityBaseTest
     {
 
@@ -102,7 +105,7 @@ namespace Kinetix.Workflow.Test
             return myDummyDtObject;
         }
 
-        [TestMethod]
+        [Test]
         public void TestWorkflowStateChange()
         {
             var container = GetConfiguredContainer();
@@ -260,7 +263,7 @@ namespace Kinetix.Workflow.Test
             Assert.AreEqual(accountGroup.Id, wfWorkflowDecision.Groups[0].Id);
         }
 
-        [TestMethod]
+        [Test]
         public void TestWorkflowRulesManualValidationMulActivities()
         {
             var container = GetConfiguredContainer();
@@ -367,7 +370,7 @@ namespace Kinetix.Workflow.Test
         }
 
 
-        [TestMethod]
+        [Test]
         public void TestWorkflowRulesForceManualValidationMulActivities()
         {
             var container = GetConfiguredContainer();
@@ -486,7 +489,7 @@ namespace Kinetix.Workflow.Test
 
         }
 
-        [TestMethod]
+        [Test]
         public void TestWorkflowRemoveWorkflow()
         {
             var container = GetConfiguredContainer();
@@ -547,7 +550,7 @@ namespace Kinetix.Workflow.Test
 
         }
 
-        [TestMethod]
+        [Test]
         public void TestWorkflowItemModifiedWithRecalculation()
         {
             var container = GetConfiguredContainer();
@@ -639,7 +642,7 @@ namespace Kinetix.Workflow.Test
 
         }
 
-        [TestMethod]
+        [Test]
         public void TestWorkflowRulesRemoveDecisionManualValidationActivities()
         {
             var container = GetConfiguredContainer();
@@ -894,7 +897,7 @@ namespace Kinetix.Workflow.Test
             Assert.AreEqual(currentActivity.WfadId, thirdActivity.WfadId);
         }
 
-        [TestMethod]
+        [Test]
         public void TestWorkflowRulesManualValidationActivities()
         {
 
@@ -1152,7 +1155,7 @@ namespace Kinetix.Workflow.Test
 
 
 
-        [TestMethod]
+        [Test]
         public void TestWorkflowRulesAutoValidationNoSelectorAllActivities()
         {
             var container = GetConfiguredContainer();
@@ -1218,7 +1221,7 @@ namespace Kinetix.Workflow.Test
         }
 
 
-        [TestMethod]
+        [Test]
         public void TestWorkflowRecalculationFirstAndCurrentStepAddRemovingRules()
         {
             var container = GetConfiguredContainer();
@@ -1334,7 +1337,7 @@ namespace Kinetix.Workflow.Test
 
         }
 
-        [TestMethod]
+        [Test]
         public void TestWorkflowRecalculationAddingNewActivityFirstPosition()
         {
             var container = GetConfiguredContainer();
@@ -1444,7 +1447,7 @@ namespace Kinetix.Workflow.Test
         }
 
 
-        [TestMethod]
+        [Test]
         public void TestWorkflowRecalculationAddingNewActivityLastPosition()
         {
             var container = GetConfiguredContainer();
@@ -1567,7 +1570,7 @@ namespace Kinetix.Workflow.Test
 
 
 
-        [TestMethod]
+        [Test]
         public void TestWorkflowDoubleWithCulture()
         {
             var container = GetConfiguredContainer();
@@ -1619,7 +1622,7 @@ namespace Kinetix.Workflow.Test
 
         }
 
-        [TestMethod]
+        [Test]
         public void TestWorkflowRecalculationRemovingActivityFirstPosition()
         {
             var container = GetConfiguredContainer();
@@ -1651,7 +1654,7 @@ namespace Kinetix.Workflow.Test
             WfActivityDefinition secondActivity = new WfActivityDefinitionBuilder("Step 2", wfWorkflowDefinition.WfwdId.Value).Build();
 
             _workflowManager.AddActivity(wfWorkflowDefinition, secondActivity, 2);
-            RuleDefinition rule1Act2 = new RuleDefinition(null, DateTime.Now, firstActivity.WfadId, "Règle 2");
+            RuleDefinition rule1Act2 = new RuleDefinition(null, DateTime.Now, secondActivity.WfadId, "Règle 2");
             RuleConditionDefinition condition1Rule1Act2 = new RuleConditionDefinition(null, "Entity", "IN", "ENT,FED,GFE", null);
             _workflowManager.AddRule(secondActivity, rule1Act2, new List<RuleConditionDefinition>() { condition1Rule1Act2 });
             // Selector/filter to validate the activity (preventing auto validation when no one is linked to an activity)
@@ -1710,7 +1713,146 @@ namespace Kinetix.Workflow.Test
             Assert.AreEqual(secondActivity.WfadId, recalculActivity.WfadId);
         }
 
-        [TestMethod]
+
+        [Test]
+        public void TestWorkflowRecalculationRemovingActivities()
+        {
+            var container = GetConfiguredContainer();
+            IWorkflowManager _workflowManager = container.Resolve<IWorkflowManager>();
+            IAccountManager _accountManager = container.Resolve<IAccountManager>();
+
+            WfWorkflowDefinition wfWorkflowDefinition = new WfWorkflowDefinitionBuilder("WorkflowRules").Build();
+            _workflowManager.CreateWorkflowDefinition(wfWorkflowDefinition);
+
+            AccountGroup accountGroup = new AccountGroup("1", "dummy group");
+            AccountUser account = new AccountUserBuilder("100").Build();
+            _accountManager.GetStore().SaveGroup(accountGroup);
+            _accountManager.GetStore().SaveAccounts(new List<AccountUser>() { account });
+            _accountManager.GetStore().Attach(account.Id, accountGroup.Id);
+
+            // Step 1 : 1 rule, 1 condition
+            WfActivityDefinition firstActivity = new WfActivityDefinitionBuilder("Step 1", wfWorkflowDefinition.WfwdId.Value).Build();
+
+            _workflowManager.AddActivity(wfWorkflowDefinition, firstActivity, 1);
+            RuleDefinition rule1Act1 = new RuleDefinition(null, DateTime.Now, firstActivity.WfadId, "Règle 1");
+            RuleConditionDefinition condition1Rule1Act1 = new RuleConditionDefinition(null, "Entity", "IN", "ENT,FED,GFE", null);
+            _workflowManager.AddRule(firstActivity, rule1Act1, new List<RuleConditionDefinition>() { condition1Rule1Act1 });
+            // Selector/filter to validate the activity (preventing auto validation when no one is linked to an activity)
+            SelectorDefinition selector1 = new SelectorDefinition(null, DateTime.Now, firstActivity.WfadId, accountGroup.Id);
+            RuleFilterDefinition filter1 = new RuleFilterDefinition(null, "Entity", "=", "ENT", null);
+            _workflowManager.AddSelector(firstActivity, selector1, new List<RuleFilterDefinition>() { filter1 });
+
+            // Step 2 : 1 rule, 1 condition
+            WfActivityDefinition secondActivity = new WfActivityDefinitionBuilder("Step 2", wfWorkflowDefinition.WfwdId.Value).Build();
+
+            _workflowManager.AddActivity(wfWorkflowDefinition, secondActivity, 2);
+            RuleDefinition rule1Act2 = new RuleDefinition(null, DateTime.Now, secondActivity.WfadId, "Règle 2");
+            RuleConditionDefinition condition1Rule1Act2 = new RuleConditionDefinition(null, "Entity", "IN", "ENT,FED,GFE", null);
+            _workflowManager.AddRule(secondActivity, rule1Act2, new List<RuleConditionDefinition>() { condition1Rule1Act2 });
+            // Selector/filter to validate the activity (preventing auto validation when no one is linked to an activity)
+            SelectorDefinition selector2 = new SelectorDefinition(null, DateTime.Now, secondActivity.WfadId, accountGroup.Id);
+            RuleFilterDefinition filter2 = new RuleFilterDefinition(null, "Entity", "=", "ENT", null);
+            _workflowManager.AddSelector(secondActivity, selector2, new List<RuleFilterDefinition>() { filter2 });
+
+            // Step 3 : 1 rule, 1 condition
+            WfActivityDefinition thirdActivity = new WfActivityDefinitionBuilder("Step 3", wfWorkflowDefinition.WfwdId.Value).Build();
+
+            _workflowManager.AddActivity(wfWorkflowDefinition, thirdActivity, 3);
+            RuleDefinition rule1Act3 = new RuleDefinition(null, DateTime.Now, thirdActivity.WfadId, "Règle 3");
+            RuleConditionDefinition condition1Rule1Act3 = new RuleConditionDefinition(null, "Entity", "IN", "ENT,FED,GFE", null);
+            _workflowManager.AddRule(thirdActivity, rule1Act3, new List<RuleConditionDefinition>() { condition1Rule1Act3 });
+            // Selector/filter to validate the activity (preventing auto validation when no one is linked to an activity)
+            SelectorDefinition selector3 = new SelectorDefinition(null, DateTime.Now, thirdActivity.WfadId, accountGroup.Id);
+            RuleFilterDefinition filter3 = new RuleFilterDefinition(null, "Entity", "=", "ENT", null);
+            _workflowManager.AddSelector(thirdActivity, selector3, new List<RuleFilterDefinition>() { filter3 });
+
+            // Step 4 : 1 rule, 1 condition
+            WfActivityDefinition fourthActivity = new WfActivityDefinitionBuilder("Step 4", wfWorkflowDefinition.WfwdId.Value).Build();
+
+            _workflowManager.AddActivity(wfWorkflowDefinition, fourthActivity, 4);
+            RuleDefinition rule1Act4 = new RuleDefinition(null, DateTime.Now, fourthActivity.WfadId, "Règle 4");
+            RuleConditionDefinition condition1Rule1Act4 = new RuleConditionDefinition(null, "Entity", "IN", "ENT,FED,GFE", null);
+            _workflowManager.AddRule(fourthActivity, rule1Act4, new List<RuleConditionDefinition>() { condition1Rule1Act4 });
+            // Selector/filter to validate the activity (preventing auto validation when no one is linked to an activity)
+            SelectorDefinition selector4 = new SelectorDefinition(null, DateTime.Now, fourthActivity.WfadId, accountGroup.Id);
+            RuleFilterDefinition filter4 = new RuleFilterDefinition(null, "Entity", "=", "ENT", null);
+            _workflowManager.AddSelector(fourthActivity, selector4, new List<RuleFilterDefinition>() { filter4 });
+
+            MyDummyDtObject myDummyDtObject = createDummyDtObject(1);
+
+            WfWorkflow wfWorkflow = _workflowManager.CreateWorkflowInstance(wfWorkflowDefinition.WfwdId.Value, "JUnit", false, myDummyDtObject.Id);
+
+            // Starting the workflow
+            _workflowManager.StartInstance(wfWorkflow);
+
+            // The current activity is the First activity
+            int currentActivityId = wfWorkflow.WfaId2.Value;
+            WfActivity currentActivity = _workflowManager.GetActivity(currentActivityId);
+            Assert.AreEqual(firstActivity.WfadId, currentActivity.WfadId);
+
+
+            // Removing the fourth Activity 
+            _workflowManager.RemoveActivity(fourthActivity);
+
+            // We call the Recalculation of the Workflow.
+            _workflowManager.RecalculateWorkflowDefinition(wfWorkflowDefinition);
+
+            WfWorkflow wfWorkflowFetched = _workflowManager.GetWorkflowInstance(wfWorkflow.WfwId.Value);
+
+            // The second activity should be manual and be the current activity. 
+            int recalculActivityId = wfWorkflowFetched.WfaId2.Value;
+            WfActivity recalculActivity = _workflowManager.GetActivity(recalculActivityId);
+            Assert.AreEqual(firstActivity.WfadId, recalculActivity.WfadId);
+
+            IList<WfActivityDefinition> activityDefinitions = _workflowManager.GetActivityDefinitions(wfWorkflowFetched);
+            Assert.AreEqual(3, activityDefinitions.Count);
+            Assert.AreEqual(activityDefinitions[0].Level, 1);
+            Assert.AreEqual(activityDefinitions[1].Level, 2);
+            Assert.AreEqual(activityDefinitions[2].Level, 3);
+
+            WfDecision wfDecision = new WfDecision();
+            wfDecision.WfaId = currentActivity.WfaId.Value;
+            wfDecision.Username = "100";
+            wfDecision.DecisionDate = DateTime.Now;
+            wfDecision.Comments = "Test";
+
+            _workflowManager.SaveDecisionAndGoToNextActivity(wfWorkflow, wfDecision);
+
+            // Removing the second and Current activity definition
+            _workflowManager.RemoveActivity(secondActivity);
+
+            // We call the Recalculation of the Workflow.
+            _workflowManager.RecalculateWorkflowDefinition(wfWorkflowDefinition);
+
+            wfWorkflowFetched = _workflowManager.GetWorkflowInstance(wfWorkflow.WfwId.Value);
+
+            // The second activity should be manual and be the current activity. 
+            recalculActivityId = wfWorkflowFetched.WfaId2.Value;
+            recalculActivity = _workflowManager.GetActivity(recalculActivityId);
+            Assert.AreEqual(thirdActivity.WfadId, recalculActivity.WfadId);
+
+            activityDefinitions = _workflowManager.GetActivityDefinitions(wfWorkflowFetched);
+            Assert.AreEqual(2, activityDefinitions.Count);
+            Assert.AreEqual(activityDefinitions[1].Level, 2);
+            
+            wfDecision = new WfDecision();
+            wfDecision.WfaId = recalculActivity.WfaId.Value;
+            wfDecision.Username = "100";
+            wfDecision.DecisionDate = DateTime.Now;
+            wfDecision.Comments = "Test";
+
+            _workflowManager.SaveDecision(wfWorkflowFetched, wfDecision);
+
+            wfWorkflowFetched = _workflowManager.GetWorkflowInstance(wfWorkflow.WfwId.Value);
+
+            // The first activity should be now manual and be the current activity. 
+            recalculActivityId = wfWorkflowFetched.WfaId2.Value;
+            recalculActivity = _workflowManager.GetActivity(recalculActivityId);
+            Assert.AreEqual(thirdActivity.WfadId, recalculActivity.WfadId);
+            
+        }
+
+        [Test]
         public void TestWorkflowRecalculationMassRecalculation()
         {
             var container = GetConfiguredContainer();
@@ -1829,7 +1971,7 @@ namespace Kinetix.Workflow.Test
         }
 
 
-        [TestMethod]
+        [Test]
         public void TestWorkflowMove2ActivitiesFirstLastPosition()
         {
             var container = GetConfiguredContainer();
@@ -1876,7 +2018,7 @@ namespace Kinetix.Workflow.Test
         }
 
 
-        [TestMethod]
+        [Test]
         public void TestWorkflowMove3ActivitiesBefore()
         {
             var container = GetConfiguredContainer();
@@ -1963,7 +2105,7 @@ namespace Kinetix.Workflow.Test
         }
 
 
-        [TestMethod]
+        [Test]
         public void TestWorkflowMove3ActivitiesAfter()
         {
             var container = GetConfiguredContainer();
@@ -2052,7 +2194,7 @@ namespace Kinetix.Workflow.Test
 
 
 
-        [TestMethod]
+        [Test]
         public void TestWorkflowMoveActivity5ActivitiesWorkflow()
         {
             var container = GetConfiguredContainer();
@@ -2161,7 +2303,7 @@ namespace Kinetix.Workflow.Test
 
 
 
-        [TestMethod]
+        [Test]
         public void TestWorkflowChangingManualToAutoToManual()
         {
             var container = GetConfiguredContainer();
@@ -2286,7 +2428,7 @@ namespace Kinetix.Workflow.Test
 
         }
 
-        [TestMethod]
+        [Test]
         public void TestWorkflowChangingManualToAutoToManualWithCustomRecalculation()
         {
             var container = GetConfiguredContainer();
