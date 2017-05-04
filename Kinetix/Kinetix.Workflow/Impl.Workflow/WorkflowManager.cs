@@ -1239,18 +1239,15 @@ namespace Kinetix.Workflow
             IDictionary<int, WfActivity> activities = allActivities.ToDictionary(a => a.WfadId);
 
             WfActivity currentActivity;
-            bool isLastPreviousCurrentActivityReached;
+            bool isLastPreviousCurrentActivityReached = false;
             if (wf.WfaId2 == null)
             {
                 //If the first(s) manual Activity(ies) has(ve) been deleted, the workflow doesn't have a current activity.
                 currentActivity = null;
-                //isLastPreviousCurrentActivityReached = true;
-                isLastPreviousCurrentActivityReached = false;
             }
             else
             {
                 currentActivity = allActivities.Where(a => a.WfaId.Equals(wf.WfaId2.Value)).First();
-                isLastPreviousCurrentActivityReached = false;
             }
 
             bool newCurrentActivityFound = false;
