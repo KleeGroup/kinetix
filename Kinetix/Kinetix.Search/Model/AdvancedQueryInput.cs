@@ -33,6 +33,14 @@ namespace Kinetix.Search.Model {
         }
 
         /// <summary>
+        /// Portefeuille de l'utilisateur.
+        /// </summary>
+        public string Portfolio {
+            get;
+            set;
+        }
+
+        /// <summary>
         /// La liste des filtres clé/valeur.
         /// </summary>
         public IDictionary<string, string> FilterList {

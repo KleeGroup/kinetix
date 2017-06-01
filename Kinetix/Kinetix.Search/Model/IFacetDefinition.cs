@@ -6,9 +6,14 @@
     public interface IFacetDefinition {
 
         /// <summary>
-        /// Nom de la facette.
+        /// Code de la facette.
         /// </summary>
-        string Name { get; set; }
+        string Code { get; set; }
+
+        /// <summary>
+        /// Libellé de la facette.
+        /// </summary>
+        string Label { get; set; }
 
         /// <summary>
         /// Nom du champ (en PascalCase) sur lequel on facette.

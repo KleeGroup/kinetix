@@ -123,6 +123,10 @@ namespace Fmk.RoslynCop.CodeFixes {
                 case "int":
                 case "int?":
                     return "Dum.Id";
+                case "System.Int16":
+                case "short":
+                case "short?":
+                    return "Dum.Short";
                 case "System.Guid":
                 case "Guid":
                 case "Guid?":
@@ -257,7 +261,7 @@ namespace Fmk.RoslynCop.CodeFixes {
                 DalAssemblyName = classSymbol.ContainingAssembly.Name,
                 DalNamespace = classDecl.GetNameSpaceFullName(),
                 Params = methSymbol.Parameters.Select(x => GetParameter(x)).ToList(),
-                SpecificUsings = new List<string> { $"{applicationName}.Business.Common.Test" }
+                SpecificUsings = new List<string> { $"{applicationName}.TestUtils.Templates", "Kinetix.TestUtils.Helpers" }
             });
             string content = template.Render(strategy);
 

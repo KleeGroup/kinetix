@@ -12,9 +12,9 @@
     <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
-    <SccProjectName>%24/FranceActive_PEPS_ChaineGestion/Main/Tools/Quality/Fmk.RoslynCop/Fmk.MsBuildCop</SccProjectName>
+    <SccProjectName>%24/FranceActive_PEPS_Budget/Main/Sources/Kinetix/Kinetix-tools/Quality/Fmk.RoslynCop/Fmk.MsBuildCop</SccProjectName>
     <SccLocalPath>.</SccLocalPath>
-    <SccAuxPath>http://172.20.170.26:8080/tfs/pgc</SccAuxPath>
+    <SccAuxPath>http://tfs12-part:8080/tfs/pgc</SccAuxPath>
     <SccProvider>{4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}</SccProvider>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">

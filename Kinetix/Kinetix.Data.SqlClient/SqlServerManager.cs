@@ -234,7 +234,10 @@ namespace Kinetix.Data.SqlClient {
             foreach (Type type in assembly.GetTypes()) {
                 if (type.IsPublic && type.IsClass && type.Namespace != null && type.Namespace.IndexOf("DataContract", StringComparison.Ordinal) != -1) {
                     foreach (FieldInfo field in type.GetFields(BindingFlags.Public | BindingFlags.Static)) {
-                        _constValues[type.Name + "." + field.Name] = field.GetRawConstantValue();
+                        var isConstant = field.FieldType.IsPrimitive || field.FieldType == typeof(string);
+                        if (isConstant) {
+                            _constValues[type.Name + "." + field.Name] = field.GetRawConstantValue();
+                        }
                     }
                 }
             }

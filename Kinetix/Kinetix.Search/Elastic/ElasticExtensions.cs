@@ -20,27 +20,27 @@ namespace Kinetix.Search.Elastic {
             if (_log.IsInfoEnabled) {
                 _log.InfoFormat(
                     "{0} {1} {2}",
-                    response.RequestInformation.RequestMethod,
-                    response.ConnectionStatus.RequestUrl,
-                    response.ConnectionStatus.HttpStatusCode);
+                    response.ApiCall.HttpMethod,
+                    response.ApiCall.Uri,
+                    response.ApiCall.HttpStatusCode);
             }
 
             if (_log.IsDebugEnabled) {
-                var request = response.ConnectionStatus.Request;
+                var request = response.ApiCall.RequestBodyInBytes;
                 if (request != null) {
-                    var str = System.Text.Encoding.UTF8.GetString(request);
+                    var str = Encoding.UTF8.GetString(request);
                     _log.Debug(str);
                 }
             }
 
-            if (!response.ConnectionStatus.Success) {
+            if (!response.ApiCall.Success) {
                 var ex = response.ServerError;
                 var sb = new StringBuilder();
-                sb.Append("Error " + response.RequestInformation.HttpStatusCode + " in ");
+                sb.Append("Error " + response.ApiCall.HttpStatusCode + " in ");
                 sb.Append(context);
                 if (ex != null) {
                     sb.Append(" : [");
-                    sb.Append(ex.ExceptionType);
+                    sb.Append(ex.Error.Type);
                     sb.Append("] ");
                     sb.Append(ex.Error);
                 }

@@ -6,16 +6,13 @@
     public class BooleanFacet : IFacetDefinition {
 
         /// <inheritdoc />
-        public string FieldName {
-            get;
-            set;
-        }
+        public string Code { get; set; }
 
         /// <inheritdoc />
-        public string Name {
-            get;
-            set;
-        }
+        public string Label { get; set; }
+
+        /// <inheritdoc />
+        public string FieldName { get; set; }
 
         /// <inheritdoc cref="IFacetDefinition.ResolveLabel" />
         public string ResolveLabel(object primaryKey) {
