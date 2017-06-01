@@ -17,6 +17,14 @@ namespace Kinetix.Search.Model {
         }
 
         /// <summary>
+        /// Libellé de la valeur de facette nulle.
+        /// </summary>
+        public string FacetNullValueLabel {
+            get;
+            set;
+        }
+
+        /// <summary>
         /// Liste des facettes.
         /// </summary>
         public ICollection<IFacetDefinition> Facets {

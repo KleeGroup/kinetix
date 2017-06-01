@@ -26,6 +26,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <CodeAnalysisRuleSet>..\RuleSet.Kinetix.ruleset</CodeAnalysisRuleSet>
+    <DocumentationFile>bin\Debug\Kinetix.Search.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -34,20 +35,18 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <CodeAnalysisRuleSet>..\RuleSet.Kinetix.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>..\RuleSet.Fmk.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Elasticsearch.Net, Version=1.0.0.0, Culture=neutral, PublicKeyToken=96c599bbe3e70f5d, processorArchitecture=MSIL">
-      <HintPath>..\packages\Elasticsearch.Net.1.9.0\lib\net45\Elasticsearch.Net.dll</HintPath>
+    <Reference Include="Elasticsearch.Net">
+      <HintPath>..\packages\Elasticsearch.Net.5.3.0\lib\net45\Elasticsearch.Net.dll</HintPath>
+    </Reference>
+    <Reference Include="log4net, Version=1.2.15.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>..\packages\log4net.2.0.5\lib\net45-full\log4net.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="log4net, Version=1.2.13.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
-      <HintPath>..\packages\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Nest, Version=1.0.0.0, Culture=neutral, PublicKeyToken=96c599bbe3e70f5d, processorArchitecture=MSIL">
-      <HintPath>..\packages\NEST.1.9.0\lib\net45\Nest.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Nest">
+      <HintPath>..\packages\NEST.5.3.0\lib\net45\Nest.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
@@ -56,10 +55,12 @@
     <Reference Include="System" />
     <Reference Include="System.configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Web" />
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Broker\MonitoredBroker.cs" />
     <Compile Include="Config\SearchDataSourceCollection.cs" />
     <Compile Include="Config\SearchDataSourceElement.cs" />
     <Compile Include="Config\SearchSettings.cs" />
@@ -69,10 +70,17 @@
     <Compile Include="Contract\ISearchStore.cs" />
     <Compile Include="Elastic\ElasticException.cs" />
     <Compile Include="Elastic\ElasticExtensions.cs" />
-    <Compile Include="Elastic\ElasticFacetHandler.cs" />
+    <Compile Include="Elastic\Faceting\IFacetHandler.cs" />
+    <Compile Include="Elastic\Faceting\StandardFacetHandler.cs" />
     <Compile Include="Elastic\ElasticMappingFactory.cs" />
     <Compile Include="Elastic\ElasticQueryBuilder.cs" />
     <Compile Include="Elastic\IIndexConfigurator.cs" />
+    <Compile Include="Elastic\Faceting\PortfolioFacetHandler.cs" />
+    <Compile Include="IR.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>IR.resx</DependentUpon>
+    </Compile>
     <Compile Include="MetaModel\DocumentDescriptor.cs" />
     <Compile Include="MetaModel\DocumentDefinition.cs" />
     <Compile Include="MetaModel\DocumentFieldDescriptor.cs" />
@@ -84,6 +92,7 @@
     <Compile Include="Elastic\ElasticStore.cs" />
     <Compile Include="Contract\ISearchBroker.cs" />
     <Compile Include="Model\AdvancedQueryInput.cs" />
+    <Compile Include="Model\PortfolioFacet.cs" />
     <Compile Include="Model\BooleanFacet.cs" />
     <Compile Include="Model\DateFacet.cs" />
     <Compile Include="Model\FacetConst.cs" />
@@ -114,16 +123,27 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="app.config" />
-    <None Include="packages.config" />
+    <None Include="app.config">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Resources\SEARCHDB.png.dat" />
   </ItemGroup>
   <ItemGroup>
     <Analyzer Include="..\packages\StyleCop.Analyzers.1.0.0\analyzers\dotnet\cs\Newtonsoft.Json.dll" />
     <Analyzer Include="..\packages\StyleCop.Analyzers.1.0.0\analyzers\dotnet\cs\StyleCop.Analyzers.CodeFixes.dll" />
     <Analyzer Include="..\packages\StyleCop.Analyzers.1.0.0\analyzers\dotnet\cs\StyleCop.Analyzers.dll" />
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="IR.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>IR.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
   </Target>

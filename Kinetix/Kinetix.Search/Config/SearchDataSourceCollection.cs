@@ -48,7 +48,7 @@ namespace Kinetix.Search.Config {
             return elementName.Equals(PropertyName, StringComparison.InvariantCultureIgnoreCase);
         }
 
-        /// <inheritdoc cref="ConfigurationElementCollection.CreateNewElement"/>
+        /// <inheritdoc cref="ConfigurationElementCollection.CreateNewElement()"/>
         protected override ConfigurationElement CreateNewElement() {
             return new SearchDataSourceElement();
         }

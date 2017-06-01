@@ -103,11 +103,12 @@ namespace Kinetix.Broker {
         /// <summary>
         /// Retourne l'instance du standard broker associé au type.
         /// </summary>
+        /// <param name="dataSourceName">Nom de la datasource.</param>
         /// <typeparam name="T">Type du broker.</typeparam>
         /// <returns>Le broker.</returns>
-        public static IBroker<T> GetStandardBroker<T>()
+        public static IBroker<T> GetStandardBroker<T>(string dataSourceName = null)
             where T : class, new() {
-            return Instance.ReturnBroker<T>(null, true);
+            return Instance.ReturnBroker<T>(dataSourceName, true);
         }
 
         /// <summary>

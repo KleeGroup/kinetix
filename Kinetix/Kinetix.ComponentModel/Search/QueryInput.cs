@@ -40,7 +40,7 @@
         /// <summary>
         /// Indique si le tri est descendant.
         /// </summary>
-        public bool SortDescending {
+        public bool SortDesc {
             get;
             set;
         }

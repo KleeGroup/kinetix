@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using Kinetix.ComponentModel.Search;
+using Kinetix.Search.ComponentModel;
 using Kinetix.Search.Contract;
+using Kinetix.Search.Elastic.Faceting;
 using Kinetix.Search.MetaModel;
 using Kinetix.Search.Model;
 using log4net;
@@ -42,9 +44,14 @@ namespace Kinetix.Search.Elastic {
         private readonly ElasticMappingFactory _factory = new ElasticMappingFactory();
 
         /// <summary>
-        /// Handler des facettes.
+        /// Handler des facettes standard.
         /// </summary>
-        private readonly ElasticFacetHandler<TDocument> _handler;
+        private readonly IFacetHandler<TDocument> _standardHandler;
+
+        /// <summary>
+        /// Handler des facettes portefeuille.
+        /// </summary>
+        private readonly IFacetHandler<TDocument> _portfolioHandler;
 
         /// <summary>
         /// Nom de la source de données.
@@ -80,7 +87,8 @@ namespace Kinetix.Search.Elastic {
                 _documentTypeName = _definition.DocumentTypeName;
                 _dataSourceName = dataSourceName;
                 _indexName = ElasticManager.Instance.LoadSearchSettings(_dataSourceName).IndexName;
-                _handler = new ElasticFacetHandler<TDocument>(_definition);
+                _standardHandler = new StandardFacetHandler<TDocument>(_definition);
+                _portfolioHandler = new PortfolioFacetHandler<TDocument>(_definition);
             } catch (Exception e) {
                 if (_log.IsErrorEnabled) {
                     _log.Error("Echec d'instanciation du store.", e);
@@ -99,24 +107,21 @@ namespace Kinetix.Search.Elastic {
 
             var client = GetClient();
 
-            var indexDefinition = new RootObjectMapping {
-                Properties = new Dictionary<PropertyNameMarker, IElasticType>(),
-                Name = _documentTypeName
-            };
-            foreach (var field in _definition.Fields) {
-                IElasticType elasticType = _factory.GetElasticType(field);
-                if (elasticType != null) {
-                    indexDefinition.Properties.Add(field.FieldName, elasticType);
-                }
-            }
+            var res = client.Map<TDocument>(x => x
+                .Type(_documentTypeName)
+                .Properties(selector => {
+                    foreach (var field in _definition.Fields) {
+                        _factory.AddField(selector, field);
+                    }
+                    return selector;
+                }));
 
-            var res = client.Map<TDocument>(x => x.InitializeUsing(indexDefinition));
             res.CheckStatus("Map");
         }
 
         /// <inheritdoc cref="ISearchStore{TDocument}.Get" />
         public TDocument Get(string id) {
-            var res = this.GetClient().Get<TDocument>(id, _indexName, _documentTypeName);
+            var res = this.GetClient().Get(CreateDocumentPath(id));
             res.CheckStatus("Get");
             return res.Source;
         }
@@ -125,7 +130,7 @@ namespace Kinetix.Search.Elastic {
         public void Put(TDocument document) {
             var id = _definition.PrimaryKey.GetValue(document).ToString();
 
-            var res = this.GetClient().Index<TDocument>(document, x => x
+            var res = this.GetClient().Index(FormatSortFields(document), x => x
                 .Index(_indexName)
                 .Type(_documentTypeName)
                 .Id(id));
@@ -160,7 +165,7 @@ namespace Kinetix.Search.Elastic {
                     foreach (var document in cluster) {
                         var id = _definition.PrimaryKey.GetValue(document).ToString();
                         x.Index<TDocument>(y => y
-                         .Document(document)
+                         .Document(FormatSortFields(document))
                          .Index(_indexName)
                          .Type(_documentTypeName)
                          .Id(id));
@@ -173,14 +178,15 @@ namespace Kinetix.Search.Elastic {
 
         /// <inheritdoc cref="ISearchStore{TDocument}.Remove" />
         public void Remove(string id) {
-            var res = this.GetClient().Delete(_indexName, _documentTypeName, id);
+            var res = this.GetClient().Delete(CreateDocumentPath(id));
 
             res.CheckStatus("Delete");
         }
 
         /// <inheritdoc cref="ISearchStore{TDocument}.Flush" />
         public void Flush() {
-            var res = this.GetClient().Delete<TDocument>(x => x.Index(_indexName).Type(_documentTypeName));
+            /* SEY : Non testé. */
+            var res = this.GetClient().DeleteByQuery<TDocument>(x => x.Index(_indexName).Type(_documentTypeName));
 
             res.CheckStatus("DeleteAll");
         }
@@ -207,6 +213,7 @@ namespace Kinetix.Search.Elastic {
             /* Facettage. */
             var facetDefList = GetFacetDefinitionList(input);
             var hasFacet = facetDefList.Any();
+            var portfolio = input.Portfolio;
 
             /* Group */
             var groupFieldName = GetGroupFieldName(input);
@@ -230,8 +237,7 @@ namespace Kinetix.Search.Elastic {
                     /* Tri */
                     if (sortDef.HasSort) {
                         s.Sort(x => x
-                            .OnField(sortDef.FieldName)
-                            .Order(sortDef.Order));
+                            .Field(sortDef.FieldName, sortDef.Order));
                     }
 
                     /* Critère de filtrage. */
@@ -247,7 +253,7 @@ namespace Kinetix.Search.Elastic {
                             if (hasFacet) {
                                 /* Facettage. */
                                 foreach (var facetDef in facetDefList) {
-                                    _handler.DefineAggregation(a, facetDef);
+                                    GetHandler(facetDef).DefineAggregation(a, facetDef, portfolio);
                                 }
                             }
                             if (hasGroup) {
@@ -273,22 +279,26 @@ namespace Kinetix.Search.Elastic {
             res.CheckStatus("AdvancedQuery");
 
             /* Extraction des facettes. */
-            var facetListOutput = new FacetListOutput();
+            var facetListOutput = new List<FacetOutput>();
             if (hasFacet) {
                 var aggs = res.Aggs;
                 foreach (var facetDef in facetDefList) {
-                    var facetOutput = _handler.ExtractFacetOutput(aggs, facetDef);
-                    facetListOutput.Add(facetDef.Name, facetOutput);
+                    facetListOutput.Add(new FacetOutput {
+                        Code = facetDef.Code,
+                        Label = facetDef.Label,
+                        Values = GetHandler(facetDef).ExtractFacetItemList(aggs, facetDef, res.Total)
+                    });
                 }
             }
 
             /* Ajout des facettes manquantes */
             if (input.ApiInput.Facets != null) {
                 foreach (var facet in input.ApiInput.Facets) {
-                    if (!facetListOutput[facet.Key].Any(f => f.Code == facet.Value)) {
-                        facetListOutput[facet.Key].Add(new Kinetix.ComponentModel.Search.FacetItem {
+                    var facetItems = facetListOutput.First(f => f.Code == facet.Key).Values;
+                    if (!facetItems.Any(f => f.Code == facet.Value)) {
+                        facetItems.Add(new FacetItem {
                             Code = facet.Value,
-                            Label = facetDefList.FirstOrDefault(fct => fct.Name == facet.Key)?.ResolveLabel(facet.Value),
+                            Label = facetDefList.FirstOrDefault(fct => fct.Code == facet.Key)?.ResolveLabel(facet.Value),
                             Count = 0
                         });
                     }
@@ -297,23 +307,31 @@ namespace Kinetix.Search.Elastic {
 
             /* Extraction des résultats. */
             var resultList = new List<TDocument>();
-            var groupResultList = new GroupResultList<TDocument>();
+            var groupResultList = new List<GroupResult<TDocument>>();
             if (hasGroup) {
                 /* Groupement. */
-                var bucket = (Bucket)res.Aggregations[groupFieldName];
-                foreach (KeyItem group in bucket.Items) {
-                    var groupName = group.Key;
-                    var topHitAgg = (TopHitsMetric)group.Aggregations[_topHitName];
-                    var docs = topHitAgg.Documents<TDocument>().ToList();
-                    groupResultList.Add(groupName, docs);
+                var bucket = (BucketAggregate)res.Aggregations[groupFieldName];
+                foreach (KeyedBucket<object> group in bucket.Items) {
+                    var list = ((TopHitsAggregate)group.Aggregations[_topHitName]).Documents<TDocument>().ToList();
+                    groupResultList.Add(new GroupResult<TDocument> {
+                        Code = group.Key.ToString(),
+                        Label = facetDefList.First(f => f.Code == apiInput.Group).ResolveLabel(group.Key),
+                        List = list,
+                        TotalCount = (int)group.DocCount
+                    });
                 }
 
                 /* Groupe pour les valeurs null. */
-                var nullBucket = (SingleBucket)res.Aggregations[groupFieldName + MissingGroupPrefix];
-                var nullTopHitAgg = (TopHitsMetric)nullBucket.Aggregations[_topHitName];
+                var nullBucket = (SingleBucketAggregate)res.Aggregations[groupFieldName + MissingGroupPrefix];
+                var nullTopHitAgg = (TopHitsAggregate)nullBucket.Aggregations[_topHitName];
                 var nullDocs = nullTopHitAgg.Documents<TDocument>().ToList();
                 if (nullDocs.Any()) {
-                    groupResultList.Add(FacetConst.NullValue, nullDocs);
+                    groupResultList.Add(new GroupResult<TDocument> {
+                        Code = FacetConst.NullValue,
+                        Label = input.FacetQueryDefinition.FacetNullValueLabel,
+                        List = nullDocs,
+                        TotalCount = (int)nullBucket.DocCount
+                    });
                 }
 
                 resultList = null;
@@ -398,7 +416,7 @@ namespace Kinetix.Search.Elastic {
             }
 
             /* Constuit la sous requête. */
-            return _builder.BuildSecurity(fieldDesc.FieldName, value);
+            return _builder.BuildInclusiveInclude(fieldDesc.FieldName, value);
         }
 
         /// <summary>
@@ -415,10 +433,10 @@ namespace Kinetix.Search.Elastic {
             var facetSubQueryList =
                 facetList.Select(f => {
                     /* Récupère la définition de la facette. */
-                    var def = input.FacetQueryDefinition.Facets.Single(x => x.Name == f.Key);
+                    var def = input.FacetQueryDefinition.Facets.Single(x => x.Code == f.Key);
                     /* Créé une sous-requête par facette. */
                     string s = f.Value;
-                    return _handler.CreateFacetSubQuery(s, def);
+                    return GetHandler(def).CreateFacetSubQuery(s, def, input.Portfolio);
                 }).ToArray();
 
             /* Concatène en "ET" toutes les sous-requêtes. */
@@ -437,7 +455,7 @@ namespace Kinetix.Search.Elastic {
             /* Recherche de la facette de groupement. */
             string groupFieldName = null;
             if (!string.IsNullOrEmpty(groupFacetName)) {
-                var groupFacetDef = input.FacetQueryDefinition.Facets.SingleOrDefault(x => x.Name == groupFacetName);
+                var groupFacetDef = input.FacetQueryDefinition.Facets.SingleOrDefault(x => x.Code == groupFacetName);
                 if (groupFacetDef == null) {
                     throw new ElasticException("No facet \"" + groupFacetName + "\" to group on.");
                 }
@@ -447,7 +465,7 @@ namespace Kinetix.Search.Elastic {
 
             foreach (var facetDef in list) {
                 /* Vérifie que le champ à facetter existe sur le document. */
-                _handler.CheckFacet(facetDef);
+                GetHandler(facetDef).CheckFacet(facetDef);
             }
 
             return list;
@@ -473,7 +491,7 @@ namespace Kinetix.Search.Elastic {
 
             return new SortDefinition {
                 FieldName = _definition.Fields[fieldName].FieldName,
-                Order = input.ApiInput.SortDescending ? SortOrder.Descending : SortOrder.Ascending
+                Order = input.ApiInput.SortDesc ? SortOrder.Descending : SortOrder.Ascending
             };
         }
 
@@ -491,7 +509,7 @@ namespace Kinetix.Search.Elastic {
             }
 
             /* Recherche de la facette de groupement. */
-            var facetDef = input.FacetQueryDefinition.Facets.SingleOrDefault(x => x.Name == groupFacetName);
+            var facetDef = input.FacetQueryDefinition.Facets.SingleOrDefault(x => x.Code == groupFacetName);
             if (facetDef == null) {
                 throw new ElasticException("No facet " + groupFacetName + " to group on.");
             }
@@ -512,6 +530,46 @@ namespace Kinetix.Search.Elastic {
         /// <returns>Client Elastic.</returns>
         private ElasticClient GetClient() {
             return ElasticManager.Instance.ObtainClient(_dataSourceName);
+        }
+
+        /// <summary>
+        /// Créé un DocumentPath.
+        /// </summary>
+        /// <param name="id">ID du document.</param>
+        /// <returns>Le DocumentPath.</returns>
+        private DocumentPath<TDocument> CreateDocumentPath(string id) {
+            return new DocumentPath<TDocument>(id).Index(_indexName).Type(_documentTypeName);
+        }
+
+        /// <summary>
+        /// Format les champs de tri du document.
+        /// Les champs de tri sont mis manuellement en minuscule avant indexation.
+        /// Ceci est nécessaire car en ElasticSearch 5.x, il n'est plus possible de trier sur un champ indexé (à faible coût).
+        /// </summary>
+        /// <param name="document">Document.</param>
+        /// <returns>Document formaté.</returns>
+        private TDocument FormatSortFields(TDocument document) {
+            foreach (var field in _definition.Fields.Where(x => x.Category == SearchFieldCategory.Sort && x.PropertyType == typeof(string))) {
+                var raw = field.GetValue(document);
+                if (raw != null) {
+                    field.SetValue(document, ((string)raw).ToLowerInvariant());
+                }
+            }
+
+            return document;
+        }
+
+        /// <summary>
+        /// Renvoie le handler de facet pour une définition de facet.
+        /// </summary>
+        /// <param name="def">Définition de facet.</param>
+        /// <returns>Handler.</returns>
+        private IFacetHandler<TDocument> GetHandler(IFacetDefinition def) {
+            if (def.GetType() == typeof(PortfolioFacet)) {
+                return _portfolioHandler;
+            }
+
+            return _standardHandler;
         }
 
         /// <summary>

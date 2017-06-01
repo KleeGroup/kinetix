@@ -19,7 +19,7 @@ namespace Kinetix.ComponentModel.Search {
         /// <summary>
         /// Groupe de liste de résultats (cas d'une recherche avec groupe).
         /// </summary>
-        public GroupResultList<TDocument> Groups {
+        public ICollection<GroupResult<TDocument>> Groups {
             get;
             set;
         }
@@ -27,7 +27,7 @@ namespace Kinetix.ComponentModel.Search {
         /// <summary>
         /// Facettes sélectionnées.
         /// </summary>
-        public FacetListOutput Facets {
+        public ICollection<FacetOutput> Facets {
             get;
             set;
         }

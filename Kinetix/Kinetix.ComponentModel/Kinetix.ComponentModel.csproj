@@ -56,8 +56,8 @@
       <HintPath>..\packages\AutoMapper.3.1.1\lib\net40\AutoMapper.Net4.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="log4net, Version=1.2.13.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
-      <HintPath>..\packages\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
+    <Reference Include="log4net, Version=1.2.15.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\log4net.2.0.5\lib\net45-full\log4net.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
@@ -151,16 +151,10 @@
     <Compile Include="Search\Criteria.cs" />
     <Compile Include="Search\FacetItem.cs" />
     <Compile Include="Search\FacetListInput.cs" />
-    <Compile Include="Search\FacetListOutput.cs" />
     <Compile Include="Search\FacetOutput.cs" />
     <Compile Include="Search\FacetSelection.cs" />
-    <Compile Include="Search\IOrderedDictionary.cs" />
-    <Compile Include="Search\OrderedDictionary.cs" />
-    <Compile Include="Search\OrderedDictionarySerializer.cs" />
-    <Compile Include="Search\UnscopedGroupResultList.cs" />
-    <Compile Include="Search\GroupResultList.cs" />
+    <Compile Include="Search\GroupResult{TDocument}.cs" />
     <Compile Include="Search\QueryInput.cs" />
-    <Compile Include="Search\UnscopedQueryOutput.cs" />
     <Compile Include="Search\QueryOutput.cs" />
     <Compile Include="SR.Designer.cs">
       <AutoGen>True</AutoGen>
