@@ -153,8 +153,10 @@
     <Compile Include="Search\FacetListInput.cs" />
     <Compile Include="Search\FacetOutput.cs" />
     <Compile Include="Search\FacetSelection.cs" />
+    <Compile Include="Search\GroupResult.cs" />
     <Compile Include="Search\GroupResult{TDocument}.cs" />
     <Compile Include="Search\QueryInput.cs" />
+    <Compile Include="Search\QueryOutput{TDocument}.cs" />
     <Compile Include="Search\QueryOutput.cs" />
     <Compile Include="SR.Designer.cs">
       <AutoGen>True</AutoGen>

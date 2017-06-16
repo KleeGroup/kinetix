@@ -1,17 +1,17 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace Kinetix.ComponentModel.Search {
 
     /// <summary>
     /// Sortie d'une recherche avancée.
     /// </summary>
-    public class QueryOutput {
+    /// <typeparam name="TDocument">Le type du document.</typeparam>
+    public class QueryOutput<TDocument> {
 
         /// <summary>
         /// Liste de résultats (cas d'une recherche sans groupe).
         /// </summary>
-        public ICollection List {
+        public ICollection<TDocument> List {
             get;
             set;
         }
@@ -19,7 +19,7 @@ namespace Kinetix.ComponentModel.Search {
         /// <summary>
         /// Groupe de liste de résultats (cas d'une recherche avec groupe).
         /// </summary>
-        public ICollection<GroupResult> Groups {
+        public ICollection<GroupResult<TDocument>> Groups {
             get;
             set;
         }

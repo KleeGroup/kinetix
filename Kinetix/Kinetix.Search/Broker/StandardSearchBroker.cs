@@ -83,6 +83,11 @@ namespace Kinetix.Search.Broker {
             return _store.AdvancedQuery(input);
         }
 
+        /// <inheritdoc cref="ISearchBroker{TDocument}.AdvancedCount" />
+        public long AdvancedCount(AdvancedQueryInput input) {
+            return _store.AdvancedCount(input);
+        }
+
         /// <summary>
         /// Retourne le store à utiliser.
         /// </summary>

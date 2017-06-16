@@ -35,10 +35,10 @@ namespace Kinetix.Search.Test.SearchBrokerTest {
             Assert.IsNotNull(facetsOutput, "Facettes non null attendues.");
             Assert.AreEqual(1, facetsOutput.Count, "Nombre de facettes attendu incorrect.");
 
-            var facet = facetsOutput.FirstOrDefault(d => d.Key == GenreFacet);
-            var facetOutput = facet.Value;
+            var facet = facetsOutput.FirstOrDefault(d => d.Code == GenreFacet);
+            var facetOutput = facet.Values;
 
-            Assert.IsNotNull(facet.Key, "Facette genre manquante.");
+            Assert.IsNotNull(facet.Code, "Facette genre manquante.");
 
             Assert.IsNotNull(facetOutput, "Valeur de facette attendue.");
             Assert.AreEqual(3, facetOutput.Count, "Nombre de genre.");
@@ -105,10 +105,10 @@ namespace Kinetix.Search.Test.SearchBrokerTest {
             Assert.IsNotNull(facetsOutput, "Facettes non null attendues.");
             Assert.AreEqual(1, facetsOutput.Count, "Nombre de facettes attendu incorrect.");
 
-            var facet = facetsOutput.FirstOrDefault(d => d.Key == GenreFacet);
-            var facetOutput = facet.Value;
+            var facet = facetsOutput.FirstOrDefault(d => d.Code == GenreFacet);
+            var facetOutput = facet.Values;
 
-            Assert.IsNotNull(facet.Key, "Facette genre manquante.");
+            Assert.IsNotNull(facet.Code, "Facette genre manquante.");
 
             Assert.IsNotNull(facetOutput, "Valeur de facette attendue.");
             Assert.AreEqual(1, facetOutput.Count, "Nombre de genre.");
@@ -140,7 +140,7 @@ namespace Kinetix.Search.Test.SearchBrokerTest {
         public void Check_Group() {
 
             var facetQueryDefinition = new FacetQueryDefinition();
-            facetQueryDefinition.Facets.Add(new BooleanFacet { Name = GenreFacet, FieldName = GenreField });
+            facetQueryDefinition.Facets.Add(new BooleanFacet { Code = GenreFacet, FieldName = GenreField });
 
             var input = new AdvancedQueryInput {
                 ApiInput = new QueryInput {
@@ -163,8 +163,8 @@ namespace Kinetix.Search.Test.SearchBrokerTest {
             Assert.AreEqual(3, groups.Count, "Nombre de groupes attendu incorrect.");
 
             foreach (var group in groups) {
-                var bucket = group.Value;
-                switch (group.Key) {
+                var bucket = group.List;
+                switch (group.Code) {
                     case "M":
                         Assert.AreEqual(3, bucket.Count);
                         break;
@@ -175,7 +175,7 @@ namespace Kinetix.Search.Test.SearchBrokerTest {
                         Assert.AreEqual(1, bucket.Count);
                         break;
                     default:
-                        Assert.Fail("Clée inattendue : " + group.Key);
+                        Assert.Fail("Clée inattendue : " + group.Code);
                         break;
                 }
             }
@@ -189,7 +189,7 @@ namespace Kinetix.Search.Test.SearchBrokerTest {
                     Skip = 0,
                     Top = 10,
                     SortFieldName = "NomSort",
-                    SortDescending = sortDescending
+                    SortDesc = sortDescending
                 }
             };
             var broker = SearchBrokerManager.GetBroker<PersonneDocument>();
@@ -208,7 +208,7 @@ namespace Kinetix.Search.Test.SearchBrokerTest {
         private static QueryOutput<PersonneDocument> CheckFacets(FacetListInput facetsInput, string query = null) {
 
             var facetQueryDefinition = new FacetQueryDefinition(new BooleanFacet {
-                Name = GenreFacet,
+                Code = GenreFacet,
                 FieldName = GenreField
             });
             var input = new AdvancedQueryInput {
