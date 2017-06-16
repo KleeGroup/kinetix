@@ -1,12 +1,10 @@
 ﻿using Kinetix.Search.ComponentModel;
-using Nest;
 
 namespace Kinetix.Search.Test.Dum {
 
     /// <summary>
     /// Document Elastic d'une personne.
     /// </summary>
-    [ElasticType(Name = "personne")]
     [SearchDocumentType("personne")]
     public class PersonneDocument {
 

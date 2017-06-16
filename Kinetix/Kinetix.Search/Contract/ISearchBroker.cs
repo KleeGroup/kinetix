@@ -66,5 +66,12 @@ namespace Kinetix.Search.Contract {
         /// <param name="input">Paramètre de recherche (facettes...)</param>
         /// <returns>Documents trouvés.</returns>
         QueryOutput<TDocument> AdvancedQuery(AdvancedQueryInput input);
+
+        /// <summary>
+        /// Effectue un count avancé.
+        /// </summary>
+        /// <param name="input">Entrée de la recherche.</param>
+        /// <returns>Nombre de documents.</returns>
+        long AdvancedCount(AdvancedQueryInput input);
     }
 }

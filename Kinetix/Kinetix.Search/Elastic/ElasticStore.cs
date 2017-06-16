@@ -353,6 +353,51 @@ namespace Kinetix.Search.Elastic {
             return output;
         }
 
+        /// <inheritdoc cref="ISearchStore{TDocument}.AdvancedCount" />
+        public long AdvancedCount(AdvancedQueryInput input) {
+            if (input == null) {
+                throw new ArgumentNullException("input");
+            }
+
+            /* Requête de filtrage. */
+            string filterQuery = GetFilterQuery(input);
+            var hasFilter = !string.IsNullOrEmpty(filterQuery);
+
+            var res = this.GetClient()
+                .Count<TDocument>(s => {
+                    /* Index / type document. */
+                    s
+                        .Index(_indexName)
+                        .Type(_documentTypeName);
+
+                    /* Critère de filtrage. */
+                    if (hasFilter) {
+                        s.Query(q =>
+                                q.QueryString(qs => qs
+                                    .Query(filterQuery)));
+                    }
+
+                    return s;
+                });
+
+            res.CheckStatus("AdvancedCount");
+
+            return res.Count;
+        }
+
+        /// <summary>
+        /// Créé la requête de filtrage.
+        /// </summary>
+        /// <param name="input">Entrée.</param>
+        /// <returns>Requête de filtrage.</returns>
+        private string GetFilterQuery(AdvancedQueryInput input) {
+            var textSubQuery = GetTextSubQuery(input);
+            var securitySubQuery = GetSecuritySubQuery(input);
+            var facetSubQuery = GetFacetSelectionSubQuery(input);
+            var filterSubQuery = GetFilterSubQuery(input);
+            return _builder.BuildAndQuery(textSubQuery, securitySubQuery, facetSubQuery, filterSubQuery);
+        }
+
         /// <summary>
         /// Crée la sous requête pour les champs de filtre.
         /// </summary>

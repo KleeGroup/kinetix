@@ -107,6 +107,16 @@ namespace Kinetix.Search.Broker {
             }
         }
 
+        /// <inheritdoc cref="ISearchBroker{TDocument}.AdvancedCount" />
+        public long AdvancedCount(AdvancedQueryInput input) {
+            StartProcess(nameof(AdvancedCount));
+            try {
+                return _broker.AdvancedCount(input);
+            } finally {
+                StopProcess();
+            }
+        }
+
         /// <summary>
         /// Démarre un processus monitoré.
         /// </summary>
