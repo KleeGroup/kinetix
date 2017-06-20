@@ -8,7 +8,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Kinetix.Audit.Test</RootNamespace>
     <AssemblyName>Kinetix.Audit.Test</AssemblyName>
-    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
@@ -16,6 +16,7 @@
     <ReferencePath>$(ProgramFiles)\Common Files\microsoft shared\VSTT\$(VisualStudioVersion)\UITestExtensionPackages</ReferencePath>
     <IsCodedUITest>False</IsCodedUITest>
     <TestProjectType>UnitTest</TestProjectType>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -52,6 +53,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.configuration" />
   </ItemGroup>
   <Choose>
     <When Condition="('$(VisualStudioVersion)' == '10.0' or '$(VisualStudioVersion)' == '') and '$(TargetFrameworkVersion)' == 'v3.5'">
@@ -71,8 +73,20 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Kinetix.Audit\Kinetix.Audit.csproj">
-      <Project>{D0186E5D-68C4-4B00-99C8-D8558A13822E}</Project>
+      <Project>{d0186e5d-68c4-4b00-99c8-d8558a13822e}</Project>
       <Name>Kinetix.Audit</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Kinetix.Broker\Kinetix.Broker.csproj">
+      <Project>{0C6E80B2-0E45-4922-9895-73B3A3EC160D}</Project>
+      <Name>Kinetix.Broker</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Kinetix.ComponentModel\Kinetix.ComponentModel.csproj">
+      <Project>{A36239CB-DE97-47FB-AFE4-4FFBF15A97EB}</Project>
+      <Name>Kinetix.ComponentModel</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Kinetix.Data.SqlClient\Kinetix.Data.SqlClient.csproj">
+      <Project>{2B935FBB-E159-45CF-8B0F-798FC787768B}</Project>
+      <Name>Kinetix.Data.SqlClient</Name>
     </ProjectReference>
     <ProjectReference Include="..\Kinetix.Test\Kinetix.Test.csproj">
       <Project>{39af2add-55e0-41c4-8dd6-65dfeb63a441}</Project>

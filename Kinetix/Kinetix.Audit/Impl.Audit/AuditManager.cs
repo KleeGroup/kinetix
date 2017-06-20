@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.ServiceModel;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Kinetix.Audit
-{
+namespace Kinetix.Audit {
     [ServiceBehavior(ConcurrencyMode = ConcurrencyMode.Multiple, InstanceContextMode = InstanceContextMode.PerCall, IncludeExceptionDetailInFaults = true)]
     public sealed class AuditManager : IAuditManager
     {
@@ -22,7 +17,7 @@ namespace Kinetix.Audit
             _auditTraceStorePlugin.CreateTrace(auditTrace);
         }
 
-        public IList<AuditTrace> FindTrace(AuditTraceCriteria auditTraceCriteria)
+        public ICollection<AuditTrace> FindTrace(AuditTraceCriteria auditTraceCriteria)
         {
             return _auditTraceStorePlugin.FindTraceByCriteria(auditTraceCriteria);
         }

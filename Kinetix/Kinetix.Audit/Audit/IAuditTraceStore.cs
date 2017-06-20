@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
-namespace Kinetix.Audit
-{
+namespace Kinetix.Audit {
     public interface IAuditTraceStore
     {
 
@@ -28,7 +23,7 @@ namespace Kinetix.Audit
         /// </summary>
         /// <param name="atc">AuditTraceCriteria.</param>
         /// <returns>the matching taces for the provided criteria</returns>
-        IList<AuditTrace> FindTraceByCriteria(AuditTraceCriteria atc);
+        ICollection<AuditTrace> FindTraceByCriteria(AuditTraceCriteria atc);
 
     }
 }
