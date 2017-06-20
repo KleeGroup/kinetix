@@ -81,6 +81,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kinetix.Notifications", "Ki
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kinetix.Notifications.Test", "Tests\Kinetix.Notifications.Test\Kinetix.Notifications.Test.csproj", "{3AC427F9-E4EA-409E-8EC2-2FF29C04782D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kinetix.SearchV3", "Kinetix.SearchV3\Kinetix.SearchV3.csproj", "{D88C145D-E13F-4D29-B831-35136994528F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -227,6 +229,10 @@ Global
 		{3AC427F9-E4EA-409E-8EC2-2FF29C04782D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3AC427F9-E4EA-409E-8EC2-2FF29C04782D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3AC427F9-E4EA-409E-8EC2-2FF29C04782D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D88C145D-E13F-4D29-B831-35136994528F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D88C145D-E13F-4D29-B831-35136994528F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D88C145D-E13F-4D29-B831-35136994528F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D88C145D-E13F-4D29-B831-35136994528F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -269,5 +275,6 @@ Global
 		{39AF2ADD-55E0-41C4-8DD6-65DFEB63A441} = {DE720745-32AB-43A8-8670-62FE5D1108E4}
 		{E9F0CD93-5C2B-45BD-9B65-D3E64E7774F4} = {E566DC13-2180-4871-80F6-FBE41CF86D63}
 		{3AC427F9-E4EA-409E-8EC2-2FF29C04782D} = {DE720745-32AB-43A8-8670-62FE5D1108E4}
+		{D88C145D-E13F-4D29-B831-35136994528F} = {E566DC13-2180-4871-80F6-FBE41CF86D63}
 	EndGlobalSection
 EndGlobal
