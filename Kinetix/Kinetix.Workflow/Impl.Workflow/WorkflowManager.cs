@@ -626,6 +626,15 @@ namespace Kinetix.Workflow
             MoveActivity(wfWorkflowDefinition, wfActivityDefinitionFrom, wfActivityDefinitionTo, after);
         }
 
+
+        public void RenameActivity(WfActivityDefinition wfActivityDefinition)
+        {
+            Debug.Assert(wfActivityDefinition != null);
+            Debug.Assert(wfActivityDefinition.WfadId != null);
+            ///---
+            _workflowStorePlugin.RenameActivityDefinition(wfActivityDefinition);
+        }
+
         public void PauseInstance(WfWorkflow wfWorkflow)
         {
             Debug.Assert(wfWorkflow != null);
@@ -1632,7 +1641,6 @@ namespace Kinetix.Workflow
             return _workflowStorePlugin.FindAllFiltersByWorkflowDefinitionId(wfWorkflowDefinition.WfwdId.Value);
         }
 
- 
         #endregion
     }
 }

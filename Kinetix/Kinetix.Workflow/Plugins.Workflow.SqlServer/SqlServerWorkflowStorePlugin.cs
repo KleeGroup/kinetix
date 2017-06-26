@@ -82,6 +82,13 @@ namespace Kinetix.Workflow {
             BrokerManager.GetBroker<WfActivityDefinition>().Delete(wfActivityDefinition.WfadId.Value);
         }
 
+        public void RenameActivityDefinition(WfActivityDefinition wfActivityDefinition) {
+            var cmd = GetSqlServerCommand("RenameActivityDefinition.sql");
+            cmd.Parameters.AddWithValue(WfActivityDefinition.Cols.WFAD_ID, wfActivityDefinition.WfadId);
+            cmd.Parameters.AddWithValue(WfActivityDefinition.Cols.NAME, wfActivityDefinition.Name);
+            cmd.ExecuteNonQuery();
+        }
+
         public WfActivityDefinition FindActivityDefinitionByPosition(WfWorkflowDefinition wfWorkflowDefinition, int position) {
             var cmd = GetSqlServerCommand("FindActivityDefinitionByPosition.sql");
             cmd.Parameters.AddWithValue(WfActivityDefinition.Cols.WFWD_ID, wfWorkflowDefinition.WfwdId);
@@ -408,6 +415,8 @@ namespace Kinetix.Workflow {
         {
             throw new NotImplementedException();
         }
+
+
 
 
         #endregion

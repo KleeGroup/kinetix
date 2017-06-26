@@ -234,6 +234,11 @@ namespace Kinetix.Workflow
         /// <param name="wfActivityDefinition">the activity to remove.</param>
         void DeleteActivityDefinition(WfActivityDefinition wfActivityDefinition);
 
+        /// <summary>
+        /// Rename an activity definition.
+        /// </summary>
+        /// <param name="wfActivityDefinition">the activity definition to rename</param>
+        void RenameActivityDefinition(WfActivityDefinition wfActivityDefinition);
 
         /// <summary>
         /// Fetch an activity definition by id.

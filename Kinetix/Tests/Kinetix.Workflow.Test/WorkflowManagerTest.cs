@@ -263,6 +263,39 @@ namespace Kinetix.Workflow.Test
             Assert.AreEqual(accountGroup.Id, wfWorkflowDecision.Groups[0].Id);
         }
 
+
+        [Test]
+        public void TestRenameActivityDefinition()
+        {
+            var container = GetConfiguredContainer();
+            IWorkflowManager _workflowManager = container.Resolve<IWorkflowManager>();
+            IAccountManager _accountManager = container.Resolve<IAccountManager>();
+
+            WfWorkflowDefinition wfWorkflowDefinition = new WfWorkflowDefinitionBuilder("WorkflowRules").Build();
+            _workflowManager.CreateWorkflowDefinition(wfWorkflowDefinition);
+
+            WfActivityDefinition firstActivity = new WfActivityDefinitionBuilder("Step 1", wfWorkflowDefinition.WfwdId.Value).Build();
+
+            AccountGroup accountGroup = new AccountGroup("1", "dummy group");
+            AccountUser account = new AccountUserBuilder("Acc1").Build();
+            _accountManager.GetStore().SaveGroup(accountGroup);
+            _accountManager.GetStore().SaveAccounts(new List<AccountUser>() { account });
+            _accountManager.GetStore().Attach(account.Id, accountGroup.Id);
+
+            // Step 1 : 1 rule, 1 condition
+            _workflowManager.AddActivity(wfWorkflowDefinition, firstActivity, 1);
+
+            WfActivityDefinition activityOne = _workflowManager.GetAllDefaultActivities(wfWorkflowDefinition)[0];
+
+            Assert.AreEqual("Step 1", activityOne.Name);
+
+            activityOne.Name = "New name";
+            _workflowManager.RenameActivity(activityOne);
+
+            activityOne = _workflowManager.GetAllDefaultActivities(wfWorkflowDefinition)[0];
+            Assert.AreEqual("New name", activityOne.Name);
+        }
+
         [Test]
         public void TestWorkflowRulesManualValidationMulActivities()
         {

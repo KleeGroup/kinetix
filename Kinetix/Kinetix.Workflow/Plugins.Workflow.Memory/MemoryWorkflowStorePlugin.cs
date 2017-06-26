@@ -323,6 +323,15 @@ namespace Kinetix.Workflow
             inMemoryActivityDefinitionStore[wfActivityDefinition.WfadId] = wfActivityDefinition;
         }
 
+        public void RenameActivityDefinition(WfActivityDefinition wfActivityDefinition)
+        {
+            Debug.Assert(wfActivityDefinition != null);
+            Debug.Assert(wfActivityDefinition.WfadId != null);
+            //---
+            inMemoryActivityDefinitionStore[wfActivityDefinition.WfadId].Name = wfActivityDefinition.Name;
+        }
+
+
         public void UpdateWorkflowDefinition(WfWorkflowDefinition wfWorkflowDefinition)
         {
             Debug.Assert(wfWorkflowDefinition != null);
@@ -633,6 +642,7 @@ namespace Kinetix.Workflow
             }
 
         }
+
 
         #endregion
 
