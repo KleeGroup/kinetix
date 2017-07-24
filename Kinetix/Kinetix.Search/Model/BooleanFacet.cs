@@ -16,7 +16,7 @@
 
         /// <inheritdoc cref="IFacetDefinition.ResolveLabel" />
         public string ResolveLabel(object primaryKey) {
-            return (string)primaryKey == "1" ? "Oui" : "Non";
+            return (string)primaryKey == "1" || (string)primaryKey == "true" ? "Oui" : "Non";
         }
     }
 }

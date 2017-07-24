@@ -156,6 +156,7 @@
     <Compile Include="Search\GroupResult.cs" />
     <Compile Include="Search\GroupResult{TDocument}.cs" />
     <Compile Include="Search\QueryInput.cs" />
+    <Compile Include="Search\QueryInput{TCriteria}.cs" />
     <Compile Include="Search\QueryOutput{TDocument}.cs" />
     <Compile Include="Search\QueryOutput.cs" />
     <Compile Include="SR.Designer.cs">
