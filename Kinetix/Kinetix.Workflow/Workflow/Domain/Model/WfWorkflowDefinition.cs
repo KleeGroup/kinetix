@@ -79,7 +79,9 @@ namespace Kinetix.Workflow.model
 
         #endregion
 
-
+        /// <summary>
+        /// Primary key for WfWorkflowDefinition.
+        /// </summary>
         [Column("WFWD_ID")]
         [Domain("DO_X_WORKFLOW_ID")]
         [Key]
@@ -89,6 +91,9 @@ namespace Kinetix.Workflow.model
             set;
         }
 
+        /// <summary>
+        /// Logical name for this Workflow Definition
+        /// </summary>
         [Column("NAME")]
         [Domain("DO_X_WORKFLOW_LABEL")]
         public string Name
@@ -97,6 +102,9 @@ namespace Kinetix.Workflow.model
             set;
         }
 
+        /// <summary>
+        /// Creation date of the workflow definition
+        /// </summary>
         [Column("CREATION_DATE")]
         [Domain("DO_X_WORKFLOW_DATE")]
         public DateTime CreationDate
@@ -105,6 +113,9 @@ namespace Kinetix.Workflow.model
             set;
         }
 
+        /// <summary>
+        /// Foreign key to the Starting Activity of this workflow definition.
+        /// </summary>
         [Column("WFAD_ID")]
         [Domain("DO_X_WORKFLOW_ID")]
         public int? WfadId

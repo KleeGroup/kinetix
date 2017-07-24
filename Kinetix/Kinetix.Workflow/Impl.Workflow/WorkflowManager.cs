@@ -284,7 +284,6 @@ namespace Kinetix.Workflow
                 wfCurrentActivityId = wfActivityCurrent.WfaId;
             }
 
-            // Remove this workflow update ?
             if (wfCurrentActivityId != null)
             {
                 wfWorkflow.WfaId2 = wfCurrentActivityId;
@@ -298,7 +297,6 @@ namespace Kinetix.Workflow
 
             wfActivityCurrent.IsAuto = true;
             // We keep the previous value of IsValid
-            //wfActivityCurrent.IsValid = true;
             _workflowStorePlugin.UpdateActivity(wfActivityCurrent);
 
             WfDecision decision = new WfDecision();
@@ -330,6 +328,12 @@ namespace Kinetix.Workflow
             wfWorkflow.WfwdId = wfwdId;
             wfWorkflow.UserLogic = userLogic;
             wfWorkflow.Username = username;
+
+            IList<WfWorkflow> wfActiveWorkflow = _workflowStorePlugin.FindActiveWorkflowInstanceByItemId(wfwdId, item);
+            if (wfActiveWorkflow.Count > 0)
+            {
+                throw new System.InvalidOperationException("Only one active workflow must exist for this Definition and Item Id");
+            }
 
             _workflowStorePlugin.CreateWorkflowInstance(wfWorkflow);
             return wfWorkflow;
@@ -614,7 +618,6 @@ namespace Kinetix.Workflow
                 trFromMove.WfadIdTo = wfActivityReferential.WfadId.Value;
                 _workflowStorePlugin.UpdateTransition(trFromMove);
             }
-
 
         }
 
@@ -1002,6 +1005,13 @@ namespace Kinetix.Workflow
             if (!WfCodeStatusWorkflow.Cre.ToString().Equals(wfWorkflow.WfsCode))
             {
                 throw new System.InvalidOperationException("A workflow must be created before starting");
+            }
+            Debug.Assert(wfWorkflow.WfwdId != null);
+            Debug.Assert(wfWorkflow.ItemId != null);
+            IList<WfWorkflow> wfActiveWorkflow = _workflowStorePlugin.FindActiveWorkflowInstanceByItemId(wfWorkflow.WfwdId.Value, wfWorkflow.ItemId.Value);
+            if (wfActiveWorkflow.Count > 0)
+            {
+                throw new System.InvalidOperationException("Only one active workflow must exist for this Definition and Item Id");
             }
             //---
             wfWorkflow.WfsCode = WfCodeStatusWorkflow.Sta.ToString();

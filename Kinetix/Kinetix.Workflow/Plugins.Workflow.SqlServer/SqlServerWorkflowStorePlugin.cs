@@ -98,10 +98,6 @@ namespace Kinetix.Workflow {
             return activity;
         }
 
-        public IList<WfActivityDefinition> FindActivityMatchingRules() {
-            throw new NotImplementedException();
-        }
-
         public IList<WfDecision> FindAllDecisionByActivity(WfActivity wfActivity) {
             IList<WfDecision> ret;
             FilterCriteria filterCriteria = new FilterCriteria();
@@ -283,6 +279,14 @@ namespace Kinetix.Workflow {
             var cmd = GetSqlServerCommand("FindActiveWorkflowsForUpdate.sql");
             cmd.Parameters.AddWithValue(WfWorkflow.Cols.WFWD_ID, wfWorkflowDefinition.WfwdId);
             cmd.Parameters.AddWithValue(LOCK, isForUpdate);
+            return new List<WfWorkflow>(cmd.ReadList<WfWorkflow>());
+        }
+
+        public IList<WfWorkflow> FindActiveWorkflowInstanceByItemId(int wfwdId, int itemId)
+        {
+            var cmd = GetSqlServerCommand("FindActiveWorkflowInstanceByItemId.sql");
+            cmd.Parameters.AddWithValue(WfWorkflow.Cols.WFWD_ID, wfwdId);
+            cmd.Parameters.AddWithValue(WfWorkflow.Cols.ITEM_ID, itemId);
             return new List<WfWorkflow>(cmd.ReadList<WfWorkflow>());
         }
 

@@ -350,6 +350,21 @@ namespace Kinetix.Workflow
             inMemoryWorkflowInstanceStore[workflow.WfwId] = workflow;
         }
 
+        public IList<WfWorkflow> FindActiveWorkflowInstanceByItemId(int wfwdId, int itemId)
+        {
+            IList<WfWorkflow> ret = new List<WfWorkflow>();
+            List<string> statusActif = new List<string>() { WfCodeStatusWorkflow.Sta.ToString(), WfCodeStatusWorkflow.End.ToString() };
+            foreach (WfWorkflow wfWorkflow in inMemoryWorkflowInstanceStore.Values)
+            {
+                if (itemId.Equals(wfWorkflow.ItemId) && wfwdId.Equals(wfWorkflow.WfwdId) && statusActif.Contains(wfWorkflow.WfsCode))
+                {
+                    ret.Add(wfWorkflow);
+                }
+            }
+
+            return ret;
+        }
+
         public IList<WfActivity> FindActivitiesByDefinitionId(WfWorkflow wfWorkflow, IList<int> wfadIds)
         {
             Debug.Assert(wfWorkflow != null);
@@ -642,6 +657,8 @@ namespace Kinetix.Workflow
             }
 
         }
+
+
 
 
         #endregion

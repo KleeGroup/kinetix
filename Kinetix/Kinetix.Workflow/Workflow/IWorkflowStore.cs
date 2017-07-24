@@ -180,8 +180,16 @@ namespace Kinetix.Workflow
         /// </summary>
         /// <param name="wfWorkflowDefinition"></param>
         /// <param name="isForUpdate"></param>
-        /// <returns></returns>
+        /// <returns>List of active workflow for the definition</returns>
         IList<WfWorkflow> FindActiveWorkflows(WfWorkflowDefinition wfWorkflowDefinition, bool isForUpdate);
+
+        /// <summary>
+        /// Find All active workflow (Started, or Paused)
+        /// </summary>
+        /// <param name="wfwdId"></param>
+        /// <param name="itemId"></param>
+        /// <returns></returns>
+        IList<WfWorkflow> FindActiveWorkflowInstanceByItemId(int wfwdId, int itemId);
 
         // Definition
 

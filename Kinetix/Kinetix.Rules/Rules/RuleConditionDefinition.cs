@@ -62,35 +62,35 @@ namespace Kinetix.Rules {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1034:NestedTypesShouldNotBeVisible", Justification = "A corriger")]
         public enum Cols {
             /// <summary>
-            /// Nom de la colonne en base associée à la propriété .
+            /// Nom de la colonne en base associée à la propriété Id.
             /// </summary>
             [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", Justification = "Correspondance schéma persistence")]
             [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1707:IdentifiersShouldNotContainUnderscores", Justification = "Correspondance schéma persistence")]
             ID,
 
             /// <summary>
-            /// Nom de la colonne en base associée à la propriété .
+            /// Nom de la colonne en base associée à la propriété Field.
             /// </summary>
             [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", Justification = "Correspondance schéma persistence")]
             [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1707:IdentifiersShouldNotContainUnderscores", Justification = "Correspondance schéma persistence")]
             FIELD,
 
             /// <summary>
-            /// Nom de la colonne en base associée à la propriété .
+            /// Nom de la colonne en base associée à la propriété Operator.
             /// </summary>
             [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", Justification = "Correspondance schéma persistence")]
             [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1707:IdentifiersShouldNotContainUnderscores", Justification = "Correspondance schéma persistence")]
             OPERATOR,
 
             /// <summary>
-            /// Nom de la colonne en base associée à la propriété .
+            /// Nom de la colonne en base associée à la propriété Expression.
             /// </summary>
             [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", Justification = "Correspondance schéma persistence")]
             [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1707:IdentifiersShouldNotContainUnderscores", Justification = "Correspondance schéma persistence")]
             EXPRESSION,
 
             /// <summary>
-            /// Nom de la colonne en base associée à la propriété .
+            /// Nom de la colonne en base associée à la propriété RudId.
             /// </summary>
             [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", Justification = "Correspondance schéma persistence")]
             [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1707:IdentifiersShouldNotContainUnderscores", Justification = "Correspondance schéma persistence")]
@@ -99,6 +99,9 @@ namespace Kinetix.Rules {
 
         #endregion
 
+        /// <summary>
+        /// Primary key for RuleConditionDefinition
+        /// </summary>
         [Column("ID")]
         [Domain("DO_X_RULES_ID")]
         [Key]
@@ -107,6 +110,9 @@ namespace Kinetix.Rules {
             set;
         }
 
+        /// <summary>
+        /// Field of the business object on which the rule should be applied.
+        /// </summary>
         [Column("FIELD")]
         [Domain("DO_X_RULES_FIELD")]
         public string Field {
@@ -114,6 +120,9 @@ namespace Kinetix.Rules {
             set;
         }
 
+        /// <summary>
+        /// Operator to apply to execute the rule.
+        /// </summary>
         [Column("OPERATOR")]
         [Domain("DO_X_RULES_OPERATOR")]
         public string Operator {
@@ -121,6 +130,10 @@ namespace Kinetix.Rules {
             set;
         }
 
+        /// <summary>
+        /// Value expression that should be compared to the field whith the defined operator.
+        /// Should be a constant
+        /// </summary>
         [Column("EXPRESSION")]
         [Domain("DO_X_RULES_EXPRESSION")]
         public string Expression {
@@ -128,6 +141,9 @@ namespace Kinetix.Rules {
             set;
         }
 
+        /// <summary>
+        /// Foreign key to the RuleDefinition
+        /// </summary>
         [Column("RUD_ID")]
         [Domain("DO_X_RULES_ID")]
         public int? RudId {

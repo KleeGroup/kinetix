@@ -44,35 +44,35 @@ namespace Kinetix.Workflow.model {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1034:NestedTypesShouldNotBeVisible", Justification = "A corriger")]
         public enum Cols {
             /// <summary>
-            /// Nom de la colonne en base associée à la propriété .
+            /// Nom de la colonne en base associée à la propriété Id.
             /// </summary>
             [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", Justification = "Correspondance schéma persistence")]
             [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1707:IdentifiersShouldNotContainUnderscores", Justification = "Correspondance schéma persistence")]
             ID,
 
             /// <summary>
-            /// Nom de la colonne en base associée à la propriété .
+            /// Nom de la colonne en base associée à la propriété Name.
             /// </summary>
             [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", Justification = "Correspondance schéma persistence")]
             [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1707:IdentifiersShouldNotContainUnderscores", Justification = "Correspondance schéma persistence")]
             NAME,
 
             /// <summary>
-            /// Nom de la colonne en base associée à la propriété .
+            /// Nom de la colonne en base associée à la propriété WfadIdFrom.
             /// </summary>
             [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", Justification = "Correspondance schéma persistence")]
             [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1707:IdentifiersShouldNotContainUnderscores", Justification = "Correspondance schéma persistence")]
             WFAD_ID_FROM,
 
             /// <summary>
-            /// Nom de la colonne en base associée à la propriété .
+            /// Nom de la colonne en base associée à la propriété WfadIdTo.
             /// </summary>
             [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", Justification = "Correspondance schéma persistence")]
             [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1707:IdentifiersShouldNotContainUnderscores", Justification = "Correspondance schéma persistence")]
             WFAD_ID_TO,
 
             /// <summary>
-            /// Nom de la colonne en base associée à la propriété .
+            /// Nom de la colonne en base associée à la propriété WfwdId.
             /// </summary>
             [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", Justification = "Correspondance schéma persistence")]
             [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1707:IdentifiersShouldNotContainUnderscores", Justification = "Correspondance schéma persistence")]
@@ -82,6 +82,9 @@ namespace Kinetix.Workflow.model {
 
         #endregion
 
+        /// <summary>
+        /// Primary key for WfTransitionDefinition
+        /// </summary>
         [Column("WFTD_ID")]
         [Domain("DO_X_WORKFLOW_ID")]
         [Key]
@@ -90,6 +93,11 @@ namespace Kinetix.Workflow.model {
             set;
         }
 
+        /// <summary>
+        /// Name for the transition.
+        /// All transition must be named. A path with transition named 'Default' 
+        /// must be used to define the main workflow path.
+        /// </summary>
         [Column("NAME")]
         [Domain("DO_X_WORKFLOW_LABEL")]
         public string Name {
@@ -97,6 +105,10 @@ namespace Kinetix.Workflow.model {
             set;
         }
 
+        /// <summary>
+        /// Foreign key to the WfActivity.
+        /// This field define the Activity origin for this "oriented" transition
+        /// </summary>
         [Column("WFAD_ID_FROM")]
         [Domain("DO_X_WORKFLOW_ID")]
         public int WfadIdFrom {
@@ -104,6 +116,10 @@ namespace Kinetix.Workflow.model {
             set;
         }
 
+        /// <summary>
+        /// Foreign key to the WfActivity.
+        /// This field define the Activity end for this "oriented" transition
+        /// </summary>
         [Column("WFAD_ID_TO")]
         [Domain("DO_X_WORKFLOW_ID")]
         public int WfadIdTo {
@@ -111,6 +127,9 @@ namespace Kinetix.Workflow.model {
             set;
         }
 
+        /// <summary>
+        /// Foreign key to the WfWorkflowDefinition.
+        /// </summary>
         [Column("WFWD_ID")]
         [Domain("DO_X_WORKFLOW_ID")]
         public int WfwdId {

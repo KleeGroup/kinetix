@@ -15,6 +15,9 @@ namespace Kinetix.Workflow
     [Table("WF_ACTIVITY")]
     public class WfActivity
     {
+        /// <summary>
+        /// Primary key for WfActivity
+        /// </summary>
         [Column("WFA_ID")]
         [Domain("DO_X_WORKFLOW_ID")]
         [Key]
@@ -24,6 +27,9 @@ namespace Kinetix.Workflow
             set;
         }
 
+        /// <summary>
+        /// The creation date of this activity
+        /// </summary>
         [Column("CREATION_DATE")]
         [Domain("DO_X_WORKFLOW_DATE")]
         public DateTime? CreationDate
@@ -32,6 +38,9 @@ namespace Kinetix.Workflow
             set;
         }
 
+        /// <summary>
+        /// The foreign key to the workflow instance
+        /// </summary>
         [Column("WFW_ID")]
         [Domain("DO_X_WORKFLOW_ID")]
         public int WfwId
@@ -40,6 +49,9 @@ namespace Kinetix.Workflow
             set;
         }
 
+        /// <summary>
+        /// The foreign key to the activity definition
+        /// </summary>
         [Column("WFAD_ID")]
         [Domain("DO_X_WORKFLOW_ID")]
         public int WfadId
@@ -48,6 +60,15 @@ namespace Kinetix.Workflow
             set;
         }
 
+
+        /// <summary>
+        /// Flag IsAuto. 
+        /// Internal flag computed to know if this activity was auto in the last validation 
+        /// or in the last recalculation. 
+        /// Due to the lazy nature of the recalculation, this flag will be correctly computed 
+        /// only if there is/was a decision linked to it.
+        /// For the previous reason, you should not use this flag in the specific code.
+        /// </summary>
         [Column("IS_AUTO")]
         [Domain("DO_X_WORKFLOW_FLAG")]
         public bool IsAuto
@@ -56,6 +77,13 @@ namespace Kinetix.Workflow
             set;
         }
 
+
+        /// <summary>
+        /// Flag IsValid.
+        /// Internal flag computed to know if this activity has been validated at least one time in the past.
+        /// This flag is used to remember the validation of this activity when this activity was manual, then auto, then manual again.
+        /// For the previous reason, you should not use this flag in the specific code.
+        /// </summary>
         [Column("IS_VALID")]
         [Domain("DO_X_WORKFLOW_FLAG")]
         public bool IsValid
@@ -64,6 +92,9 @@ namespace Kinetix.Workflow
             set;
         }
 
+        /// <summary>
+        /// Generated Key used to store the primary key for mass insertion of activities during the recalculation.
+        /// </summary>
         [Column("INSERT_KEY")]
         [Domain("DO_X_WORKFLOW_ID")]
         [DataMember]
@@ -77,42 +108,42 @@ namespace Kinetix.Workflow
         public enum Cols
         {
             /// <summary>
-            /// Nom de la colonne en base associée à la propriété .
+            /// Nom de la colonne en base associée à la propriété WfaId.
             /// </summary>
             [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", Justification = "Correspondance schéma persistence")]
             [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1707:IdentifiersShouldNotContainUnderscores", Justification = "Correspondance schéma persistence")]
             WFA_ID,
 
             /// <summary>
-            /// Nom de la colonne en base associée à la propriété .
+            /// Nom de la colonne en base associée à la propriété CreationDate.
             /// </summary>
             [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", Justification = "Correspondance schéma persistence")]
             [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1707:IdentifiersShouldNotContainUnderscores", Justification = "Correspondance schéma persistence")]
             CREATION_DATE,
 
             /// <summary>
-            /// Nom de la colonne en base associée à la propriété .
+            /// Nom de la colonne en base associée à la propriété WfwId.
             /// </summary>
             [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", Justification = "Correspondance schéma persistence")]
             [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1707:IdentifiersShouldNotContainUnderscores", Justification = "Correspondance schéma persistence")]
             WFW_ID,
 
             /// <summary>
-            /// Nom de la colonne en base associée à la propriété .
+            /// Nom de la colonne en base associée à la propriété WfadId.
             /// </summary>
             [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", Justification = "Correspondance schéma persistence")]
             [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1707:IdentifiersShouldNotContainUnderscores", Justification = "Correspondance schéma persistence")]
             WFAD_ID,
 
             /// <summary>
-            /// Nom de la colonne en base associée à la propriété .
+            /// Nom de la colonne en base associée à la propriété IsAuto.
             /// </summary>
             [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", Justification = "Correspondance schéma persistence")]
             [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1707:IdentifiersShouldNotContainUnderscores", Justification = "Correspondance schéma persistence")]
             IS_AUTO,
 
             /// <summary>
-            /// Nom de la colonne en base associée à la propriété .
+            /// Nom de la colonne en base associée à la propriété IsValid.
             /// </summary>
             [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", Justification = "Correspondance schéma persistence")]
             [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1707:IdentifiersShouldNotContainUnderscores", Justification = "Correspondance schéma persistence")]

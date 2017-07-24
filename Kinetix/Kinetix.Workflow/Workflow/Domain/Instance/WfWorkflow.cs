@@ -56,56 +56,56 @@ namespace Kinetix.Workflow.instance
         public enum Cols
         {
             /// <summary>
-            /// Nom de la colonne en base associée à la propriété .
+            /// Nom de la colonne en base associée à la propriété WfwId.
             /// </summary>
             [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", Justification = "Correspondance schéma persistence")]
             [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1707:IdentifiersShouldNotContainUnderscores", Justification = "Correspondance schéma persistence")]
             WFW_ID,
 
             /// <summary>
-            /// Nom de la colonne en base associée à la propriété .
+            /// Nom de la colonne en base associée à la propriété CreationDate.
             /// </summary>
             [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", Justification = "Correspondance schéma persistence")]
             [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1707:IdentifiersShouldNotContainUnderscores", Justification = "Correspondance schéma persistence")]
             CREATION_DATE,
 
             /// <summary>
-            /// Nom de la colonne en base associée à la propriété .
+            /// Nom de la colonne en base associée à la propriété ItemId.
             /// </summary>
             [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", Justification = "Correspondance schéma persistence")]
             [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1707:IdentifiersShouldNotContainUnderscores", Justification = "Correspondance schéma persistence")]
             ITEM_ID,
 
             /// <summary>
-            /// Nom de la colonne en base associée à la propriété .
+            /// Nom de la colonne en base associée à la propriété Username.
             /// </summary>
             [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", Justification = "Correspondance schéma persistence")]
             [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1707:IdentifiersShouldNotContainUnderscores", Justification = "Correspondance schéma persistence")]
             USERNAME,
 
             /// <summary>
-            /// Nom de la colonne en base associée à la propriété .
+            /// Nom de la colonne en base associée à la propriété UserLogic.
             /// </summary>
             [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", Justification = "Correspondance schéma persistence")]
             [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1707:IdentifiersShouldNotContainUnderscores", Justification = "Correspondance schéma persistence")]
             USER_LOGIC,
 
             /// <summary>
-            /// Nom de la colonne en base associée à la propriété .
+            /// Nom de la colonne en base associée à la propriété WfwdId.
             /// </summary>
             [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", Justification = "Correspondance schéma persistence")]
             [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1707:IdentifiersShouldNotContainUnderscores", Justification = "Correspondance schéma persistence")]
             WFWD_ID,
 
             /// <summary>
-            /// Nom de la colonne en base associée à la propriété .
+            /// Nom de la colonne en base associée à la propriété WfsCode.
             /// </summary>
             [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", Justification = "Correspondance schéma persistence")]
             [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1707:IdentifiersShouldNotContainUnderscores", Justification = "Correspondance schéma persistence")]
-            WFS_ID,
+            WFS_CODE,
 
             /// <summary>
-            /// Nom de la colonne en base associée à la propriété .
+            /// Nom de la colonne en base associée à la propriété WfaId2.
             /// </summary>
             [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", Justification = "Correspondance schéma persistence")]
             [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1707:IdentifiersShouldNotContainUnderscores", Justification = "Correspondance schéma persistence")]
@@ -114,6 +114,9 @@ namespace Kinetix.Workflow.instance
 
         #endregion
 
+        /// <summary>
+        /// Primary key for the WfWorkflow
+        /// </summary>
         [Column("WFW_ID")]
         [Domain("DO_X_WORKFLOW_ID")]
         [Key]
@@ -123,6 +126,9 @@ namespace Kinetix.Workflow.instance
             set;
         }
 
+        /// <summary>
+        /// Creation date of the workflow instance
+        /// </summary>
         [Column("CREATION_DATE")]
         [Domain("DO_X_WORKFLOW_DATE")]
         public DateTime? CreationDate
@@ -131,6 +137,10 @@ namespace Kinetix.Workflow.instance
             set;
         }
 
+        /// <summary>
+        /// Weak foreign key linked to the business object on which the rules should be applyed.
+        /// Ex of business object : DemandeAchat
+        /// </summary>
         [Column("ITEM_ID")]
         [Domain("DO_X_WORKFLOW_WEAK_ID")]
         public int? ItemId
@@ -139,6 +149,9 @@ namespace Kinetix.Workflow.instance
             set;
         }
 
+        /// <summary>
+        /// Username of the user who has created this workflow instance.
+        /// </summary>
         [Column("USERNAME")]
         [Domain("DO_X_WORKFLOW_USER")]
         public string Username
@@ -147,6 +160,11 @@ namespace Kinetix.Workflow.instance
             set;
         }
 
+        /// <summary>
+        /// Flag to know if this workflow has been created by a human user or by a business rules or a job
+        /// True if created manually
+        /// False if created automatically
+        /// </summary>
         [Column("USER_LOGIC")]
         [Domain("DO_X_WORKFLOW_FLAG")]
         [Required]
@@ -156,6 +174,9 @@ namespace Kinetix.Workflow.instance
             set;
         }
 
+        /// <summary>
+        /// Foreign key linked to the workflow definition
+        /// </summary>
         [Column("WFWD_ID")]
         [Domain("DO_X_WORKFLOW_ID")]
         [Required]
@@ -165,7 +186,10 @@ namespace Kinetix.Workflow.instance
             set;
         }
 
-
+        /// <summary>
+        /// Status code for the workflow instance status : the workflow can be :
+        /// Created, Started, paused or Stopped
+        /// </summary>
         [Column("WFS_CODE")]
         [Domain("DO_X_WORKFLOW_CODE")]
         [Required]
@@ -175,6 +199,14 @@ namespace Kinetix.Workflow.instance
             set;
         }
 
+        /// <summary>
+        /// Foreign key to the current activity.
+        /// 
+        /// Use this field to know the current activity of this instance. 
+        /// This field will be updated by the engine when the user go to the next activity, or when a 
+        /// recalculation determine that this activity is the current.
+        /// This is one of the most important field of the workflow package.
+        /// </summary>
         [Column("WFA_ID_2")]
         [Domain("DO_X_WORKFLOW_ID")]
         public int? WfaId2

@@ -12,6 +12,9 @@ namespace Kinetix.Workflow.model
     public class WfMultiplicityDefinition
     {
 
+        /// <summary>
+        /// Primary key for the multiplicity definition
+        /// </summary>
         [Column("WFMD_ID")]
         [Domain("DO_X_WORKFLOW_CODE")]
         [Key]
@@ -21,6 +24,9 @@ namespace Kinetix.Workflow.model
             set;
         }
 
+        /// <summary>
+        /// Label associated to the Multiplicity
+        /// </summary>
         [Column("LABEL")]
         [Domain("DO_X_WORKFLOW_LABEL")]
         public string Label

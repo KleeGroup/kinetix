@@ -40,7 +40,7 @@ namespace Kinetix.Rules.Test
                 ConnectionString = "Data Source=carla;Initial Catalog=" + dataBaseName + ";User ID=dianeConnection;Password=Puorgeelk23",
                 ProviderName = "System.Data.SqlClient"
             };
-
+            
             // Register Domain metadata in Domain manager.
             DomainManager.Instance.RegisterDomainMetadataType(typeof(RuleDomainMetadata));
             SqlServerManager.Instance.RegisterConnectionStringSettings(conn);

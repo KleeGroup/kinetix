@@ -27,7 +27,6 @@ namespace Kinetix.Rules {
         /// <param name="creationDate">Date de création de la règle.</param>
         /// <param name="itemId">Id de l'Item.</param>
         /// <param name="label">Libelle de la règle.</param>
-
         public RuleDefinition(int? id, DateTime? creationDate, int? itemId, string label) {
 
             this.Id = id;
@@ -63,28 +62,28 @@ namespace Kinetix.Rules {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1034:NestedTypesShouldNotBeVisible", Justification = "A corriger")]
         public enum Cols {
             /// <summary>
-            /// Nom de la colonne en base associée à la propriété .
+            /// Nom de la colonne en base associée à la propriété Id.
             /// </summary>
             [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", Justification = "Correspondance schéma persistence")]
             [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1707:IdentifiersShouldNotContainUnderscores", Justification = "Correspondance schéma persistence")]
             ID,
 
             /// <summary>
-            /// Nom de la colonne en base associée à la propriété .
+            /// Nom de la colonne en base associée à la propriété CreationDate.
             /// </summary>
             [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", Justification = "Correspondance schéma persistence")]
             [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1707:IdentifiersShouldNotContainUnderscores", Justification = "Correspondance schéma persistence")]
             CREATION_DATE,
 
             /// <summary>
-            /// Nom de la colonne en base associée à la propriété .
+            /// Nom de la colonne en base associée à la propriété ItemId.
             /// </summary>
             [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", Justification = "Correspondance schéma persistence")]
             [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1707:IdentifiersShouldNotContainUnderscores", Justification = "Correspondance schéma persistence")]
             ITEM_ID,
 
             /// <summary>
-            /// Nom de la colonne en base associée à la propriété .
+            /// Nom de la colonne en base associée à la propriété Label.
             /// </summary>
             [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", Justification = "Correspondance schéma persistence")]
             [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1707:IdentifiersShouldNotContainUnderscores", Justification = "Correspondance schéma persistence")]
@@ -93,7 +92,9 @@ namespace Kinetix.Rules {
 
         #endregion
 
-
+        /// <summary>
+        /// Primary Key for RuleDefinition.
+        /// </summary>
         [Column("ID")]
         [Domain("DO_X_RULES_ID")]
         [Key]
@@ -102,6 +103,9 @@ namespace Kinetix.Rules {
             set;
         }
 
+        /// <summary>
+        /// Creation Date for the rule definition
+        /// </summary>
         [Column("CREATION_DATE")]
         [Domain("DO_X_RULES_DATE")]
         public DateTime? CreationDate {
@@ -109,6 +113,10 @@ namespace Kinetix.Rules {
             set;
         }
 
+        /// <summary>
+        /// Weak Foreign key to which item the rule should be applied.
+        /// In the workflow context, this field should be linked to the WfActivityDefinition (and not the business object).
+        /// </summary>
         [Column("ITEM_ID")]
         [Domain("DO_X_RULES_WEAK_ID")]
         public int? ItemId {
@@ -116,6 +124,9 @@ namespace Kinetix.Rules {
             set;
         }
 
+        /// <summary>
+        /// Name associated to the rule
+        /// </summary>
         [Column("LABEL")]
         [Domain("DO_X_RULES_LABEL")]
         public string Label {

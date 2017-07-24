@@ -55,28 +55,28 @@ namespace Kinetix.Rules {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1034:NestedTypesShouldNotBeVisible", Justification = "A corriger")]
         public enum Cols {
             /// <summary>
-            /// Nom de la colonne en base associée à la propriété .
+            /// Nom de la colonne en base associée à la propriété Id.
             /// </summary>
             [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", Justification = "Correspondance schéma persistence")]
             [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1707:IdentifiersShouldNotContainUnderscores", Justification = "Correspondance schéma persistence")]
             ID,
 
             /// <summary>
-            /// Nom de la colonne en base associée à la propriété .
+            /// Nom de la colonne en base associée à la propriété CreationDate.
             /// </summary>
             [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", Justification = "Correspondance schéma persistence")]
             [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1707:IdentifiersShouldNotContainUnderscores", Justification = "Correspondance schéma persistence")]
             CREATION_DATE,
 
             /// <summary>
-            /// Nom de la colonne en base associée à la propriété .
+            /// Nom de la colonne en base associée à la propriété ItemId.
             /// </summary>
             [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", Justification = "Correspondance schéma persistence")]
             [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1707:IdentifiersShouldNotContainUnderscores", Justification = "Correspondance schéma persistence")]
             ITEM_ID,
 
             /// <summary>
-            /// Nom de la colonne en base associée à la propriété .
+            /// Nom de la colonne en base associée à la propriété GroupId.
             /// </summary>
             [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", Justification = "Correspondance schéma persistence")]
             [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1707:IdentifiersShouldNotContainUnderscores", Justification = "Correspondance schéma persistence")]
@@ -85,6 +85,10 @@ namespace Kinetix.Rules {
 
         #endregion
 
+
+        /// <summary>
+        /// Primary Key for SelectorDefinition.
+        /// </summary>
         [Column("ID")]
         [Domain("DO_X_RULES_ID")]
         [Key]
@@ -93,6 +97,9 @@ namespace Kinetix.Rules {
             set;
         }
 
+        /// <summary>
+        /// Creation Date for the Selector Definition
+        /// </summary>
         [Column("CREATION_DATE")]
         [Domain("DO_X_RULES_DATE")]
         public DateTime? CreationDate {
@@ -100,6 +107,10 @@ namespace Kinetix.Rules {
             set;
         }
 
+        /// <summary>
+        /// Weak Foreign key to which item the rule should be applied.
+        /// In the workflow context, this field should be linked to the WfActivityDefinition (and not the business object).
+        /// </summary>
         [Column("ITEM_ID")]
         [Domain("DO_X_RULES_WEAK_ID")]
         public int? ItemId {
@@ -107,6 +118,10 @@ namespace Kinetix.Rules {
             set;
         }
 
+        /// <summary>
+        /// Weak Foreign key that define the group of users that should be selected.
+        /// In the workflow context, this group id should be linked to the group of users that should be allowed to validate the activity designated by the ItemId Field.
+        /// </summary>
         [Column("GROUP_ID")]
         [Domain("DO_X_RULES_GROUP_ID")]
         public string GroupId {
