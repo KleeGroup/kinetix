@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace Kinetix.ComponentModel.Search {
 
@@ -7,14 +6,6 @@ namespace Kinetix.ComponentModel.Search {
     /// Sortie d'une recherche avancée.
     /// </summary>
     public class QueryOutput {
-
-        /// <summary>
-        /// Liste de résultats (cas d'une recherche sans groupe).
-        /// </summary>
-        public ICollection List {
-            get;
-            set;
-        }
 
         /// <summary>
         /// Groupe de liste de résultats (cas d'une recherche avec groupe).

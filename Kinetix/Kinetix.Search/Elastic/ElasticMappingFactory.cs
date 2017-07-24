@@ -84,6 +84,12 @@ namespace Kinetix.Search.Elastic {
                         .Name(fieldName)
                         .Index(true)
                         .Store(false));
+                case SearchFieldCategory.ListFacet:
+                    return selector.Text(x => x
+                        .Name(fieldName)
+                        .Index(true)
+                        .Store(false)
+                        .Analyzer("text_fr"));
                 case SearchFieldCategory.Sort:
                     if (field.PropertyType == typeof(DateTime?)) {
                         return selector.Date(x => x
