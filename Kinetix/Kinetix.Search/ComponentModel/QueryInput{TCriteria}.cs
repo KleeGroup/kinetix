@@ -1,9 +1,11 @@
-﻿namespace Kinetix.ComponentModel.Search {
+﻿namespace Kinetix.Search.ComponentModel {
 
     /// <summary>
     /// Entrée d'une recherche avancée.
     /// </summary>
-    public class QueryInput {
+    /// <typeparam name="TCriteria">Critère.</typeparam>
+    public class QueryInput<TCriteria>
+        where TCriteria : Criteria {
 
         /// <summary>
         /// Liste des facettes.
@@ -16,7 +18,7 @@
         /// <summary>
         /// Critères de recherche.
         /// </summary>
-        public Criteria Criteria {
+        public TCriteria Criteria {
             get;
             set;
         }

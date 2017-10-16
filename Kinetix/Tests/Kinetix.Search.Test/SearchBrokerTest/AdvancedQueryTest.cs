@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Kinetix.ComponentModel.Search;
 using Kinetix.Search.Broker;
+using Kinetix.Search.ComponentModel;
 using Kinetix.Search.Model;
 using Kinetix.Search.Test.Dum;
 using Microsoft.VisualStudio.TestTools.UnitTesting;

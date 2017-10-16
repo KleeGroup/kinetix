@@ -1,9 +1,11 @@
-﻿namespace Kinetix.ComponentModel.Search {
+﻿using System.Collections.Generic;
+
+namespace Kinetix.Search.ComponentModel {
 
     /// <summary>
-    /// Item de facette.
+    /// Facette en sortie de recherche avancée : liste de facettes.
     /// </summary>
-    public struct FacetItem {
+    public class FacetOutput {
 
         /// <summary>
         /// Code de la facette.
@@ -14,7 +16,7 @@
         }
 
         /// <summary>
-        /// Libellé de l'item.
+        /// Libellé de la facette.
         /// </summary>
         public string Label {
             get;
@@ -22,9 +24,9 @@
         }
 
         /// <summary>
-        /// Nombre d'éléments pour l'item.
+        /// Valeurs possibles des facettes.
         /// </summary>
-        public long Count {
+        public ICollection<FacetItem> Values {
             get;
             set;
         }

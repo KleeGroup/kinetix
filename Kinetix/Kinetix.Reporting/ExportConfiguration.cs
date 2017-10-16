@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Globalization;
-using Kinetix.ComponentModel.Search;
 
 namespace Kinetix.Reporting {
 
@@ -17,7 +16,7 @@ namespace Kinetix.Reporting {
         /// <summary>
         /// The stringify criteria.
         /// </summary>
-        public QueryInput Input { get; set; }
+        public object Input { get; set; }
 
         /// <summary>
         /// The culture.

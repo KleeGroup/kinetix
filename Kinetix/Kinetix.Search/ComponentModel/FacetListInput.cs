@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Kinetix.ComponentModel.Search {
+namespace Kinetix.Search.ComponentModel {
 
     /// <summary>
     /// Sélection de facettes en entrée de la recherche.

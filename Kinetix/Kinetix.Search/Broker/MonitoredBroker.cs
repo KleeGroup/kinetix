@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using Kinetix.ComponentModel.Search;
 using Kinetix.Monitoring.Counter;
+using Kinetix.Search.ComponentModel;
 using Kinetix.Search.Contract;
 using Kinetix.Search.Model;
 

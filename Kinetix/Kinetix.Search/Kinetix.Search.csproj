@@ -107,6 +107,17 @@
     <Compile Include="Elastic\ElasticManager.cs" />
     <Compile Include="Broker\StandardSearchBroker.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ComponentModel\Criteria.cs" />
+    <Compile Include="ComponentModel\FacetItem.cs" />
+    <Compile Include="ComponentModel\FacetListInput.cs" />
+    <Compile Include="ComponentModel\FacetOutput.cs" />
+    <Compile Include="ComponentModel\FacetSelection.cs" />
+    <Compile Include="ComponentModel\GroupResult.cs" />
+    <Compile Include="ComponentModel\GroupResult{TDocument}.cs" />
+    <Compile Include="ComponentModel\QueryInput.cs" />
+    <Compile Include="ComponentModel\QueryInput{TCriteria}.cs" />
+    <Compile Include="ComponentModel\QueryOutput.cs" />
+    <Compile Include="ComponentModel\QueryOutput{TDocument}.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Kinetix.ComponentModel\Kinetix.ComponentModel.csproj">

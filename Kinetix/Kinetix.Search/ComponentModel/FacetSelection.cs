@@ -1,4 +1,4 @@
-﻿namespace Kinetix.ComponentModel.Search {
+﻿namespace Kinetix.Search.ComponentModel {
 
     /// <summary>
     /// Sélection de facette pour une entrée de recherche.

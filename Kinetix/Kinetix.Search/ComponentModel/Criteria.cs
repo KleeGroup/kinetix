@@ -1,4 +1,4 @@
-﻿namespace Kinetix.ComponentModel.Search {
+﻿namespace Kinetix.Search.ComponentModel {
 
     /// <summary>
     /// Critère de recherche.
