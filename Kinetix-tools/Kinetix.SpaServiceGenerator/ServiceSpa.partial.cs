@@ -173,7 +173,7 @@ namespace Kinetix.SpaServiceGenerator {
         private INamedTypeSymbol[] GetTypes(INamedTypeSymbol type) =>
             new[] {
                 type,
-                type.IsGenericType ? (type.TypeArguments.Last() as INamedTypeSymbol).ConstructedFrom : null
+                type.IsGenericType ? (type?.TypeArguments.Last() as INamedTypeSymbol)?.ConstructedFrom : null
             };
     }
 }
