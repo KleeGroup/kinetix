@@ -1,14 +1,8 @@
-﻿using Kinetix.Account;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using Kinetix.Account;
 
-namespace Kinetix.Rules
-{
-    public interface IRuleSelector
-    {
+namespace Kinetix.Rules {
+    public interface IRuleSelector {
 
         /// <summary>
         /// Select accounts matching the selector provided from an activity.
