@@ -12,13 +12,5 @@
             get;
             set;
         }
-
-        /// <summary>
-        /// Scope de recherche.
-        /// </summary>
-        public string Scope {
-            get;
-            set;
-        }
     }
 }
