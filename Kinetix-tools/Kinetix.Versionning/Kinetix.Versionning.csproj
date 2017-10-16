@@ -26,7 +26,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <CodeAnalysisRuleSet>..\..\Kinetix\RuleSet.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>..\..\Kinetix\RuleSet.Kinetix.ruleset</CodeAnalysisRuleSet>
     <DocumentationFile>bin\Debug\Kinetix.Versionning.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">

@@ -5,10 +5,10 @@ using Kinetix.ComponentModel.Test.Contract;
 #if NUnit
     using NUnit.Framework; 
 #else
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
-    using SetUpAttribute = Microsoft.VisualStudio.TestTools.UnitTesting.TestInitializeAttribute;
-    using TestAttribute = Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute;
-    using TestFixtureAttribute = Microsoft.VisualStudio.TestTools.UnitTesting.TestClassAttribute;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using SetUpAttribute = Microsoft.VisualStudio.TestTools.UnitTesting.TestInitializeAttribute;
+using TestAttribute = Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute;
+using TestFixtureAttribute = Microsoft.VisualStudio.TestTools.UnitTesting.TestClassAttribute;
 #endif
 
 namespace Kinetix.ComponentModel.Test {
@@ -240,7 +240,7 @@ namespace Kinetix.ComponentModel.Test {
         [Test]
         [ExpectedException(typeof(ArgumentNullException))]
         public void TestCheckAllNullCollection() {
-            BeanDescriptor.CheckAll(null, false);
+            BeanDescriptor.CheckAll<int>(null, false);
         }
     }
 }

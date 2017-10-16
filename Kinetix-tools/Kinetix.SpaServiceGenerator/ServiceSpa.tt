@@ -1,0 +1,49 @@
+﻿<#@ template language="C#" #>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="Kinetix.SpaServiceGenerator.Model" #>
+/*
+    Ce fichier a été généré automatiquement.
+    Toute modification sera perdue.
+*/
+
+/* tslint:disable */
+import * as server from "../server";
+<# foreach (var import in GetImportList()) { #>
+import {<#= import.Item1 #>} from "<#= import.Item2 #>/<#= import.Item3 #>";
+<# } #>
+<# foreach (var service in Services) { #>
+
+/**
+ * <#= service.Documentation.Summary #>
+<# foreach (var param in service.Documentation.Parameters) { #> * @param <#= param.Item1 #> <#= param.Item2 #>
+<# } #>
+ */
+export function <#= Utils.ToFirstLower(service.Name) #>(<# 
+    foreach (var parameter in service.Parameters) { #><#= parameter.Name #><#= parameter.IsOptional ? "?" : "" #>: <#= GetTSType(parameter.Type) #><#
+        if (parameter.Name != service.Parameters.Last().Name) {
+            #>, <#
+        }
+    }#>) {
+    return server.<#= Utils.ToFirstLower(service.Verb.ToString()) #><#= IsArray(service.ReturnType) && service.Verb == Verb.Get ? "List" : ""  #><<#= GetTSType(service.ReturnType, service.Verb != Verb.Get) #>>(`./<#= service.Route.Replace("{", "${").Replace("?", "") #>`<#
+        if (service.Parameters.Any() && service.Verb == Verb.Post) {
+            #>, <#= service.Parameters.First().Name #><#
+        }
+        var mandatoryParameters = service.Parameters.Where(param => !param.IsOptional);
+        if (service.Verb == Verb.Get && mandatoryParameters.Any()) {
+            #>, [<#
+            foreach (var parameter in mandatoryParameters) {
+                if (!parameter.IsOptional) {
+                    #><#= parameter.Name #><#
+                    if (parameter.Name != mandatoryParameters.Last().Name) {
+                        #>, <#
+                    }
+                }
+            }
+            #>]<#
+        }
+        #>);
+}
+<# } #>

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.27004.2002
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kinetix.Broker", "Kinetix.Broker\Kinetix.Broker.csproj", "{0C6E80B2-0E45-4922-9895-73B3A3EC160D}"
 EndProject
@@ -82,6 +82,7 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kinetix.Notifications.Test", "Tests\Kinetix.Notifications.Test\Kinetix.Notifications.Test.csproj", "{3AC427F9-E4EA-409E-8EC2-2FF29C04782D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kinetix.SearchV3", "Kinetix.SearchV3\Kinetix.SearchV3.csproj", "{D88C145D-E13F-4D29-B831-35136994528F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kinetix.SpaServiceGenerator", "..\Kinetix-tools\Kinetix.SpaServiceGenerator\Kinetix.SpaServiceGenerator.csproj", "{D8130CC7-9926-4900-9F14-ECBB41C8025D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -237,6 +238,10 @@ Global
 		{D88C145D-E13F-4D29-B831-35136994528F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D88C145D-E13F-4D29-B831-35136994528F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D88C145D-E13F-4D29-B831-35136994528F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D8130CC7-9926-4900-9F14-ECBB41C8025D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D8130CC7-9926-4900-9F14-ECBB41C8025D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D8130CC7-9926-4900-9F14-ECBB41C8025D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D8130CC7-9926-4900-9F14-ECBB41C8025D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -280,5 +285,9 @@ Global
 		{E9F0CD93-5C2B-45BD-9B65-D3E64E7774F4} = {E566DC13-2180-4871-80F6-FBE41CF86D63}
 		{3AC427F9-E4EA-409E-8EC2-2FF29C04782D} = {DE720745-32AB-43A8-8670-62FE5D1108E4}
 		{D88C145D-E13F-4D29-B831-35136994528F} = {E566DC13-2180-4871-80F6-FBE41CF86D63}
+		{D8130CC7-9926-4900-9F14-ECBB41C8025D} = {A4733C58-5A6F-4E73-B9F6-E2C7A09D70D5}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {42250737-4FCC-4CA4-891A-01CB4D26E37A}
 	EndGlobalSection
 EndGlobal
