@@ -5,12 +5,12 @@ using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace Kinetix.ClassGenerator.Tfs {
+namespace Kinetix.ClassGenerator.Writer {
 
     /// <summary>
     /// Classe de base pour l'écriture des fichiers générés.
     /// </summary>
-    internal abstract class AbstractFileWriter : TextWriter {
+    public class FileWriter : TextWriter {
 
         /// <summary>
         /// Nombre de lignes d'en-tête à ignorer dans le calcul de checksum.
@@ -24,7 +24,7 @@ namespace Kinetix.ClassGenerator.Tfs {
         /// Crée une nouvelle instance.
         /// </summary>
         /// <param name="fileName">Nom du fichier à écrire.</param>
-        public AbstractFileWriter(string fileName)
+        public FileWriter(string fileName)
             : base(CultureInfo.InvariantCulture) {
             if (fileName == null) {
                 throw new ArgumentNullException("fileName");
@@ -37,35 +37,23 @@ namespace Kinetix.ClassGenerator.Tfs {
         /// <summary>
         /// Retourne l'encodage à utiliser.
         /// </summary>
-        public override Encoding Encoding {
-            get {
-                return Encoding.UTF8;
-            }
-        }
+        public override Encoding Encoding => Encoding.UTF8;
 
         /// <summary>
         /// Retourne le numéro de la ligne qui contient la version.
         /// </summary>
-        protected abstract int VersionLine {
-            get;
-        }
+        protected virtual int VersionLine => 3;
 
         /// <summary>
         /// Active la lecture et l'écriture d'un entête avec un hash du fichier.
         /// </summary>
-        protected virtual bool EnableHeader {
-            get {
-                return true;
-            }
-        }
+        protected virtual bool EnableHeader => true;
 
         /// <summary>
         /// Renvoie le token de début de ligne de commentaire dans le langage du fichier.
         /// </summary>
         /// <returns>Toket de début de ligne de commentaire.</returns>
-        protected abstract string StartCommentToken {
-            get;
-        }
+        protected virtual string StartCommentToken => "////";
 
         /// <summary>
         /// Ecrit un caractère dans le stream.
@@ -115,10 +103,6 @@ namespace Kinetix.ClassGenerator.Tfs {
                 return;
             }
 
-            if (fileExists) {
-                PrepareFile(_fileName);
-            }
-
             /* Création du répertoire si inexistant. */
             var dir = new FileInfo(_fileName).DirectoryName;
             if (!Directory.Exists(dir)) {
@@ -127,7 +111,6 @@ namespace Kinetix.ClassGenerator.Tfs {
 
             using (StreamWriter sw = new StreamWriter(_fileName, false, this.Encoding)) {
                 if (this.EnableHeader) {
-                    this.WriterHeader(sw, currentVersion);
                     sw.WriteLine(this.StartCommentToken);
                     sw.WriteLine(this.StartCommentToken + " ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT (" + hash + ") !");
                     sw.WriteLine(this.StartCommentToken);
@@ -140,20 +123,6 @@ namespace Kinetix.ClassGenerator.Tfs {
             if (!fileExists) {
                 this.FinishFile(_fileName);
             }
-        }
-
-        /// <summary>
-        /// Ecrit le header du fichier.
-        /// </summary>
-        /// <param name="sw">Writer.</param>
-        /// <param name="currentVersion">Numéro de version courant.</param>
-        protected abstract void WriterHeader(StreamWriter sw, string currentVersion);
-
-        /// <summary>
-        /// Prépare le fichier pour une écriture.
-        /// </summary>
-        /// <param name="fileName">Nom du fichier.</param>
-        protected virtual void PrepareFile(string fileName) {
         }
 
         /// <summary>

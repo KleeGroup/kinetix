@@ -1,4 +1,4 @@
-﻿namespace Kinetix.Tfs.Tools.MsBuild {
+﻿namespace Kinetix.ClassGenerator.MsBuild {
 
     /// <summary>
     /// Représente un item de projet MSBuild.

@@ -1,4 +1,4 @@
-﻿namespace Kinetix.Tfs.Tools.MsBuild {
+﻿namespace Kinetix.ClassGenerator.MsBuild {
 
     /// <summary>
     /// Actions de build pour un fichier dans un projet Visual Studio.

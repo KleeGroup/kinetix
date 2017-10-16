@@ -1,12 +1,12 @@
-﻿using Kinetix.Tfs.Tools.MsBuild;
+﻿using Kinetix.ClassGenerator.MsBuild;
 
-namespace Kinetix.ClassGenerator.Tfs {
+namespace Kinetix.ClassGenerator.Writer {
 
     /// <summary>
-    /// Writer pour l'écriture de fichier avec entête TFS.
+    /// Writer pour l'écriture de fichier.
     /// Spécifique pour les fichiers SQL (usage du token commentaire SQL).
     /// </summary>
-    internal class TfsSqlFileWriter : TfsFileWriter {
+    internal class SqlFileWriter : FileWriter {
 
         private readonly string _sqlprojFileName;
         private readonly string _buildAction;
@@ -17,7 +17,7 @@ namespace Kinetix.ClassGenerator.Tfs {
         /// <param name="fileName">Nom du fichier à écrire.</param>
         /// <param name="sqlprojFileName">Nom du fichier sqlproj.</param>
         /// <param name="buildAction">Action de build pour le fichier.</param>
-        public TfsSqlFileWriter(string fileName, string sqlprojFileName = null, string buildAction = null)
+        public SqlFileWriter(string fileName, string sqlprojFileName = null, string buildAction = null)
             : base(fileName) {
             _buildAction = buildAction;
             _sqlprojFileName = sqlprojFileName;
@@ -27,20 +27,13 @@ namespace Kinetix.ClassGenerator.Tfs {
         /// Renvoie le token de début de ligne de commentaire dans le langage du fichier.
         /// </summary>
         /// <returns>Toket de début de ligne de commentaire.</returns>
-        protected override string StartCommentToken {
-            get {
-                return "----";
-            }
-        }
+        protected override string StartCommentToken => "----";
 
         /// <summary>
         /// Appelé après la création d'un nouveau fichier.
         /// </summary>
         /// <param name="fileName">Nom du fichier.</param>
         protected override void FinishFile(string fileName) {
-            /* Ajoute le fichier dans TFS */
-            base.FinishFile(fileName);
-
             if (string.IsNullOrEmpty(_sqlprojFileName)) {
                 return;
             }
@@ -49,8 +42,7 @@ namespace Kinetix.ClassGenerator.Tfs {
             string localFileName = ProjectFileUtils.GetProjectRelativeFileName(fileName, _sqlprojFileName);
 
             /* Met à jour le fichier csproj. */
-            ProjectUpdater
-                .Create(TfsManager.Client)
+            new ProjectUpdater()
                 .AddItem(_sqlprojFileName, new ProjectItem { ItemPath = localFileName, BuildAction = _buildAction });
         }
     }

@@ -1,37 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Kinetix.Tfs.Tools.Client;
 using Microsoft.Build.Evaluation;
 
-namespace Kinetix.Tfs.Tools.MsBuild {
+namespace Kinetix.ClassGenerator.MsBuild {
 
     /// <summary>
     /// Updater de projet MSBuild.
     /// </summary>
     public class ProjectUpdater {
-
-        /// <summary>
-        /// Client TFS.
-        /// </summary>
-        private readonly TfsClient _client;
-
-        /// <summary>
-        /// Créé une nouvelle instance de ProjectUpdater.
-        /// </summary>
-        /// <param name="client">Client TFS.</param>
-        private ProjectUpdater(TfsClient client) {
-            _client = client;
-        }
-
-        /// <summary>
-        /// Créé un ProjectUpdater.
-        /// </summary>
-        /// <param name="client">Client TFS.</param>
-        /// <returns>ProjectUpdater.</returns>
-        public static ProjectUpdater Create(TfsClient client) {
-            return new ProjectUpdater(client);
-        }
 
         /// <summary>
         /// Ajoute un Item à un projet MSBuild.
@@ -62,9 +39,6 @@ namespace Kinetix.Tfs.Tools.MsBuild {
                 Console.WriteLine("Project adding " + item.ItemPath + "...");
                 project.AddItem(item.BuildAction, item.ItemPath);
             }
-
-            Console.WriteLine("Project checkout : " + projetFilePath);
-            _client.CheckOut(projetFilePath);
 
             project.Save(projetFilePath);
             project.ProjectCollection.UnloadProject(project);

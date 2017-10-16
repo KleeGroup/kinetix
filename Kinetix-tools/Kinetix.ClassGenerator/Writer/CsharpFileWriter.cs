@@ -1,13 +1,12 @@
-﻿using Kinetix.Tfs.Tools.MsBuild;
+﻿using Kinetix.ClassGenerator.MsBuild;
 
-namespace Kinetix.ClassGenerator.Tfs {
+namespace Kinetix.ClassGenerator.Writer {
 
     /// <summary>
     /// Writer pour l'écriture d'un fichier CSharp.
-    /// Le fichier est mis en check out / add dans TFS.
     /// Il est ajouté au fichier csproj fourni.
     /// </summary>
-    internal class TfsCsharpFileWriter : TfsFileWriter {
+    internal class CsharpFileWriter : FileWriter {
 
         private readonly string _csprojFileName;
 
@@ -16,19 +15,9 @@ namespace Kinetix.ClassGenerator.Tfs {
         /// </summary>
         /// <param name="fileName">Nom du fichier à écrire.</param>
         /// <param name="csprojFileName">Nom du fichier csproj.</param>
-        public TfsCsharpFileWriter(string fileName, string csprojFileName = null)
+        public CsharpFileWriter(string fileName, string csprojFileName = null)
             : base(fileName) {
             _csprojFileName = csprojFileName;
-        }
-
-        /// <summary>
-        /// Renvoie le token de début de ligne de commentaire dans le langage du fichier.
-        /// </summary>
-        /// <returns>Toket de début de ligne de commentaire.</returns>
-        protected override string StartCommentToken {
-            get {
-                return "////";
-            }
         }
 
         /// <summary>
@@ -47,8 +36,7 @@ namespace Kinetix.ClassGenerator.Tfs {
             string localFileName = ProjectFileUtils.GetProjectRelativeFileName(fileName, _csprojFileName);
 
             /* Met à jour le fichier csproj. */
-            ProjectUpdater
-                .Create(TfsManager.Client)
+            new ProjectUpdater()
                 .AddItem(_csprojFileName, new ProjectItem { ItemPath = localFileName, BuildAction = BuildActions.Compile });
         }
     }

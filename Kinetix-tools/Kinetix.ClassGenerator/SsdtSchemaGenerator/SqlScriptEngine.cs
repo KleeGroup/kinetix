@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using Kinetix.ClassGenerator.SsdtSchemaGenerator.Contract;
-using Kinetix.ClassGenerator.Tfs;
+using Kinetix.ClassGenerator.Writer;
 
 namespace Kinetix.ClassGenerator.SsdtSchemaGenerator {
 
@@ -82,7 +82,7 @@ namespace Kinetix.ClassGenerator.SsdtSchemaGenerator {
             var scriptPath = Path.Combine(folderPath, scriptName);
 
             // Utilisation du flux spécial qui ne checkout le fichier que s'il est modifié.
-            using (TextWriter tw = new TfsSqlFileWriter(scriptPath, GeneratorParameters.SsdtProjFileName, buildAction)) {
+            using (TextWriter tw = new SqlFileWriter(scriptPath, GeneratorParameters.SsdtProjFileName, buildAction)) {
                 /*  Génére le script de l'item */
                 scripter.WriteItemScript(tw, item);
             }

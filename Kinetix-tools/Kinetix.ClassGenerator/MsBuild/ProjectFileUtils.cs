@@ -1,6 +1,6 @@
 ﻿using System.IO;
 
-namespace Kinetix.Tfs.Tools.MsBuild {
+namespace Kinetix.ClassGenerator.MsBuild {
 
     /// <summary>
     /// Classe utilitaire pour gérer les projets MSBUILD.

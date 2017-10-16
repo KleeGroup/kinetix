@@ -302,7 +302,7 @@ namespace Kinetix.ClassGenerator {
                 queryParameter = "new Kinetix.Data.SqlClient.QueryParameter(" + className + ".Cols." + defaultProperty.DataMember.Name + ", Kinetix.Data.SqlClient.SortOrder.Asc)";
             }
 
-            return "return BrokerManager.GetBroker<" + className + ">().GetAll(" + queryParameter + ");";
+            return "return BrokerManager.GetStandardBroker<" + className + ">().GetAll(" + queryParameter + ");";
         }
 
         /// <summary>
@@ -330,14 +330,6 @@ namespace Kinetix.ClassGenerator {
         /// <returns>Code généré.</returns>
         protected override string LoadDefaultPropertyAttribute(string defaultProperty) {
             return "[DefaultProperty(\"" + defaultProperty + "\")]";
-        }
-
-        /// <summary>
-        /// Retourne l'attribut Translatable.
-        /// </summary>
-        /// <returns>Code généré.</returns>
-        protected override string LoadTranslatableAttribute() {
-            return "[Translatable]";
         }
 
         /// <summary>

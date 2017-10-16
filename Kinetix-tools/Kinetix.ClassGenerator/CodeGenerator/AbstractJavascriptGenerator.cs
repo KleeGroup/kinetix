@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using Kinetix.ClassGenerator.Model;
-using Kinetix.ClassGenerator.Tfs;
+using Kinetix.ClassGenerator.Writer;
 
 namespace Kinetix.ClassGenerator.CodeGenerator {
 
@@ -149,7 +149,7 @@ namespace Kinetix.ClassGenerator.CodeGenerator {
         /// <param name="namespaceName">Nom du namespace.</param>
         /// <param name="modelClassList">Liste des classe du namespace.</param>
         private void WriteNameSpaceNode(string outputFileNameJavascript, string namespaceName, ICollection<ModelClass> modelClassList) {
-            using (TextWriter writerJs = new TfsJsFileWriter(outputFileNameJavascript)) {
+            using (TextWriter writerJs = new FileWriter(outputFileNameJavascript)) {
 
                 writerJs.WriteLine($"export const {FirstToLower(namespaceName)} = {{");
                 int i = 1;
