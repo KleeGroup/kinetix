@@ -52,28 +52,28 @@ namespace Kinetix.Workflow.instance
         public enum Cols
         {
             /// <summary>
-            /// Nom de la colonne en base associée à la propriété .
+            /// Nom de la colonne en base associée à la propriété Id.
             /// </summary>
             [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", Justification = "Correspondance schéma persistence")]
             [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1707:IdentifiersShouldNotContainUnderscores", Justification = "Correspondance schéma persistence")]
             WFE_ID,
 
             /// <summary>
-            /// Nom de la colonne en base associée à la propriété .
+            /// Nom de la colonne en base associée à la propriété Username.
             /// </summary>
             [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", Justification = "Correspondance schéma persistence")]
             [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1707:IdentifiersShouldNotContainUnderscores", Justification = "Correspondance schéma persistence")]
             USERNAME,
 
             /// <summary>
-            /// Nom de la colonne en base associée à la propriété .
+            /// Nom de la colonne en base associée à la propriété Choice.
             /// </summary>
             [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", Justification = "Correspondance schéma persistence")]
             [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1707:IdentifiersShouldNotContainUnderscores", Justification = "Correspondance schéma persistence")]
             CHOICE,
 
             /// <summary>
-            /// Nom de la colonne en base associée à la propriété .
+            /// Nom de la colonne en base associée à la propriété DecisionDate.
             /// </summary>
             [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", Justification = "Correspondance schéma persistence")]
             [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1707:IdentifiersShouldNotContainUnderscores", Justification = "Correspondance schéma persistence")]
@@ -81,14 +81,14 @@ namespace Kinetix.Workflow.instance
 
 
             /// <summary>
-            /// Nom de la colonne en base associée à la propriété .
+            /// Nom de la colonne en base associée à la propriété Comments.
             /// </summary>
             [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", Justification = "Correspondance schéma persistence")]
             [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1707:IdentifiersShouldNotContainUnderscores", Justification = "Correspondance schéma persistence")]
             COMMENTS,
 
             /// <summary>
-            /// Nom de la colonne en base associée à la propriété .
+            /// Nom de la colonne en base associée à la propriété WfaId.
             /// </summary>
             [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", Justification = "Correspondance schéma persistence")]
             [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1707:IdentifiersShouldNotContainUnderscores", Justification = "Correspondance schéma persistence")]
@@ -98,6 +98,9 @@ namespace Kinetix.Workflow.instance
 
         #endregion
 
+        /// <summary>
+        /// Primary key for WfDecision
+        /// </summary>
         [Column("WFE_ID")]
         [Domain("DO_X_WORKFLOW_ID")]
         [Key]
@@ -107,6 +110,10 @@ namespace Kinetix.Workflow.instance
             set;
         }
 
+        /// <summary>
+        /// Username of the user who has validated the decision. 
+        /// If the decision is auto, a specific user will be used.
+        /// </summary>
         [Column("USERNAME")]
         [Domain("DO_X_WORKFLOW_USER")]
         public string Username
@@ -115,6 +122,10 @@ namespace Kinetix.Workflow.instance
             set;
         }
 
+        /// <summary>
+        /// Functionnal choice decision used to validate this decision.
+        /// Ex: 1:OK, 2:OK with reserves, 3: KO
+        /// </summary>
         [Column("CHOICE")]
         [Domain("DO_X_WORKFLOW_CHOICE")]
         public int? Choice
@@ -123,6 +134,9 @@ namespace Kinetix.Workflow.instance
             set;
         }
 
+        /// <summary>
+        /// Date of the decision.
+        /// </summary>
         [Column("DECISION_DATE")]
         [Domain("DO_X_WORKFLOW_DATE")]
         public DateTime? DecisionDate
@@ -131,6 +145,9 @@ namespace Kinetix.Workflow.instance
             set;
         }
 
+        /// <summary>
+        /// User comments linked to the decision.
+        /// </summary>
         [Column("COMMENTS")]
         [Domain("DO_X_WORKFLOW_COMMENTS")]
         public string Comments
@@ -139,7 +156,9 @@ namespace Kinetix.Workflow.instance
             set;
         }
 
-
+        /// <summary>
+        /// Foreign key linked to the activity
+        /// </summary>
         [Column("WFA_ID")]
         [Domain("DO_X_WORKFLOW_ID")]
         public int WfaId

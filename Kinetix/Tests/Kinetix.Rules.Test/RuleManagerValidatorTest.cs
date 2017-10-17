@@ -9,8 +9,9 @@ using System.Linq;
 #if NUnit
     using NUnit.Framework; 
 #else
-
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using TestFixtureAttribute = Microsoft.VisualStudio.TestTools.UnitTesting.TestClassAttribute;
+using TestAttribute = Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute;
 #endif
 using Microsoft.Practices.Unity;
 
@@ -70,7 +71,7 @@ namespace Kinetix.Rules.Test
             container.RegisterType<Kinetix.Rules.IRuleValidatorPlugin, Kinetix.Rules.SimpleRuleValidatorPlugin>();
         }
 
-        [TestMethod]
+        [Test]
         public void TestAddRule()
         {
             int item1 = 10000;
@@ -104,7 +105,7 @@ namespace Kinetix.Rules.Test
             Assert.IsTrue(rulesFetch2.SequenceEqual(new List<RuleDefinition>() { rule2, rule3 }, new RuleEqualityComparer()));
         }
 
-        [TestMethod]
+        [Test]
         public void TestAddUpdateDelete()
         {
             int item1 = 10000;
@@ -150,7 +151,7 @@ namespace Kinetix.Rules.Test
             Assert.AreEqual(0, rulesFetch_2_0.Count);
         }
 
-        [TestMethod]
+        [Test]
         public void TestValidationOneRuleOneCondition()
         {
             var container = GetConfiguredContainer();
@@ -182,7 +183,7 @@ namespace Kinetix.Rules.Test
         /// <summary>
         /// No rule for RulesManager
         /// </summary>
-        [TestMethod]
+        [Test]
         public void TestValidationNoRuleNoCondition()
         {
             var container = GetConfiguredContainer();
@@ -213,7 +214,7 @@ namespace Kinetix.Rules.Test
         /// <summary>
         /// Combining many condition in one rule for RulesManager
         /// </summary>
-        [TestMethod]
+        [Test]
         public void TestValidationOneRuleManyCondition()
         {
             var container = GetConfiguredContainer();
@@ -262,7 +263,7 @@ namespace Kinetix.Rules.Test
         /// <summary>
         /// Combining many rules with one condition for RulesManager
         /// </summary>
-        [TestMethod]
+        [Test]
         public void TestValidationManyRulesOneCondition()
         {
             var container = GetConfiguredContainer();
@@ -315,7 +316,7 @@ namespace Kinetix.Rules.Test
         /// <summary>
         /// Combining many rules with many rules for RulesManager
         /// </summary>
-        [TestMethod]
+        [Test]
         public void TestValidationManyRulesManyCondition()
         {
             var container = GetConfiguredContainer();

@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Kinetix.ComponentModel.Search;
+using Kinetix.Search.ComponentModel;
 using Kinetix.Search.Model;
 using Nest;
 

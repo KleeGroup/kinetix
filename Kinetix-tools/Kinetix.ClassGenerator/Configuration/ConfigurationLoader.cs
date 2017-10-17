@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Xml.Linq;
 using Kinetix.ClassGenerator.Model;
-using Kinetix.ClassGenerator.Tfs;
+using Kinetix.ClassGenerator.Writer;
 
 namespace Kinetix.ClassGenerator.Configuration {
 
@@ -227,7 +227,7 @@ namespace Kinetix.ClassGenerator.Configuration {
             // Sauvegarde du fichier avec les nouvelles colonnes.
             try {
                 Console.WriteLine("Sauvegarde de la configuration de l'historique de création des colonnes....");
-                using (TextWriter tw = new TfsXmlFileWriter(configurationFilePath)) {
+                using (TextWriter tw = new XmlFileWriter(configurationFilePath)) {
                     xDoc.Save(tw);
                 }
 

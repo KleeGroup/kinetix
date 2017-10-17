@@ -18,6 +18,9 @@ namespace Kinetix.Workflow.instance
     public class WfStatus
     {
 
+        /// <summary>
+        /// Primary key for the Workflow instance Status
+        /// </summary>
         [Column("WFS_CODE")]
         [Domain("DO_X_WORKFLOW_CODE")]
         [Key]
@@ -27,6 +30,9 @@ namespace Kinetix.Workflow.instance
             set;
         }
 
+        /// <summary>
+        /// Label associated to the Status
+        /// </summary>
         [Column("WFS_LABEL")]
         [Domain("DO_X_WORKFLOW_LABEL")]
         public int? WfsLabel

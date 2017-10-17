@@ -82,6 +82,13 @@ namespace Kinetix.Workflow {
             BrokerManager.GetBroker<WfActivityDefinition>().Delete(wfActivityDefinition.WfadId.Value);
         }
 
+        public void RenameActivityDefinition(WfActivityDefinition wfActivityDefinition) {
+            var cmd = GetSqlServerCommand("RenameActivityDefinition.sql");
+            cmd.Parameters.AddWithValue(WfActivityDefinition.Cols.WFAD_ID, wfActivityDefinition.WfadId);
+            cmd.Parameters.AddWithValue(WfActivityDefinition.Cols.NAME, wfActivityDefinition.Name);
+            cmd.ExecuteNonQuery();
+        }
+
         public WfActivityDefinition FindActivityDefinitionByPosition(WfWorkflowDefinition wfWorkflowDefinition, int position) {
             var cmd = GetSqlServerCommand("FindActivityDefinitionByPosition.sql");
             cmd.Parameters.AddWithValue(WfActivityDefinition.Cols.WFWD_ID, wfWorkflowDefinition.WfwdId);
@@ -89,10 +96,6 @@ namespace Kinetix.Workflow {
 
             WfActivityDefinition activity = CollectionBuilder<WfActivityDefinition>.ParseCommandForSingleObject(cmd, true);
             return activity;
-        }
-
-        public IList<WfActivityDefinition> FindActivityMatchingRules() {
-            throw new NotImplementedException();
         }
 
         public IList<WfDecision> FindAllDecisionByActivity(WfActivity wfActivity) {
@@ -279,6 +282,14 @@ namespace Kinetix.Workflow {
             return new List<WfWorkflow>(cmd.ReadList<WfWorkflow>());
         }
 
+        public IList<WfWorkflow> FindActiveWorkflowInstanceByItemId(int wfwdId, int itemId)
+        {
+            var cmd = GetSqlServerCommand("FindActiveWorkflowInstanceByItemId.sql");
+            cmd.Parameters.AddWithValue(WfWorkflow.Cols.WFWD_ID, wfwdId);
+            cmd.Parameters.AddWithValue(WfWorkflow.Cols.ITEM_ID, itemId);
+            return new List<WfWorkflow>(cmd.ReadList<WfWorkflow>());
+        }
+
         public void UpdateTransition(WfTransitionDefinition transition)
         {
             BrokerManager.GetBroker<WfTransitionDefinition>().Save(transition);
@@ -304,6 +315,14 @@ namespace Kinetix.Workflow {
         public void IncrementActivityDefinitionPositionsAfter(int wfwdId, int position)
         {
             var cmd = GetSqlServerCommand("IncrementActivityDefinitionPositionsAfter.sql");
+            cmd.Parameters.AddWithValue(WfActivityDefinition.Cols.WFWD_ID, wfwdId);
+            cmd.Parameters.AddWithValue(WfActivityDefinition.Cols.LEVEL, position);
+            cmd.ExecuteNonQuery();
+        }
+
+        public void DecrementActivityDefinitionPositionsAfter(int wfwdId, int position)
+        {
+            var cmd = GetSqlServerCommand("DecrementActivityDefinitionPositionsAfter.sql");
             cmd.Parameters.AddWithValue(WfActivityDefinition.Cols.WFWD_ID, wfwdId);
             cmd.Parameters.AddWithValue(WfActivityDefinition.Cols.LEVEL, position);
             cmd.ExecuteNonQuery();
@@ -400,6 +419,8 @@ namespace Kinetix.Workflow {
         {
             throw new NotImplementedException();
         }
+
+
 
 
         #endregion

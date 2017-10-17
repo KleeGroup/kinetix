@@ -29,6 +29,14 @@ namespace Kinetix.ClassGenerator {
            char.ToLower(text[0]) + text.Substring(1);
 
         /// <summary>
+        /// Met la première lettre d'un string en majuscule.
+        /// </summary>
+        /// <param name="text">Le texte en entrée.</param>
+        /// <returns>Le texte en sortie.</returns>
+        public static string ToFirstUpper(string text) =>
+           char.ToUpper(text[0]) + text.Substring(1);
+
+        /// <summary>
         /// Passe le texte donnée en camelCase.
         /// </summary>
         /// <param name="namespaceName">Le texte d'entrée.</param>

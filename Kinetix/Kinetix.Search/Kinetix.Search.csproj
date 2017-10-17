@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Kinetix.Search</RootNamespace>
     <AssemblyName>Kinetix.Search</AssemblyName>
-    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
     <SccProjectName>SAK</SccProjectName>
@@ -38,19 +38,17 @@
     <CodeAnalysisRuleSet>..\RuleSet.Fmk.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Elasticsearch.Net">
-      <HintPath>..\packages\Elasticsearch.Net.5.3.0\lib\net45\Elasticsearch.Net.dll</HintPath>
+    <Reference Include="Elasticsearch.Net, Version=5.0.0.0, Culture=neutral, PublicKeyToken=96c599bbe3e70f5d, processorArchitecture=MSIL">
+      <HintPath>..\packages\Elasticsearch.Net.5.5.0\lib\net45\Elasticsearch.Net.dll</HintPath>
     </Reference>
-    <Reference Include="log4net, Version=1.2.15.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
-      <HintPath>..\packages\log4net.2.0.5\lib\net45-full\log4net.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="log4net, Version=2.0.8.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>..\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
     </Reference>
-    <Reference Include="Nest">
-      <HintPath>..\packages\NEST.5.3.0\lib\net45\Nest.dll</HintPath>
+    <Reference Include="Nest, Version=5.0.0.0, Culture=neutral, PublicKeyToken=96c599bbe3e70f5d, processorArchitecture=MSIL">
+      <HintPath>..\packages\NEST.5.5.0\lib\net45\Nest.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
@@ -107,6 +105,17 @@
     <Compile Include="Elastic\ElasticManager.cs" />
     <Compile Include="Broker\StandardSearchBroker.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ComponentModel\Criteria.cs" />
+    <Compile Include="ComponentModel\FacetItem.cs" />
+    <Compile Include="ComponentModel\FacetListInput.cs" />
+    <Compile Include="ComponentModel\FacetOutput.cs" />
+    <Compile Include="ComponentModel\FacetSelection.cs" />
+    <Compile Include="ComponentModel\GroupResult.cs" />
+    <Compile Include="ComponentModel\GroupResult{TDocument}.cs" />
+    <Compile Include="ComponentModel\QueryInput.cs" />
+    <Compile Include="ComponentModel\QueryInput{TCriteria}.cs" />
+    <Compile Include="ComponentModel\QueryOutput.cs" />
+    <Compile Include="ComponentModel\QueryOutput{TDocument}.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Kinetix.ComponentModel\Kinetix.ComponentModel.csproj">
@@ -130,11 +139,6 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="Resources\SEARCHDB.png.dat" />
-  </ItemGroup>
-  <ItemGroup>
-    <Analyzer Include="..\packages\StyleCop.Analyzers.1.0.0\analyzers\dotnet\cs\Newtonsoft.Json.dll" />
-    <Analyzer Include="..\packages\StyleCop.Analyzers.1.0.0\analyzers\dotnet\cs\StyleCop.Analyzers.CodeFixes.dll" />
-    <Analyzer Include="..\packages\StyleCop.Analyzers.1.0.0\analyzers\dotnet\cs\StyleCop.Analyzers.dll" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="IR.resx">

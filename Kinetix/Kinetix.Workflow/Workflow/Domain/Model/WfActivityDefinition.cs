@@ -50,35 +50,35 @@ namespace Kinetix.Workflow.model
         public enum Cols
         {
             /// <summary>
-            /// Nom de la colonne en base associée à la propriété .
+            /// Nom de la colonne en base associée à la propriété WfadId.
             /// </summary>
             [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", Justification = "Correspondance schéma persistence")]
             [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1707:IdentifiersShouldNotContainUnderscores", Justification = "Correspondance schéma persistence")]
             WFAD_ID,
 
             /// <summary>
-            /// Nom de la colonne en base associée à la propriété .
+            /// Nom de la colonne en base associée à la propriété Name.
             /// </summary>
             [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", Justification = "Correspondance schéma persistence")]
             [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1707:IdentifiersShouldNotContainUnderscores", Justification = "Correspondance schéma persistence")]
             NAME,
 
             /// <summary>
-            /// Nom de la colonne en base associée à la propriété .
+            /// Nom de la colonne en base associée à la propriété Level.
             /// </summary>
             [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", Justification = "Correspondance schéma persistence")]
             [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1707:IdentifiersShouldNotContainUnderscores", Justification = "Correspondance schéma persistence")]
             LEVEL,
 
             /// <summary>
-            /// Nom de la colonne en base associée à la propriété .
+            /// Nom de la colonne en base associée à la propriété WfmdCode.
             /// </summary>
             [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", Justification = "Correspondance schéma persistence")]
             [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1707:IdentifiersShouldNotContainUnderscores", Justification = "Correspondance schéma persistence")]
             WFMD_CODE,
-            
+
             /// <summary>
-            /// Nom de la colonne en base associée à la propriété .
+            /// Nom de la colonne en base associée à la propriété WfwdId.
             /// </summary>
             [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", Justification = "Correspondance schéma persistence")]
             [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1707:IdentifiersShouldNotContainUnderscores", Justification = "Correspondance schéma persistence")]
@@ -88,6 +88,9 @@ namespace Kinetix.Workflow.model
 
         #endregion
 
+        /// <summary>
+        /// Primary key for WfActivityDefinition 
+        /// </summary>
         [Column("WFAD_ID")]
         [Domain("DO_X_WORKFLOW_ID")]
         [Key]
@@ -97,6 +100,9 @@ namespace Kinetix.Workflow.model
             set;
         }
 
+        /// <summary>
+        /// Logical name for this definition.
+        /// </summary>
         [Column("NAME")]
         [Domain("DO_X_WORKFLOW_LABEL")]
         public string Name
@@ -105,6 +111,10 @@ namespace Kinetix.Workflow.model
             set;
         }
 
+        /// <summary>
+        /// Level position of this activity in the default transition path for the workflowDefinition.
+        /// This field should not be used by specific code.
+        /// </summary>
         [Column("LEVEL")]
         [Domain("DO_X_WORKFLOW_LEVEL")]
         public int? Level
@@ -113,6 +123,12 @@ namespace Kinetix.Workflow.model
             set;
         }
 
+        /// <summary>
+        /// Multiplicity definition for this activity.
+        /// Multiplicity can be :
+        /// - Single : Only one user validation is required to go to the next step.
+        /// - Multiple : All the users validations are required to go to the next step.
+        /// </summary>
         [Column("WFMD_CODE")]
         [Domain("DO_X_WORKFLOW_CODE")]
         public string WfmdCode
@@ -121,6 +137,9 @@ namespace Kinetix.Workflow.model
             set;
         }
 
+        /// <summary>
+        /// Foreign key to the WorkflowDefinition
+        /// </summary>
         [Column("WFWD_ID")]
         [Domain("DO_X_WORKFLOW_ID")]
         public int WfwdId

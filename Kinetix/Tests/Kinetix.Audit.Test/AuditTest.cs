@@ -8,26 +8,55 @@ using Kinetix.Audit.Audit;
 using System.Collections.Generic;
 using Kinetix.Test;
 using Microsoft.Practices.Unity;
+using Kinetix.Data.SqlClient;
+using Kinetix.Broker;
+using Kinetix.ComponentModel;
+using System.Configuration;
 
-namespace Kinetix.Audit.Test
-{
+namespace Kinetix.Audit.Test {
     [TestClass]
-    public class AuditTest : UnityBaseTest
-    {
+    public class AuditTest : UnityBaseTest {
+
+        private readonly string DefaultDataSource = "default";
+
+        // TODO : Change hard coded data-source
+        private const string SERVER_NAME = "carla";
+        private const string DATABASE_NAME = "DianeTfs";
+        private const string USER_NAME = "dianeConnection";
+        private const string USER_PWD = "Puorgeelk23";
+
+        private readonly bool SqlServer = true;
 
         //private IUnityContainer container;
 
-        public override void Register()
-        {
-            var container = GetConfiguredContainer();
+        public override void Register() {
+            
+            if (SqlServer) {
+                // Connection string.
+                ConnectionStringSettings conn = new ConnectionStringSettings {
+                    Name = DefaultDataSource,
+                    ConnectionString = $"Data Source={SERVER_NAME};Initial Catalog={DATABASE_NAME};User ID={USER_NAME};Password={USER_PWD}",
+                    ProviderName = "System.Data.SqlClient"
+                };
 
+                DomainManager.Instance.RegisterDomainMetadataType(typeof(AuditDomainMetadata));
+                SqlServerManager.Instance.RegisterConnectionStringSettings(conn);
+                BrokerManager.RegisterDefaultDataSource(DefaultDataSource);
+                BrokerManager.Instance.RegisterStore(DefaultDataSource, typeof(SqlServerStore<>));
+            }
+
+            var container = GetConfiguredContainer();
             container.RegisterType<Kinetix.Audit.IAuditManager, Kinetix.Audit.AuditManager>();
-            container.RegisterType<Kinetix.Audit.IAuditTraceStorePlugin, Kinetix.Audit.MemoryAuditTraceStorePlugin>();
+
+            if (SqlServer) {
+                container.RegisterType<Kinetix.Audit.IAuditTraceStorePlugin, Kinetix.Audit.SqlServerAuditTraceStorePlugin>();
+            } else {
+                container.RegisterType<Kinetix.Audit.IAuditTraceStorePlugin, Kinetix.Audit.MemoryAuditTraceStorePlugin>();
+            }
         }
 
         [TestMethod]
-        public void TestAddAuditTrace()
-        {
+        public void TestAddAuditTrace() {
             var container = GetConfiguredContainer();
             IAuditManager auditManager = container.Resolve<IAuditManager>();
 
@@ -44,11 +73,10 @@ namespace Kinetix.Audit.Test
         }
 
         [TestMethod]
-        public void TestFindAuditTrace()
-        {
+        public void TestFindAuditTrace() {
             var container = GetConfiguredContainer();
             IAuditManager auditManager = container.Resolve<IAuditManager>();
-            
+
             AuditTrace auditTrace1 = new AuditTraceBuilder("CAT2", "USER2", 2, "My message 2").Build();
             auditManager.AddTrace(auditTrace1);
 
@@ -61,7 +89,7 @@ namespace Kinetix.Audit.Test
 
             //Criteria Category
             AuditTraceCriteria atc1 = new AuditTraceCriteriaBuilder().WithCategory("CAT2").Build();
-            IList<AuditTrace> auditTraceFetch1 = auditManager.FindTrace(atc1);
+            IList<AuditTrace> auditTraceFetch1 = new List<AuditTrace>(auditManager.FindTrace(atc1));
 
             Assert.AreEqual(1, auditTraceFetch1.Count);
 
@@ -81,7 +109,7 @@ namespace Kinetix.Audit.Test
                     .WithDateBusinessEnd(dateJPlus1)
                     .Build();
 
-            IList<AuditTrace> auditTraceFetch2 = auditManager.FindTrace(auditTraceCriteria2);
+            IList<AuditTrace> auditTraceFetch2 = new List<AuditTrace>(auditManager.FindTrace(auditTraceCriteria2));
 
             Assert.AreEqual(1, auditTraceFetch2.Count);
 
@@ -98,14 +126,14 @@ namespace Kinetix.Audit.Test
                     .WithDateExecutionStart(dateJMinus1)
                     .WithDateExecutionEnd(dateJPlus1)
                     .Build();
-            IList<AuditTrace> auditTraceFetch3 = auditManager.FindTrace(auditTraceCriteria3);
+            IList<AuditTrace> auditTraceFetch3 = new List<AuditTrace>(auditManager.FindTrace(auditTraceCriteria3));
 
             Assert.AreEqual(2, auditTraceFetch3.Count);
 
             //Criteria Item
 
             AuditTraceCriteria auditTraceCriteria4 = new AuditTraceCriteriaBuilder().WithItem(2).Build();
-            IList<AuditTrace> auditTraceFetch4 = auditManager.FindTrace(auditTraceCriteria4);
+            IList<AuditTrace> auditTraceFetch4 = new List<AuditTrace>(auditManager.FindTrace(auditTraceCriteria4));
 
             Assert.AreEqual(1, auditTraceFetch4.Count);
 
@@ -119,7 +147,7 @@ namespace Kinetix.Audit.Test
 
             //Criteria User
             AuditTraceCriteria auditTraceCriteria5 = new AuditTraceCriteriaBuilder().WithUser("USER3").Build();
-            IList<AuditTrace> auditTraceFetch5 = auditManager.FindTrace(auditTraceCriteria5);
+            IList<AuditTrace> auditTraceFetch5 = new List<AuditTrace>(auditManager.FindTrace(auditTraceCriteria5));
 
             Assert.AreEqual(1, auditTraceFetch5.Count);
 
@@ -130,7 +158,7 @@ namespace Kinetix.Audit.Test
             Assert.AreEqual(auditTrace2.Context, auditTraceFetched5.Context);
             Assert.AreEqual(auditTrace2.ExecutionDate, auditTraceFetched5.ExecutionDate);
             Assert.AreEqual(auditTrace2.Item, auditTraceFetched5.Item);
-            
+
         }
     }
 }

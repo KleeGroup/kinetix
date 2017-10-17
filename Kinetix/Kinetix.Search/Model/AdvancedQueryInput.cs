@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Kinetix.ComponentModel.Search;
+using Kinetix.Search.ComponentModel;
 
 namespace Kinetix.Search.Model {
 

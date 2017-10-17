@@ -1,10 +1,8 @@
-﻿using Kinetix.Account;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using Kinetix.Account;
 
-namespace Kinetix.Rules
-{
-    public interface IRuleManager
-    {
+namespace Kinetix.Rules {
+    public interface IRuleManager {
 
         /// <summary>
         /// Select accounts matching the selector for an activity.

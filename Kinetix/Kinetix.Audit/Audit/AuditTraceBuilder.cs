@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
-namespace Kinetix.Audit.Audit
-{
+namespace Kinetix.Audit.Audit {
     public class AuditTraceBuilder
     {
         private int? Id;
@@ -35,7 +32,7 @@ namespace Kinetix.Audit.Audit
             this.Username = username;
             this.Message = message;
             this.Item = item;
-            this.ExecutionDate = DateTime.Now;
+            this.ExecutionDate = DateTime.UtcNow;
         }
 
 

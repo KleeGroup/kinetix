@@ -103,6 +103,13 @@ namespace Kinetix.Workflow
         void DeleteWorkflow(int wfwId);
 
         /// <summary>
+        /// Decrement position by 1 for all activity definition >= position
+        /// </summary>
+        /// <param name="wfwdId"></param>
+        /// <param name="position"></param>
+        void DecrementActivityDefinitionPositionsAfter(int wfwdId, int position);
+
+        /// <summary>
         /// Increment position by 1 for all activity definition >= position
         /// </summary>
         /// <param name="wfwdId"></param>
@@ -173,8 +180,16 @@ namespace Kinetix.Workflow
         /// </summary>
         /// <param name="wfWorkflowDefinition"></param>
         /// <param name="isForUpdate"></param>
-        /// <returns></returns>
+        /// <returns>List of active workflow for the definition</returns>
         IList<WfWorkflow> FindActiveWorkflows(WfWorkflowDefinition wfWorkflowDefinition, bool isForUpdate);
+
+        /// <summary>
+        /// Find All active workflow (Started, or Paused)
+        /// </summary>
+        /// <param name="wfwdId"></param>
+        /// <param name="itemId"></param>
+        /// <returns></returns>
+        IList<WfWorkflow> FindActiveWorkflowInstanceByItemId(int wfwdId, int itemId);
 
         // Definition
 
@@ -227,6 +242,11 @@ namespace Kinetix.Workflow
         /// <param name="wfActivityDefinition">the activity to remove.</param>
         void DeleteActivityDefinition(WfActivityDefinition wfActivityDefinition);
 
+        /// <summary>
+        /// Rename an activity definition.
+        /// </summary>
+        /// <param name="wfActivityDefinition">the activity definition to rename</param>
+        void RenameActivityDefinition(WfActivityDefinition wfActivityDefinition);
 
         /// <summary>
         /// Fetch an activity definition by id.

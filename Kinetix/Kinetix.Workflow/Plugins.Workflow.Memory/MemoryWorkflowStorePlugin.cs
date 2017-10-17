@@ -323,6 +323,15 @@ namespace Kinetix.Workflow
             inMemoryActivityDefinitionStore[wfActivityDefinition.WfadId] = wfActivityDefinition;
         }
 
+        public void RenameActivityDefinition(WfActivityDefinition wfActivityDefinition)
+        {
+            Debug.Assert(wfActivityDefinition != null);
+            Debug.Assert(wfActivityDefinition.WfadId != null);
+            //---
+            inMemoryActivityDefinitionStore[wfActivityDefinition.WfadId].Name = wfActivityDefinition.Name;
+        }
+
+
         public void UpdateWorkflowDefinition(WfWorkflowDefinition wfWorkflowDefinition)
         {
             Debug.Assert(wfWorkflowDefinition != null);
@@ -339,6 +348,21 @@ namespace Kinetix.Workflow
             Debug.Assert(inMemoryWorkflowInstanceStore.ContainsKey(workflow.WfwId), "This workflow cannot be updated : It does not exist in the store");
             //---
             inMemoryWorkflowInstanceStore[workflow.WfwId] = workflow;
+        }
+
+        public IList<WfWorkflow> FindActiveWorkflowInstanceByItemId(int wfwdId, int itemId)
+        {
+            IList<WfWorkflow> ret = new List<WfWorkflow>();
+            List<string> statusActif = new List<string>() { WfCodeStatusWorkflow.Sta.ToString(), WfCodeStatusWorkflow.End.ToString() };
+            foreach (WfWorkflow wfWorkflow in inMemoryWorkflowInstanceStore.Values)
+            {
+                if (itemId.Equals(wfWorkflow.ItemId) && wfwdId.Equals(wfWorkflow.WfwdId) && statusActif.Contains(wfWorkflow.WfsCode))
+                {
+                    ret.Add(wfWorkflow);
+                }
+            }
+
+            return ret;
         }
 
         public IList<WfActivity> FindActivitiesByDefinitionId(WfWorkflow wfWorkflow, IList<int> wfadIds)
@@ -497,19 +521,34 @@ namespace Kinetix.Workflow
 
         public void IncrementActivityDefinitionPositionsAfter(int wfwdId, int position)
         {
+            ShiftLevelAfter(wfwdId, position, 1);
+        }
+
+        public void DecrementActivityDefinitionPositionsAfter(int wfwdId, int position)
+        {
+            ShiftLevelAfter(wfwdId, position, -1);
+        }
+
+        private void ShiftLevelAfter(int wfwdId, int position, int shift)
+        {
             foreach (WfActivityDefinition wfActivityDefinition in inMemoryActivityDefinitionStore.Values)
             {
                 if (wfwdId.Equals(wfActivityDefinition.WfwdId) && wfActivityDefinition.Level.Value >= position)
                 {
-                    wfActivityDefinition.Level = wfActivityDefinition.Level.Value + 1;
+                    wfActivityDefinition.Level = wfActivityDefinition.Level.Value + shift;
                 }
             }
-
         }
 
         public void ShiftActivityDefinitionPositionsBetween(int wfwdId, int posStart, int posEnd, int shift)
         {
-            throw new NotImplementedException();
+            foreach (WfActivityDefinition wfActivityDefinition in inMemoryActivityDefinitionStore.Values)
+            {
+                if (wfwdId.Equals(wfActivityDefinition.WfwdId) && wfActivityDefinition.Level.Value >= posStart && wfActivityDefinition.Level.Value <= posEnd)
+                {
+                    wfActivityDefinition.Level = wfActivityDefinition.Level.Value + shift;
+                }
+            }
         }
 
         public void DeleteActivities(int wfadId)
@@ -618,6 +657,9 @@ namespace Kinetix.Workflow
             }
 
         }
+
+
+
 
         #endregion
 

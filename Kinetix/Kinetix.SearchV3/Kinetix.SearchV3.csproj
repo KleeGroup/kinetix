@@ -1,0 +1,173 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{D88C145D-E13F-4D29-B831-35136994528F}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Kinetix.SearchV3</RootNamespace>
+    <AssemblyName>Kinetix.SearchV3</AssemblyName>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>..\RuleSet.Kinetix.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>..\RuleSet.Fmk.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="AutoMapper, Version=4.2.1.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
+      <HintPath>..\packages\AutoMapper.4.2.1\lib\net45\AutoMapper.dll</HintPath>
+    </Reference>
+    <Reference Include="CommonServiceLocator, Version=2.0.1.0, Culture=neutral, PublicKeyToken=489b6accfaf20ef0, processorArchitecture=MSIL">
+      <HintPath>..\packages\CommonServiceLocator.2.0.1\lib\net45\CommonServiceLocator.dll</HintPath>
+    </Reference>
+    <Reference Include="Elasticsearch.Net, Version=1.0.0.0, Culture=neutral, PublicKeyToken=96c599bbe3e70f5d, processorArchitecture=MSIL">
+      <HintPath>..\packages\Elasticsearch.Net.1.9.2\lib\net45\Elasticsearch.Net.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="log4net, Version=2.0.8.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>..\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Practices.Unity, Version=4.0.0.0, Culture=neutral, PublicKeyToken=6d32ff45e0ccc69f, processorArchitecture=MSIL">
+      <HintPath>..\packages\Unity.4.0.1\lib\net45\Microsoft.Practices.Unity.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Practices.Unity.Configuration, Version=4.0.0.0, Culture=neutral, PublicKeyToken=6d32ff45e0ccc69f, processorArchitecture=MSIL">
+      <HintPath>..\packages\Unity.4.0.1\lib\net45\Microsoft.Practices.Unity.Configuration.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Practices.Unity.Interception, Version=4.0.0.0, Culture=neutral, PublicKeyToken=6d32ff45e0ccc69f, processorArchitecture=MSIL">
+      <HintPath>..\packages\Unity.Interception.4.0.1\lib\Net45\Microsoft.Practices.Unity.Interception.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Practices.Unity.Interception.Configuration, Version=4.0.0.0, Culture=neutral, PublicKeyToken=6d32ff45e0ccc69f, processorArchitecture=MSIL">
+      <HintPath>..\packages\Unity.Interception.4.0.1\lib\Net45\Microsoft.Practices.Unity.Interception.Configuration.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Practices.Unity.RegistrationByConvention, Version=4.0.0.0, Culture=neutral, PublicKeyToken=6d32ff45e0ccc69f, processorArchitecture=MSIL">
+      <HintPath>..\packages\Unity.4.0.1\lib\net45\Microsoft.Practices.Unity.RegistrationByConvention.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Nest, Version=1.0.0.0, Culture=neutral, PublicKeyToken=96c599bbe3e70f5d, processorArchitecture=MSIL">
+      <HintPath>..\packages\NEST.1.9.0\lib\net45\Nest.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Web" />
+    <Reference Include="Microsoft.CSharp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ComponentModel\Search\FacetItem.cs" />
+    <Compile Include="ComponentModel\Search\FacetListInput.cs" />
+    <Compile Include="ComponentModel\Search\FacetOutput.cs" />
+    <Compile Include="ComponentModel\Search\FacetSelection.cs" />
+    <Compile Include="ComponentModel\Search\GroupResult.cs" />
+    <Compile Include="ComponentModel\Search\QueryInput.cs" />
+    <Compile Include="ComponentModel\Search\QueryOutput.cs" />
+    <Compile Include="Config\SearchDataSourceCollection.cs" />
+    <Compile Include="Config\SearchDataSourceElement.cs" />
+    <Compile Include="Config\SearchSettings.cs" />
+    <Compile Include="Contract\ISearchLoader.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Contract\ISearchStore.cs" />
+    <Compile Include="Elastic\ElasticException.cs" />
+    <Compile Include="Elastic\ElasticExtensions.cs" />
+    <Compile Include="Elastic\ElasticFacetHandler.cs" />
+    <Compile Include="Elastic\ElasticMappingFactory.cs" />
+    <Compile Include="Elastic\ElasticQueryBuilder.cs" />
+    <Compile Include="Elastic\ElasticResources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ElasticResources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Elastic\IIndexConfigurator.cs" />
+    <Compile Include="MetaModel\DocumentDescriptor.cs" />
+    <Compile Include="MetaModel\DocumentDefinition.cs" />
+    <Compile Include="MetaModel\DocumentFieldDescriptor.cs" />
+    <Compile Include="MetaModel\DocumentFieldDescriptorCollection.cs" />
+    <Compile Include="Broker\SearchBrokerManager.cs" />
+    <Compile Include="ComponentModel\SearchDocumentTypeAttribute.cs" />
+    <Compile Include="ComponentModel\SearchFieldAttribute.cs" />
+    <Compile Include="ComponentModel\SearchFieldCategory.cs" />
+    <Compile Include="Elastic\ElasticStore.cs" />
+    <Compile Include="Contract\ISearchBroker.cs" />
+    <Compile Include="Model\AdvancedQueryInput.cs" />
+    <Compile Include="Model\BooleanFacet.cs" />
+    <Compile Include="Model\DateFacet.cs" />
+    <Compile Include="Model\FacetConst.cs" />
+    <Compile Include="Model\FacetQueryDefinition.cs" />
+    <Compile Include="Model\IFacetDefinition.cs" />
+    <Compile Include="Model\TermFacet.cs" />
+    <Compile Include="Model\ReferenceFacet.cs" />
+    <Compile Include="Model\SearchChunk.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Config\SearchConfigSection.cs" />
+    <Compile Include="Elastic\ElasticManager.cs" />
+    <Compile Include="Broker\StandardSearchBroker.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Kinetix.Monitoring\Kinetix.Monitoring.csproj">
+      <Project>{E5CA12F8-EA8D-45B2-9EED-9592F4833478}</Project>
+      <Name>Kinetix.Monitoring</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Kinetix.ServiceModel\Kinetix.ServiceModel.csproj">
+      <Project>{a7a2c429-2e86-4830-84bd-1477d68f1401}</Project>
+      <Name>Kinetix.ServiceModel</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Elastic\ElasticResources.en-US.resx" />
+    <EmbeddedResource Include="Elastic\ElasticResources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>ElasticResources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

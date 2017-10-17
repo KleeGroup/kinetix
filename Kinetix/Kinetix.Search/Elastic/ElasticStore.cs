@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Kinetix.ComponentModel.Search;
 using Kinetix.Search.ComponentModel;
 using Kinetix.Search.Contract;
 using Kinetix.Search.Elastic.Faceting;
@@ -10,14 +9,16 @@ using Kinetix.Search.Model;
 using log4net;
 using Nest;
 
-namespace Kinetix.Search.Elastic {
+namespace Kinetix.Search.Elastic
+{
 
     /// <summary>
     /// Store ElasticSearch.
     /// </summary>
     /// <typeparam name="TDocument">Type du document.</typeparam>
     public class ElasticStore<TDocument> : ISearchStore<TDocument>
-        where TDocument : class {
+        where TDocument : class
+    {
 
         /// <summary>
         /// Taille de cluster pour l'insertion en masse.
@@ -77,9 +78,12 @@ namespace Kinetix.Search.Elastic {
         /// Créé une nouvelle instance de ElasticStore.
         /// </summary>
         /// <param name="dataSourceName">Nom de la datasource.</param>
-        public ElasticStore(string dataSourceName) {
-            try {
-                if (dataSourceName == null) {
+        public ElasticStore(string dataSourceName)
+        {
+            try
+            {
+                if (dataSourceName == null)
+                {
                     throw new ArgumentNullException("dataSourceName");
                 }
 
@@ -89,8 +93,11 @@ namespace Kinetix.Search.Elastic {
                 _indexName = ElasticManager.Instance.LoadSearchSettings(_dataSourceName).IndexName;
                 _standardHandler = new StandardFacetHandler<TDocument>(_definition);
                 _portfolioHandler = new PortfolioFacetHandler<TDocument>(_definition);
-            } catch (Exception e) {
-                if (_log.IsErrorEnabled) {
+            }
+            catch (Exception e)
+            {
+                if (_log.IsErrorEnabled)
+                {
                     _log.Error("Echec d'instanciation du store.", e);
                 }
 
@@ -99,9 +106,11 @@ namespace Kinetix.Search.Elastic {
         }
 
         /// <inheritdoc cref="ISearchStore{TDocument}.CreateDocumentType" />
-        public void CreateDocumentType() {
+        public void CreateDocumentType()
+        {
 
-            if (_log.IsInfoEnabled) {
+            if (_log.IsInfoEnabled)
+            {
                 _log.Info("Create Document type : " + _documentTypeName);
             }
 
@@ -110,7 +119,8 @@ namespace Kinetix.Search.Elastic {
             var res = client.Map<TDocument>(x => x
                 .Type(_documentTypeName)
                 .Properties(selector => {
-                    foreach (var field in _definition.Fields) {
+                    foreach (var field in _definition.Fields)
+                    {
                         _factory.AddField(selector, field);
                     }
                     return selector;
@@ -120,14 +130,16 @@ namespace Kinetix.Search.Elastic {
         }
 
         /// <inheritdoc cref="ISearchStore{TDocument}.Get" />
-        public TDocument Get(string id) {
+        public TDocument Get(string id)
+        {
             var res = this.GetClient().Get(CreateDocumentPath(id));
             res.CheckStatus("Get");
             return res.Source;
         }
 
         /// <inheritdoc cref="ISearchStore{TDocument}.Put" />
-        public void Put(TDocument document) {
+        public void Put(TDocument document)
+        {
             var id = _definition.PrimaryKey.GetValue(document).ToString();
 
             var res = this.GetClient().Index(FormatSortFields(document), x => x
@@ -139,12 +151,15 @@ namespace Kinetix.Search.Elastic {
         }
 
         /// <inheritdoc cref="ISearchStore{TDocument}.PutAll" />
-        public void PutAll(IEnumerable<TDocument> documentList) {
-            if (documentList == null) {
+        public void PutAll(IEnumerable<TDocument> documentList)
+        {
+            if (documentList == null)
+            {
                 throw new ArgumentNullException("documentList");
             }
 
-            if (!documentList.Any()) {
+            if (!documentList.Any())
+            {
                 return;
             }
 
@@ -153,7 +168,8 @@ namespace Kinetix.Search.Elastic {
             int left = total % ClusterSize;
             var clusterNb = ((total - left) / ClusterSize) + (left > 0 ? 1 : 0);
 
-            for (int i = 1; i <= clusterNb; i++) {
+            for (int i = 1; i <= clusterNb; i++)
+            {
 
                 /* Extraction du cluster. */
                 var cluster = documentList
@@ -162,7 +178,8 @@ namespace Kinetix.Search.Elastic {
 
                 /* Indexation en masse du cluster. */
                 var res = this.GetClient().Bulk(x => {
-                    foreach (var document in cluster) {
+                    foreach (var document in cluster)
+                    {
                         var id = _definition.PrimaryKey.GetValue(document).ToString();
                         x.Index<TDocument>(y => y
                          .Document(FormatSortFields(document))
@@ -177,14 +194,16 @@ namespace Kinetix.Search.Elastic {
         }
 
         /// <inheritdoc cref="ISearchStore{TDocument}.Remove" />
-        public void Remove(string id) {
+        public void Remove(string id)
+        {
             var res = this.GetClient().Delete(CreateDocumentPath(id));
 
             res.CheckStatus("Delete");
         }
 
         /// <inheritdoc cref="ISearchStore{TDocument}.Flush" />
-        public void Flush() {
+        public void Flush()
+        {
             /* SEY : Non testé. */
             var res = this.GetClient().DeleteByQuery<TDocument>(x => x.Index(_indexName).Type(_documentTypeName));
 
@@ -192,8 +211,10 @@ namespace Kinetix.Search.Elastic {
         }
 
         /// <inheritdoc cref="ISearchStore{TDocument}.AdvancedQuery" />
-        public QueryOutput<TDocument> AdvancedQuery(AdvancedQueryInput input) {
-            if (input == null) {
+        public QueryOutput<TDocument> AdvancedQuery(AdvancedQueryInput input)
+        {
+            if (input == null)
+            {
                 throw new ArgumentNullException("input");
             }
 
@@ -235,28 +256,34 @@ namespace Kinetix.Search.Elastic {
                         .Size(size);
 
                     /* Tri */
-                    if (sortDef.HasSort) {
+                    if (sortDef.HasSort)
+                    {
                         s.Sort(x => x
                             .Field(sortDef.FieldName, sortDef.Order));
                     }
 
                     /* Critère de filtrage. */
-                    if (hasFilter) {
+                    if (hasFilter)
+                    {
                         s.Query(q =>
                                 q.QueryString(qs => qs
                                     .Query(filterQuery)));
                     }
 
                     /* Aggrégations. */
-                    if (hasFacet || hasGroup) {
+                    if (hasFacet || hasGroup)
+                    {
                         s.Aggregations(a => {
-                            if (hasFacet) {
+                            if (hasFacet)
+                            {
                                 /* Facettage. */
-                                foreach (var facetDef in facetDefList) {
+                                foreach (var facetDef in facetDefList)
+                                {
                                     GetHandler(facetDef).DefineAggregation(a, facetDef, portfolio);
                                 }
                             }
-                            if (hasGroup) {
+                            if (hasGroup)
+                            {
                                 /* Groupement. */
                                 a.Terms(groupFieldName, st => st
                                     .Field(groupFieldName)
@@ -280,10 +307,13 @@ namespace Kinetix.Search.Elastic {
 
             /* Extraction des facettes. */
             var facetListOutput = new List<FacetOutput>();
-            if (hasFacet) {
+            if (hasFacet)
+            {
                 var aggs = res.Aggs;
-                foreach (var facetDef in facetDefList) {
-                    facetListOutput.Add(new FacetOutput {
+                foreach (var facetDef in facetDefList)
+                {
+                    facetListOutput.Add(new FacetOutput
+                    {
                         Code = facetDef.Code,
                         Label = facetDef.Label,
                         Values = GetHandler(facetDef).ExtractFacetItemList(aggs, facetDef, res.Total)
@@ -292,11 +322,15 @@ namespace Kinetix.Search.Elastic {
             }
 
             /* Ajout des facettes manquantes */
-            if (input.ApiInput.Facets != null) {
-                foreach (var facet in input.ApiInput.Facets) {
+            if (input.ApiInput.Facets != null)
+            {
+                foreach (var facet in input.ApiInput.Facets)
+                {
                     var facetItems = facetListOutput.First(f => f.Code == facet.Key).Values;
-                    if (!facetItems.Any(f => f.Code == facet.Value)) {
-                        facetItems.Add(new FacetItem {
+                    if (!facetItems.Any(f => f.Code == facet.Value))
+                    {
+                        facetItems.Add(new FacetItem
+                        {
                             Code = facet.Value,
                             Label = facetDefList.FirstOrDefault(fct => fct.Code == facet.Key)?.ResolveLabel(facet.Value),
                             Count = 0
@@ -308,12 +342,15 @@ namespace Kinetix.Search.Elastic {
             /* Extraction des résultats. */
             var resultList = new List<TDocument>();
             var groupResultList = new List<GroupResult<TDocument>>();
-            if (hasGroup) {
+            if (hasGroup)
+            {
                 /* Groupement. */
                 var bucket = (BucketAggregate)res.Aggregations[groupFieldName];
-                foreach (KeyedBucket<object> group in bucket.Items) {
+                foreach (KeyedBucket<object> group in bucket.Items)
+                {
                     var list = ((TopHitsAggregate)group.Aggregations[_topHitName]).Documents<TDocument>().ToList();
-                    groupResultList.Add(new GroupResult<TDocument> {
+                    groupResultList.Add(new GroupResult<TDocument>
+                    {
                         Code = group.Key.ToString(),
                         Label = facetDefList.First(f => f.Code == apiInput.Group).ResolveLabel(group.Key),
                         List = list,
@@ -325,8 +362,10 @@ namespace Kinetix.Search.Elastic {
                 var nullBucket = (SingleBucketAggregate)res.Aggregations[groupFieldName + MissingGroupPrefix];
                 var nullTopHitAgg = (TopHitsAggregate)nullBucket.Aggregations[_topHitName];
                 var nullDocs = nullTopHitAgg.Documents<TDocument>().ToList();
-                if (nullDocs.Any()) {
-                    groupResultList.Add(new GroupResult<TDocument> {
+                if (nullDocs.Any())
+                {
+                    groupResultList.Add(new GroupResult<TDocument>
+                    {
                         Code = FacetConst.NullValue,
                         Label = input.FacetQueryDefinition.FacetNullValueLabel,
                         List = nullDocs,
@@ -335,14 +374,17 @@ namespace Kinetix.Search.Elastic {
                 }
 
                 resultList = null;
-            } else {
+            }
+            else
+            {
                 /* Liste unique. */
                 resultList = res.Documents.ToList();
                 groupResultList = null;
             }
 
             /* Construction de la sortie. */
-            var output = new QueryOutput<TDocument> {
+            var output = new QueryOutput<TDocument>
+            {
                 List = resultList,
                 Facets = facetListOutput,
                 Groups = groupResultList,
@@ -354,8 +396,10 @@ namespace Kinetix.Search.Elastic {
         }
 
         /// <inheritdoc cref="ISearchStore{TDocument}.AdvancedCount" />
-        public long AdvancedCount(AdvancedQueryInput input) {
-            if (input == null) {
+        public long AdvancedCount(AdvancedQueryInput input)
+        {
+            if (input == null)
+            {
                 throw new ArgumentNullException("input");
             }
 
@@ -371,7 +415,8 @@ namespace Kinetix.Search.Elastic {
                         .Type(_documentTypeName);
 
                     /* Critère de filtrage. */
-                    if (hasFilter) {
+                    if (hasFilter)
+                    {
                         s.Query(q =>
                                 q.QueryString(qs => qs
                                     .Query(filterQuery)));
@@ -390,7 +435,8 @@ namespace Kinetix.Search.Elastic {
         /// </summary>
         /// <param name="input">Entrée.</param>
         /// <returns>Requête de filtrage.</returns>
-        private string GetFilterQuery(AdvancedQueryInput input) {
+        private string GetFilterQuery(AdvancedQueryInput input)
+        {
             var textSubQuery = GetTextSubQuery(input);
             var securitySubQuery = GetSecuritySubQuery(input);
             var facetSubQuery = GetFacetSelectionSubQuery(input);
@@ -403,13 +449,16 @@ namespace Kinetix.Search.Elastic {
         /// </summary>
         /// <param name="input">Entrée.</param>
         /// <returns>Sous-requête.</returns>
-        private string GetFilterSubQuery(AdvancedQueryInput input) {
-            if (input.FilterList == null || !input.FilterList.Any()) {
+        private string GetFilterSubQuery(AdvancedQueryInput input)
+        {
+            if (input.FilterList == null || !input.FilterList.Any())
+            {
                 return string.Empty;
             }
 
             var filterList = new List<string>();
-            foreach (KeyValuePair<string, string> entry in input.FilterList) {
+            foreach (KeyValuePair<string, string> entry in input.FilterList)
+            {
                 var field = _definition.Fields[entry.Key].FieldName;
                 filterList.Add(_builder.BuildFilter(field, entry.Value));
             }
@@ -422,18 +471,21 @@ namespace Kinetix.Search.Elastic {
         /// </summary>
         /// <param name="input">Entrée.</param>
         /// <returns>Sous-requête.</returns>
-        private string GetTextSubQuery(AdvancedQueryInput input) {
+        private string GetTextSubQuery(AdvancedQueryInput input)
+        {
             var criteria = input.ApiInput.Criteria;
             var value = criteria != null ? criteria.Query : null;
 
             /* Absence de texte ou joker : sous-requête vide. */
-            if (string.IsNullOrEmpty(value) || value == "*") {
+            if (string.IsNullOrEmpty(value) || value == "*")
+            {
                 return string.Empty;
             }
 
             /* Vérifie la présence d'un champ textuel. */
             var fieldDesc = _definition.TextField;
-            if (fieldDesc == null) {
+            if (fieldDesc == null)
+            {
                 throw new ElasticException("The Document \"" + _definition.DocumentTypeName + "\" needs a Search category field to allow Query.");
             }
 
@@ -446,17 +498,20 @@ namespace Kinetix.Search.Elastic {
         /// </summary>
         /// <param name="input">Entrée.</param>
         /// <returns>Sous-requête.</returns>
-        private string GetSecuritySubQuery(AdvancedQueryInput input) {
+        private string GetSecuritySubQuery(AdvancedQueryInput input)
+        {
             var value = input.Security;
 
             /* Absence de filtrage de sécurité : sous-requêt vide. */
-            if (string.IsNullOrEmpty(value)) {
+            if (string.IsNullOrEmpty(value))
+            {
                 return string.Empty;
             }
 
             /* Vérifie la présence d'un champ de sécurité. */
             var fieldDesc = _definition.SecurityField;
-            if (fieldDesc == null) {
+            if (fieldDesc == null)
+            {
                 throw new ElasticException("The Document \"" + _definition.DocumentTypeName + "\" needs a Security category field to allow Query with security filtering.");
             }
 
@@ -469,9 +524,11 @@ namespace Kinetix.Search.Elastic {
         /// </summary>
         /// <param name="input">Entrée.</param>
         /// <returns>Sous-requête.</returns>
-        private string GetFacetSelectionSubQuery(AdvancedQueryInput input) {
+        private string GetFacetSelectionSubQuery(AdvancedQueryInput input)
+        {
             var facetList = input.ApiInput.Facets;
-            if (facetList == null || !facetList.Any()) {
+            if (facetList == null || !facetList.Any())
+            {
                 return string.Empty;
             }
 
@@ -493,22 +550,26 @@ namespace Kinetix.Search.Elastic {
         /// </summary>
         /// <param name="input">Entrée.</param>
         /// <returns>Définitions de facettes.</returns>
-        private ICollection<IFacetDefinition> GetFacetDefinitionList(AdvancedQueryInput input) {
+        private ICollection<IFacetDefinition> GetFacetDefinitionList(AdvancedQueryInput input)
+        {
             var groupFacetName = input.ApiInput.Group;
             var list = input.FacetQueryDefinition != null ? input.FacetQueryDefinition.Facets : new List<IFacetDefinition>();
 
             /* Recherche de la facette de groupement. */
             string groupFieldName = null;
-            if (!string.IsNullOrEmpty(groupFacetName)) {
+            if (!string.IsNullOrEmpty(groupFacetName))
+            {
                 var groupFacetDef = input.FacetQueryDefinition.Facets.SingleOrDefault(x => x.Code == groupFacetName);
-                if (groupFacetDef == null) {
+                if (groupFacetDef == null)
+                {
                     throw new ElasticException("No facet \"" + groupFacetName + "\" to group on.");
                 }
 
                 groupFieldName = groupFacetDef.FieldName;
             }
 
-            foreach (var facetDef in list) {
+            foreach (var facetDef in list)
+            {
                 /* Vérifie que le champ à facetter existe sur le document. */
                 GetHandler(facetDef).CheckFacet(facetDef);
             }
@@ -521,20 +582,24 @@ namespace Kinetix.Search.Elastic {
         /// </summary>
         /// <param name="input">Entrée.</param>
         /// <returns>Définition du tri.</returns>
-        private SortDefinition GetSortDefinition(AdvancedQueryInput input) {
+        private SortDefinition GetSortDefinition(AdvancedQueryInput input)
+        {
             var fieldName = input.ApiInput.SortFieldName;
 
             /* Cas de l'absence de tri. */
-            if (string.IsNullOrEmpty(fieldName)) {
+            if (string.IsNullOrEmpty(fieldName))
+            {
                 return new SortDefinition();
             }
 
             /* Vérifie la présence du champ. */
-            if (!_definition.Fields.HasProperty(fieldName)) {
+            if (!_definition.Fields.HasProperty(fieldName))
+            {
                 throw new ElasticException("The Document \"" + _definition.DocumentTypeName + "\" is missing a \"" + fieldName + "\" property to sort on.");
             }
 
-            return new SortDefinition {
+            return new SortDefinition
+            {
                 FieldName = _definition.Fields[fieldName].FieldName,
                 Order = input.ApiInput.SortDesc ? SortOrder.Descending : SortOrder.Ascending
             };
@@ -545,24 +610,28 @@ namespace Kinetix.Search.Elastic {
         /// </summary>
         /// <param name="input">Entrée.</param>
         /// <returns>Nom du champ.</returns>
-        private string GetGroupFieldName(AdvancedQueryInput input) {
+        private string GetGroupFieldName(AdvancedQueryInput input)
+        {
             var groupFacetName = input.ApiInput.Group;
 
             /* Pas de groupement. */
-            if (string.IsNullOrEmpty(groupFacetName)) {
+            if (string.IsNullOrEmpty(groupFacetName))
+            {
                 return null;
             }
 
             /* Recherche de la facette de groupement. */
             var facetDef = input.FacetQueryDefinition.Facets.SingleOrDefault(x => x.Code == groupFacetName);
-            if (facetDef == null) {
+            if (facetDef == null)
+            {
                 throw new ElasticException("No facet " + groupFacetName + " to group on.");
             }
 
             var fieldName = facetDef.FieldName;
 
             /* Vérifie la présence du champ. */
-            if (!_definition.Fields.HasProperty(fieldName)) {
+            if (!_definition.Fields.HasProperty(fieldName))
+            {
                 throw new ElasticException("The Document \"" + _definition.DocumentTypeName + "\" is missing a \"" + fieldName + "\" property to group on.");
             }
 
@@ -573,7 +642,8 @@ namespace Kinetix.Search.Elastic {
         /// Obtient le client ElastcSearch.
         /// </summary>
         /// <returns>Client Elastic.</returns>
-        private ElasticClient GetClient() {
+        private ElasticClient GetClient()
+        {
             return ElasticManager.Instance.ObtainClient(_dataSourceName);
         }
 
@@ -582,7 +652,8 @@ namespace Kinetix.Search.Elastic {
         /// </summary>
         /// <param name="id">ID du document.</param>
         /// <returns>Le DocumentPath.</returns>
-        private DocumentPath<TDocument> CreateDocumentPath(string id) {
+        private DocumentPath<TDocument> CreateDocumentPath(string id)
+        {
             return new DocumentPath<TDocument>(id).Index(_indexName).Type(_documentTypeName);
         }
 
@@ -593,10 +664,13 @@ namespace Kinetix.Search.Elastic {
         /// </summary>
         /// <param name="document">Document.</param>
         /// <returns>Document formaté.</returns>
-        private TDocument FormatSortFields(TDocument document) {
-            foreach (var field in _definition.Fields.Where(x => x.Category == SearchFieldCategory.Sort && x.PropertyType == typeof(string))) {
+        private TDocument FormatSortFields(TDocument document)
+        {
+            foreach (var field in _definition.Fields.Where(x => x.Category == SearchFieldCategory.Sort && x.PropertyType == typeof(string)))
+            {
                 var raw = field.GetValue(document);
-                if (raw != null) {
+                if (raw != null)
+                {
                     field.SetValue(document, ((string)raw).ToLowerInvariant());
                 }
             }
@@ -609,8 +683,10 @@ namespace Kinetix.Search.Elastic {
         /// </summary>
         /// <param name="def">Définition de facet.</param>
         /// <returns>Handler.</returns>
-        private IFacetHandler<TDocument> GetHandler(IFacetDefinition def) {
-            if (def.GetType() == typeof(PortfolioFacet)) {
+        private IFacetHandler<TDocument> GetHandler(IFacetDefinition def)
+        {
+            if (def.GetType() == typeof(PortfolioFacet))
+            {
                 return _portfolioHandler;
             }
 
@@ -620,12 +696,14 @@ namespace Kinetix.Search.Elastic {
         /// <summary>
         /// Définition de tri.
         /// </summary>
-        private class SortDefinition {
+        private class SortDefinition
+        {
 
             /// <summary>
             /// Ordre de tri.
             /// </summary>
-            public SortOrder Order {
+            public SortOrder Order
+            {
                 get;
                 set;
             }
@@ -633,7 +711,8 @@ namespace Kinetix.Search.Elastic {
             /// <summary>
             /// Champ du tri (camelCase).
             /// </summary>
-            public string FieldName {
+            public string FieldName
+            {
                 get;
                 set;
             }
@@ -641,8 +720,10 @@ namespace Kinetix.Search.Elastic {
             /// <summary>
             /// Indique si le tri est défini.
             /// </summary>
-            public bool HasSort {
-                get {
+            public bool HasSort
+            {
+                get
+                {
                     return !string.IsNullOrEmpty(this.FieldName);
                 }
             }

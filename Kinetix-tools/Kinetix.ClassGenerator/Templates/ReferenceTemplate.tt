@@ -1,0 +1,18 @@
+﻿<#@ template language="C#" #>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+/*
+    Ce fichier a été généré automatiquement.
+    Toute modification sera perdue.
+*/
+<# foreach (var reference in References) { #>
+
+export type <#= reference.Name #>Code = <#= GetConstValues(reference) #>;
+export interface <#= reference.Name #> {
+<# foreach (var property in reference.PropertyList) { #>
+    <#= Utils.ToFirstLower(property.Name) #><#= property.DataMember.IsRequired || property.IsPrimaryKey ? string.Empty : "?" #>: <#= ToTSType(property) #>;
+<# } #>
+}
+<# } #>

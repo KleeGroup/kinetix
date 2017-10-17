@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.ServiceModel;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Kinetix.Audit
-{
+namespace Kinetix.Audit {
     [ServiceContract]
     public interface IAuditManager
     {
@@ -22,7 +17,7 @@ namespace Kinetix.Audit
         /// <param name="auditTraceCriteria">Criteria.</param>
         /// <returns>The matching audit traces.</returns>
         [OperationContract]
-        IList<AuditTrace> FindTrace(AuditTraceCriteria auditTraceCriteria);
+        ICollection<AuditTrace> FindTrace(AuditTraceCriteria auditTraceCriteria);
 
         /// <summary>
         /// Get an audit trail.
