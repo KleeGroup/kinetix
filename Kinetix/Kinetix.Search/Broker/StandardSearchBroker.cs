@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Kinetix.ComponentModel.Search;
+using Kinetix.Search.ComponentModel;
 using Kinetix.Search.Contract;
 using Kinetix.Search.Model;
 
@@ -81,6 +81,11 @@ namespace Kinetix.Search.Broker {
         /// <inheritdoc cref="ISearchBroker{TDocument}.AdvancedQuery" />
         public QueryOutput<TDocument> AdvancedQuery(AdvancedQueryInput input) {
             return _store.AdvancedQuery(input);
+        }
+
+        /// <inheritdoc cref="ISearchBroker{TDocument}.AdvancedCount" />
+        public long AdvancedCount(AdvancedQueryInput input) {
+            return _store.AdvancedCount(input);
         }
 
         /// <summary>

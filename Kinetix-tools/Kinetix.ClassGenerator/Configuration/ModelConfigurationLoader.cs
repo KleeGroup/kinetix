@@ -17,6 +17,7 @@ namespace Kinetix.ClassGenerator.Configuration {
         private const string SpaAppPath = "SpaAppPath";
         private const string JsModelRootTag = "JsModelRoot";
         private const string JsResourceRootTag = "JsResourceRoot";
+        private const string IsFocus4Tag = "IsFocus4";
         private const string UkFileTag = "UkFile";
         private const string IndexFkFileTag = "IndexFkFile";
         private const string TypeFileTag = "TypeFile";
@@ -74,6 +75,7 @@ namespace Kinetix.ClassGenerator.Configuration {
             GeneratorParameters.SpaAppPath = TryLoadValueFromXml(doc, SpaAppPath);
             GeneratorParameters.JsModelRoot = TryLoadValueFromXml(doc, JsModelRootTag);
             GeneratorParameters.JsResourceRoot = TryLoadValueFromXml(doc, JsResourceRootTag);
+            GeneratorParameters.IsFocus4 = bool.Parse(LoadValueFromXml(doc, IsFocus4Tag));
 
             // Paramètres pour la génération de scripts d'initialisation pour le SQL.
             GeneratorParameters.CrebasFile = TryLoadValueFromXml(doc, CrebasFileTag);

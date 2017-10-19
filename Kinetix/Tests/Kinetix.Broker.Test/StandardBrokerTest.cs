@@ -82,7 +82,8 @@ namespace Kinetix.Broker.Test {
         public void TestDeleteAllLikeNull() {
             StandardBroker<Bean> broker = new StandardBroker<Bean>("name");
             TestStore<Bean>.ExceptionOnCall = false;
-            broker.DeleteAllByCriteria(null);
+            Bean bean = null;
+            broker.DeleteAllByCriteria(bean);
         }
 
         /// <summary>

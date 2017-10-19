@@ -223,6 +223,14 @@ namespace Kinetix.ClassGenerator {
         }
 
         /// <summary>
+        /// Projet Focus v4.
+        /// </summary>
+        public static bool IsFocus4 {
+            get;
+            set;
+        }
+
+        /// <summary>
         /// Renvoie ou définit l'emplacement du dossier contenant les ressources à générer.
         /// </summary>
         public static string JsResourceRoot {

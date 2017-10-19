@@ -69,7 +69,7 @@ namespace Kinetix.Broker {
             string defaultLanguage = _resourceLoader.LoadLangueCodeDefaut();
             string lanCode = _resourceLoader.LoadCurrentLangueCode();
 
-            if (definition.PrimaryKey.GetValue(bean) != null && !lanCode.Equals(defaultLanguage) && definition.IsTranslatable) {
+            if (definition.PrimaryKey.GetValue(bean) != null && lanCode != defaultLanguage && definition.IsTranslatable) {
                 T beanOld = ReferenceManager.Instance.GetReferenceObjectByPrimaryKey<T>(definition.PrimaryKey.GetValue(bean));
                 foreach (BeanPropertyDescriptor property in propList) {
                     if (property.IsTranslatable) {

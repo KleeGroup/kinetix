@@ -43,18 +43,36 @@ namespace Kinetix.Search.Elastic {
         }
 
         /// <summary>
-        /// Construit une requête pour le filtrage de sécurité.
+        /// Construit une requête pour inclure une valeur parmi plusieurs.
         /// </summary>
-        /// <param name="field">Champ de sécurité.</param>
-        /// <param name="codes">Codes de sécurité.</param>
+        /// <param name="field">Champ.</param>
+        /// <param name="codes">Liste de valeurs à inclure.</param>
         /// <returns>Requête.</returns>
-        public string BuildSecurity(string field, string codes) {
+        public string BuildInclusiveInclude(string field, string codes) {
             /* Echappe les caractères réservés. */
             var escapedValue = EscapeLuceneSpecialChars(codes);
             /* Découpe en mot. */
             var subWords = escapedValue.Split(' ');
             /* Concatène en OR : un seul match est suffisant. */
             var andQuery = string.Join(" OR ", subWords);
+            /* Ajoute le nom du champ. */
+            var query = string.Format("{0}:({1})", field, andQuery);
+            return query;
+        }
+
+        /// <summary>
+        /// Construit une requête pour exclure des valeurs.
+        /// </summary>
+        /// <param name="field">Champ.</param>
+        /// <param name="codes">Liste de valeurs à exclure.</param>
+        /// <returns>Requête.</returns>
+        public string BuildExcludeQuery(string field, string codes) {
+            /* Echappe les caractères réservés. */
+            var escapedValue = EscapeLuceneSpecialChars(codes);
+            /* Découpe en mot. */
+            var subWords = escapedValue.Split(' ');
+            /* Concatène en OR : un seul match est suffisant. */
+            var andQuery = string.Join(" AND ", subWords.Select(x => $"-{x}"));
             /* Ajoute le nom du champ. */
             var query = string.Format("{0}:({1})", field, andQuery);
             return query;
@@ -80,7 +98,7 @@ namespace Kinetix.Search.Elastic {
         /// <param name="field">Champ.</param>
         /// <returns>Requête.</returns>
         public string BuildMissingField(string field) {
-            return string.Format("_missing_:{0}", field);
+            return string.Format("NOT (_exists_:{0})", field);
         }
 
         /// <summary>

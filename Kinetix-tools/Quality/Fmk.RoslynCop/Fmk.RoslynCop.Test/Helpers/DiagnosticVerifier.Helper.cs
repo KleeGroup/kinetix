@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using System.Web.Http;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -22,7 +21,6 @@ namespace TestHelper {
         private static readonly MetadataReference SystemCoreReference = MetadataReference.CreateFromFile(typeof(Enumerable).Assembly.Location);
         private static readonly MetadataReference SystemServiceModelReference = MetadataReference.CreateFromFile(typeof(System.ServiceModel.ServiceBehaviorAttribute).Assembly.Location);
         private static readonly MetadataReference SystemThreadingReference = MetadataReference.CreateFromFile(typeof(System.Threading.Thread).Assembly.Location);
-        private static readonly MetadataReference SystemWebHttpReference = MetadataReference.CreateFromFile(typeof(ApiController).Assembly.Location);
 
         private static string cSharpDefaultFileExt = "cs";
         private static string defaultFilePathPrefix = "Test";
@@ -95,7 +93,6 @@ namespace TestHelper {
                 .AddMetadataReference(projectId, SystemCoreReference)
                 .AddMetadataReference(projectId, SystemServiceModelReference)
                 .AddMetadataReference(projectId, SystemThreadingReference)
-                .AddMetadataReference(projectId, SystemWebHttpReference)
                 .AddMetadataReference(projectId, CSharpSymbolsReference)
                 .AddMetadataReference(projectId, CodeAnalysisReference);
 

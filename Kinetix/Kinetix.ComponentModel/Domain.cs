@@ -174,7 +174,7 @@ namespace Kinetix.ComponentModel {
 
                 RangeAttribute ranAttr = GetValidationAttribute<RangeAttribute>();
                 if (ranAttr != null && ranAttr.Maximum != null) {
-                    return ranAttr.Maximum.ToString().Length;
+                    return ranAttr.Maximum.ToString().Replace(",", string.Empty).Length;
                 }
 
                 DateAttribute dateAttr = GetValidationAttribute<DateAttribute>();

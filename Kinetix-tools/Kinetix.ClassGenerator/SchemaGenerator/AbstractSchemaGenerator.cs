@@ -6,7 +6,6 @@ using System.Text;
 using Kinetix.ClassGenerator.CodeGenerator;
 using Kinetix.ClassGenerator.Model;
 using Kinetix.ClassGenerator.NVortex;
-using Kinetix.ClassGenerator.Tfs;
 using Kinetix.ComponentModel;
 using Kinetix.ServiceModel;
 
@@ -68,9 +67,6 @@ namespace Kinetix.ClassGenerator.SchemaGenerator {
             DeleteFileIfExists(outputFileNameType);
 
             List<List<ModelProperty>> fkList = new List<List<ModelProperty>>();
-
-            TfsManager.CheckOut(outputFileNameCrebas);
-            TfsManager.CheckOut(outputFileNameUK);
 
             using (StreamWriter writerCrebas = File.CreateText(outputFileNameCrebas),
                     writerUk = File.CreateText(outputFileNameUK),
@@ -290,7 +286,6 @@ namespace Kinetix.ClassGenerator.SchemaGenerator {
         /// <param name="outputFileName">Nom du fichier.</param>
         private static void DeleteFileIfExists(string outputFileName) {
             if (File.Exists(outputFileName)) {
-                TfsManager.CheckOut(outputFileName);
                 try {
                     File.Delete(outputFileName);
                 } catch (IOException e) {

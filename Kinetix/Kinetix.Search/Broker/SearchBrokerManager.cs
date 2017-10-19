@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using Kinetix.Monitoring.Counter;
+using Kinetix.Monitoring.Html;
+using Kinetix.Monitoring.Manager;
 using Kinetix.Search.Contract;
 using log4net;
 
@@ -9,8 +12,12 @@ namespace Kinetix.Search.Broker {
     /// <summary>
     /// Manager pour les brokers de recherche.
     /// </summary>
-    public sealed class SearchBrokerManager {
+    public sealed class SearchBrokerManager : IManager, IManagerDescription {
 
+        /// <summary>
+        /// Constante.
+        /// </summary>
+        internal const string SearchCube = "SEARCHDB";
         private static readonly SearchBrokerManager _instance = new SearchBrokerManager();
         private static string _defaultDataSourceName;
 
@@ -21,6 +28,7 @@ namespace Kinetix.Search.Broker {
         /// Constructeur.
         /// </summary>
         private SearchBrokerManager() {
+            Analytics.Instance.OpenDataBase(SearchCube, this);
         }
 
         /// <summary>
@@ -29,6 +37,60 @@ namespace Kinetix.Search.Broker {
         public static SearchBrokerManager Instance {
             get {
                 return _instance;
+            }
+        }
+
+        /// <summary>
+        /// Nom du manager.
+        /// </summary>
+        string IManagerDescription.Name {
+            get {
+                return "Search";
+            }
+        }
+
+        /// <summary>
+        /// Retourne un objet décrivant le service.
+        /// </summary>
+        IManagerDescription IManager.Description {
+            get {
+                return this;
+            }
+        }
+
+        /// <summary>
+        /// Image du manager.
+        /// </summary>
+        string IManagerDescription.Image {
+            get {
+                return "SEARCHDB.png";
+            }
+        }
+
+        /// <summary>
+        /// Image.
+        /// </summary>
+        byte[] IManagerDescription.ImageData {
+            get {
+                return IR.SEARCHDB_png;
+            }
+        }
+
+        /// <summary>
+        /// Priorité d'affichage du manager.
+        /// </summary>
+        int IManagerDescription.Priority {
+            get {
+                return 40;
+            }
+        }
+
+        /// <summary>
+        /// Type mime de l'image.
+        /// </summary>
+        string IManagerDescription.ImageMimeType {
+            get {
+                return "image/png";
             }
         }
 
@@ -52,6 +114,22 @@ namespace Kinetix.Search.Broker {
         public static ISearchBroker<T> GetBroker<T>()
             where T : class, new() {
             return Instance.ReturnBroker<T>(null);
+        }
+
+        /// <summary>
+        /// Libération des ressources consommées par le manager lors du undeploy.
+        /// Exemples : connexions, thread, flux.
+        /// </summary>
+        void IManager.Close() {
+        }
+
+        /// <summary>
+        /// Extension de la méthode toString().
+        /// Permet à chaque Manager de présenter son propre état.
+        /// </summary>
+        /// <param name="writer">Writer HTML.</param>
+        void IManagerDescription.ToHtml(System.Web.UI.HtmlTextWriter writer) {
+            HtmlPageRenderer.ToHtml(SearchCube, writer);
         }
 
         /// <summary>
@@ -114,7 +192,7 @@ namespace Kinetix.Search.Broker {
                     return (ISearchBroker<T>)broker;
                 }
 
-                broker = new StandardSearchBroker<T>(dsName);
+                broker = new MonitoredBroker<T>(new StandardSearchBroker<T>(dsName));
 
                 _brokerMap[key] = broker;
                 return (ISearchBroker<T>)broker;

@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Kinetix.ComponentModel.Search;
+using Kinetix.Search.ComponentModel;
 
 namespace Kinetix.Search.Model {
 
@@ -28,6 +28,14 @@ namespace Kinetix.Search.Model {
         /// Filtrage de sécurité.
         /// </summary>
         public string Security {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Portefeuille de l'utilisateur.
+        /// </summary>
+        public string Portfolio {
             get;
             set;
         }

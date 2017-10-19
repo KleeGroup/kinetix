@@ -154,7 +154,10 @@ namespace Kinetix.Data.SqlClient {
                     } else if (property.PrimitiveType == typeof(decimal)) {
                         metaData = new SqlMetaData(property.MemberName, SqlDbType.Decimal, 19, 9);
                     } else if (property.PrimitiveType == typeof(string)) {
-                        metaData = new SqlMetaData(property.MemberName, SqlDbType.NVarChar, DomainManager.Instance.GetDomain(property).Length.Value);
+                        var length = DomainManager.Instance.GetDomain(property).Length;
+                        metaData = length == null ?
+                            new SqlMetaData(property.MemberName, SqlDbType.Text) :
+                            new SqlMetaData(property.MemberName, SqlDbType.NVarChar, length.Value);
                     } else if (property.PrimitiveType == typeof(DateTime)) {
                         metaData = new SqlMetaData(property.MemberName, SqlDbType.DateTime2);
                     } else if (property.PrimitiveType == typeof(bool)) {

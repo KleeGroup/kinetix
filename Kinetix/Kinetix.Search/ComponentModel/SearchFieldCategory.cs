@@ -36,9 +36,9 @@
         Facet,
 
         /// <summary>
-        /// Champ utilisé pour les agrégations : indexé tel quel, stocké.
+        /// Champ de facette contenant une liste de valeurs : indexé tel quel, non stocké.
         /// </summary>
-        Dimension,
+        ListFacet,
 
         /// <summary>
         /// Champ utilisé pour filtrer les résultats de recherche.

@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Kinetix.ComponentModel.Search;
+using Kinetix.Search.ComponentModel;
 using Kinetix.Search.Model;
 
 namespace Kinetix.Search.Contract {
@@ -51,5 +51,12 @@ namespace Kinetix.Search.Contract {
         /// <param name="input">Entrée de la recherche.</param>
         /// <returns>Sortie de la recherche.</returns>
         QueryOutput<TDocument> AdvancedQuery(AdvancedQueryInput input);
+
+        /// <summary>
+        /// Effectue un count avancé.
+        /// </summary>
+        /// <param name="input">Entrée de la recherche.</param>
+        /// <returns>Nombre de documents.</returns>
+        long AdvancedCount(AdvancedQueryInput input);
     }
 }

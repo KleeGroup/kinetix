@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Kinetix.ClassGenerator</RootNamespace>
     <AssemblyName>Kinetix.ClassGenerator</AssemblyName>
-    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SignAssembly>false</SignAssembly>
     <AssemblyOriginatorKeyFile>
@@ -61,17 +61,17 @@
     <DefineConstants>TRACE;SkipPostSharp</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <CodeAnalysisRuleSet>..\..\Kinetix\RuleSet.Fmk.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>..\..\Kinetix\RuleSet.Kinetix.ruleset</CodeAnalysisRuleSet>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
     <StartupObject>Kinetix.ClassGenerator.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="DocumentFormat.OpenXml, Version=2.5.5631.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\Kinetix\packages\DocumentFormat.OpenXml.2.5\lib\DocumentFormat.OpenXml.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="DocumentFormat.OpenXml, Version=2.7.2.0, Culture=neutral, PublicKeyToken=8fb06cb64d019a17, processorArchitecture=MSIL">
+      <HintPath>..\..\Kinetix\packages\DocumentFormat.OpenXml.2.7.2\lib\net40\DocumentFormat.OpenXml.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.Build" />
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.configuration" />
@@ -104,6 +104,7 @@
     <Compile Include="CodeGenerator\CodeUtils.cs" />
     <Compile Include="CodeGenerator\CSharpCodeGenerator.cs" />
     <Compile Include="CodeGenerator\JavascriptResourceGenerator.cs" />
+    <Compile Include="CodeGenerator\TypescriptDefinitionGenerator.cs" />
     <Compile Include="CodeGenerator\Utils.cs" />
     <Compile Include="Configuration\ArgumentParser.cs" />
     <Compile Include="Configuration\ConfigurationLoader.cs" />
@@ -122,14 +123,31 @@
     <Compile Include="Model\ModelProperty.cs" />
     <Compile Include="Model\ModelClass.cs" />
     <Compile Include="Model\ModelNamespace.cs" />
+    <Compile Include="MsBuild\BuildActions.cs" />
+    <Compile Include="MsBuild\ProjectFileUtils.cs" />
+    <Compile Include="MsBuild\ProjectItem.cs" />
+    <Compile Include="MsBuild\ProjectUpdater.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="CodeGenerator\JavascriptSchemaGenerator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SchemaGenerator\AbstractSchemaGenerator.cs" />
     <Compile Include="SchemaGenerator\OracleSchemaGenerator.cs" />
-    <Compile Include="Tfs\TfsJsFileWriter.cs" />
-    <Compile Include="Tfs\TfsManager.cs" />
-    <Compile Include="Tfs\TfsCsharpFileWriter.cs" />
+    <Compile Include="Templates\ReferenceTemplate.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ReferenceTemplate.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Templates\ReferenceTemplate.partial.cs" />
+    <Compile Include="Templates\TypescriptTemplate.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>TypescriptTemplate.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Templates\TypescriptTemplate.partial.cs" />
+    <Compile Include="Writer\CsharpFileWriter.cs" />
+    <Compile Include="Writer\FileWriter.cs" />
+    <Compile Include="Writer\SqlFileWriter.cs" />
+    <Compile Include="Writer\XmlFileWriter.cs" />
     <Compile Include="XmlParser\AbstractParser.cs" />
     <Compile Include="XmlParser\IModelParser.cs" />
     <Compile Include="XmlParser\ParserHelper.cs" />
@@ -150,10 +168,6 @@
     <Compile Include="SsdtSchemaGenerator\SqlScriptEngine.cs" />
     <Compile Include="SsdtSchemaGenerator\SqlServerSsdtInsertGenerator.cs" />
     <Compile Include="SsdtSchemaGenerator\SqlServerSsdtSchemaGenerator.cs" />
-    <Compile Include="Tfs\AbstractFileWriter.cs" />
-    <Compile Include="Tfs\TfsFileWriter.cs" />
-    <Compile Include="Tfs\TfsSqlFileWriter.cs" />
-    <Compile Include="Tfs\TfsXmlFileWriter.cs" />
     <Compile Include="Vortex\Category.cs" />
     <Compile Include="Vortex\NVortexGenerator.cs" />
     <Compile Include="Vortex\NVortexMessage.cs" />
@@ -162,9 +176,7 @@
     <None Include="app.config">
       <SubType>Designer</SubType>
     </None>
-    <None Include="packages.config">
-      <SubType>Designer</SubType>
-    </None>
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
@@ -212,22 +224,21 @@
       <Project>{a7a2c429-2e86-4830-84bd-1477d68f1401}</Project>
       <Name>Kinetix.ServiceModel</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Kinetix.Tfs.Tools\Kinetix.Tfs.Tools.csproj">
-      <Project>{723f8cd3-1645-4bdf-95a8-de4f8b2ac9b7}</Project>
-      <Name>Kinetix.Tfs.Tools</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="conf_exemple.xml" />
     <Content Include="README.txt" />
+    <Content Include="Templates\ReferenceTemplate.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>ReferenceTemplate.cs</LastGenOutput>
+    </Content>
+    <Content Include="Templates\TypescriptTemplate.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>TypescriptTemplate.cs</LastGenOutput>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
-  </ItemGroup>
-  <ItemGroup>
-    <Analyzer Include="..\..\Kinetix\packages\StyleCop.Analyzers.1.0.0\analyzers\dotnet\cs\Newtonsoft.Json.dll" />
-    <Analyzer Include="..\..\Kinetix\packages\StyleCop.Analyzers.1.0.0\analyzers\dotnet\cs\StyleCop.Analyzers.CodeFixes.dll" />
-    <Analyzer Include="..\..\Kinetix\packages\StyleCop.Analyzers.1.0.0\analyzers\dotnet\cs\StyleCop.Analyzers.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

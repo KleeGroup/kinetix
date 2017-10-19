@@ -1,15 +1,14 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.IO;
+using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Presentation;
-using D = DocumentFormat.OpenXml.Drawing;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Collections.Generic;
-using System.Linq;
 using DocumentFormat.OpenXml.Validation;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using D = DocumentFormat.OpenXml.Drawing;
 using Resx = Kinetix.Reporting.Test.Resources.Resource;
-using System.IO;
-using System.Drawing;
-using Kinetix.Reporting;
 
 namespace Kinetix.Reporting.Test {
     /// <summary>
@@ -19,7 +18,7 @@ namespace Kinetix.Reporting.Test {
     public class PowerpointHelperTest {
 
         private static readonly OpenXmlValidator validator = new OpenXmlValidator();
-            
+
         #region CreatePresentationWithOneEmptySlide
 
         /// <summary>
@@ -169,7 +168,7 @@ namespace Kinetix.Reporting.Test {
         }
 
         #endregion
-        
+
         #region AddElement
 
         /// <summary>
@@ -283,7 +282,7 @@ namespace Kinetix.Reporting.Test {
         }
 
         #endregion
-        
+
         #region AddCenteredParagraph
         /// <summary>
         /// Test l'ajout d'un paragraphe centré à un autre élément.
@@ -313,10 +312,10 @@ namespace Kinetix.Reporting.Test {
         /// </summary>
         [TestMethod]
         public void CreateRectangleShape_Valid() {
-            Shape rectangle = PowerpointHelper.CreateRectangleShape(50,50,50,50);
-            
+            Shape rectangle = PowerpointHelper.CreateRectangleShape(50, 50, 50, 50);
+
             PowerpointHelper.AddParagraph(rectangle, "text");
-            
+
             var errors = validator.Validate(rectangle);
             Assert.IsTrue(errors.Count() == 0);
         }
@@ -326,10 +325,10 @@ namespace Kinetix.Reporting.Test {
         /// </summary>
         [TestMethod]
         public void CreateRectangleShape_CustomAttributes_Valid() {
-            Shape rectangle = PowerpointHelper.CreateRectangleShape(50,50,50,50, "AFAFAF", D.TextAnchoringTypeValues.Bottom, D.TextWrappingValues.None);
-            
+            Shape rectangle = PowerpointHelper.CreateRectangleShape(50, 50, 50, 50, "AFAFAF", D.TextAnchoringTypeValues.Bottom, D.TextWrappingValues.None);
+
             PowerpointHelper.AddParagraph(rectangle, "text");
-            
+
             var errors = validator.Validate(rectangle);
             Assert.IsTrue(errors.Count() == 0);
         }
@@ -383,7 +382,7 @@ namespace Kinetix.Reporting.Test {
         /// </summary>
         [TestMethod]
         public void AddTextRun_Valid() {
-            Shape rectangle = PowerpointHelper.CreateRectangleShape(50,50,50,50);
+            Shape rectangle = PowerpointHelper.CreateRectangleShape(50, 50, 50, 50);
             D.Paragraph paragraph = PowerpointHelper.AddParagraph(rectangle, "text");
 
             int oldNbTextRun = paragraph.Descendants<D.Run>().Count();
@@ -588,7 +587,7 @@ namespace Kinetix.Reporting.Test {
         public void AddImage_Valid() {
             PresentationDocument pres = PowerpointHelper.CreatePresentationWithOneEmptySlide("./testFileI.pptx");
             ShapeTree shapeTree = PowerpointHelper.GetShapeTreeOfFirstSlide(pres);
-            GroupShape groupShape = PowerpointHelper.CreateGroupShape(50,50,50,50);
+            GroupShape groupShape = PowerpointHelper.CreateGroupShape(50, 50, 50, 50);
             PowerpointHelper.AddElement(shapeTree, groupShape);
             Bitmap logo = Resx.klee;
 

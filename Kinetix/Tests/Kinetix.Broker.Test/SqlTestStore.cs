@@ -188,14 +188,6 @@ namespace Kinetix.Broker.Test {
             return 1;
         }
 
-        /// <summary>
-        /// Crée une nouvelle commande à partir d'une requête.
-        /// </summary>
-        /// <param name="commandName">Nom de la commande.</param>
-        /// <param name="commandType">Type de la commande.</param>
-        protected override AbstractSqlCommand CreateSqlCommand(string commandName, CommandType commandType) {
-            throw new NotImplementedException();
-        }
 
         /// <summary>
         /// Insère un nouvel enregistrement.
@@ -240,6 +232,11 @@ namespace Kinetix.Broker.Test {
         /// <returns>Paramètre ajouté.</returns>
         protected override SqlServerParameter AddParameter(SqlServerParameterCollection parameters, BeanPropertyDescriptor property, object value) {
             return parameters.AddWithValue(property.MemberName, value);
+        }
+
+        protected override SqlServerCommand CreateSqlCommand(string commandName, CommandType commandType)
+        {
+            throw new NotImplementedException();
         }
     }
 }

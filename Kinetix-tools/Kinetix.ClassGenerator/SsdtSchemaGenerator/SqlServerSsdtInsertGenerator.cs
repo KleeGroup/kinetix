@@ -8,11 +8,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Kinetix.ClassGenerator.Model;
+using Kinetix.ClassGenerator.MsBuild;
 using Kinetix.ClassGenerator.SsdtSchemaGenerator.Contract;
 using Kinetix.ClassGenerator.SsdtSchemaGenerator.Dto;
 using Kinetix.ClassGenerator.SsdtSchemaGenerator.Scripter;
 using Kinetix.ServiceModel;
-using Kinetix.Tfs.Tools.MsBuild;
 
 namespace Kinetix.ClassGenerator.SsdtSchemaGenerator {
 

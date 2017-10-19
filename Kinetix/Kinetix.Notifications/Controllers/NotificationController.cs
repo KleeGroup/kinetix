@@ -45,11 +45,9 @@ namespace Kinetix.Notifications {
         /// <param name="messageUuids">messages id</param>
         [HttpDelete]
         [Route("api/messages")]
-        public HttpResponseMessage removeMessage(string[] messageUuids)
-        {
+        public HttpResponseMessage removeMessage(string[] messageUuids) {
             string loggedAccountIds = _accountManager.GetLoggedAccount();
-            foreach (string messageUuid in messageUuids)
-            {
+            foreach (string messageUuid in messageUuids) {
                 _notificationManager.Remove(loggedAccountIds, Guid.Parse(messageUuid));
             }
             return new HttpResponseMessage(HttpStatusCode.NoContent);

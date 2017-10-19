@@ -13,13 +13,11 @@ using Kinetix.ClassGenerator.NVortex;
 using Kinetix.ClassGenerator.SchemaGenerator;
 using Kinetix.ClassGenerator.SsdtSchemaGenerator;
 using Kinetix.ClassGenerator.SsdtSchemaGenerator.Contract;
-using Kinetix.ClassGenerator.Tfs;
 using Kinetix.ClassGenerator.XmlParser;
 using Kinetix.ClassGenerator.XmlParser.EapReader;
 using Kinetix.ClassGenerator.XmlParser.OomReader;
 using Kinetix.ComponentModel;
 using Kinetix.ServiceModel;
-using Kinetix.Tfs.Tools.Client;
 
 namespace Kinetix.ClassGenerator.Main {
 
@@ -47,6 +45,11 @@ namespace Kinetix.ClassGenerator.Main {
         /// Composant de génération du schéma en Javascript.
         /// </summary>
         private readonly JavascriptSchemaGenerator _javascriptSchemaGenerator = new JavascriptSchemaGenerator();
+
+        /// <summary>
+        /// Composant de génération du schéma en Javascript.
+        /// </summary>
+        private readonly TypescriptDefinitionGenerator _typescriptDefinitionGenerator = new TypescriptDefinitionGenerator();
 
         /// <summary>
         /// Composant de génération des ressources en javascript.
@@ -80,17 +83,12 @@ namespace Kinetix.ClassGenerator.Main {
             // Chargements des domaines.
             _domainList = LoadDomain();
 
-            // On initialise dans un singleton le client TFS.
-            string workspaceDir = Path.GetFullPath(".");
-            using (TfsManager.Client = TfsClient.Connect(GeneratorParameters.TfsCollectionUrl, workspaceDir)) {
+            // Chargement des modèles objet en mémoire.
+            LoadObjectModel();
 
-                // Chargement des modèles objet en mémoire.
-                LoadObjectModel();
-
-                // Génération.
-                GenerateSqlSchema();
-                GenerateJavascript();
-            }
+            // Génération.
+            GenerateSqlSchema();
+            GenerateJavascript();
 
             // Pause.
             if (GeneratorParameters.Pause) {
@@ -359,7 +357,12 @@ namespace Kinetix.ClassGenerator.Main {
         /// </summary>
         private void GenerateJavascript() {
             if (GeneratorParameters.GenerateJavascript) {
-                _javascriptSchemaGenerator.Generate(_modelList, $"{GeneratorParameters.SpaAppPath}/{GeneratorParameters.JsModelRoot}");
+                if (GeneratorParameters.IsFocus4) {
+                    _typescriptDefinitionGenerator.Generate(_modelList, GeneratorParameters.SpaAppPath, GeneratorParameters.RootNamespace);
+                } else {
+                    _javascriptSchemaGenerator.Generate(_modelList, $"{GeneratorParameters.SpaAppPath}/{GeneratorParameters.JsModelRoot}");
+                }
+
                 _javascriptResourceGenerator.Generate(_modelList, $"{GeneratorParameters.SpaAppPath}/{GeneratorParameters.JsResourceRoot}");
             }
         }
