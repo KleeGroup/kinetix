@@ -19,9 +19,9 @@ namespace Kinetix.ClassGenerator.SsdtSchemaGenerator.Scripter {
     public class SqlTableScripter : ISqlScripter<ModelClass> {
 
         /// <summary>
-        /// Calcule le nom du script pour l'item.
+        /// Calcul le nom du script pour la table.
         /// </summary>
-        /// <param name="item">Item à scripter.</param>
+        /// <param name="item">Table à scripter.</param>
         /// <returns>Nom du fichier de script.</returns>
         public string GetScriptName(ModelClass item) {
             if (item == null) {
@@ -32,9 +32,9 @@ namespace Kinetix.ClassGenerator.SsdtSchemaGenerator.Scripter {
         }
 
         /// <summary>
-        /// Indique si l'item doit générer un script.
+        /// Indique si la table doit générer un script.
         /// </summary>
-        /// <param name="item">Item candidat.</param>
+        /// <param name="item">Table candidate.</param>
         /// <returns><code>True</code> si un script doit être généré.</returns>
         public bool IsScriptGenerated(ModelClass item) {
             if (item == null) {
@@ -45,7 +45,7 @@ namespace Kinetix.ClassGenerator.SsdtSchemaGenerator.Scripter {
         }
 
         /// <summary>
-        /// Ecrit dans un flux le script pour l'item.
+        /// Ecrit dans un flux le script de création pour la table.
         /// </summary>
         /// <param name="writer">Flux d'écriture.</param>
         /// <param name="item">Table à scripter.</param>
@@ -73,6 +73,9 @@ namespace Kinetix.ClassGenerator.SsdtSchemaGenerator.Scripter {
             // Fin du create table.
             WriteCreateTableClosing(writer, item, useCompression);
 
+            // Creation des contraintes nullables
+            GenerateUniqueNullableConstraints(writer, item);
+
             // Indexes sur les clés étrangères.
             GenerateIndexForeignKey(writer, item);
 
@@ -83,7 +86,7 @@ namespace Kinetix.ClassGenerator.SsdtSchemaGenerator.Scripter {
         /// <summary>
         /// Extrait les propriétés de type clés étrangères.
         /// </summary>
-        /// <param name="classe">La table à ecrire.</param>
+        /// <param name="classe">La table à ecrire.</param>        
         /// <returns>Liste des propriétés étrangères persistentes.</returns>
         private static ICollection<ModelProperty> ExtractFkProperties(ModelClass classe) {
             ICollection<ModelProperty> fkPropertiesList = new List<ModelProperty>();
@@ -134,6 +137,26 @@ namespace Kinetix.ClassGenerator.SsdtSchemaGenerator.Scripter {
             }
         }
 
+        private static void GenerateUniqueNullableConstraints(TextWriter writer, ModelClass classe) {
+            string tableName = classe.GetTableName();
+            // Contrainte d'unicité nullable sur une seule colonne.
+            foreach (ModelProperty columnProperty in classe.PersistentPropertyList) {
+                if (columnProperty.IsUniqueNullable && !columnProperty.IsPrimaryKey) {
+                    string propertyName = columnProperty.GetColumnName();
+                    string indexName = "IDX_UNI_" + tableName + "_" + propertyName + "_FK";
+
+                    writer.WriteLine("/* Unique constraint on nullable column for " + tableName + "." + propertyName + " */");
+                    writer.WriteLine("create unique nonclustered index [" + indexName + "]");
+                    writer.Write("\ton [dbo].[" + tableName + "] ([" + propertyName + "] ASC)");
+                    writer.Write("\twhere [" + propertyName + "] is not null");
+
+                    writer.WriteLine();
+                    writer.WriteLine("go");
+                    writer.WriteLine();
+                }
+            }
+        }
+
         /// <summary>
         /// Ecrit le SQL pour une colonne.
         /// </summary>
@@ -155,7 +178,7 @@ namespace Kinetix.ClassGenerator.SsdtSchemaGenerator.Scripter {
         /// Génère la contrainte de clef étrangère.
         /// </summary>
         /// <param name="sb">Flux d'écriture.</param>
-        /// <param name="property">Propriété portant la clef étrangère.</param>
+        /// <param name="property">Propriété portant la clef étrangère.</param>        
         private static void WriteConstraintForeignKey(StringBuilder sb, ModelProperty property) {
             string tableName = property.Class.GetTableName();
 
@@ -251,14 +274,14 @@ namespace Kinetix.ClassGenerator.SsdtSchemaGenerator.Scripter {
                 definitions.Add(sb.ToString());
             }
 
-            // Primary Key
+            // Primary Key            
             sb.Clear();
             WritePkLine(sb, table);
             definitions.Add(sb.ToString());
 
-            // Foreign key constraints
+            // Foreign key constraints            
             var fkList = ExtractFkProperties(table);
-            foreach (ModelProperty property in fkList.Where(prop => !prop.DataDescription.ReferenceClass.IsView)) {
+            foreach (ModelProperty property in fkList.Where(prop => !prop.DataDescription.ReferenceClass.IsView && !prop.DataDescription.ReferenceClass.IsExternal)) {
                 sb.Clear();
                 WriteConstraintForeignKey(sb, property);
                 definitions.Add(sb.ToString());
@@ -276,7 +299,7 @@ namespace Kinetix.ClassGenerator.SsdtSchemaGenerator.Scripter {
         /// Ecrit la ligne de création de la PK.
         /// </summary>
         /// <param name="sb">Flux.</param>
-        /// <param name="classe">Classe.</param>
+        /// <param name="classe">Classe.</param>        
         private static void WritePkLine(StringBuilder sb, ModelClass classe) {
             int pkCount = 0;
             sb.Append("constraint [PK_").Append(classe.GetTableName()).Append("] primary key clustered (");
@@ -303,7 +326,7 @@ namespace Kinetix.ClassGenerator.SsdtSchemaGenerator.Scripter {
 
         /// <summary>
         /// Calcule la liste des déclarations de contraintes d'unicité.
-        /// </summary>
+        /// </summary>        
         /// <param name="classe">Classe de la table.</param>
         /// <returns>Liste des déclarations de contraintes d'unicité.</returns>
         private static IList<string> WriteUniqueConstraint(ModelClass classe) {

@@ -12,12 +12,21 @@ namespace Kinetix.ClassGenerator {
         /// </summary>
         static GeneratorParameters() {
             ModelFiles = new List<string>();
+            ExtModelFiles = new List<string>();
         }
 
         /// <summary>
-        /// URL de la collection TFS du projet.
+        /// Nom du fichier de DB context.
         /// </summary>
-        public static string TfsCollectionUrl {
+        public static string DbContext {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Fichiers contenant les domaines.
+        /// </summary>
+        public static string DomainModelFile {
             get;
             set;
         }
@@ -26,6 +35,14 @@ namespace Kinetix.ClassGenerator {
         /// Liste des fichiers de modélisation.
         /// </summary>
         public static ICollection<string> ModelFiles {
+            get;
+            private set;
+        }
+
+        /// <summary>
+        /// Liste des fichiers de modélisation pour les dépendances.
+        /// </summary>
+        public static ICollection<string> ExtModelFiles {
             get;
             private set;
         }
@@ -167,6 +184,14 @@ namespace Kinetix.ClassGenerator {
         }
 
         /// <summary>
+        /// Nom de l'assembly contenant des implémentations de AbstractListFactory.
+        /// </summary>
+        public static string ListFactoryAssembly {
+            get;
+            set;
+        }
+
+        /// <summary>
         /// Retourne true si PostSharp est activé, false sinon.
         /// </summary>
         public static bool IsPostSharpDisabled {
@@ -258,14 +283,6 @@ namespace Kinetix.ClassGenerator {
         /// Retourne ou définit l'emplacement du ficheir de création des types (SQL).
         /// </summary>
         public static string TypeFileName {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Retourne ou définit l'emplacement du fichier de création des synonymes (SQL).
-        /// </summary>
-        public static string SynonymFile {
             get;
             set;
         }

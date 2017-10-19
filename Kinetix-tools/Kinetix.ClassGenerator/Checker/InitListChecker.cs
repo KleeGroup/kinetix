@@ -145,12 +145,31 @@ namespace Kinetix.ClassGenerator.Checker {
                     propertyValue = "\"" + propertyValue + "\"";
                 }
 
-                classe.ConstValues.Add(itemInit.VarName, propertyValue.ToString());
+                BeanPropertyDescriptor libelleDescriptor = GetLibelleDescriptor(classe, definition);
+                string libelle = null;
+                if (libelleDescriptor != null) {
+                    libelle = (string)libelleDescriptor.GetValue(itemInit.Bean);
+                } else {
+                    libelle = itemInit.VarName;
+                }
+
+                classe.ConstValues.Add(itemInit.VarName, new StaticListElement() { Code = propertyValue, Libelle = libelle, CodeType = propertyDescriptor.PrimitiveType.ToString() });
             }
         }
 
+        private BeanPropertyDescriptor GetLibelleDescriptor(ModelClass classe, BeanDefinition beanDefinition) {
+
+            foreach (BeanPropertyDescriptor prop in beanDefinition.Properties) {
+                if (prop.PropertyName.Equals("Libelle") || prop.PropertyName.Equals("Description")) {
+                    return prop;
+                }
+            }
+
+            return null;
+        }
+
         /// <summary>
-        /// Methode a surcharger.
+        /// Methode a surcharger. 
         /// </summary>
         /// <param name="classe">Classe.</param>
         /// <param name="definition">Definition.</param>

@@ -76,16 +76,40 @@ namespace Kinetix.ClassGenerator.Checker {
         /// <param name="classeArrivee">Classe d'arrivée. </param>
         /// <returns>True or false.</returns>
         private static bool IsLinked(ModelClass classeDepart, ModelClass classeArrivee) {
-            foreach (ModelProperty property in classeDepart.PropertyList) {
-                if (property.IsFromAssociation) {
-                    ModelClass pointedClass = property.DataDescription.ReferenceClass;
-                    if (pointedClass.Equals(classeArrivee) || IsLinked(pointedClass, classeArrivee)) {
-                        return true;
+
+            Queue<ModelClass> untreatedClasses = new Queue<ModelClass>();
+            List<ModelClass> treatedClasses = new List<ModelClass>();
+
+            //initialisation des queues
+            untreatedClasses.Enqueue(classeDepart);
+        
+            //variables du loop
+            ModelClass currentClasse;
+            bool result = false;
+
+            while ((untreatedClasses.Count != 0)||result)
+            {
+                //Next in line
+                currentClasse = untreatedClasses.Dequeue();
+
+                //Treatment
+                treatedClasses.Add(currentClasse);
+
+                foreach (ModelProperty property in currentClasse.PropertyList)
+                {
+                    if (property.IsFromAssociation)
+                    {
+                        ModelClass pointedClass = property.DataDescription.ReferenceClass;
+                        result = result || pointedClass.Equals(classeArrivee);
+                        if (!treatedClasses.Contains(pointedClass)) //Add children if not treated before.
+                        {
+                            untreatedClasses.Enqueue(pointedClass);
+                        }
                     }
+
                 }
             }
-
-            return false;
+            return result;
         }
     }
 }

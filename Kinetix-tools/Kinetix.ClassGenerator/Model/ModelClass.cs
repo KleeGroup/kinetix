@@ -19,10 +19,19 @@ namespace Kinetix.ClassGenerator.Model {
         /// Constructeur;.
         /// </summary>
         public ModelClass() {
-            this.ConstValues = new Dictionary<string, string>();
+            this.ConstValues = new Dictionary<string, StaticListElement>();
             this.IgnoreReferenceToReference = false;
             this.IndexNotGeneratedList = new List<string>();
         }
+
+        /// <summary>
+        /// Objet indiquant si la table est une référence externe.
+        /// </summary>
+        public bool IsExternal {
+            get;
+            set;
+        }
+
 
         /// <summary>
         /// Retourne la liste des using de la classe.
@@ -36,7 +45,7 @@ namespace Kinetix.ClassGenerator.Model {
         /// <summary>
         /// Objet présentant les const.
         /// </summary>
-        public Dictionary<string, string> ConstValues {
+        public Dictionary<string, StaticListElement> ConstValues {
             get;
             private set;
         }
@@ -512,7 +521,7 @@ namespace Kinetix.ClassGenerator.Model {
                 throw new ArgumentNullException("nmspace", "nmspace.Model.Name is null.");
             }
 
-            if (!string.IsNullOrEmpty(nmspace.Name) && !nmspace.Name.Equals(Namespace.Name)) {
+            if (!string.IsNullOrEmpty(nmspace.Name) && !nmspace.Name.Equals(Namespace.Name) && !nmspace.IsExternal) {
                 _usingList.Add(nmspace.Model.Name + "." + nmspace.Name);
             }
         }
@@ -546,7 +555,7 @@ namespace Kinetix.ClassGenerator.Model {
                     return true;
                 }
             }
-
+            
             return false;
         }
     }

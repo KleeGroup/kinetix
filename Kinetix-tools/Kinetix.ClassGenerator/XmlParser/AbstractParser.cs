@@ -60,16 +60,8 @@ namespace Kinetix.ClassGenerator.XmlParser {
         /// <param name="domainList">Liste des domaines.</param>
         protected AbstractParser(ICollection<string> modelFiles, ICollection<IDomain> domainList)
             : this() {
-            if (modelFiles == null) {
-                throw new ArgumentNullException("modelFiles");
-            }
-
-            if (domainList == null) {
-                throw new ArgumentNullException("domainList");
-            }
-
-            DomainList = domainList;
-            ModelFiles = modelFiles;
+            DomainList = domainList ?? throw new ArgumentNullException("domainList");
+            ModelFiles = modelFiles ?? throw new ArgumentNullException("modelFiles");
         }
 
         /// <summary>
@@ -197,11 +189,13 @@ namespace Kinetix.ClassGenerator.XmlParser {
                             if (!mp.IsFromComposition && mp.DataDescription.Domain.Code == DomainManager.AliasDomain) {
                                 objectToUpdate.Add(mp);
                             } else {
-                                var columnName = FormatAliasColumn(item.Name, mp.Name);
                                 try {
-                                    modelPropertyMap.Add(columnName, mp);
-                                } catch (Exception ex) {
-                                    throw new NotSupportedException("Erreur à l'ajout de la colonne suivante : " + columnName, ex);
+                                    modelPropertyMap.Add(FormatAliasColumn(item.Name, mp.Name), mp);
+                                } catch (ArgumentException e) {
+                                    Console.WriteLine("Conflict on key :" + FormatAliasColumn(item.Name, mp.Name) + " Class:" + item.Name);
+                                    ModelProperty other = modelPropertyMap[FormatAliasColumn(item.Name, mp.Name)];
+                                    Console.WriteLine("And on Class:" + other.Class.Name);
+                                    throw e;
                                 }
                             }
                         }
@@ -259,9 +253,11 @@ namespace Kinetix.ClassGenerator.XmlParser {
         /// <param name="ex">Le message d'erreur.</param>
         /// <param name="message">Message additif.</param>
         protected void RegisterError(Category category, Exception ex, string message) {
-            NVortexMessage nVortexMessage = new NVortexMessage();
-            nVortexMessage.IsError = true;
-            nVortexMessage.Category = category;
+            var nVortexMessage = new NVortexMessage {
+                IsError = true,
+                Category = category
+            };
+
             if (ex == null) {
                 nVortexMessage.Description = string.IsNullOrEmpty(message) ? string.Empty : " - " + message;
             } else {

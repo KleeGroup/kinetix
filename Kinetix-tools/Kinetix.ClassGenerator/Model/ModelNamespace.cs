@@ -17,6 +17,14 @@ namespace Kinetix.ClassGenerator.Model {
         }
 
         /// <summary>
+        /// Objet indiquant si le namespace est une référence externe.
+        /// </summary>
+        public bool IsExternal {
+            get;
+            set;
+        }
+
+        /// <summary>
         /// Nom du modèle définissant l'objet.
         /// </summary>
         public string ModelFile {
@@ -90,7 +98,7 @@ namespace Kinetix.ClassGenerator.Model {
             if (classe == null) {
                 throw new ArgumentNullException("classe");
             }
-
+            
             ClassList.Add(classe);
         }
     }

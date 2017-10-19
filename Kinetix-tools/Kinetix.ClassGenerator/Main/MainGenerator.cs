@@ -87,6 +87,7 @@ namespace Kinetix.ClassGenerator.Main {
             LoadObjectModel();
 
             // Génération.
+            GenerateCSharp();
             GenerateSqlSchema();
             GenerateJavascript();
 
@@ -166,7 +167,8 @@ namespace Kinetix.ClassGenerator.Main {
         [SuppressMessage("Microsoft.Reliability", "CA2001:AvoidCallingProblematicMethods", Justification = "Chargement dynamique des domaines")]
         private static ICollection<TableInit> LoadTableInitList(bool isStatic) {
             ICollection<TableInit> list = null;
-            Assembly assembly = Assembly.LoadFile(GeneratorParameters.DomainFactoryAssembly);
+
+            Assembly assembly = Assembly.LoadFile(GeneratorParameters.ListFactoryAssembly);
             foreach (Module module in assembly.GetModules()) {
                 foreach (Type type in module.GetTypes()) {
                     if (typeof(AbstractListFactory).IsAssignableFrom(type)) {
@@ -183,7 +185,7 @@ namespace Kinetix.ClassGenerator.Main {
         }
 
         /// <summary>
-        /// Ecrit les erreurs sur la sortie standard
+        /// Ecrit les erreurs sur la sortie standard 
         /// et retourne <code>True</code> si aucune erreur bloquante n'a été trouvée, <code>False</code> sinon.
         /// </summary>
         /// <param name="msgList">Liste des messages.</param>
@@ -229,7 +231,7 @@ namespace Kinetix.ClassGenerator.Main {
             IModelParser parser;
             switch (GeneratorParameters.ModelType) {
                 case "oom":
-                    parser = new OomParser(GeneratorParameters.ModelFiles, _domainList);
+                    parser = new OomParser(GeneratorParameters.ModelFiles, GeneratorParameters.DomainModelFile, GeneratorParameters.ExtModelFiles, _domainList);
                     break;
                 case "eap":
                     parser = new EapParser(GeneratorParameters.ModelFiles, _domainList);
@@ -242,7 +244,7 @@ namespace Kinetix.ClassGenerator.Main {
         }
 
         /// <summary>
-        /// Charge en mémoire les modèles objet et génères les warnings.
+        /// Charge en mémoire les modèles objet et génère les warnings.
         /// </summary>
         private void LoadObjectModel() {
 
@@ -267,18 +269,21 @@ namespace Kinetix.ClassGenerator.Main {
             }
 
             NVortexGenerator.Generate(messageList, GeneratorParameters.VortexFile, GeneratorParameters.SourceRepository, "ClassGenerator");
-            if (GeneratorParameters.Generate) {
-                if (CanGenerate(messageList)) {
-                    Console.Out.WriteLine("***** Génération du modèle *****");
-                    AbstractCodeGenerator generator = new CSharpCodeGenerator(GeneratorParameters.OutputDirectory);
-                    generator.Generate(_modelList);
-                }
-            }
 
-            if (NbErrorMessage(messageList) != 0) {
+
+            if (!CanGenerate(messageList)) {
                 Environment.Exit(-NbErrorMessage(messageList));
             }
         }
+
+        private void GenerateCSharp() {
+            if (GeneratorParameters.Generate) {
+                Console.Out.WriteLine("***** Génération du modèle *****");
+                AbstractCodeGenerator generator = new CSharpCodeGenerator(GeneratorParameters.OutputDirectory);
+                generator.Generate(_modelList);
+            }
+        }
+
 
         /// <summary>
         /// Génère le schéma SQL.

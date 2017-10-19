@@ -10,7 +10,6 @@ namespace Kinetix.ClassGenerator.Configuration {
     [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Justification = "Conceptuellement non statique")]
     public class ModelConfigurationLoader {
 
-        private const string TfsCollectionUrlTag = "TfsCollectionUrl";
         private const string VortexFileTag = "VortexFile";
         private const string CrebasFileTag = "CrebasFile";
         private const string RootNamespace = "RootNamespace";
@@ -32,10 +31,18 @@ namespace Kinetix.ClassGenerator.Configuration {
         private const string HistoriqueCreationFileTag = "HistoriqueCreationFile";
         private const string OutputDirectoryTag = "OutputDirectory";
         private const string DomainFactoryAssemblyTag = "DomainFactoryAssembly";
+        private const string ListFactoryAssemblyTag = "ListFactoryAssembly";
+        private const string DbContextModelTag = "DbContextModel";
+        private const string IsEntityFrameworkTag = "IsEntityFrameworkTag";
+
         private const string ModelTypeTag = "ModelType";
         private const string IsSpaTag = "IsSpa";
+        private const string DomainModelFileTag = "DomainModelFile";
         private const string ModelFilesTag = "ModelFiles";
         private const string ModelFileTag = "ModelFile";
+
+        private const string ExtModelFilesTag = "ExtModelFiles";
+
         private const string SourceRepositoryTag = "SourceRepository";
         private const string LogScriptTableNameTag = "LogScriptTableName";
         private const string LogScriptVersionFieldTag = "LogScriptVersionField";
@@ -60,11 +67,11 @@ namespace Kinetix.ClassGenerator.Configuration {
             doc.Load(xmlPath);
             LoadModelFileNames(doc);
 
+            // Paramètre pour l'OOM de domaines.
+            GeneratorParameters.DomainModelFile = LoadValueFromXml(doc, DomainModelFileTag);
+
             // Paramètre pour le fichier d'erreurs.
             GeneratorParameters.VortexFile = LoadValueFromXml(doc, VortexFileTag);
-
-            // Parametre pour connaitre la collection TFS.
-            GeneratorParameters.TfsCollectionUrl = LoadValueFromXml(doc, TfsCollectionUrlTag);
 
             // Parametre pour connaitre le type du modèle à parser.
             GeneratorParameters.ModelType = LoadValueFromXml(doc, ModelTypeTag);
@@ -109,6 +116,9 @@ namespace Kinetix.ClassGenerator.Configuration {
             // Paramètres pour la génération des classes C#
             GeneratorParameters.OutputDirectory = LoadValueFromXml(doc, OutputDirectoryTag);
             GeneratorParameters.DomainFactoryAssembly = Path.GetFullPath(LoadValueFromXml(doc, DomainFactoryAssemblyTag));
+            GeneratorParameters.ListFactoryAssembly = Path.GetFullPath(LoadValueFromXml(doc, ListFactoryAssemblyTag));
+            GeneratorParameters.IsEntityFrameworkUsed = bool.Parse(TryLoadValueFromXml(doc, IsEntityFrameworkTag));
+            GeneratorParameters.DbContext = TryLoadValueFromXml(doc, DbContextModelTag);
 
             // Paramètre pour le type de base de données cible
             GeneratorParameters.IsOracle = TryLoadValueFromXml(doc, DbTypeTag) == "oracle";
@@ -166,6 +176,13 @@ namespace Kinetix.ClassGenerator.Configuration {
             foreach (XmlNode node in nodeList) {
                 if (node.Name == ModelFileTag) {
                     GeneratorParameters.ModelFiles.Add(node.InnerText);
+                }
+            }
+
+            nodeList = GetUniqueNodeByName(doc, ExtModelFilesTag).ChildNodes;
+            foreach (XmlNode node in nodeList) {
+                if (node.Name == ModelFileTag) {
+                    GeneratorParameters.ExtModelFiles.Add(node.InnerText);
                 }
             }
         }
