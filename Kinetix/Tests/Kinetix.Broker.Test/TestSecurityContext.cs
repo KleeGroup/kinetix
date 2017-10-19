@@ -4,6 +4,7 @@ using System.Security.Claims;
 using System.Security.Principal;
 using System.Threading;
 using Kinetix.ComponentModel;
+using Fmk.ComponentModel;
 
 namespace Kinetix.Broker.Test {
     /// <summary>

@@ -3,6 +3,7 @@ using System.Configuration;
 using System.Security.Principal;
 using System.Threading;
 using System.Transactions;
+using Fmk.ComponentModel;
 #if NUnit
     using NUnit.Framework; 
 #else
@@ -50,6 +51,56 @@ namespace Kinetix.Data.SqlClient.Test {
         }
 
         /// <summary>
+        /// Identité de test.
+        /// </summary>
+        private class TestIdentity : GenericIdentity
+        {
+
+            /// <summary>
+            /// Crée une nouvelle instance.
+            /// </summary>
+            /// <param name="name">Nom.</param>
+            public TestIdentity(string name)
+                : base(name)
+            {
+                this.AddClaim(new Claim(UserIdClaim.ClaimType, "123456789"));
+            }
+
+            /// <summary>
+            /// Identifiant base de données.
+            /// </summary>
+            public int Id
+            {
+                get
+                {
+                    return 123456789;
+                }
+            }
+
+            /// <summary>
+            /// Nom complet.
+            /// </summary>
+            public string FullName
+            {
+                get
+                {
+                    return "CommandParserTest";
+                }
+            }
+
+            /// <summary>
+            /// Code de la langue.
+            /// </summary>
+            public string LangueCode
+            {
+                get
+                {
+                    return "FR";
+                }
+            }
+        }
+
+        /// <summary>
         /// Test de parsing de CurrentUserId.
         /// </summary>
         [Test]
@@ -82,65 +133,6 @@ namespace Kinetix.Data.SqlClient.Test {
                 command.Dispose();
             }
         }
-
-        /// <summary>
-        /// Test de parsing d'une constante dans un bloc [if...].
-        /// </summary>
-        [Test]
-        public void TestParseConstantIf() {
-            using (TransactionScope tx = new TransactionScope(TransactionScopeOption.Required)) {
-                TestDbProviderFactory.DefinedNextResult(new List<Bean>());
-
-                AbstractSqlCommand command = new OracleClient.OracleSqlCommand("test", SqlResource.ResourceManager, "SqlTestConstIf");
-                command.Parameters.AddWithValue("PAR1", 5);
-                command.ExecuteReader();
-
-                Assert.IsTrue(command.CommandText.Contains("1 = 1"));
-
-                command.Dispose();
-            }
-        }
-
-        /// <summary>
-        /// Identité de test.
-        /// </summary>
-        private class TestIdentity : GenericIdentity {
-
-            /// <summary>
-            /// Crée une nouvelle instance.
-            /// </summary>
-            /// <param name="name">Nom.</param>
-            public TestIdentity(string name)
-                : base(name) {
-                this.AddClaim(new Claim(UserIdClaim.ClaimType, "123456789"));
-            }
-
-            /// <summary>
-            /// Identifiant base de données.
-            /// </summary>
-            public int Id {
-                get {
-                    return 123456789;
-                }
-            }
-
-            /// <summary>
-            /// Nom complet.
-            /// </summary>
-            public string FullName {
-                get {
-                    return "CommandParserTest";
-                }
-            }
-
-            /// <summary>
-            /// Code de la langue.
-            /// </summary>
-            public string LangueCode {
-                get {
-                    return "FR";
-                }
-            }
-        }
+       
     }
 }

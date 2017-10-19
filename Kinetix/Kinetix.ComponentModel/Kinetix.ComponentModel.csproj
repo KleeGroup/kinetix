@@ -153,6 +153,7 @@
       <DependentUpon>SR.en.resx</DependentUpon>
     </Compile>
     <Compile Include="TranslatableAttribute.cs" />
+    <Compile Include="UserIdClaim.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="SR.en.resx">

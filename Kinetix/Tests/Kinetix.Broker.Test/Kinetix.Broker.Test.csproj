@@ -84,7 +84,6 @@
     <Compile Include="ModificationDateRuleTest.cs" />
     <Compile Include="ModificationUserRuleTest.cs" />
     <Compile Include="OptimisticLockingBrokerExceptionTest.cs" />
-    <Compile Include="OracleSqlStoreTest.cs" />
     <Compile Include="SortParamTest.cs" />
     <Compile Include="SqlServerStoreTest.cs" />
     <Compile Include="SqlStoreTest.cs" />

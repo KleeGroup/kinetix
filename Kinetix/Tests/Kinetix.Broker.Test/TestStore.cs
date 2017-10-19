@@ -221,5 +221,17 @@ namespace Kinetix.Broker.Test {
         public bool AreUsed(ICollection<int> primaryKeys, ICollection<string> tablesToIgnore = null) {
             throw new NotImplementedException();
         }
+
+        /// <summary>
+        /// Charge un objet à partir de critère de recherche.
+        /// </summary>
+        /// <param name="destination">Bean à charger.</param>
+        /// <param name="criteria">Les critères de recherche.</param>
+        /// <param name="returnNullIfZeroRow">Null if Zero.</param>
+        /// <returns>Bean.</returns>
+        public T LoadByCriteria(T destination, FilterCriteria criteria, bool returnNullIfZeroRow = false)
+        {
+            return new T();
+        }
     }
 }
