@@ -719,33 +719,15 @@ namespace Kinetix.ClassGenerator.CodeGenerator {
         private void GenerateDbContext(IEnumerable<ModelRoot> modelRootList) {
             Console.Out.WriteLine("Generating DbContext");
 
-            // Si le tag est présent, tout mettre dans un seul Db Context.
-            ModelRoot refModel = modelRootList.SingleOrDefault(x => x.ModelFile == GeneratorParameters.DbContext);
-
-            string rootName = "";
-            string strippedProjectName = "";
-            string destDirectory = "";
-
-            var projectName = $"{GeneratorParameters.DbContextProjectName}DataContract";
-
-            if (refModel != null) {
-                rootName = refModel.Name;
-                strippedProjectName = RemoveDots(rootName);
-                destDirectory = GetDirectoryForModelClass(true, rootName, projectName);
-            }
-
-            IEnumerator<ModelRoot> enumerator = modelRootList.GetEnumerator();
-            enumerator.MoveNext();
-            if (refModel == null) {
-                rootName = enumerator.Current.Name;
-                strippedProjectName = RemoveDots(rootName);
-                destDirectory = GetDirectoryForModelClass(true, rootName, projectName);
-            }
+            var projectName = GeneratorParameters.DbContextProjectPath.Split('\\').Last();
+            var rootName = GeneratorParameters.RootNamespace;
+            var strippedProjectName = RemoveDots(rootName);
+            var destDirectory = $"{GeneratorParameters.OutputDirectory}\\{GeneratorParameters.DbContextProjectPath}";
 
             Directory.CreateDirectory(destDirectory);
 
-            var targetFileName = Path.Combine(destDirectory, strippedProjectName + "DbContext.cs");
-            var csprojFileName = Path.Combine(destDirectory.Substring(0, destDirectory.Length - 9), $"{rootName}.{projectName}.csproj");
+            var targetFileName = Path.Combine(destDirectory, "generated", strippedProjectName + "DbContext.cs");
+            var csprojFileName = Path.Combine(destDirectory, $"{projectName}.csproj");
             using (_currentWriter = new CsharpFileWriter(targetFileName, csprojFileName)) {
                 WriteLine("using System.Data.Entity;");
                 WriteLine("using Kinetix.Data.SqlClient;");
@@ -757,7 +739,7 @@ namespace Kinetix.ClassGenerator.CodeGenerator {
                 }
 
                 WriteEmptyLine();
-                WriteLine($"namespace {rootName}.{projectName} {{");
+                WriteLine($"namespace {projectName} {{");
                 WriteEmptyLine();
                 WriteSummary(1, "DbContext généré pour Entity Framework.");
                 WriteLine(1, "public partial class " + strippedProjectName + "DbContext : DbContext {");
@@ -1078,6 +1060,9 @@ namespace Kinetix.ClassGenerator.CodeGenerator {
                     WriteLine(LoadUsing("System.Linq"));
                 }
                 WriteLine(LoadUsing("System.ServiceModel"));
+                if (GeneratorParameters.IsEntityFrameworkUsed) {
+                    WriteLine(LoadUsing(GeneratorParameters.DbContextProjectPath.Split('\\').Last()));
+                }
                 WriteLine(LoadUsing(projectName + "." + nameSpaceContract));
                 WriteLine(LoadUsing(projectName + "." + nameSpaceName));
                 if (!GeneratorParameters.IsEntityFrameworkUsed) {

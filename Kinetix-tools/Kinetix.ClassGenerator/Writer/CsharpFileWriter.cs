@@ -1,5 +1,4 @@
-﻿using System;
-using Kinetix.ClassGenerator.MsBuild;
+﻿using Kinetix.ClassGenerator.MsBuild;
 
 namespace Kinetix.ClassGenerator.Writer {
 
@@ -29,14 +28,13 @@ namespace Kinetix.ClassGenerator.Writer {
             /* Ajoute le fichier dans TFS */
             base.FinishFile(fileName);
 
-            if (string.IsNullOrEmpty(_csprojFileName)) {
+            if (string.IsNullOrEmpty(_csprojFileName) || GeneratorParameters.IsNewCsproj) {
                 return;
             }
 
             /* Chemin relatif au csproj */
             string localFileName = ProjectFileUtils.GetProjectRelativeFileName(fileName, _csprojFileName);
 
-            Console.ReadKey();
             /* Met à jour le fichier csproj. */
             new ProjectUpdater()
                 .AddItem(_csprojFileName, new ProjectItem { ItemPath = localFileName, BuildAction = BuildActions.Compile });

@@ -26,7 +26,7 @@ namespace Kinetix.ClassGenerator {
         /// <summary>
         /// Nom du projet dans lequel mettre le DbContext.
         /// </summary>
-        public static string DbContextProjectName {
+        public static string DbContextProjectPath {
             get;
             set;
         }
@@ -179,6 +179,14 @@ namespace Kinetix.ClassGenerator {
         /// Repository de contrôle de source.
         /// </summary>
         public static string SourceRepository {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Utilise les nouveaux .csproj (= pas d'ajout nécessaire).
+        /// </summary>
+        public static bool IsNewCsproj {
             get;
             set;
         }

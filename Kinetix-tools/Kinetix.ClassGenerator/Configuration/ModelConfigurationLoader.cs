@@ -33,9 +33,10 @@ namespace Kinetix.ClassGenerator.Configuration {
         private const string DomainFactoryAssemblyTag = "DomainFactoryAssembly";
         private const string ListFactoryAssemblyTag = "ListFactoryAssembly";
         private const string DbContextModelTag = "DbContextModel";
-        private const string DbContextProjectNameTag = "DbContextProjectName";
+        private const string DbContextProjectPathTag = "DbContextProjectPath";
         private const string IsEntityFrameworkTag = "IsEntityFrameworkUsed";
 
+        private const string IsNewCsprojTag = "IsNewCsproj";
         private const string UseTypeSafeConstValuesTag = "UseTypeSafeConstValues";
 
         private const string ModelTypeTag = "ModelType";
@@ -97,6 +98,7 @@ namespace Kinetix.ClassGenerator.Configuration {
             GeneratorParameters.StaticListLabelFile = TryLoadValueFromXml(doc, StaticListLabelFileTag);
             GeneratorParameters.ReferenceListLabelFile = TryLoadValueFromXml(doc, ReferenceListLabelFileTag);
 
+            GeneratorParameters.IsNewCsproj = bool.Parse(TryLoadValueFromXml(doc, IsNewCsprojTag) ?? "false");
             GeneratorParameters.UseTypeSafeConstValues = bool.Parse(TryLoadValueFromXml(doc, UseTypeSafeConstValuesTag) ?? "false");
 
             // Paramètres pour la génération de fichiers SSDT pour le SQL (configuration).
@@ -124,7 +126,7 @@ namespace Kinetix.ClassGenerator.Configuration {
             GeneratorParameters.ListFactoryAssembly = Path.GetFullPath(LoadValueFromXml(doc, ListFactoryAssemblyTag));
             GeneratorParameters.IsEntityFrameworkUsed = bool.Parse(TryLoadValueFromXml(doc, IsEntityFrameworkTag) ?? "false");
             GeneratorParameters.DbContext = TryLoadValueFromXml(doc, DbContextModelTag);
-            GeneratorParameters.DbContextProjectName = TryLoadValueFromXml(doc, DbContextProjectNameTag);
+            GeneratorParameters.DbContextProjectPath = TryLoadValueFromXml(doc, DbContextProjectPathTag);
 
             // Paramètre pour le type de base de données cible
             GeneratorParameters.IsOracle = TryLoadValueFromXml(doc, DbTypeTag) == "oracle";
