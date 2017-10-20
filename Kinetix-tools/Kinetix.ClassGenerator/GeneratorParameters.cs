@@ -328,6 +328,14 @@ namespace Kinetix.ClassGenerator {
         }
 
         /// <summary>
+        /// Utilise des types spécifiques pour les valeurs de listes statique, au lieu de string.
+        /// </summary>
+        public static bool UseTypeSafeConstValues {
+            get;
+            set;
+        }
+
+        /// <summary>
         /// Nom du fichier sql d'insertion des libellés de liste statique.
         /// </summary>
         public static string StaticListLabelFile {

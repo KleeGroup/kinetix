@@ -59,41 +59,61 @@ namespace Kinetix.ClassGenerator.Templates
             #line hidden
             this.Write(" {\r\n");
             
+<<<<<<< 9f18d55fe84e585139a6defcfb4b940afbb4f2a9
             #line 14 "D:\src\github\kinetix\Kinetix-tools\Kinetix.ClassGenerator\Templates\ReferenceTemplate.tt"
+=======
+            #line 14 "D:\Projets\kinetix\Kinetix-tools\Kinetix.ClassGenerator\Templates\ReferenceTemplate.tt"
  foreach (var property in reference.PropertyList) { 
-            
-            #line default
-            #line hidden
             this.Write("    ");
             
+<<<<<<< 9f18d55fe84e585139a6defcfb4b940afbb4f2a9
             #line 15 "D:\src\github\kinetix\Kinetix-tools\Kinetix.ClassGenerator\Templates\ReferenceTemplate.tt"
+=======
+            #line 15 "D:\Projets\kinetix\Kinetix-tools\Kinetix.ClassGenerator\Templates\ReferenceTemplate.tt"
+>>>>>>> Corrections cas non-EF + retravail enum typesafe
             this.Write(this.ToStringHelper.ToStringWithCulture(Utils.ToFirstLower(property.Name)));
             
             #line default
             #line hidden
             
+<<<<<<< 9f18d55fe84e585139a6defcfb4b940afbb4f2a9
             #line 15 "D:\src\github\kinetix\Kinetix-tools\Kinetix.ClassGenerator\Templates\ReferenceTemplate.tt"
+=======
+            #line 15 "D:\Projets\kinetix\Kinetix-tools\Kinetix.ClassGenerator\Templates\ReferenceTemplate.tt"
+>>>>>>> Corrections cas non-EF + retravail enum typesafe
             this.Write(this.ToStringHelper.ToStringWithCulture(property.DataMember.IsRequired || property.IsPrimaryKey ? string.Empty : "?"));
             
             #line default
             #line hidden
             this.Write(": ");
             
+<<<<<<< 9f18d55fe84e585139a6defcfb4b940afbb4f2a9
             #line 15 "D:\src\github\kinetix\Kinetix-tools\Kinetix.ClassGenerator\Templates\ReferenceTemplate.tt"
+=======
+            #line 15 "D:\Projets\kinetix\Kinetix-tools\Kinetix.ClassGenerator\Templates\ReferenceTemplate.tt"
+>>>>>>> Corrections cas non-EF + retravail enum typesafe
             this.Write(this.ToStringHelper.ToStringWithCulture(ToTSType(property)));
             
             #line default
             #line hidden
             this.Write(";\r\n");
             
+<<<<<<< 9f18d55fe84e585139a6defcfb4b940afbb4f2a9
             #line 16 "D:\src\github\kinetix\Kinetix-tools\Kinetix.ClassGenerator\Templates\ReferenceTemplate.tt"
+=======
+            #line 16 "D:\Projets\kinetix\Kinetix-tools\Kinetix.ClassGenerator\Templates\ReferenceTemplate.tt"
+>>>>>>> Corrections cas non-EF + retravail enum typesafe
  } 
             
             #line default
             #line hidden
             this.Write("}\r\n");
             
+<<<<<<< 9f18d55fe84e585139a6defcfb4b940afbb4f2a9
             #line 18 "D:\src\github\kinetix\Kinetix-tools\Kinetix.ClassGenerator\Templates\ReferenceTemplate.tt"
+=======
+            #line 18 "D:\Projets\kinetix\Kinetix-tools\Kinetix.ClassGenerator\Templates\ReferenceTemplate.tt"
+>>>>>>> Corrections cas non-EF + retravail enum typesafe
  } 
             
             #line default

@@ -189,7 +189,9 @@ namespace Kinetix.ClassGenerator.XmlParser.OomReader {
             _modelRootList = new List<ModelRoot>();
 
             // Chargement des domaines
-            ParseModelFile(_domainModelFile, true, false);
+            if (_domainModelFile != null) {
+                ParseModelFile(_domainModelFile, true, false);
+            }
 
             // Chargement des tables d'autres bases (dépendances)
             foreach (string modelFile in _extModelFiles) {

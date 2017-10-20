@@ -588,6 +588,7 @@ namespace Kinetix.ClassGenerator.CodeGenerator {
             WriteLine(1, LoadBeginClassDeclaration(item.Name, item.ParentClass == null ? string.Empty : item.ParentClass.Name, ifList));
 
             GenerateConstProperties(item);
+
             GenerateConstructors(item);
 
             if (item.DataContract.IsPersistent && !item.IsView && item.PersistentPropertyList.Count > 0) {
@@ -615,6 +616,10 @@ namespace Kinetix.ClassGenerator.CodeGenerator {
             }
 
             WriteLine(1, LoadEndClassDeclaration());
+
+            if (GeneratorParameters.UseTypeSafeConstValues) {
+                GenerateConstPropertiesClass(item);
+            }
         }
 
         /// <summary>
@@ -632,18 +637,11 @@ namespace Kinetix.ClassGenerator.CodeGenerator {
         private void GenerateConstProperties(ModelClass item) {
             int nbConstValues = item.ConstValues.Count;
             if (nbConstValues != 0) {
-                string codeType = item.ConstValues.First().Value.CodeType;
 
                 WriteEmptyLine();
 
-                WriteSummary(2, String.Format("Enumerations des valeurs pour {0}", item.Name));
-                WriteLine(2, String.Format("public sealed class Enum : AbstractGenericTypeSafeEnum<{0}>", codeType));
-                WriteLine(2, "{");
-
-                WriteLine(2, String.Format("private static readonly Dictionary<{0}, Enum> instance = new Dictionary<{0}, Enum>();", codeType));
-
                 int i = 0;
-                foreach (string constFieldName in item.ConstValues.Keys) {
+                foreach (string constFieldName in item.ConstValues.Keys.ToList().OrderBy(x => x)) {
                     ++i;
                     StaticListElement valueLibelle = item.ConstValues[constFieldName];
                     ModelProperty property = null;
@@ -658,27 +656,55 @@ namespace Kinetix.ClassGenerator.CodeGenerator {
                         property = ((IList<ModelProperty>)item.PrimaryKey)[0];
                     }
 
-                    WriteSummary(3, valueLibelle.Libelle);
-                    WriteLine(3, String.Format("public static readonly Enum {0} = new Enum ({1});", constFieldName, valueLibelle.Code));
+                    WriteSummary(2, valueLibelle.Libelle);
+
+                    if (GeneratorParameters.UseTypeSafeConstValues) {
+                        WriteLine(2, String.Format("public static readonly {2}Code {0} = new {2}Code({1});", constFieldName, valueLibelle.Code, item.Name));
+                    } else {
+                        WriteLine(2, String.Format("public const string {0} = {1};", constFieldName, valueLibelle.Code));
+                    }
 
                     if (i < nbConstValues) {
                         WriteEmptyLine();
                     }
                 }
+            }
+        }
 
-                WriteLine(3, String.Format("private Enum({0} value) : base (value) {{ instance[value] = this;}}", codeType));
+        /// <summary>
+        /// Génération des constantes statiques.
+        /// </summary>
+        /// <param name="item">La classe générée.</param>
+        private void GenerateConstPropertiesClass(ModelClass item) {
+            int nbConstValues = item.ConstValues.Count;
+            if (nbConstValues != 0) {
+
+                WriteEmptyLine();
+                WriteLine("#pragma warning disable SA1402");
+                WriteEmptyLine();
+                WriteSummary(1, $"Type des valeurs pour {item.Name}");
+                WriteLine(1, $"public sealed class {item.Name}Code : TypeSafeEnum {{");
                 WriteEmptyLine();
 
-                WriteLine(2, String.Format("public static explicit operator Enum({0} value) {{", codeType));
-                WriteLine(3, String.Format("Enum result;", codeType));
-                WriteLine(3, "if (instance.TryGetValue(value, out result)) {");
+                WriteLine(2, $"private static readonly Dictionary<string, {item.Name}Code> Instance = new Dictionary<string, {item.Name}Code>();");
+                WriteEmptyLine();
+
+                WriteSummary(2, "Constructeur");
+                WriteParam(2, "value", "Valeur");
+                WriteLine(2, $"public {item.Name}Code(string value)");
+                WriteLine(3, ": base(value) {");
+                WriteLine(3, "Instance[value] = this;");
+                WriteLine(2, "}");
+                WriteEmptyLine();
+
+                WriteLine(2, $"public static explicit operator {item.Name}Code(string value) {{");
+                WriteLine(3, "if (Instance.TryGetValue(value, out var result)) {");
                 WriteLine(4, "return result;");
                 WriteLine(3, "} else {");
                 WriteLine(4, "throw new InvalidCastException();");
                 WriteLine(3, "}");
                 WriteLine(2, "}");
-
-                WriteLine(2, "}");
+                WriteLine(1, "}");
             }
         }
 
@@ -1180,10 +1206,6 @@ namespace Kinetix.ClassGenerator.CodeGenerator {
 
             if (GeneratorParameters.IsPostSharpDisabled) {
                 WriteLine(LoadUsing("System.Runtime.Serialization"));
-            }
-
-            if (item.ConstValues != null && item.ConstValues.Count > 0) {
-                WriteLine(LoadUsing("Enum.Common"));
             }
 
             // Pas besoin du using du DataContract si inutilisé

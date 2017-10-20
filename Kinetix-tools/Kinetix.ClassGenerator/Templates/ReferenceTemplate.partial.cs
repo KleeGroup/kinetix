@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Kinetix.ClassGenerator.Model;
 
 namespace Kinetix.ClassGenerator.Templates {
@@ -14,13 +15,13 @@ namespace Kinetix.ClassGenerator.Templates {
         /// </summary>
         public IEnumerable<ModelClass> References { get; set; }
 
-        /// <summary>
+        /// <summary>UseTypeSafeConstValues
         /// Transforme une liste de constantes en type Typescript.
         /// </summary>
         /// <param name="reference">La liste de constantes.</param>
         /// <returns>Le type de sorte.</returns>
         private string GetConstValues(ModelClass reference) {
-            var constValues = string.Join(" | ", reference.ConstValues.Values);
+            var constValues = string.Join(" | ", reference.ConstValues.Values.Select(value => value.Code));
             if (constValues == string.Empty) {
                 return "string";
             } else {

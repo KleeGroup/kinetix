@@ -35,6 +35,8 @@ namespace Kinetix.ClassGenerator.Configuration {
         private const string DbContextModelTag = "DbContextModel";
         private const string IsEntityFrameworkTag = "IsEntityFrameworkTag";
 
+        private const string UseTypeSafeConstValuesTag = "UseTypeSafeConstValues";
+
         private const string ModelTypeTag = "ModelType";
         private const string IsSpaTag = "IsSpa";
         private const string DomainModelFileTag = "DomainModelFile";
@@ -68,7 +70,7 @@ namespace Kinetix.ClassGenerator.Configuration {
             LoadModelFileNames(doc);
 
             // Paramètre pour l'OOM de domaines.
-            GeneratorParameters.DomainModelFile = LoadValueFromXml(doc, DomainModelFileTag);
+            GeneratorParameters.DomainModelFile = TryLoadValueFromXml(doc, DomainModelFileTag);
 
             // Paramètre pour le fichier d'erreurs.
             GeneratorParameters.VortexFile = LoadValueFromXml(doc, VortexFileTag);
@@ -94,6 +96,8 @@ namespace Kinetix.ClassGenerator.Configuration {
             GeneratorParameters.StaticListLabelFile = TryLoadValueFromXml(doc, StaticListLabelFileTag);
             GeneratorParameters.ReferenceListLabelFile = TryLoadValueFromXml(doc, ReferenceListLabelFileTag);
 
+            GeneratorParameters.UseTypeSafeConstValues = bool.Parse(TryLoadValueFromXml(doc, UseTypeSafeConstValuesTag) ?? "false");
+
             // Paramètres pour la génération de fichiers SSDT pour le SQL (configuration).
             GeneratorParameters.DefaultValuesFile = TryLoadValueFromXml(doc, DefaultValuesFileTag);
             GeneratorParameters.NoTableFile = TryLoadValueFromXml(doc, NoTableFileTag);
@@ -117,7 +121,7 @@ namespace Kinetix.ClassGenerator.Configuration {
             GeneratorParameters.OutputDirectory = LoadValueFromXml(doc, OutputDirectoryTag);
             GeneratorParameters.DomainFactoryAssembly = Path.GetFullPath(LoadValueFromXml(doc, DomainFactoryAssemblyTag));
             GeneratorParameters.ListFactoryAssembly = Path.GetFullPath(LoadValueFromXml(doc, ListFactoryAssemblyTag));
-            GeneratorParameters.IsEntityFrameworkUsed = bool.Parse(TryLoadValueFromXml(doc, IsEntityFrameworkTag));
+            GeneratorParameters.IsEntityFrameworkUsed = bool.Parse(TryLoadValueFromXml(doc, IsEntityFrameworkTag) ?? "false");
             GeneratorParameters.DbContext = TryLoadValueFromXml(doc, DbContextModelTag);
 
             // Paramètre pour le type de base de données cible
@@ -143,13 +147,23 @@ namespace Kinetix.ClassGenerator.Configuration {
         /// <param name="doc">Document XML.</param>
         /// <param name="paramName">Nom du noeud.</param>
         /// <returns>Contenu du noeud.</returns>
-        private static string TryLoadValueFromXml(XmlDocument doc, string paramName) {
+        private XmlNode TryLoadNodeFromXml(XmlDocument doc, string paramName) {
             XmlNodeList nodeList = doc.GetElementsByTagName(paramName);
             if (nodeList.Count != 1) {
                 return null;
             }
 
-            return nodeList.Item(0).InnerText;
+            return nodeList.Item(0);
+        }
+
+        /// <summary>
+        /// Retourne le contenu d'un noeud unique s'il existe dans le document XML, null sinon.
+        /// </summary>
+        /// <param name="doc">Document XML.</param>
+        /// <param name="paramName">Nom du noeud.</param>
+        /// <returns>Contenu du noeud.</returns>
+        private string TryLoadValueFromXml(XmlDocument doc, string paramName) {
+            return TryLoadNodeFromXml(doc, paramName)?.InnerText;
         }
 
         /// <summary>
@@ -171,18 +185,20 @@ namespace Kinetix.ClassGenerator.Configuration {
         /// Charge les nom des modèles de données depuis le fichier de configuration.
         /// </summary>
         /// <param name="doc">Document XML de configuration.</param>
-        private static void LoadModelFileNames(XmlDocument doc) {
-            XmlNodeList nodeList = GetUniqueNodeByName(doc, ModelFilesTag).ChildNodes;
+        private void LoadModelFileNames(XmlDocument doc) {
+            var nodeList = GetUniqueNodeByName(doc, ModelFilesTag).ChildNodes;
             foreach (XmlNode node in nodeList) {
                 if (node.Name == ModelFileTag) {
                     GeneratorParameters.ModelFiles.Add(node.InnerText);
                 }
             }
 
-            nodeList = GetUniqueNodeByName(doc, ExtModelFilesTag).ChildNodes;
-            foreach (XmlNode node in nodeList) {
-                if (node.Name == ModelFileTag) {
-                    GeneratorParameters.ExtModelFiles.Add(node.InnerText);
+            nodeList = TryLoadNodeFromXml(doc, ExtModelFilesTag)?.ChildNodes;
+            if (nodeList != null) {
+                foreach (XmlNode node in nodeList) {
+                    if (node.Name == ModelFileTag) {
+                        GeneratorParameters.ExtModelFiles.Add(node.InnerText);
+                    }
                 }
             }
         }
