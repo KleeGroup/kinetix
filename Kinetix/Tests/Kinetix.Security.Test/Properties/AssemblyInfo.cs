@@ -8,9 +8,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("Kinetix.Security.Test")]
 [assembly: AssemblyDescription("Tests unitaires module sécurité")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("KLEE Group")]
+[assembly: AssemblyCompany("Klee Group")]
 [assembly: AssemblyProduct("Kinetix.Security.Test.Properties")]
-[assembly: AssemblyCopyright("Copyright © Microsoft 2011")]
+[assembly: AssemblyCopyright("Copyright © Klee Group 2017")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -29,5 +29,5 @@ using System.Runtime.InteropServices;
 //      Build Number
 //      Revision
 //
-[assembly: AssemblyVersion("1.0.0.0")]
-[assembly: AssemblyFileVersion("1.0.0.0")]
+[assembly: AssemblyVersion("1.0.0")]
+[assembly: AssemblyFileVersion("1.0.0")]

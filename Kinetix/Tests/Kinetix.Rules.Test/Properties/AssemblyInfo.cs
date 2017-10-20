@@ -8,9 +8,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("Kinetix.Rules.Test")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("a")]
+[assembly: AssemblyCompany("Klee Group")]
 [assembly: AssemblyProduct("Kinetix.Rules.Test")]
-[assembly: AssemblyCopyright("Copyright © a 2016")]
+[assembly: AssemblyCopyright("Copyright © Klee Group 2016")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

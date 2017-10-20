@@ -6,7 +6,7 @@ do
   echo $dir
   rm *.nupkg
   #nuget pack *.csproj -Symbols
-  nuget pack *.csproj -properties Configuration=Release
+  nuget pack *.csproj -properties Configuration=Release -Symbols
   popd
 done
 

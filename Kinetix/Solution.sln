@@ -80,9 +80,16 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kinetix.Notifications.Test", "Tests\Kinetix.Notifications.Test\Kinetix.Notifications.Test.csproj", "{3AC427F9-E4EA-409E-8EC2-2FF29C04782D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kinetix.SearchV3", "Kinetix.SearchV3\Kinetix.SearchV3.csproj", "{D88C145D-E13F-4D29-B831-35136994528F}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kinetix.SpaServiceGenerator", "..\Kinetix-tools\Kinetix.SpaServiceGenerator\Kinetix.SpaServiceGenerator.csproj", "{D8130CC7-9926-4900-9F14-ECBB41C8025D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kinetix.TestUtils", "..\Kinetix-tools\Kinetix.TestUtils\Kinetix.TestUtils.csproj", "{0D195549-C304-4DB8-B13B-14F50355564A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fmk.MsBuildCop", "..\Kinetix-tools\Quality\Fmk.RoslynCop\Fmk.MsBuildCop\Fmk.MsBuildCop.csproj", "{5B94620E-5565-463E-8438-124C45287531}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fmk.RoslynCop", "..\Kinetix-tools\Quality\Fmk.RoslynCop\Fmk.RoslynCop\Fmk.RoslynCop.csproj", "{38745868-A1BD-4605-AB5E-A6ED04E93125}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fmk.RoslynCop.Test", "..\Kinetix-tools\Quality\Fmk.RoslynCop\Fmk.RoslynCop.Test\Fmk.RoslynCop.Test.csproj", "{AE0ABA98-36D1-4FD2-BEE5-A4CE16A4EA81}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -242,6 +249,18 @@ Global
 		{0D195549-C304-4DB8-B13B-14F50355564A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0D195549-C304-4DB8-B13B-14F50355564A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0D195549-C304-4DB8-B13B-14F50355564A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5B94620E-5565-463E-8438-124C45287531}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5B94620E-5565-463E-8438-124C45287531}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5B94620E-5565-463E-8438-124C45287531}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5B94620E-5565-463E-8438-124C45287531}.Release|Any CPU.Build.0 = Release|Any CPU
+		{38745868-A1BD-4605-AB5E-A6ED04E93125}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{38745868-A1BD-4605-AB5E-A6ED04E93125}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{38745868-A1BD-4605-AB5E-A6ED04E93125}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{38745868-A1BD-4605-AB5E-A6ED04E93125}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AE0ABA98-36D1-4FD2-BEE5-A4CE16A4EA81}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AE0ABA98-36D1-4FD2-BEE5-A4CE16A4EA81}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AE0ABA98-36D1-4FD2-BEE5-A4CE16A4EA81}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AE0ABA98-36D1-4FD2-BEE5-A4CE16A4EA81}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -286,6 +305,9 @@ Global
 		{D88C145D-E13F-4D29-B831-35136994528F} = {E566DC13-2180-4871-80F6-FBE41CF86D63}
 		{D8130CC7-9926-4900-9F14-ECBB41C8025D} = {A4733C58-5A6F-4E73-B9F6-E2C7A09D70D5}
 		{0D195549-C304-4DB8-B13B-14F50355564A} = {A4733C58-5A6F-4E73-B9F6-E2C7A09D70D5}
+		{5B94620E-5565-463E-8438-124C45287531} = {A4733C58-5A6F-4E73-B9F6-E2C7A09D70D5}
+		{38745868-A1BD-4605-AB5E-A6ED04E93125} = {A4733C58-5A6F-4E73-B9F6-E2C7A09D70D5}
+		{AE0ABA98-36D1-4FD2-BEE5-A4CE16A4EA81} = {A4733C58-5A6F-4E73-B9F6-E2C7A09D70D5}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {42250737-4FCC-4CA4-891A-01CB4D26E37A}
