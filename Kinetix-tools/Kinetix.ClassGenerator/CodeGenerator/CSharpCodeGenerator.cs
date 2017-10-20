@@ -306,11 +306,19 @@ namespace Kinetix.ClassGenerator {
         /// <returns>Code généré.</returns>
         protected override string LoadReferenceAccessorBody(string className, ModelProperty defaultProperty) {
             string queryParameter = string.Empty;
-            if (defaultProperty != null) {
-                queryParameter = "new Kinetix.Data.SqlClient.QueryParameter(" + className + ".Cols." + defaultProperty.DataMember.Name + ", Kinetix.Data.SqlClient.SortOrder.Asc)";
-            }
+            if (GeneratorParameters.IsEntityFrameworkUsed) {
+                if (defaultProperty != null) {
+                    queryParameter = $".OrderBy(row => row.{defaultProperty.DataMember.Name})";
+                }
 
-            return "return BrokerManager.GetStandardBroker<" + className + ">().GetAll(" + queryParameter + ");";
+                return $"return _dbContext.{Pluralize(className)}{queryParameter}.ToList();";
+            } else {
+                if (defaultProperty != null) {
+                    queryParameter = "new Kinetix.Data.SqlClient.QueryParameter(" + className + ".Cols." + defaultProperty.DataMember.Name + ", Kinetix.Data.SqlClient.SortOrder.Asc)";
+                }
+
+                return "return BrokerManager.GetStandardBroker<" + className + ">().GetAll(" + queryParameter + ");";
+            }
         }
 
         /// <summary>

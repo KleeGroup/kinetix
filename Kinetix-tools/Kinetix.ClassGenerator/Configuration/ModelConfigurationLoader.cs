@@ -33,7 +33,8 @@ namespace Kinetix.ClassGenerator.Configuration {
         private const string DomainFactoryAssemblyTag = "DomainFactoryAssembly";
         private const string ListFactoryAssemblyTag = "ListFactoryAssembly";
         private const string DbContextModelTag = "DbContextModel";
-        private const string IsEntityFrameworkTag = "IsEntityFrameworkTag";
+        private const string DbContextProjectNameTag = "DbContextProjectName";
+        private const string IsEntityFrameworkTag = "IsEntityFrameworkUsed";
 
         private const string UseTypeSafeConstValuesTag = "UseTypeSafeConstValues";
 
@@ -123,6 +124,7 @@ namespace Kinetix.ClassGenerator.Configuration {
             GeneratorParameters.ListFactoryAssembly = Path.GetFullPath(LoadValueFromXml(doc, ListFactoryAssemblyTag));
             GeneratorParameters.IsEntityFrameworkUsed = bool.Parse(TryLoadValueFromXml(doc, IsEntityFrameworkTag) ?? "false");
             GeneratorParameters.DbContext = TryLoadValueFromXml(doc, DbContextModelTag);
+            GeneratorParameters.DbContextProjectName = TryLoadValueFromXml(doc, DbContextProjectNameTag);
 
             // Paramètre pour le type de base de données cible
             GeneratorParameters.IsOracle = TryLoadValueFromXml(doc, DbTypeTag) == "oracle";

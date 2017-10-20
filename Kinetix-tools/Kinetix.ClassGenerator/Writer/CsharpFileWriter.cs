@@ -1,4 +1,5 @@
-﻿using Kinetix.ClassGenerator.MsBuild;
+﻿using System;
+using Kinetix.ClassGenerator.MsBuild;
 
 namespace Kinetix.ClassGenerator.Writer {
 
@@ -35,6 +36,7 @@ namespace Kinetix.ClassGenerator.Writer {
             /* Chemin relatif au csproj */
             string localFileName = ProjectFileUtils.GetProjectRelativeFileName(fileName, _csprojFileName);
 
+            Console.ReadKey();
             /* Met à jour le fichier csproj. */
             new ProjectUpdater()
                 .AddItem(_csprojFileName, new ProjectItem { ItemPath = localFileName, BuildAction = BuildActions.Compile });

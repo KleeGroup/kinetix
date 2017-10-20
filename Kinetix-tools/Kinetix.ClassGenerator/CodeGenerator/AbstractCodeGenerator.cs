@@ -475,15 +475,6 @@ namespace Kinetix.ClassGenerator.CodeGenerator {
         }
 
         /// <summary>
-        /// Retourne le namespace du projet "Common" de Business.
-        /// </summary>
-        /// <param name="projectName">Nom du projet.</param>
-        /// <returns>Namespace du projet "Common" de Business.</returns>
-        private static string GetBusinessCommonNamespace(string projectName) {
-            return string.Format(CultureInfo.InvariantCulture, "{0}.Business.Common", projectName);
-        }
-
-        /// <summary>
         /// Retourne le namespace complet d'une class.
         /// </summary>
         /// <param name="root">Racine du namespace.</param>
@@ -731,57 +722,48 @@ namespace Kinetix.ClassGenerator.CodeGenerator {
             // Si le tag est présent, tout mettre dans un seul Db Context.
             ModelRoot refModel = modelRootList.SingleOrDefault(x => x.ModelFile == GeneratorParameters.DbContext);
 
-            string projectName = "";
+            string rootName = "";
             string strippedProjectName = "";
             string destDirectory = "";
 
+            var projectName = $"{GeneratorParameters.DbContextProjectName}DataContract";
+
             if (refModel != null) {
-                projectName = refModel.Name;
-                strippedProjectName = RemoveDots(projectName);
-                destDirectory = GetImplementationDirectoryName(projectName);
+                rootName = refModel.Name;
+                strippedProjectName = RemoveDots(rootName);
+                destDirectory = GetDirectoryForModelClass(true, rootName, projectName);
             }
 
             IEnumerator<ModelRoot> enumerator = modelRootList.GetEnumerator();
             enumerator.MoveNext();
             if (refModel == null) {
-                projectName = enumerator.Current.Name;
-                strippedProjectName = RemoveDots(projectName);
-                destDirectory = GetImplementationDirectoryName(projectName);
+                rootName = enumerator.Current.Name;
+                strippedProjectName = RemoveDots(rootName);
+                destDirectory = GetDirectoryForModelClass(true, rootName, projectName);
             }
 
             Directory.CreateDirectory(destDirectory);
 
-            string targetFileName = Path.Combine(destDirectory, strippedProjectName + "DbContext.cs");
-            using (_currentWriter = new CsharpFileWriter(targetFileName)) {
+            var targetFileName = Path.Combine(destDirectory, strippedProjectName + "DbContext.cs");
+            var csprojFileName = Path.Combine(destDirectory.Substring(0, destDirectory.Length - 9), $"{rootName}.{projectName}.csproj");
+            using (_currentWriter = new CsharpFileWriter(targetFileName, csprojFileName)) {
                 WriteLine("using System.Data.Entity;");
-                WriteLine("using System.Diagnostics.CodeAnalysis;");
-                WriteLine("using System.Transactions;");
-                WriteLine("using Fmk.Data.SqlClient;");
+                WriteLine("using Kinetix.Data.SqlClient;");
 
                 List<string> listNs = new List<string>();
-                foreach (ModelRoot model in modelRootList) {
-                    //foreach (ModelNamespace ns in model.Namespaces.Values)
-                    //{
-                    //    if (ns.HasPersistentClasses)
-                    //    {
-                    //        listNs.Add(ns.Model.Name + "." + ns.Name);
-                    //    }
-                    //}
-                }
                 listNs.Sort();
                 foreach (string ns in listNs.Distinct()) {
                     WriteLine("using " + ns + ";");
                 }
 
                 WriteEmptyLine();
-                WriteLine("namespace " + GetBusinessCommonNamespace(projectName) + " {");
-                //WriteEmptyLine();
-                WriteSummary(1, "DbContext généré pour Entity-Framework.");
-                WriteLine(1, "[SuppressMessage(\"Microsoft.Maintainability\", \"CA1506:AvoidExcessiveClassCoupling\", Justification = \"EF4.1\")]");
+                WriteLine($"namespace {rootName}.{projectName} {{");
+                WriteEmptyLine();
+                WriteSummary(1, "DbContext généré pour Entity Framework.");
                 WriteLine(1, "public partial class " + strippedProjectName + "DbContext : DbContext {");
                 WriteEmptyLine();
                 WriteSummary(2, "Constructeur par défaut.");
-                WriteLine(2, "public " + strippedProjectName + "DbContext(TransactionScope transScope)");
+                WriteLine(2, "public " + strippedProjectName + "DbContext()");
                 WriteLine(3, ": base(SqlServerManager.Instance.ObtainConnection(\"default\"), false) {");
                 WriteLine(2, "}");
 
@@ -1092,10 +1074,15 @@ namespace Kinetix.ClassGenerator.CodeGenerator {
             using (_currentWriter = new CsharpFileWriter(implementationFileName, csprojFileName)) {
                 WriteLine(LoadUsing("System.Collections.Generic"));
                 WriteLine(LoadUsing("System.Diagnostics.CodeAnalysis"));
+                if (GeneratorParameters.IsEntityFrameworkUsed) {
+                    WriteLine(LoadUsing("System.Linq"));
+                }
                 WriteLine(LoadUsing("System.ServiceModel"));
                 WriteLine(LoadUsing(projectName + "." + nameSpaceContract));
                 WriteLine(LoadUsing(projectName + "." + nameSpaceName));
-                WriteLine(LoadUsing("Kinetix.Broker"));
+                if (!GeneratorParameters.IsEntityFrameworkUsed) {
+                    WriteLine(LoadUsing("Kinetix.Broker"));
+                }
 
                 WriteEmptyLine();
                 WriteLine(LoadBeginNamespace(projectName + "." + nameSpaceImplementation));
@@ -1106,6 +1093,17 @@ namespace Kinetix.ClassGenerator.CodeGenerator {
 
                 WriteLine(1, LoadServiceBehaviorAttribute());
                 WriteLine(1, LoadBeginClassDeclaration(implementationName, null, new List<string> { interfaceName }));
+
+                if (GeneratorParameters.IsEntityFrameworkUsed) {
+                    WriteEmptyLine();
+                    WriteLine(2, $"private readonly {GeneratorParameters.RootNamespace}DbContext _dbContext;");
+                    WriteEmptyLine();
+                    WriteSummary(2, "Constructeur");
+                    WriteParam(2, "dbContext", "DbContext");
+                    WriteLine(2, $"public {implementationName}({GeneratorParameters.RootNamespace}DbContext dbContext) {{");
+                    WriteLine(3, "_dbContext = dbContext;");
+                    WriteLine(2, "}");
+                }
 
                 foreach (ModelClass classe in classList) {
                     string serviceName = "Load" + classe.Name + "List";
@@ -1258,34 +1256,6 @@ namespace Kinetix.ClassGenerator.CodeGenerator {
             return Path.Combine(basePath, localPath);
         }
 
-
-        /// <summary>
-        /// Retourne le sous-répertoire de Business.
-        /// </summary>
-        /// <param name="projectName">Nom du projet.</param>
-        /// <returns>Sous-répertoire de Business.</returns>
-        private string GetBusinessSubdirectoryName(string projectName) {
-            return Path.Combine(_outputDirectory, projectName);
-        }
-
-        /// <summary>
-        /// Retourne le répertoire dans lequel générer les contrats.
-        /// </summary>
-        /// <param name="projectName">Nom du projet.</param>
-        /// <returns>Répertoire dans lequel générer les contrats.</returns>
-        private string GetContractDirectoryName(string projectName) {
-            return Path.Combine(GetBusinessSubdirectoryName(projectName), "Contract");
-        }
-
-        /// <summary>
-        /// Retourne le répertoire dans lequel générer les objets persistants.
-        /// </summary>
-        /// <param name="projectName">Nom du projet.</param>
-        /// <returns>Répertoire dans lequel générer les objets persistants.</returns>
-        private string GetDataContractDirectoryName(string projectName) {
-            return Path.Combine(GetBusinessSubdirectoryName(projectName), "DataContract");
-        }
-
         /// <summary>
         /// Retourne l'emplacement du fichier généré à partir du ModelClass fourni.
         /// </summary>
@@ -1297,15 +1267,11 @@ namespace Kinetix.ClassGenerator.CodeGenerator {
         }
 
         /// <summary>
-        /// Retourne le répertoire d'implémentation des contrats.
+        /// Mets au pluriel le nom.
         /// </summary>
-        /// <param name="projectName">Nom du projet.</param>
-        /// <returns>Répertoire dans lequel générer les objets persistants.</returns>
-        private string GetImplementationDirectoryName(string projectName) {
-            return Path.Combine(GetBusinessSubdirectoryName(projectName), "Implementation");
-        }
-
-        private string Pluralize(string className) {
+        /// <param name="className">Le nom de la classe.</param>
+        /// <returns></returns>
+        protected string Pluralize(string className) {
             return className.EndsWith("s") ? className : className + "s";
         }
 

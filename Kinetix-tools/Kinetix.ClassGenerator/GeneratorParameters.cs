@@ -24,6 +24,14 @@ namespace Kinetix.ClassGenerator {
         }
 
         /// <summary>
+        /// Nom du projet dans lequel mettre le DbContext.
+        /// </summary>
+        public static string DbContextProjectName {
+            get;
+            set;
+        }
+
+        /// <summary>
         /// Fichiers contenant les domaines.
         /// </summary>
         public static string DomainModelFile {

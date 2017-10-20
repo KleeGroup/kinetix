@@ -41,7 +41,6 @@ namespace Kinetix.ClassGenerator.Configuration {
             GeneratorParameters.GenerateJavascript = false;
             GeneratorParameters.GenerateJavascriptRedirect = false;
             GeneratorParameters.IsProjetUesl = false;
-            GeneratorParameters.IsEntityFrameworkUsed = false;
         }
 
         /// <summary>
