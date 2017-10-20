@@ -12,12 +12,29 @@ namespace Kinetix.ClassGenerator {
         /// </summary>
         static GeneratorParameters() {
             ModelFiles = new List<string>();
+            ExtModelFiles = new List<string>();
         }
 
         /// <summary>
-        /// URL de la collection TFS du projet.
+        /// Nom du fichier de DB context.
         /// </summary>
-        public static string TfsCollectionUrl {
+        public static string DbContext {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Nom du projet dans lequel mettre le DbContext.
+        /// </summary>
+        public static string DbContextProjectPath {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Fichiers contenant les domaines.
+        /// </summary>
+        public static string DomainModelFile {
             get;
             set;
         }
@@ -26,6 +43,14 @@ namespace Kinetix.ClassGenerator {
         /// Liste des fichiers de modélisation.
         /// </summary>
         public static ICollection<string> ModelFiles {
+            get;
+            private set;
+        }
+
+        /// <summary>
+        /// Liste des fichiers de modélisation pour les dépendances.
+        /// </summary>
+        public static ICollection<string> ExtModelFiles {
             get;
             private set;
         }
@@ -159,9 +184,25 @@ namespace Kinetix.ClassGenerator {
         }
 
         /// <summary>
+        /// Utilise les nouveaux .csproj (= pas d'ajout nécessaire).
+        /// </summary>
+        public static bool IsNewCsproj {
+            get;
+            set;
+        }
+
+        /// <summary>
         /// Nom de l'assembly contenant des implémentations de AbstractDomainFactory.
         /// </summary>
         public static string DomainFactoryAssembly {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Nom de l'assembly contenant des implémentations de AbstractListFactory.
+        /// </summary>
+        public static string ListFactoryAssembly {
             get;
             set;
         }
@@ -263,14 +304,6 @@ namespace Kinetix.ClassGenerator {
         }
 
         /// <summary>
-        /// Retourne ou définit l'emplacement du fichier de création des synonymes (SQL).
-        /// </summary>
-        public static string SynonymFile {
-            get;
-            set;
-        }
-
-        /// <summary>
         /// Retourne ou définit l'emplacement du script d'insertion des données des listes statiques (SQL).
         /// </summary>
         public static string StaticListFile {
@@ -306,6 +339,14 @@ namespace Kinetix.ClassGenerator {
         /// Nom du fichier de configuration de l'historique de création des colonnes.
         /// </summary>
         public static string HistoriqueCreationFile {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Utilise des types spécifiques pour les valeurs de listes statique, au lieu de string.
+        /// </summary>
+        public static bool UseTypeSafeConstValues {
             get;
             set;
         }

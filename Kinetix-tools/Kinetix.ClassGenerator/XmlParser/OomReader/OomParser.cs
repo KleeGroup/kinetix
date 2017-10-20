@@ -6,6 +6,7 @@ using System.Globalization;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Xml;
+using Kinetix.ClassGenerator.Checker;
 using Kinetix.ClassGenerator.Model;
 using Kinetix.ClassGenerator.NVortex;
 using Kinetix.ComponentModel;
@@ -71,14 +72,22 @@ namespace Kinetix.ClassGenerator.XmlParser.OomReader {
         private XmlNamespaceManager _currentNsManager;
         private ModelRoot _currentModelRoot;
         private ICollection<ModelRoot> _modelRootList;
+        private ModelRoot _domainModelRoot;
+
+        private readonly string _domainModelFile;
+        private readonly ICollection<string> _extModelFiles;
 
         /// <summary>
         /// Constructeur.
         /// </summary>
         /// <param name="modelFiles">Liste des modèles à analyser.</param>
+        /// <param name="domainModelFile">Modele contenant les domaines.</param>
+        /// <param name="extModelFiles">Liste des modèles de base de données externes à analyser.</param>
         /// <param name="domainList">Liste des domaines.</param>
-        public OomParser(ICollection<string> modelFiles, ICollection<IDomain> domainList)
+        public OomParser(ICollection<string> modelFiles, string domainModelFile, ICollection<string> extModelFiles, ICollection<IDomain> domainList)
             : base(modelFiles, domainList) {
+            this._domainModelFile = domainModelFile;
+            this._extModelFiles = extModelFiles;
         }
 
         /// <summary>
@@ -123,6 +132,53 @@ namespace Kinetix.ClassGenerator.XmlParser.OomReader {
             return false;
         }
 
+        private void ParseModelFile(string modelFile, bool domainsOnly = false, bool addToList = true) {
+            DisplayMessage("Analyse du fichier " + modelFile);
+            using (FileStream stream = new FileStream(modelFile, FileMode.Open, FileAccess.Read, FileShare.ReadWrite)) {
+                _currentOom = new XmlDocument();
+                _currentOom.Load(stream);
+            }
+
+            _currentNsManager = new XmlNamespaceManager(_currentOom.NameTable);
+            _currentNsManager.AddNamespace("xsl", "http://www.w3.org/1999/XSL/Transform");
+            _currentNsManager.AddNamespace("a", "attribute");
+            _currentNsManager.AddNamespace("c", "collection");
+            _currentNsManager.AddNamespace("o", "object");
+
+            XmlNode modelNode = _currentOom.SelectSingleNode(NodeModel, _currentNsManager);
+            ModelRoot root = new ModelRoot() {
+                ModelFile = modelFile,
+                Label = ParserHelper.GetXmlValue(modelNode.SelectSingleNode(PropertyName, _currentNsManager)),
+                Name = ConvertModelName(ParserHelper.GetXmlValue(modelNode.SelectSingleNode(PropertyCode, _currentNsManager)))
+            };
+            _currentModelRoot = root;
+
+            DisplayMessage("==> Parsing du modèle " + root.Label + "(" + root.Name + ")");
+            DisplayMessage("--> Lecture des domaines.");
+            BuildModelDomains(_currentOom.SelectSingleNode(NodeDomains, _currentNsManager), modelFile);
+
+            if (!domainsOnly) {
+                DisplayMessage("--> Lecture des namespaces.");
+                XmlNode nmspacesNode = _currentOom.SelectSingleNode(NodeNamespace, _currentNsManager);
+                BuildModelNamespaces(nmspacesNode, modelFile);
+                DisplayMessage("--> Lecture des héritages.");
+                BuildModelNamespaceGeneralizations(nmspacesNode, modelFile);
+                DisplayMessage("--> Lecture des associations.");
+                BuildModelNamespaceAssociations(nmspacesNode, modelFile);
+            } else {
+                _domainModelRoot = root;
+                // Hack relativement sale, pour ne pas avoir les warnings (Le domaine de la propriété [] n'existe pas) sans raison
+                // FIXME
+                foreach (ModelDomain domain in root.CreatedDomains) {
+                    ModelDomainChecker.Instance.Check(domain);
+                }
+            }
+
+            if (addToList) {
+                _modelRootList.Add(root);
+            }
+        }
+
         /// <summary>
         /// Peuple la structure du modèle objet en paramètre à partir d'un fichier OOM.
         /// </summary>
@@ -131,38 +187,20 @@ namespace Kinetix.ClassGenerator.XmlParser.OomReader {
         public override ICollection<ModelRoot> Parse() {
             ErrorList.Clear();
             _modelRootList = new List<ModelRoot>();
+
+            // Chargement des domaines
+            if (_domainModelFile != null) {
+                ParseModelFile(_domainModelFile, true, false);
+            }
+
+            // Chargement des tables d'autres bases (dépendances)
+            foreach (string modelFile in _extModelFiles) {
+                ParseModelFile(modelFile, false, false);
+            }
+
+            // Chargement des tables et autres fichiers
             foreach (string modelFile in ModelFiles) {
-                DisplayMessage("Analyse du fichier " + modelFile);
-                using (FileStream stream = new FileStream(modelFile, FileMode.Open, FileAccess.Read, FileShare.ReadWrite)) {
-                    _currentOom = new XmlDocument();
-                    _currentOom.Load(stream);
-                }
-
-                _currentNsManager = new XmlNamespaceManager(_currentOom.NameTable);
-                _currentNsManager.AddNamespace("xsl", "http://www.w3.org/1999/XSL/Transform");
-                _currentNsManager.AddNamespace("a", "attribute");
-                _currentNsManager.AddNamespace("c", "collection");
-                _currentNsManager.AddNamespace("o", "object");
-
-                XmlNode modelNode = _currentOom.SelectSingleNode(NodeModel, _currentNsManager);
-                ModelRoot root = new ModelRoot() {
-                    ModelFile = modelFile,
-                    Label = ParserHelper.GetXmlValue(modelNode.SelectSingleNode(PropertyName, _currentNsManager)),
-                    Name = ConvertModelName(ParserHelper.GetXmlValue(modelNode.SelectSingleNode(PropertyCode, _currentNsManager)))
-                };
-                _currentModelRoot = root;
-
-                DisplayMessage("==> Parsing du modèle " + root.Label + "(" + root.Name + ")");
-                DisplayMessage("--> Lecture des domaines.");
-                BuildModelDomains(_currentOom.SelectSingleNode(NodeDomains, _currentNsManager), modelFile);
-                DisplayMessage("--> Lecture des namespaces.");
-                XmlNode nmspacesNode = _currentOom.SelectSingleNode(NodeNamespace, _currentNsManager);
-                BuildModelNamespaces(nmspacesNode, modelFile);
-                DisplayMessage("--> Lecture des héritages.");
-                BuildModelNamespaceGeneralizations(nmspacesNode, modelFile);
-                DisplayMessage("--> Lecture des associations.");
-                BuildModelNamespaceAssociations(nmspacesNode, modelFile);
-                _modelRootList.Add(root);
+                ParseModelFile(modelFile);
             }
 
             return ParseAliasColumn(_modelRootList);
@@ -218,6 +256,10 @@ namespace Kinetix.ClassGenerator.XmlParser.OomReader {
         /// <returns>Le domaine.</returns>
         [SuppressMessage("Microsoft.Globalization", "CA1303:DoNotPassLiteralsAsLocalizedParameters", Justification = "Non internationalisé")]
         private ModelDomain GetDomainByCode(string domainCode) {
+            if (_domainModelRoot != null && _domainModelRoot.HasDomainByCode(domainCode)) {
+                return _domainModelRoot.GetDomainByCode(domainCode);
+            }
+
             foreach (ModelRoot modelRoot in _modelRootList) {
                 if (modelRoot.HasDomainByCode(domainCode)) {
                     return modelRoot.GetDomainByCode(domainCode);
@@ -240,7 +282,8 @@ namespace Kinetix.ClassGenerator.XmlParser.OomReader {
                     Name = ParserHelper.GetXmlValue(nmspaceNode.SelectSingleNode(PropertyCode, _currentNsManager)),
                     Comment = ParserHelper.GetXmlValue(nmspaceNode.SelectSingleNode(PropertyComment, _currentNsManager)),
                     Creator = ParserHelper.GetXmlValue(nmspaceNode.SelectSingleNode(PropertyCreator, _currentNsManager)),
-                    Model = _currentModelRoot
+                    Model = _currentModelRoot,
+                    IsExternal = _extModelFiles.Contains(modelFile)
                 };
                 if (string.IsNullOrEmpty(nmspace.Comment)) {
                     RegisterError(Category.Doc, "Le package [" + nmspace.Label + "] n'a pas de commentaire.");
@@ -503,7 +546,8 @@ namespace Kinetix.ClassGenerator.XmlParser.OomReader {
                     Comment = ParserHelper.GetXmlValue(classNode.SelectSingleNode(PropertyComment, _currentNsManager)),
                     Stereotype = ParserHelper.GetXmlValue(classNode.SelectSingleNode(PropertyStereotype, _currentNsManager)),
                     Namespace = nmspace,
-                    ModelFile = modelFile
+                    ModelFile = modelFile,
+                    IsExternal = _extModelFiles.Contains(modelFile)
                 };
 
                 if (!string.IsNullOrEmpty(classe.Stereotype) && classe.Stereotype != "Reference" && classe.Stereotype != "Statique") {
@@ -831,9 +875,20 @@ namespace Kinetix.ClassGenerator.XmlParser.OomReader {
                         if (annotation.Name == "Unique") {
                             property.IsUnique = true;
                         }
+                        if (annotation.Name == "UniqueNullable") {
+                            property.IsUniqueNullable = true;
+                        }
+
+                        if (annotation.Name == "Reprise") {
+                            property.IsReprise = true;
+                        }
 
                         if (annotation.Name == "UniqueMultiple") {
                             property.IsUniqueMany = true;
+                        }
+
+                        if (annotation.Name == "IsIdManuallySet") {
+                            property.IsIdManuallySet = true;
                         }
 
                         property.AddAnnotation(annotation);
@@ -857,7 +912,7 @@ namespace Kinetix.ClassGenerator.XmlParser.OomReader {
                                 classe.Trigram = property.DataDescription.Libelle;
                             }
 
-                            dataMemberName = classe.Trigram + "_" + columnName;
+                            dataMemberName = property.IsReprise ? columnName : classe.Trigram + "_" + columnName;
                         } else if (dataMemberName.Equals(columnName)) {
                             RegisterError(Category.Error, "Propriété " + classe.Name + "." + property.Name + " : le nom de la colonne ne doit pas être saisie si il peut être déduit du nom de la classe.");
                         }

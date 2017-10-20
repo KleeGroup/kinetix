@@ -113,6 +113,7 @@
     <Compile Include="Main\MainGenerator.cs" />
     <Compile Include="Model\IPersistenceData.cs" />
     <Compile Include="Model\ModelAnnotation.cs" />
+    <Compile Include="Model\StaticListElement.cs" />
     <Compile Include="Model\Stereotype.cs" />
     <Compile Include="Model\IModelObject.cs" />
     <Compile Include="Model\ModelRoot.cs" />
@@ -226,7 +227,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="conf_exemple.xml" />
     <Content Include="README.txt" />
     <Content Include="Templates\ReferenceTemplate.tt">
       <Generator>TextTemplatingFilePreprocessor</Generator>

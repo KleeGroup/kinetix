@@ -261,11 +261,7 @@ namespace Kinetix.Data.SqlClient {
         /// </summary>
         /// <param name="connectionStringSettings">Configuration.</param>
         public void RegisterConnectionStringSettings(ConnectionStringSettings connectionStringSettings) {
-            if (connectionStringSettings == null) {
-                throw new ArgumentNullException("connectionStringSettings");
-            }
-
-            _connectionSettings[connectionStringSettings.Name] = connectionStringSettings;
+            _connectionSettings[connectionStringSettings.Name] = connectionStringSettings ?? throw new ArgumentNullException("connectionStringSettings");
         }
 
         /// <summary>
@@ -318,6 +314,10 @@ namespace Kinetix.Data.SqlClient {
             } else {
                 HttpContext.Current.Items.Remove(SqlServerTransactionalContext);
             }
+        }
+
+        public DbConnection ObtainConnection(string connectionName) {
+            return (DbConnection)ObtainConnection(connectionName, false, out var mustCloseConnection).SqlConnection;
         }
 
         /// <summary>

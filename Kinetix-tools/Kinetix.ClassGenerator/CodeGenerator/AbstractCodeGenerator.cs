@@ -57,13 +57,9 @@ namespace Kinetix.ClassGenerator.CodeGenerator {
                 throw new ArgumentNullException(nameof(modelRootList));
             }
 
-            if (false) {
-                // TODO rendre configurable.
-                ////GenerateDbContext(modelRootList);
+            if (GeneratorParameters.IsEntityFrameworkUsed) {
+                GenerateDbContext(modelRootList);
             }
-
-            // Pas de génération des resources pour le moment.
-            ////GenerateResourceLocator(modelRootList);
 
             foreach (ModelRoot model in modelRootList) {
                 if (model.Namespaces != null && model.Namespaces.Values.Count > 0) {
@@ -232,6 +228,12 @@ namespace Kinetix.ClassGenerator.CodeGenerator {
         /// <param name="enumValue">Nom de l'enum.</param>
         /// <returns>Code généré.</returns>
         protected abstract string LoadEnumItem(string enumValue);
+
+        /// <summary>
+        /// Retourne l'attribut DatabaseGenerated set à None.
+        /// </summary>
+        /// <returns>Code généré.</returns>
+        protected abstract string LoadGeneratedNoneAttribute();
 
         /// <summary>
         /// Retourne le code associé à l'instanciation d'un membre privé.
@@ -473,15 +475,6 @@ namespace Kinetix.ClassGenerator.CodeGenerator {
         }
 
         /// <summary>
-        /// Retourne le namespace du projet "Common" de Business.
-        /// </summary>
-        /// <param name="projectName">Nom du projet.</param>
-        /// <returns>Namespace du projet "Common" de Business.</returns>
-        private static string GetBusinessCommonNamespace(string projectName) {
-            return string.Format(CultureInfo.InvariantCulture, "{0}.Business.Common", projectName);
-        }
-
-        /// <summary>
         /// Retourne le namespace complet d'une class.
         /// </summary>
         /// <param name="root">Racine du namespace.</param>
@@ -586,6 +579,7 @@ namespace Kinetix.ClassGenerator.CodeGenerator {
             WriteLine(1, LoadBeginClassDeclaration(item.Name, item.ParentClass == null ? string.Empty : item.ParentClass.Name, ifList));
 
             GenerateConstProperties(item);
+
             GenerateConstructors(item);
 
             if (item.DataContract.IsPersistent && !item.IsView && item.PersistentPropertyList.Count > 0) {
@@ -613,6 +607,10 @@ namespace Kinetix.ClassGenerator.CodeGenerator {
             }
 
             WriteLine(1, LoadEndClassDeclaration());
+
+            if (GeneratorParameters.UseTypeSafeConstValues) {
+                GenerateConstPropertiesClass(item);
+            }
         }
 
         /// <summary>
@@ -630,11 +628,13 @@ namespace Kinetix.ClassGenerator.CodeGenerator {
         private void GenerateConstProperties(ModelClass item) {
             int nbConstValues = item.ConstValues.Count;
             if (nbConstValues != 0) {
+
                 WriteEmptyLine();
+
                 int i = 0;
-                foreach (string constFieldName in item.ConstValues.Keys.OrderBy(key => key, StringComparer.Ordinal)) {
+                foreach (string constFieldName in item.ConstValues.Keys.ToList().OrderBy(x => x)) {
                     ++i;
-                    string value = item.ConstValues[constFieldName];
+                    StaticListElement valueLibelle = item.ConstValues[constFieldName];
                     ModelProperty property = null;
                     if (item.Stereotype == Stereotype.Reference) {
                         foreach (ModelProperty prop in item.PropertyList) {
@@ -647,12 +647,55 @@ namespace Kinetix.ClassGenerator.CodeGenerator {
                         property = ((IList<ModelProperty>)item.PrimaryKey)[0];
                     }
 
-                    WriteSummary(2, "Obtient la valeur de la clef primaire pour " + constFieldName);
-                    WriteLine(2, LoadPublicConstField(constFieldName, property.DataType, value));
+                    WriteSummary(2, valueLibelle.Libelle);
+
+                    if (GeneratorParameters.UseTypeSafeConstValues) {
+                        WriteLine(2, String.Format("public static readonly {2}Code {0} = new {2}Code({1});", constFieldName, valueLibelle.Code, item.Name));
+                    } else {
+                        WriteLine(2, String.Format("public const string {0} = {1};", constFieldName, valueLibelle.Code));
+                    }
+
                     if (i < nbConstValues) {
                         WriteEmptyLine();
                     }
                 }
+            }
+        }
+
+        /// <summary>
+        /// Génération des constantes statiques.
+        /// </summary>
+        /// <param name="item">La classe générée.</param>
+        private void GenerateConstPropertiesClass(ModelClass item) {
+            int nbConstValues = item.ConstValues.Count;
+            if (nbConstValues != 0) {
+
+                WriteEmptyLine();
+                WriteLine("#pragma warning disable SA1402");
+                WriteEmptyLine();
+                WriteSummary(1, $"Type des valeurs pour {item.Name}");
+                WriteLine(1, $"public sealed class {item.Name}Code : TypeSafeEnum {{");
+                WriteEmptyLine();
+
+                WriteLine(2, $"private static readonly Dictionary<string, {item.Name}Code> Instance = new Dictionary<string, {item.Name}Code>();");
+                WriteEmptyLine();
+
+                WriteSummary(2, "Constructeur");
+                WriteParam(2, "value", "Valeur");
+                WriteLine(2, $"public {item.Name}Code(string value)");
+                WriteLine(3, ": base(value) {");
+                WriteLine(3, "Instance[value] = this;");
+                WriteLine(2, "}");
+                WriteEmptyLine();
+
+                WriteLine(2, $"public static explicit operator {item.Name}Code(string value) {{");
+                WriteLine(3, "if (Instance.TryGetValue(value, out var result)) {");
+                WriteLine(4, "return result;");
+                WriteLine(3, "} else {");
+                WriteLine(4, "throw new InvalidCastException();");
+                WriteLine(3, "}");
+                WriteLine(2, "}");
+                WriteLine(1, "}");
             }
         }
 
@@ -675,44 +718,35 @@ namespace Kinetix.ClassGenerator.CodeGenerator {
         /// <param name="modelRootList">Liste des modeles.</param>
         private void GenerateDbContext(IEnumerable<ModelRoot> modelRootList) {
             Console.Out.WriteLine("Generating DbContext");
-            var enumerator = modelRootList.GetEnumerator();
-            enumerator.MoveNext();
-            var projectName = enumerator.Current.Name;
-            var strippedProjectName = RemoveDots(projectName);
 
-            var targetFileName = Path.Combine(GetImplementationDirectoryName(projectName), GetBusinessCommonNamespace(projectName) + "\\" + strippedProjectName + "DbContext.cs");
-            using (_currentWriter = new CsharpFileWriter(targetFileName)) {
+            var projectName = GeneratorParameters.DbContextProjectPath.Split('\\').Last();
+            var rootName = GeneratorParameters.RootNamespace;
+            var strippedProjectName = RemoveDots(rootName);
+            var destDirectory = $"{GeneratorParameters.OutputDirectory}\\{GeneratorParameters.DbContextProjectPath}";
+
+            Directory.CreateDirectory(destDirectory);
+
+            var targetFileName = Path.Combine(destDirectory, "generated", strippedProjectName + "DbContext.cs");
+            var csprojFileName = Path.Combine(destDirectory, $"{projectName}.csproj");
+            using (_currentWriter = new CsharpFileWriter(targetFileName, csprojFileName)) {
                 WriteLine("using System.Data.Entity;");
-                WriteLine("using System.Diagnostics.CodeAnalysis;");
-                var listNs = new List<string>();
-                foreach (ModelRoot model in modelRootList) {
-                    foreach (ModelNamespace ns in model.Namespaces.Values) {
-                        if (ns.HasPersistentClasses) {
-                            listNs.Add(ns.Model.Name + "." + ns.Name);
-                        }
-                    }
-                }
+                WriteLine("using Kinetix.Data.SqlClient;");
 
+                List<string> listNs = new List<string>();
                 listNs.Sort();
-                foreach (string ns in listNs) {
+                foreach (string ns in listNs.Distinct()) {
                     WriteLine("using " + ns + ";");
                 }
 
                 WriteEmptyLine();
-                WriteLine("namespace " + GetBusinessCommonNamespace(projectName) + " {");
+                WriteLine($"namespace {projectName} {{");
                 WriteEmptyLine();
-                WriteSummary(1, "DbContext généré pour Entity-Framework.");
-                WriteLine(1, "[SuppressMessage(\"Microsoft.Maintainability\", \"CA1506:AvoidExcessiveClassCoupling\", Justification = \"EF4.1\")]");
-                WriteLine(1, "public class " + strippedProjectName + "DbContext : DbContext {");
-                WriteEmptyLine();
-                WriteSummary(2, "Constructeur par défaut.");
-                WriteLine(2, "public " + strippedProjectName + "DbContext() {");
-                WriteLine(2, "}");
-
+                WriteSummary(1, "DbContext généré pour Entity Framework.");
+                WriteLine(1, "public partial class " + strippedProjectName + "DbContext : DbContext {");
                 WriteEmptyLine();
                 WriteSummary(2, "Constructeur par défaut.");
-                WriteLine(2, "public " + strippedProjectName + "DbContext(string name)");
-                WriteLine(3, ": base(name) {");
+                WriteLine(2, "public " + strippedProjectName + "DbContext()");
+                WriteLine(3, ": base(SqlServerManager.Instance.ObtainConnection(\"default\"), false) {");
                 WriteLine(2, "}");
 
                 foreach (ModelRoot model in modelRootList) {
@@ -721,11 +755,51 @@ namespace Kinetix.ClassGenerator.CodeGenerator {
                             if (classe.DataContract.IsPersistent) {
                                 WriteEmptyLine();
                                 WriteSummary(2, "Accès à l'entité " + classe.Name);
-                                WriteLine(2, "public IDbSet<" + classe.Name + "> " + classe.Name + " { get; set; }");
+                                WriteLine(2, "public DbSet<" + classe.FullyQualifiedName + "> " + Pluralize(classe.Name) + " { get; set; }");
                             }
                         }
                     }
                 }
+
+                WriteEmptyLine();
+                WriteSummary(2, "Hook pour l'ajout de configuration sur EF (précision des champs, etc).");
+                WriteParam(2, "modelBuilder", "L'objet de construction du modèle");
+                WriteLine(2, "protected override void OnModelCreating(DbModelBuilder modelBuilder)");
+                WriteLine(2, "{");
+                WriteLine(3, "base.OnModelCreating(modelBuilder);");
+
+                WriteEmptyLine();
+
+                foreach (ModelRoot model in modelRootList) {
+                    foreach (ModelNamespace ns in model.Namespaces.Values) {
+                        foreach (ModelClass classe in ns.ClassList) {
+                            if (classe.DataContract.IsPersistent) {
+                                foreach (ModelProperty property in classe.PropertyList) {
+                                    if (property.DataType == "decimal" && property.DataDescription.Domain.PersistentLength.HasValue && property.DataDescription.Domain.PersistentPrecision.HasValue) {
+                                        WriteLine(3,
+                                            string.Format("modelBuilder.Entity<{0}>().Property(x => x.{1}).HasPrecision({2}, {3});",
+                                                classe.FullyQualifiedName,
+                                                property.Name,
+                                                property.DataDescription.Domain.PersistentLength.Value,
+                                                property.DataDescription.Domain.PersistentPrecision.Value
+                                            )
+                                        );
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                WriteEmptyLine();
+
+                WriteLine(3, "OnModelCreatingCustom(modelBuilder);");
+
+                WriteLine(2, "}");
+
+                WriteEmptyLine();
+                WriteSummary(2, "Hook pour l'ajout de configuration custom sur EF (view, etc).");
+                WriteParam(2, "modelBuilder", "L'objet de construction du modèle");
+                WriteLine(2, "partial void OnModelCreatingCustom(DbModelBuilder modelBuilder);");
 
                 WriteLine(1, "}");
                 WriteLine("}");
@@ -838,12 +912,12 @@ namespace Kinetix.ClassGenerator.CodeGenerator {
         /// <param name="item">La classe générée.</param>
         private void GenerateProperties(ModelClass item) {
             if (item.PropertyList.Count > 0) {
-                foreach (ModelProperty property in item.PersistentPropertyList) {
+                foreach (ModelProperty property in item.PersistentPropertyList.Where(prop => !prop.IsReprise)) {
                     WriteEmptyLine();
                     GenerateProperty(property);
                 }
 
-                foreach (ModelProperty propertyNonPersistent in item.NonPersistentPropertyList) {
+                foreach (ModelProperty propertyNonPersistent in item.NonPersistentPropertyList.Where(prop => !prop.IsReprise)) {
                     WriteEmptyLine();
                     GenerateProperty(propertyNonPersistent);
                 }
@@ -870,7 +944,7 @@ namespace Kinetix.ClassGenerator.CodeGenerator {
             }
 
             if (property.DataDescription != null) {
-                if (!string.IsNullOrEmpty(property.DataDescription.ReferenceType)) {
+                if (!string.IsNullOrEmpty(property.DataDescription.ReferenceType) && !property.DataDescription.ReferenceClass.IsExternal) {
                     string referencedType = property.DataDescription.ReferenceType;
 
                     WriteLine(2, LoadReferencedTypeAttribute(referencedType));
@@ -881,8 +955,11 @@ namespace Kinetix.ClassGenerator.CodeGenerator {
                 }
             }
 
-            if (property.DataDescription.IsPrimaryKey) {
+            if (property.DataDescription.IsPrimaryKey /*&& (GeneratorParameters.IsPostSharpDisabled || GeneratorParameters.IsEntityFrameworkUsed)*/) {
                 WriteLine(2, LoadKeyAttribute());
+                if (property.IsIdManuallySet) {
+                    WriteLine(2, LoadGeneratedNoneAttribute());
+                }
             }
 
             if (GeneratorParameters.IsPostSharpDisabled) {
@@ -979,10 +1056,18 @@ namespace Kinetix.ClassGenerator.CodeGenerator {
             using (_currentWriter = new CsharpFileWriter(implementationFileName, csprojFileName)) {
                 WriteLine(LoadUsing("System.Collections.Generic"));
                 WriteLine(LoadUsing("System.Diagnostics.CodeAnalysis"));
+                if (GeneratorParameters.IsEntityFrameworkUsed) {
+                    WriteLine(LoadUsing("System.Linq"));
+                }
                 WriteLine(LoadUsing("System.ServiceModel"));
+                if (GeneratorParameters.IsEntityFrameworkUsed) {
+                    WriteLine(LoadUsing(GeneratorParameters.DbContextProjectPath.Split('\\').Last()));
+                }
                 WriteLine(LoadUsing(projectName + "." + nameSpaceContract));
                 WriteLine(LoadUsing(projectName + "." + nameSpaceName));
-                WriteLine(LoadUsing("Kinetix.Broker"));
+                if (!GeneratorParameters.IsEntityFrameworkUsed) {
+                    WriteLine(LoadUsing("Kinetix.Broker"));
+                }
 
                 WriteEmptyLine();
                 WriteLine(LoadBeginNamespace(projectName + "." + nameSpaceImplementation));
@@ -993,6 +1078,17 @@ namespace Kinetix.ClassGenerator.CodeGenerator {
 
                 WriteLine(1, LoadServiceBehaviorAttribute());
                 WriteLine(1, LoadBeginClassDeclaration(implementationName, null, new List<string> { interfaceName }));
+
+                if (GeneratorParameters.IsEntityFrameworkUsed) {
+                    WriteEmptyLine();
+                    WriteLine(2, $"private readonly {GeneratorParameters.RootNamespace}DbContext _dbContext;");
+                    WriteEmptyLine();
+                    WriteSummary(2, "Constructeur");
+                    WriteParam(2, "dbContext", "DbContext");
+                    WriteLine(2, $"public {implementationName}({GeneratorParameters.RootNamespace}DbContext dbContext) {{");
+                    WriteLine(3, "_dbContext = dbContext;");
+                    WriteLine(2, "}");
+                }
 
                 foreach (ModelClass classe in classList) {
                     string serviceName = "Load" + classe.Name + "List";
@@ -1072,10 +1168,9 @@ namespace Kinetix.ClassGenerator.CodeGenerator {
         /// <param name="item">Classe concernée.</param>
         private void GenerateUsing(ModelClass item) {
             WriteLine(LoadUsing("System"));
-            if (item.HasCollection) {
+            if (item.HasCollection || (item.ConstValues != null && item.ConstValues.Count > 0)) {
                 WriteLine(LoadUsing("System.Collections.Generic"));
             }
-
             if (!string.IsNullOrEmpty(item.DefaultProperty)
                 || GeneratorParameters.IsNotifyPropertyChangeEnabled
                 || item.Stereotype == Stereotype.Reference
@@ -1157,12 +1252,12 @@ namespace Kinetix.ClassGenerator.CodeGenerator {
         }
 
         /// <summary>
-        /// Retourne le répertoire d'implémentation des contrats.
+        /// Mets au pluriel le nom.
         /// </summary>
-        /// <param name="projectName">Nom du projet.</param>
-        /// <returns>Répertoire dans lequel générer les objets persistants.</returns>
-        private string GetImplementationDirectoryName(string projectName) {
-            return Path.Combine(_outputDirectory, projectName + "." + "Implementation");
+        /// <param name="className">Le nom de la classe.</param>
+        /// <returns></returns>
+        protected string Pluralize(string className) {
+            return className.EndsWith("s") ? className : className + "s";
         }
 
         /// <summary>

@@ -28,7 +28,7 @@ namespace Kinetix.ClassGenerator.Writer {
             /* Ajoute le fichier dans TFS */
             base.FinishFile(fileName);
 
-            if (string.IsNullOrEmpty(_csprojFileName)) {
+            if (string.IsNullOrEmpty(_csprojFileName) || GeneratorParameters.IsNewCsproj) {
                 return;
             }
 

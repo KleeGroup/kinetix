@@ -152,8 +152,9 @@ namespace Kinetix.ClassGenerator.SchemaGenerator {
         /// <param name="rawCmd">Commande SQL à modifier.</param>
         /// <returns>Commande SQL modifiée.</returns>
         private static string ReplaceConfigurationVariables(string rawCmd) {
-            Dictionary<string, string> varValueDic = new Dictionary<string, string>();
-            varValueDic.Add("dbEchangeDirectory", @"c:\SSIS");
+            var varValueDic = new Dictionary<string, string> {
+                { "dbEchangeDirectory", @"c:\SSIS" }
+            };
             StringBuilder sb = new StringBuilder(rawCmd);
             foreach (KeyValuePair<string, string> pair in varValueDic) {
                 string varName = string.Format(CultureInfo.InvariantCulture, "$({0})", pair.Key);

@@ -275,6 +275,14 @@ namespace Kinetix.ClassGenerator {
         }
 
         /// <summary>
+        /// Retourne l'attribut DatabaseGenerated set à None.
+        /// </summary>
+        /// <returns>Code généré.</returns>
+        protected override string LoadGeneratedNoneAttribute() {
+            return "[DatabaseGenerated(DatabaseGeneratedOption.None)]";
+        }
+
+        /// <summary>
         /// Retourne l'attribut OperationContract.
         /// </summary>
         /// <returns>Code généré.</returns>
@@ -298,11 +306,19 @@ namespace Kinetix.ClassGenerator {
         /// <returns>Code généré.</returns>
         protected override string LoadReferenceAccessorBody(string className, ModelProperty defaultProperty) {
             string queryParameter = string.Empty;
-            if (defaultProperty != null) {
-                queryParameter = "new Kinetix.Data.SqlClient.QueryParameter(" + className + ".Cols." + defaultProperty.DataMember.Name + ", Kinetix.Data.SqlClient.SortOrder.Asc)";
-            }
+            if (GeneratorParameters.IsEntityFrameworkUsed) {
+                if (defaultProperty != null) {
+                    queryParameter = $".OrderBy(row => row.{defaultProperty.DataMember.Name})";
+                }
 
-            return "return BrokerManager.GetStandardBroker<" + className + ">().GetAll(" + queryParameter + ");";
+                return $"return _dbContext.{Pluralize(className)}{queryParameter}.ToList();";
+            } else {
+                if (defaultProperty != null) {
+                    queryParameter = "new Kinetix.Data.SqlClient.QueryParameter(" + className + ".Cols." + defaultProperty.DataMember.Name + ", Kinetix.Data.SqlClient.SortOrder.Asc)";
+                }
+
+                return "return BrokerManager.GetStandardBroker<" + className + ">().GetAll(" + queryParameter + ");";
+            }
         }
 
         /// <summary>
@@ -555,18 +571,15 @@ namespace Kinetix.ClassGenerator {
                 throw new ArgumentNullException("validationAttribute");
             }
 
-            RangeAttribute rangeAttr = validationAttribute as RangeAttribute;
-            if (rangeAttr != null) {
+            if (validationAttribute is RangeAttribute rangeAttr) {
                 return "[Range(" + rangeAttr.Minimum.ToString() + ", " + rangeAttr.Maximum.ToString() + ")]";
             }
 
-            EmailAttribute emailAttr = validationAttribute as EmailAttribute;
-            if (emailAttr != null) {
+            if (validationAttribute is EmailAttribute emailAttr) {
                 return "[Email(" + emailAttr.MaximumLength + ")]";
             }
 
-            StringLengthAttribute strLenAttr = validationAttribute as StringLengthAttribute;
-            if (strLenAttr != null) {
+            if (validationAttribute is StringLengthAttribute strLenAttr) {
                 StringBuilder sb = new StringBuilder("[StringLength(");
                 sb.Append(strLenAttr.MaximumLength);
                 if (strLenAttr.MinimumLength > 0) {
@@ -579,18 +592,15 @@ namespace Kinetix.ClassGenerator {
                 return sb.ToString();
             }
 
-            RegularExpressionAttribute regexAttr = validationAttribute as RegularExpressionAttribute;
-            if (regexAttr != null) {
+            if (validationAttribute is RegularExpressionAttribute regexAttr) {
                 return "[RegularExpression(\"" + regexAttr.Pattern + "\")]";
             }
 
-            DateAttribute dateAttr = validationAttribute as DateAttribute;
-            if (dateAttr != null) {
+            if (validationAttribute is DateAttribute dateAttr) {
                 return string.Format(CultureInfo.InvariantCulture, "[Date({0})]", dateAttr.Precision);
             }
 
-            NumeroSiretAttribute siretAttr = validationAttribute as NumeroSiretAttribute;
-            if (siretAttr != null) {
+            if (validationAttribute is NumeroSiretAttribute siretAttr) {
                 return "[NumeroSiret]";
             }
 

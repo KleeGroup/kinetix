@@ -135,9 +135,33 @@ namespace Kinetix.ClassGenerator.Model {
         }
 
         /// <summary>
+        /// Indique si la propriété est unique et nullable.
+        /// </summary>
+        public bool IsUniqueNullable {
+            get;
+            set;
+        }
+
+        /// <summary>
         /// Indique si la propriété est unique sur plusieur colonnes.
         /// </summary>
         public bool IsUniqueMany {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Indique si la propriété est utilisée uniquement pour la reprise de données.
+        /// </summary>
+        public bool IsReprise {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Indique si la propriété est un Id qui sera entré par l'utilisateur à la création de l'objet.
+        /// </summary>
+        public bool IsIdManuallySet {
             get;
             set;
         }
@@ -175,7 +199,7 @@ namespace Kinetix.ClassGenerator.Model {
         /// </summary>
         public bool IsDatabaseOnly {
             get {
-                return this.Stereotype == Kinetix.ClassGenerator.Model.Stereotype.DatabaseOnly;
+                return Kinetix.ClassGenerator.Model.Stereotype.DatabaseOnly == this.Stereotype;
             }
         }
 
