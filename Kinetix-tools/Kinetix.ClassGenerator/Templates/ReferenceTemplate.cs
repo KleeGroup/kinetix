@@ -28,76 +28,72 @@ namespace Kinetix.ClassGenerator.Templates
         /// </summary>
         public virtual string TransformText()
         {
-            this.Write("\n");
-            this.Write("\n");
-            this.Write("\n");
-            this.Write("\n");
-            this.Write("\n/*\n    Ce fichier a été généré automatiquement.\n    Toute modification sera perd" +
-                    "ue.\n*/\n");
+            this.Write("/*\r\n    Ce fichier a été généré automatiquement.\r\n    Toute modification sera per" +
+                    "due.\r\n*/\r\n");
             
-            #line 1 "D:\Projets\kinetix\Kinetix-tools\Kinetix.ClassGenerator\Templates\ReferenceTemplate.tt"
+            #line 10 "D:\Projets\kinetix\Kinetix-tools\Kinetix.ClassGenerator\Templates\ReferenceTemplate.tt"
  foreach (var reference in References) { 
             
             #line default
             #line hidden
-            this.Write("\n\nexport type ");
+            this.Write("\r\nexport type ");
             
-            #line 1 "D:\Projets\kinetix\Kinetix-tools\Kinetix.ClassGenerator\Templates\ReferenceTemplate.tt"
+            #line 12 "D:\Projets\kinetix\Kinetix-tools\Kinetix.ClassGenerator\Templates\ReferenceTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(reference.Name));
             
             #line default
             #line hidden
             this.Write("Code = ");
             
-            #line 1 "D:\Projets\kinetix\Kinetix-tools\Kinetix.ClassGenerator\Templates\ReferenceTemplate.tt"
+            #line 12 "D:\Projets\kinetix\Kinetix-tools\Kinetix.ClassGenerator\Templates\ReferenceTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(GetConstValues(reference)));
             
             #line default
             #line hidden
-            this.Write(";\nexport interface ");
+            this.Write(";\r\nexport interface ");
             
-            #line 1 "D:\Projets\kinetix\Kinetix-tools\Kinetix.ClassGenerator\Templates\ReferenceTemplate.tt"
+            #line 13 "D:\Projets\kinetix\Kinetix-tools\Kinetix.ClassGenerator\Templates\ReferenceTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(reference.Name));
             
             #line default
             #line hidden
-            this.Write(" {\n");
+            this.Write(" {\r\n");
             
-            #line 1 "D:\Projets\kinetix\Kinetix-tools\Kinetix.ClassGenerator\Templates\ReferenceTemplate.tt"
+            #line 14 "D:\Projets\kinetix\Kinetix-tools\Kinetix.ClassGenerator\Templates\ReferenceTemplate.tt"
  foreach (var property in reference.PropertyList) { 
             
             #line default
             #line hidden
-            this.Write("\n    ");
+            this.Write("    ");
             
-            #line 1 "D:\Projets\kinetix\Kinetix-tools\Kinetix.ClassGenerator\Templates\ReferenceTemplate.tt"
+            #line 15 "D:\Projets\kinetix\Kinetix-tools\Kinetix.ClassGenerator\Templates\ReferenceTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Utils.ToFirstLower(property.Name)));
             
             #line default
             #line hidden
             
-            #line 1 "D:\Projets\kinetix\Kinetix-tools\Kinetix.ClassGenerator\Templates\ReferenceTemplate.tt"
+            #line 15 "D:\Projets\kinetix\Kinetix-tools\Kinetix.ClassGenerator\Templates\ReferenceTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(property.DataMember.IsRequired || property.IsPrimaryKey ? string.Empty : "?"));
             
             #line default
             #line hidden
             this.Write(": ");
             
-            #line 1 "D:\Projets\kinetix\Kinetix-tools\Kinetix.ClassGenerator\Templates\ReferenceTemplate.tt"
+            #line 15 "D:\Projets\kinetix\Kinetix-tools\Kinetix.ClassGenerator\Templates\ReferenceTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(ToTSType(property)));
             
             #line default
             #line hidden
-            this.Write(";\n");
+            this.Write(";\r\n");
             
-            #line 1 "D:\Projets\kinetix\Kinetix-tools\Kinetix.ClassGenerator\Templates\ReferenceTemplate.tt"
+            #line 16 "D:\Projets\kinetix\Kinetix-tools\Kinetix.ClassGenerator\Templates\ReferenceTemplate.tt"
  } 
             
             #line default
             #line hidden
-            this.Write("\n}\n");
+            this.Write("}\r\n");
             
-            #line 1 "D:\Projets\kinetix\Kinetix-tools\Kinetix.ClassGenerator\Templates\ReferenceTemplate.tt"
+            #line 18 "D:\Projets\kinetix\Kinetix-tools\Kinetix.ClassGenerator\Templates\ReferenceTemplate.tt"
  } 
             
             #line default

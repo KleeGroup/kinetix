@@ -18,7 +18,7 @@ import {<#= import.Item1 #>} from "<#= import.Item2 #>/<#= import.Item3 #>";<#
 } if (imports.Any()) { #>
 
 <# } #>
-import {<#= string.Join(", ", GetDomainList()) #>} from "../domains";
+import {<#= string.Join(", ", GetDomainList()) #>} from "../../domains";
 
 export interface <#= Model.Name #> {
 <# foreach (var property in Model.PropertyList) { #>
