@@ -85,8 +85,10 @@ namespace Kinetix.SpaServiceGenerator {
                     ((param as XmlElementSyntax).StartTag.Attributes.First() as XmlNameAttributeSyntax).Identifier.ToString(),
                     (param as XmlElementSyntax).Content.ToString()));
 
+            var verb = method.AttributeLists.First().Attributes.First().ToString();
+
             return new ServiceDeclaration {
-                Verb = method.AttributeLists.First().Attributes.First().ToString() == "HttpGet" ? Verb.Get : Verb.Post,
+                Verb = verb == "HttpPost" ? Verb.Post : verb == "HttpDelete" ? Verb.Delete : verb == "HttpPut" ? Verb.Put : Verb.Get,
                 Route = ((method.AttributeLists.Last().Attributes.First().ArgumentList.ChildNodes().First() as AttributeArgumentSyntax)
                     .Expression as LiteralExpressionSyntax).Token.ValueText,
                 Name = method.Identifier.ToString(),

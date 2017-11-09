@@ -13,6 +13,16 @@
         /// <summary>
         /// POST.
         /// </summary>
-        Post
+        Post,
+
+        /// <summary>
+        /// PUT.
+        /// </summary>
+        Put,
+
+        /// <summary>
+        /// DELETE.
+        /// </summary>
+        Delete
     }
 }

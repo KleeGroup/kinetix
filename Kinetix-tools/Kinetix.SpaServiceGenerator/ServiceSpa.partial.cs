@@ -31,16 +31,15 @@ namespace Kinetix.SpaServiceGenerator {
         /// Récupère le type Typescript correspondant à un type C#.
         /// </summary>
         /// <param name="type">Le type C#.</param>
-        /// <param name="listMarker">Affiche ou non les [] pour les types de liste.</param>
         /// <returns>Le type TS.</returns>
-        private static string GetTSType(INamedTypeSymbol type, bool listMarker = true) {
+        private static string GetTSType(INamedTypeSymbol type) {
 
             if (type.IsGenericType) {
-                if (type.Name == "ICollection" && listMarker) {
+                if (type.Name == "ICollection") {
                     return $"{GetTSType(type.TypeArguments.First() as INamedTypeSymbol)}[]";
                 }
 
-                if (type.Name == "ICollection" || type.Name == "Nullable") {
+                if (type.Name == "Nullable") {
                     return GetTSType(type.TypeArguments.First() as INamedTypeSymbol);
                 }
 
