@@ -32,31 +32,11 @@ namespace Kinetix.ClassGenerator.Templates
                     "due.\r\n*/\r\n\r\n/* tslint:disable */\r\nimport {");
             
             #line 12 "D:\Projets\kinetix\Kinetix-tools\Kinetix.ClassGenerator\Templates\TypescriptTemplate.tt"
- if (!Model.PropertyList.All(p => IsArray(p) || p.IsFromComposition)) { 
+            this.Write(this.ToStringHelper.ToStringWithCulture(FocusImport));
             
             #line default
             #line hidden
-            this.Write("EntityField, ");
-            
-            #line 12 "D:\Projets\kinetix\Kinetix-tools\Kinetix.ClassGenerator\Templates\TypescriptTemplate.tt"
- } 
-            
-            #line default
-            #line hidden
-            
-            #line 12 "D:\Projets\kinetix\Kinetix-tools\Kinetix.ClassGenerator\Templates\TypescriptTemplate.tt"
- if (Model.PropertyList.Any(p => IsArray(p))) { 
-            
-            #line default
-            #line hidden
-            this.Write("StoreListNode, ");
-            
-            #line 12 "D:\Projets\kinetix\Kinetix-tools\Kinetix.ClassGenerator\Templates\TypescriptTemplate.tt"
- } 
-            
-            #line default
-            #line hidden
-            this.Write("StoreNode} from \"focus4/entity\";\r\n");
+            this.Write("} from \"focus4/entity\";\r\n");
             
             #line 13 "D:\Projets\kinetix\Kinetix-tools\Kinetix.ClassGenerator\Templates\TypescriptTemplate.tt"
  var imports = GetImportList();
@@ -115,6 +95,25 @@ namespace Kinetix.ClassGenerator.Templates
             
             #line default
             #line hidden
+            
+            #line 23 "D:\Projets\kinetix\Kinetix-tools\Kinetix.ClassGenerator\Templates\TypescriptTemplate.tt"
+ if (Model.ParentClass != null) { 
+            
+            #line default
+            #line hidden
+            this.Write(" extends ");
+            
+            #line 23 "D:\Projets\kinetix\Kinetix-tools\Kinetix.ClassGenerator\Templates\TypescriptTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(Model.ParentClass.Name));
+            
+            #line default
+            #line hidden
+            
+            #line 23 "D:\Projets\kinetix\Kinetix-tools\Kinetix.ClassGenerator\Templates\TypescriptTemplate.tt"
+ } 
+            
+            #line default
+            #line hidden
             this.Write(" {\r\n");
             
             #line 24 "D:\Projets\kinetix\Kinetix-tools\Kinetix.ClassGenerator\Templates\TypescriptTemplate.tt"
@@ -156,14 +155,41 @@ namespace Kinetix.ClassGenerator.Templates
             
             #line default
             #line hidden
-            this.Write("Node extends StoreNode<");
+            this.Write("Node extends ");
+            
+            #line 29 "D:\Projets\kinetix\Kinetix-tools\Kinetix.ClassGenerator\Templates\TypescriptTemplate.tt"
+ if (Model.ParentClass == null) { 
+            
+            #line default
+            #line hidden
+            this.Write("StoreNode<");
             
             #line 29 "D:\Projets\kinetix\Kinetix-tools\Kinetix.ClassGenerator\Templates\TypescriptTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Model.Name));
             
             #line default
             #line hidden
-            this.Write("> {\r\n");
+            this.Write(">");
+            
+            #line 29 "D:\Projets\kinetix\Kinetix-tools\Kinetix.ClassGenerator\Templates\TypescriptTemplate.tt"
+ } else { 
+            
+            #line default
+            #line hidden
+            
+            #line 29 "D:\Projets\kinetix\Kinetix-tools\Kinetix.ClassGenerator\Templates\TypescriptTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(Model.ParentClass.Name));
+            
+            #line default
+            #line hidden
+            this.Write("Node");
+            
+            #line 29 "D:\Projets\kinetix\Kinetix-tools\Kinetix.ClassGenerator\Templates\TypescriptTemplate.tt"
+ } 
+            
+            #line default
+            #line hidden
+            this.Write(" {\r\n");
             
             #line 30 "D:\Projets\kinetix\Kinetix-tools\Kinetix.ClassGenerator\Templates\TypescriptTemplate.tt"
  foreach (var property in Model.PropertyList) { 
@@ -260,86 +286,129 @@ namespace Kinetix.ClassGenerator.Templates
             
             #line default
             #line hidden
-            this.Write("}\r\n\r\nexport const ");
+            
+            #line 43 "D:\Projets\kinetix\Kinetix-tools\Kinetix.ClassGenerator\Templates\TypescriptTemplate.tt"
+
+    if (Model.ParentClass != null) {
+    
+            
+            #line default
+            #line hidden
+            this.Write("    set(config: Partial<");
+            
+            #line 45 "D:\Projets\kinetix\Kinetix-tools\Kinetix.ClassGenerator\Templates\TypescriptTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(Model.Name));
+            
+            #line default
+            #line hidden
+            this.Write(">): void;\r\n");
             
             #line 46 "D:\Projets\kinetix\Kinetix-tools\Kinetix.ClassGenerator\Templates\TypescriptTemplate.tt"
+ }
+
+            
+            #line default
+            #line hidden
+            this.Write("}\r\n\r\nexport const ");
+            
+            #line 50 "D:\Projets\kinetix\Kinetix-tools\Kinetix.ClassGenerator\Templates\TypescriptTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Model.Name));
             
             #line default
             #line hidden
             this.Write("Entity = {\r\n    name: \"");
             
-            #line 47 "D:\Projets\kinetix\Kinetix-tools\Kinetix.ClassGenerator\Templates\TypescriptTemplate.tt"
+            #line 51 "D:\Projets\kinetix\Kinetix-tools\Kinetix.ClassGenerator\Templates\TypescriptTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Utils.ToFirstLower(Model.Name)));
             
             #line default
             #line hidden
             this.Write("\",\r\n    fields: {\r\n");
             
-            #line 49 "D:\Projets\kinetix\Kinetix-tools\Kinetix.ClassGenerator\Templates\TypescriptTemplate.tt"
+            #line 53 "D:\Projets\kinetix\Kinetix-tools\Kinetix.ClassGenerator\Templates\TypescriptTemplate.tt"
+ if (Model.ParentClass != null) { 
+            
+            #line default
+            #line hidden
+            this.Write("        ...");
+            
+            #line 54 "D:\Projets\kinetix\Kinetix-tools\Kinetix.ClassGenerator\Templates\TypescriptTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(Model.ParentClass.Name));
+            
+            #line default
+            #line hidden
+            this.Write("Entity.fields,\r\n");
+            
+            #line 55 "D:\Projets\kinetix\Kinetix-tools\Kinetix.ClassGenerator\Templates\TypescriptTemplate.tt"
+ } 
+            
+            #line default
+            #line hidden
+            
+            #line 56 "D:\Projets\kinetix\Kinetix-tools\Kinetix.ClassGenerator\Templates\TypescriptTemplate.tt"
  foreach (var property in Model.PropertyList) { 
             
             #line default
             #line hidden
             this.Write("        ");
             
-            #line 50 "D:\Projets\kinetix\Kinetix-tools\Kinetix.ClassGenerator\Templates\TypescriptTemplate.tt"
+            #line 57 "D:\Projets\kinetix\Kinetix-tools\Kinetix.ClassGenerator\Templates\TypescriptTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Utils.ToFirstLower(property.Name)));
             
             #line default
             #line hidden
             this.Write(": {\r\n            ");
             
-            #line 51 "D:\Projets\kinetix\Kinetix-tools\Kinetix.ClassGenerator\Templates\TypescriptTemplate.tt"
+            #line 58 "D:\Projets\kinetix\Kinetix-tools\Kinetix.ClassGenerator\Templates\TypescriptTemplate.tt"
  if (!IsArray(property) && !property.IsFromComposition) { 
             
             #line default
             #line hidden
             this.Write("name: \"");
             
-            #line 51 "D:\Projets\kinetix\Kinetix-tools\Kinetix.ClassGenerator\Templates\TypescriptTemplate.tt"
+            #line 58 "D:\Projets\kinetix\Kinetix-tools\Kinetix.ClassGenerator\Templates\TypescriptTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Utils.ToFirstLower(property.Name)));
             
             #line default
             #line hidden
             this.Write("\",\r\n            ");
             
-            #line 52 "D:\Projets\kinetix\Kinetix-tools\Kinetix.ClassGenerator\Templates\TypescriptTemplate.tt"
+            #line 59 "D:\Projets\kinetix\Kinetix-tools\Kinetix.ClassGenerator\Templates\TypescriptTemplate.tt"
  } 
             
             #line default
             #line hidden
             this.Write("type: ");
             
-            #line 52 "D:\Projets\kinetix\Kinetix-tools\Kinetix.ClassGenerator\Templates\TypescriptTemplate.tt"
+            #line 59 "D:\Projets\kinetix\Kinetix-tools\Kinetix.ClassGenerator\Templates\TypescriptTemplate.tt"
  if (IsArray(property)) { 
             
             #line default
             #line hidden
             this.Write("\"list\" as \"list\"");
             
-            #line 52 "D:\Projets\kinetix\Kinetix-tools\Kinetix.ClassGenerator\Templates\TypescriptTemplate.tt"
+            #line 59 "D:\Projets\kinetix\Kinetix-tools\Kinetix.ClassGenerator\Templates\TypescriptTemplate.tt"
  } else if (property.IsFromComposition) { 
             
             #line default
             #line hidden
             this.Write("\"object\" as \"object\"");
             
-            #line 52 "D:\Projets\kinetix\Kinetix-tools\Kinetix.ClassGenerator\Templates\TypescriptTemplate.tt"
+            #line 59 "D:\Projets\kinetix\Kinetix-tools\Kinetix.ClassGenerator\Templates\TypescriptTemplate.tt"
  } else { 
             
             #line default
             #line hidden
             this.Write("\"field\" as \"field\"");
             
-            #line 52 "D:\Projets\kinetix\Kinetix-tools\Kinetix.ClassGenerator\Templates\TypescriptTemplate.tt"
+            #line 59 "D:\Projets\kinetix\Kinetix-tools\Kinetix.ClassGenerator\Templates\TypescriptTemplate.tt"
  } 
             
             #line default
             #line hidden
             this.Write(",\r\n            ");
             
-            #line 53 "D:\Projets\kinetix\Kinetix-tools\Kinetix.ClassGenerator\Templates\TypescriptTemplate.tt"
+            #line 60 "D:\Projets\kinetix\Kinetix-tools\Kinetix.ClassGenerator\Templates\TypescriptTemplate.tt"
  if (GetDomain(property) != null) { 
                  
             
@@ -347,14 +416,14 @@ namespace Kinetix.ClassGenerator.Templates
             #line hidden
             this.Write("domain: ");
             
-            #line 54 "D:\Projets\kinetix\Kinetix-tools\Kinetix.ClassGenerator\Templates\TypescriptTemplate.tt"
+            #line 61 "D:\Projets\kinetix\Kinetix-tools\Kinetix.ClassGenerator\Templates\TypescriptTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(GetDomain(property)));
             
             #line default
             #line hidden
             this.Write(",\r\n            ");
             
-            #line 55 "D:\Projets\kinetix\Kinetix-tools\Kinetix.ClassGenerator\Templates\TypescriptTemplate.tt"
+            #line 62 "D:\Projets\kinetix\Kinetix-tools\Kinetix.ClassGenerator\Templates\TypescriptTemplate.tt"
  } else {
                  
             
@@ -362,14 +431,14 @@ namespace Kinetix.ClassGenerator.Templates
             #line hidden
             this.Write("entityName: \"");
             
-            #line 56 "D:\Projets\kinetix\Kinetix-tools\Kinetix.ClassGenerator\Templates\TypescriptTemplate.tt"
+            #line 63 "D:\Projets\kinetix\Kinetix-tools\Kinetix.ClassGenerator\Templates\TypescriptTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Utils.ToFirstLower(GetReferencedType(property))));
             
             #line default
             #line hidden
             this.Write("\"");
             
-            #line 56 "D:\Projets\kinetix\Kinetix-tools\Kinetix.ClassGenerator\Templates\TypescriptTemplate.tt"
+            #line 63 "D:\Projets\kinetix\Kinetix-tools\Kinetix.ClassGenerator\Templates\TypescriptTemplate.tt"
  
                  if (!IsArray(property) && !property.IsFromComposition) { 
             
@@ -377,14 +446,14 @@ namespace Kinetix.ClassGenerator.Templates
             #line hidden
             this.Write(",\r\n            ");
             
-            #line 58 "D:\Projets\kinetix\Kinetix-tools\Kinetix.ClassGenerator\Templates\TypescriptTemplate.tt"
+            #line 65 "D:\Projets\kinetix\Kinetix-tools\Kinetix.ClassGenerator\Templates\TypescriptTemplate.tt"
     } else { 
             
             #line default
             #line hidden
             this.Write("\r\n        ");
             
-            #line 60 "D:\Projets\kinetix\Kinetix-tools\Kinetix.ClassGenerator\Templates\TypescriptTemplate.tt"
+            #line 67 "D:\Projets\kinetix\Kinetix-tools\Kinetix.ClassGenerator\Templates\TypescriptTemplate.tt"
         }
                } if (!IsArray(property) && !property.IsFromComposition) { 
                  
@@ -393,20 +462,20 @@ namespace Kinetix.ClassGenerator.Templates
             #line hidden
             this.Write("isRequired: ");
             
-            #line 62 "D:\Projets\kinetix\Kinetix-tools\Kinetix.ClassGenerator\Templates\TypescriptTemplate.tt"
+            #line 69 "D:\Projets\kinetix\Kinetix-tools\Kinetix.ClassGenerator\Templates\TypescriptTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Utils.ToFirstLower(property.DataMember.IsRequired.ToString())));
             
             #line default
             #line hidden
             this.Write(",\r\n            ");
             
-            #line 63 "D:\Projets\kinetix\Kinetix-tools\Kinetix.ClassGenerator\Templates\TypescriptTemplate.tt"
+            #line 70 "D:\Projets\kinetix\Kinetix-tools\Kinetix.ClassGenerator\Templates\TypescriptTemplate.tt"
  } 
             
             #line default
             #line hidden
             
-            #line 63 "D:\Projets\kinetix\Kinetix-tools\Kinetix.ClassGenerator\Templates\TypescriptTemplate.tt"
+            #line 70 "D:\Projets\kinetix\Kinetix-tools\Kinetix.ClassGenerator\Templates\TypescriptTemplate.tt"
  if (!IsArray(property) && !property.IsFromComposition) { 
                  
             
@@ -414,42 +483,42 @@ namespace Kinetix.ClassGenerator.Templates
             #line hidden
             this.Write("translationKey: \"");
             
-            #line 64 "D:\Projets\kinetix\Kinetix-tools\Kinetix.ClassGenerator\Templates\TypescriptTemplate.tt"
+            #line 71 "D:\Projets\kinetix\Kinetix-tools\Kinetix.ClassGenerator\Templates\TypescriptTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Utils.ToNamespace(Model.Namespace.Name)));
             
             #line default
             #line hidden
             this.Write(".");
             
-            #line 64 "D:\Projets\kinetix\Kinetix-tools\Kinetix.ClassGenerator\Templates\TypescriptTemplate.tt"
+            #line 71 "D:\Projets\kinetix\Kinetix-tools\Kinetix.ClassGenerator\Templates\TypescriptTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Utils.ToFirstLower(Model.Name)));
             
             #line default
             #line hidden
             this.Write(".");
             
-            #line 64 "D:\Projets\kinetix\Kinetix-tools\Kinetix.ClassGenerator\Templates\TypescriptTemplate.tt"
+            #line 71 "D:\Projets\kinetix\Kinetix-tools\Kinetix.ClassGenerator\Templates\TypescriptTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Utils.ToFirstLower(property.Name)));
             
             #line default
             #line hidden
             this.Write("\"\r\n        ");
             
-            #line 65 "D:\Projets\kinetix\Kinetix-tools\Kinetix.ClassGenerator\Templates\TypescriptTemplate.tt"
+            #line 72 "D:\Projets\kinetix\Kinetix-tools\Kinetix.ClassGenerator\Templates\TypescriptTemplate.tt"
  } 
             
             #line default
             #line hidden
             this.Write("}");
             
-            #line 65 "D:\Projets\kinetix\Kinetix-tools\Kinetix.ClassGenerator\Templates\TypescriptTemplate.tt"
+            #line 72 "D:\Projets\kinetix\Kinetix-tools\Kinetix.ClassGenerator\Templates\TypescriptTemplate.tt"
  if (property != Model.PropertyList.Last()) { 
             
             #line default
             #line hidden
             this.Write(",");
             
-            #line 65 "D:\Projets\kinetix\Kinetix-tools\Kinetix.ClassGenerator\Templates\TypescriptTemplate.tt"
+            #line 72 "D:\Projets\kinetix\Kinetix-tools\Kinetix.ClassGenerator\Templates\TypescriptTemplate.tt"
  }
 
             
@@ -457,7 +526,7 @@ namespace Kinetix.ClassGenerator.Templates
             #line hidden
             this.Write("\r\n");
             
-            #line 68 "D:\Projets\kinetix\Kinetix-tools\Kinetix.ClassGenerator\Templates\TypescriptTemplate.tt"
+            #line 75 "D:\Projets\kinetix\Kinetix-tools\Kinetix.ClassGenerator\Templates\TypescriptTemplate.tt"
 
 } 
             

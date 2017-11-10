@@ -9,7 +9,7 @@
 */
 
 /* tslint:disable */
-import {<# if (!Model.PropertyList.All(p => IsArray(p) || p.IsFromComposition)) { #>EntityField, <# } #><# if (Model.PropertyList.Any(p => IsArray(p))) { #>StoreListNode, <# } #>StoreNode} from "focus4/entity";
+import {<#= FocusImport #>} from "focus4/entity";
 <# var imports = GetImportList();
    foreach (var import in imports) { 
 #>
@@ -20,13 +20,13 @@ import {<#= import.Item1 #>} from "<#= import.Item2 #>/<#= import.Item3 #>";<#
 <# } #>
 import {<#= string.Join(", ", GetDomainList()) #>} from "../../domains";
 
-export interface <#= Model.Name #> {
+export interface <#= Model.Name #><# if (Model.ParentClass != null) { #> extends <#= Model.ParentClass.Name #><# } #> {
 <# foreach (var property in Model.PropertyList) { #>
     <#= Utils.ToFirstLower(property.Name) #><#= property.DataMember.IsRequired || property.IsPrimaryKey || IsArray(property) || property.IsFromComposition ? string.Empty : "?" #>: <#= ToTSType(property) #>;
 <# } #>
 }
 
-export interface <#= Model.Name #>Node extends StoreNode<<#= Model.Name #>> {
+export interface <#= Model.Name #>Node extends <# if (Model.ParentClass == null) { #>StoreNode<<#= Model.Name #>><# } else { #><#= Model.ParentClass.Name #>Node<# } #> {
 <# foreach (var property in Model.PropertyList) { #>
     <#= Utils.ToFirstLower(property.Name) #>: <# 
         if (IsArray(property)) { 
@@ -40,12 +40,19 @@ export interface <#= Model.Name #>Node extends StoreNode<<#= Model.Name #>> {
         if (IsArray(property) || !property.IsFromComposition) { 
             #>><# 
         } #>;
-<# } #>
+<# } #><#
+    if (Model.ParentClass != null) {
+    #>    set(config: Partial<<#= Model.Name #>>): void;
+<# }
+#>
 }
 
 export const <#= Model.Name #>Entity = {
     name: "<#= Utils.ToFirstLower(Model.Name) #>",
     fields: {
+<# if (Model.ParentClass != null) { #>
+        ...<#= Model.ParentClass.Name #>Entity.fields,
+<# } #>
 <# foreach (var property in Model.PropertyList) { #>
         <#= Utils.ToFirstLower(property.Name) #>: {
             <# if (!IsArray(property) && !property.IsFromComposition) { #>name: "<#= Utils.ToFirstLower(property.Name) #>",
