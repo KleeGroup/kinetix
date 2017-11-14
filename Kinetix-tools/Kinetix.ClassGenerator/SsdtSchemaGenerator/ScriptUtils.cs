@@ -40,6 +40,8 @@ namespace Kinetix.ClassGenerator.SsdtSchemaGenerator {
                 persistentType += ")";
             } else if (property.DataDescription.IsPrimaryKey && property.DataDescription.Domain.Code == "DO_ID") {
                 persistentType += " identity";
+            } else if (persistentType == "nvarchar") {
+                persistentType += "(MAX)";
             }
 
             return persistentType;
