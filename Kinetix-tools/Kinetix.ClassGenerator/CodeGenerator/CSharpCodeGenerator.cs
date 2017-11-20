@@ -308,7 +308,7 @@ namespace Kinetix.ClassGenerator {
             string queryParameter = string.Empty;
             if (GeneratorParameters.IsEntityFrameworkUsed) {
                 if (defaultProperty != null) {
-                    queryParameter = $".OrderBy(row => row.{defaultProperty.DataMember.Name})";
+                    queryParameter = $".OrderBy(row => row.{defaultProperty.Name})";
                 }
 
                 return $"return _dbContext.{Pluralize(className)}{queryParameter}.ToList();";
