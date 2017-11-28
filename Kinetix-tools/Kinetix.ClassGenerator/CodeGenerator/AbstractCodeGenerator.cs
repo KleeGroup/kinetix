@@ -730,6 +730,7 @@ namespace Kinetix.ClassGenerator.CodeGenerator {
             var csprojFileName = Path.Combine(destDirectory, $"{projectName}.csproj");
             using (_currentWriter = new CsharpFileWriter(targetFileName, csprojFileName)) {
                 WriteLine("using System.Data.Entity;");
+                WriteLine("using System.Transactions;");
                 WriteLine("using Kinetix.Data.SqlClient;");
 
                 List<string> listNs = new List<string>();
@@ -745,7 +746,7 @@ namespace Kinetix.ClassGenerator.CodeGenerator {
                 WriteLine(1, "public partial class " + strippedProjectName + "DbContext : DbContext {");
                 WriteEmptyLine();
                 WriteSummary(2, "Constructeur par défaut.");
-                WriteLine(2, "public " + strippedProjectName + "DbContext()");
+                WriteLine(2, "public " + strippedProjectName + "DbContext(TransactionScope scope)");
                 WriteLine(3, ": base(SqlServerManager.Instance.ObtainConnection(\"default\"), false) {");
                 WriteLine(2, "}");
 
