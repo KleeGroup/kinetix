@@ -47,7 +47,7 @@ namespace Kinetix.Search.Elastic.Faceting {
             var missingBucket = aggs.Missing(facetDef.Code + MissingFacetPrefix);
             var missingCount = missingBucket.DocCount;
             if (missingCount > 0) {
-                facetOutput.Add(new FacetItem { Code = FacetConst.NullValue, Label = "Non renseigné", Count = missingCount });
+                facetOutput.Add(new FacetItem { Code = FacetConst.NullValue, Label = "focus.search.results.missing", Count = missingCount });
             }
 
             return facetOutput;

@@ -47,5 +47,10 @@ namespace Kinetix.Search.Model {
             get;
             set;
         }
+
+        /// <summary>
+        /// Nombre d'éléments à récupérer dans un groupe.
+        /// </summary>
+        public int GroupSize { get; set; } = 10;
     }
 }
