@@ -67,7 +67,7 @@ namespace Kinetix.SpaServiceGenerator {
 
                 var template = new ServiceSpa { ProjectName = projectName, DefinitionPath = definitionPath, Services = serviceList };
                 var output = template.TransformText();
-                File.WriteAllText(fileName, output, Encoding.UTF8);
+                File.WriteAllText(fileName, output, new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
             }
         }
 
