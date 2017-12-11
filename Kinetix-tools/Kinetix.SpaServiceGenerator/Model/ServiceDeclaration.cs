@@ -16,7 +16,7 @@ namespace Kinetix.SpaServiceGenerator.Model {
         /// <summary>
         /// Le verbe du service (get ou post).
         /// </summary>
-        public Verb Verb { get; set; }
+        public string Verb { get; set; }
 
         /// <summary>
         /// Le nom du service.

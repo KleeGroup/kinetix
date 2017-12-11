@@ -160,7 +160,7 @@ namespace Kinetix.SpaServiceGenerator
             this.Write(") {\r\n    return server.");
             
             #line 30 "D:\Projets\kinetix\Kinetix-tools\Kinetix.SpaServiceGenerator\ServiceSpa.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(Utils.ToFirstLower(service.Verb.ToString())));
+            this.Write(this.ToStringHelper.ToStringWithCulture(Utils.ToFirstLower(service.Verb)));
             
             #line default
             #line hidden
@@ -182,7 +182,7 @@ namespace Kinetix.SpaServiceGenerator
             
             #line 30 "D:\Projets\kinetix\Kinetix-tools\Kinetix.SpaServiceGenerator\ServiceSpa.tt"
 
-        if (service.Parameters.Any() && service.Verb == Verb.Post) {
+        if (service.Parameters.Any() && (service.Verb == "HttpPost" || service.Verb == "HttpPut")) {
             
             
             #line default
