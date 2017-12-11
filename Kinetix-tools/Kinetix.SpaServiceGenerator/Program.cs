@@ -88,7 +88,7 @@ namespace Kinetix.SpaServiceGenerator {
             var verb = method.AttributeLists.First().Attributes.First().ToString();
 
             return new ServiceDeclaration {
-                Verb = verb == "HttpPost" ? Verb.Post : verb == "HttpDelete" ? Verb.Delete : verb == "HttpPut" ? Verb.Put : Verb.Get,
+                Verb = verb,
                 Route = ((method.AttributeLists.Last().Attributes.First().ArgumentList.ChildNodes().First() as AttributeArgumentSyntax)
                     .Expression as LiteralExpressionSyntax).Token.ValueText,
                 Name = method.Identifier.ToString(),

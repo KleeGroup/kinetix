@@ -27,8 +27,8 @@ export function <#= Utils.ToFirstLower(service.Name) #>(<#
             #>, <#
         }
     }#>) {
-    return server.<#= Utils.ToFirstLower(service.Verb.ToString()) #><<#= GetTSType(service.ReturnType) #>>(`./<#= service.Route.Replace("{", "${").Replace("?", "") #>`<#
-        if (service.Parameters.Any() && service.Verb == Verb.Post) {
+    return server.<#= Utils.ToFirstLower(service.Verb) #><<#= GetTSType(service.ReturnType) #>>(`./<#= service.Route.Replace("{", "${").Replace("?", "") #>`<#
+        if (service.Parameters.Any() && (service.Verb == "HttpPost" || service.Verb == "HttpPut")) {
             #>, <#= service.Parameters.First().Name #><#
         }
         #>);
