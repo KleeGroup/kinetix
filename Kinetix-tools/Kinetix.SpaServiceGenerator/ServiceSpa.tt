@@ -29,11 +29,11 @@ export function <#= Utils.ToFirstLower(service.Name) #>(<#
     }
     if (service.Parameters.Count() > 0) { 
         #>, <#
-    } #>queryObj = {}) {
+    } #>options: server.RequestInitExtended = {}) {
     return server.<#= Utils.ToFirstLower(service.Verb) #><<#= GetTSType(service.ReturnType) #>>(`./<#= service.Route.Replace("{", "${").Replace("?", "") #>`<#
         if (service.Parameters.Any() && (service.Verb == "HttpPost" || service.Verb == "HttpPut")) {
             #>, <#= service.Parameters.First().Name #><#
         }
-        #>, queryObj);
+        #>, options);
 }
 <# } #>
