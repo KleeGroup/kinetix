@@ -167,7 +167,7 @@ namespace Kinetix.SpaServiceGenerator
             
             #line default
             #line hidden
-            this.Write("queryObj = {}) {\r\n    return server.");
+            this.Write("options: server.RequestInitExtended = {}) {\r\n    return server.");
             
             #line 33 "D:\Sources\kinetix\Kinetix-tools\Kinetix.SpaServiceGenerator\ServiceSpa.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Utils.ToFirstLower(service.Verb)));
@@ -212,7 +212,7 @@ namespace Kinetix.SpaServiceGenerator
             
             #line default
             #line hidden
-            this.Write(", queryObj);\r\n}\r\n");
+            this.Write(", options);\r\n}\r\n");
             
             #line 39 "D:\Sources\kinetix\Kinetix-tools\Kinetix.SpaServiceGenerator\ServiceSpa.tt"
  } 
