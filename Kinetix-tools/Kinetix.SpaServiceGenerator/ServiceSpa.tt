@@ -20,19 +20,31 @@ import {<#= import.Item1 #>} from "<#= import.Item2 #>/<#= import.Item3 #>";
  * <#= service.Documentation.Summary #>
 <# foreach (var param in service.Documentation.Parameters) { #> * @param <#= param.Item1 #> <#= param.Item2 #>
 <# } #>
+ * @param options Options to service call.
  */
 export function <#= Utils.ToFirstLower(service.Name) #>(<# 
-    foreach (var parameter in service.Parameters) { #><#= parameter.Name #><#= parameter.IsOptional ? "?" : "" #>: <#= GetTSType(parameter.Type) #><#
-        if (parameter.Name != service.Parameters.Last().Name) {
+    if (service.BodyParameters.Any()) {
+        var parameter = service.BodyParameters.First();
+        #><#= parameter.Name #><#= parameter.IsOptional ? "?" : "" #>: <#= GetTSType(parameter.Type) #>, <#
+    }
+    foreach (var parameter in service.UriParameters) { #><#= parameter.Name #><#= parameter.IsOptional ? "?" : "" #>: <#= GetTSType(parameter.Type) #><#
+        if (parameter.Name != service.UriParameters.Last().Name) {
             #>, <#
         }
     }
-    if (service.Parameters.Count() > 0) { 
+    if (service.UriParameters.Count() > 0) { 
         #>, <#
-    } #>options: server.RequestInitExtended = {}) {
+    } #>options: server.RequestInitExtended<{<# 
+        foreach (var queryParameter in service.QueryParameters) { 
+            #><#= queryParameter.Name #><#= queryParameter.IsOptional ? "?" : "" #>: <#= GetTSType(queryParameter.Type) #><#
+            if (queryParameter.Name != service.QueryParameters.Last().Name) {
+                #>, <#
+            }	
+        }
+    #>}> = {}) {
     return server.<#= Utils.ToFirstLower(service.Verb) #><<#= GetTSType(service.ReturnType) #>>(`./<#= service.Route.Replace("{", "${").Replace("?", "") #>`<#
-        if (service.Parameters.Any() && (service.Verb == "HttpPost" || service.Verb == "HttpPut")) {
-            #>, <#= service.Parameters.First().Name #><#
+        if (service.BodyParameters.Any()) {
+            #>, <#= service.BodyParameters.First().Name #><#
         }
         #>, options);
 }

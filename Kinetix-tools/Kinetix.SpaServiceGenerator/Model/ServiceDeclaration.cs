@@ -34,6 +34,21 @@ namespace Kinetix.SpaServiceGenerator.Model {
         public ICollection<Parameter> Parameters { get; set; }
 
         /// <summary>
+        /// Les URI paramètres du service.
+        /// </summary>
+        public ICollection<Parameter> UriParameters { get; set; }
+
+        /// <summary>
+        /// Les query params du service.
+        /// </summary>
+        public ICollection<Parameter> QueryParameters { get; set; }
+
+        /// <summary>
+        /// Les body params du service.
+        /// </summary>
+        public ICollection<Parameter> BodyParameters { get; set; }
+
+        /// <summary>
         /// La documentation du service.
         /// </summary>
         public Documentation Documentation { get; set; }
