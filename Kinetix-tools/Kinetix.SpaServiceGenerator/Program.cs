@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Kinetix.SpaServiceGenerator.Model;
 using Microsoft.CodeAnalysis;
@@ -87,17 +89,49 @@ namespace Kinetix.SpaServiceGenerator {
 
             var verb = method.AttributeLists.First().Attributes.First().ToString();
 
+            ICollection<Parameter> parameterList = method.ParameterList.ChildNodes().OfType<ParameterSyntax>().Select(parameter => new Parameter {
+                Type = model.GetSymbolInfo(parameter.Type).Symbol as INamedTypeSymbol,
+                Name = parameter.Identifier.ToString(),
+                IsOptional = parameter.Default != null,
+                IsFromBody = parameter.AttributeLists.FirstOrDefault()?.Attributes.Where(attr => attr.ToString() == "FromBody").Any()
+            }).ToList();
+
+            IList<string> routeParameters = new List<string>();
+            string route = ((method.AttributeLists.Last().Attributes.First().ArgumentList.ChildNodes().First() as AttributeArgumentSyntax)
+                    .Expression as LiteralExpressionSyntax).Token.ValueText;
+            MatchCollection matches = Regex.Matches(route, "(?s){.+?}");
+            foreach (Match match in matches) {
+                routeParameters.Add(match.Value.Replace("{", "").Replace("}", ""));
+            }
+
+            var uriParameters = parameterList
+                .Where(param => !param.IsFromBody.GetValueOrDefault(false) && routeParameters.Contains(param.Name))
+                .ToList();
+            var queryParameters = parameterList
+                .Where(param => !param.IsFromBody.GetValueOrDefault(false) && !routeParameters.Contains(param.Name))
+                .ToList();
+
+            ICollection<Parameter> bodyParameters = new List<Parameter>();
+            if ((verb == "HttpPost" || verb == "HttpPut" || verb == "HttpDelete") && parameterList.Except(uriParameters).Any()) {
+                var bodyParams = parameterList
+                    .Except(uriParameters)
+                    .Where(param => param.IsFromBody.GetValueOrDefault(false));
+                bodyParameters.Add(bodyParams.Any() ? bodyParams.First() : parameterList.FirstOrDefault());
+
+                queryParameters = queryParameters
+                    .Where(param => !bodyParameters.Select(body => body.Name).Contains(param.Name))
+                    .ToList();
+            }
+
             return new ServiceDeclaration {
                 Verb = verb,
-                Route = ((method.AttributeLists.Last().Attributes.First().ArgumentList.ChildNodes().First() as AttributeArgumentSyntax)
-                    .Expression as LiteralExpressionSyntax).Token.ValueText,
+                Route = route,
                 Name = method.Identifier.ToString(),
                 ReturnType = model.GetSymbolInfo(method.ReturnType).Symbol as INamedTypeSymbol,
-                Parameters = method.ParameterList.ChildNodes().OfType<ParameterSyntax>().Select(parameter => new Parameter {
-                    Type = model.GetSymbolInfo(parameter.Type).Symbol as INamedTypeSymbol,
-                    Name = parameter.Identifier.ToString(),
-                    IsOptional = parameter.Default != null
-                }).ToList(),
+                Parameters = parameterList,
+                UriParameters = uriParameters,
+                QueryParameters = queryParameters,
+                BodyParameters = bodyParameters,
                 Documentation = new Documentation { Summary = summary, Parameters = parameters.ToList() }
             };
         }

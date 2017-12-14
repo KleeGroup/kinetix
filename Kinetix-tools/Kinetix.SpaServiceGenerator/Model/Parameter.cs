@@ -21,5 +21,11 @@ namespace Kinetix.SpaServiceGenerator.Model {
         /// Optionnel ou non.
         /// </summary>
         public bool IsOptional { get; set; }
+
+        /// <summary>
+        /// Avec attribut FromBody ou non.
+        /// </summary>
+        public bool? IsFromBody { get; set; }
+
     }
 }
