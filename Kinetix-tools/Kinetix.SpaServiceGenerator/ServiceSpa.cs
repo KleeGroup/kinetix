@@ -257,16 +257,62 @@ namespace Kinetix.SpaServiceGenerator
             
             #line default
             #line hidden
-            this.Write(">(`./");
+            this.Write(", {");
             
             #line 45 "D:\Sources\kinetix\Kinetix-tools\Kinetix.SpaServiceGenerator\ServiceSpa.tt"
+ 
+            foreach (var queryParameter in service.QueryParameters) { 
+                
+            
+            #line default
+            #line hidden
+            
+            #line 47 "D:\Sources\kinetix\Kinetix-tools\Kinetix.SpaServiceGenerator\ServiceSpa.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(queryParameter.Name));
+            
+            #line default
+            #line hidden
+            
+            #line 47 "D:\Sources\kinetix\Kinetix-tools\Kinetix.SpaServiceGenerator\ServiceSpa.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(queryParameter.IsOptional ? "?" : ""));
+            
+            #line default
+            #line hidden
+            this.Write(": ");
+            
+            #line 47 "D:\Sources\kinetix\Kinetix-tools\Kinetix.SpaServiceGenerator\ServiceSpa.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(GetTSType(queryParameter.Type)));
+            
+            #line default
+            #line hidden
+            
+            #line 47 "D:\Sources\kinetix\Kinetix-tools\Kinetix.SpaServiceGenerator\ServiceSpa.tt"
+
+                if (queryParameter.Name != service.QueryParameters.Last().Name) {
+                    
+            
+            #line default
+            #line hidden
+            this.Write(", ");
+            
+            #line 49 "D:\Sources\kinetix\Kinetix-tools\Kinetix.SpaServiceGenerator\ServiceSpa.tt"
+
+                }	
+            }
+        
+            
+            #line default
+            #line hidden
+            this.Write("}>(`./");
+            
+            #line 52 "D:\Sources\kinetix\Kinetix-tools\Kinetix.SpaServiceGenerator\ServiceSpa.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(service.Route.Replace("{", "${").Replace("?", "")));
             
             #line default
             #line hidden
             this.Write("`");
             
-            #line 45 "D:\Sources\kinetix\Kinetix-tools\Kinetix.SpaServiceGenerator\ServiceSpa.tt"
+            #line 52 "D:\Sources\kinetix\Kinetix-tools\Kinetix.SpaServiceGenerator\ServiceSpa.tt"
 
         if (service.BodyParameters.Any()) {
             
@@ -275,13 +321,13 @@ namespace Kinetix.SpaServiceGenerator
             #line hidden
             this.Write(", ");
             
-            #line 47 "D:\Sources\kinetix\Kinetix-tools\Kinetix.SpaServiceGenerator\ServiceSpa.tt"
+            #line 54 "D:\Sources\kinetix\Kinetix-tools\Kinetix.SpaServiceGenerator\ServiceSpa.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(service.BodyParameters.First().Name));
             
             #line default
             #line hidden
             
-            #line 47 "D:\Sources\kinetix\Kinetix-tools\Kinetix.SpaServiceGenerator\ServiceSpa.tt"
+            #line 54 "D:\Sources\kinetix\Kinetix-tools\Kinetix.SpaServiceGenerator\ServiceSpa.tt"
 
         }
         
@@ -290,7 +336,7 @@ namespace Kinetix.SpaServiceGenerator
             #line hidden
             this.Write(", options);\r\n}\r\n");
             
-            #line 51 "D:\Sources\kinetix\Kinetix-tools\Kinetix.SpaServiceGenerator\ServiceSpa.tt"
+            #line 58 "D:\Sources\kinetix\Kinetix-tools\Kinetix.SpaServiceGenerator\ServiceSpa.tt"
  } 
             
             #line default
