@@ -42,7 +42,14 @@ export function <#= Utils.ToFirstLower(service.Name) #>(<#
             }	
         }
     #>}> = {}) {
-    return server.<#= Utils.ToFirstLower(service.Verb) #><<#= GetTSType(service.ReturnType) #>>(`./<#= service.Route.Replace("{", "${").Replace("?", "") #>`<#
+    return server.<#= Utils.ToFirstLower(service.Verb) #><<#= GetTSType(service.ReturnType) #>, {<# 
+            foreach (var queryParameter in service.QueryParameters) { 
+                #><#= queryParameter.Name #><#= queryParameter.IsOptional ? "?" : "" #>: <#= GetTSType(queryParameter.Type) #><#
+                if (queryParameter.Name != service.QueryParameters.Last().Name) {
+                    #>, <#
+                }	
+            }
+        #>}>(`./<#= service.Route.Replace("{", "${").Replace("?", "") #>`<#
         if (service.BodyParameters.Any()) {
             #>, <#= service.BodyParameters.First().Name #><#
         }
