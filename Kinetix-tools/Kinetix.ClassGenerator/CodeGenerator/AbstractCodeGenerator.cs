@@ -689,6 +689,7 @@ namespace Kinetix.ClassGenerator.CodeGenerator {
                 WriteEmptyLine();
 
                 WriteLine(2, $"public static explicit operator {item.Name}Code(string value) {{");
+                WriteLine(3, $"System.Runtime.CompilerServices.RuntimeHelpers.RunClassConstructor(typeof({item.Name}).TypeHandle);");
                 WriteLine(3, "if (Instance.TryGetValue(value, out var result)) {");
                 WriteLine(4, "return result;");
                 WriteLine(3, "} else {");
