@@ -35,7 +35,7 @@ namespace Kinetix.SpaServiceGenerator {
         private static string GetTSType(INamedTypeSymbol type) {
 
             if (type.IsGenericType) {
-                if (type.Name == "ICollection") {
+                if (type.Name == "ICollection" || type.Name == "IEnumerable") {
                     return $"{GetTSType(type.TypeArguments.First() as INamedTypeSymbol)}[]";
                 }
 
@@ -94,7 +94,7 @@ namespace Kinetix.SpaServiceGenerator {
         /// <param name="type">Type.</param>
         /// <returns>Oui / Non.</returns>
         private static bool IsArray(INamedTypeSymbol type) {
-            return type.IsGenericType && type.Name == "ICollection";
+            return type.IsGenericType && (type.Name == "ICollection" || type.Name == "IEnumerable");
         }
 
         /// <summary>
@@ -115,7 +115,7 @@ namespace Kinetix.SpaServiceGenerator {
             var parameterTypes = Services.SelectMany(service => service.Parameters.SelectMany(parameter => GetTypes(parameter.Type)));
 
             var types = returnTypes.Concat(parameterTypes)
-                .Where(type => (!type?.ContainingNamespace.ToString().Contains("Kinetix") ?? false) && type?.SpecialType == SpecialType.None && !type.ContainingNamespace.ToString().Contains("System"));
+                .Where(type => !type.ContainingNamespace.ToString().Contains("Kinetix") && !type.ContainingNamespace.ToString().Contains("System"));
 
             var referenceTypes = types.Where(type =>
                 type.DeclaringSyntaxReferences.Any(s => {
@@ -165,14 +165,23 @@ namespace Kinetix.SpaServiceGenerator {
         }
 
         /// <summary>
-        /// Récupère les types d'un type (générique...)
+        /// Récupère tous les types et sous-types constitutants d'un type donné (génériques).
         /// </summary>
         /// <param name="type">le type d'entrée.</param>
         /// <returns>Les types de sorties.</returns>
-        private INamedTypeSymbol[] GetTypes(INamedTypeSymbol type) =>
-            new[] {
-                type,
-                type.IsGenericType ? (type?.TypeArguments.Last() as INamedTypeSymbol)?.ConstructedFrom : null
-            };
+        private IEnumerable<INamedTypeSymbol> GetTypes(INamedTypeSymbol type) {
+            if (type != null && type.SpecialType == SpecialType.None) {
+                yield return type;
+                if (type.IsGenericType) {
+                    foreach (var typeArg in type.TypeArguments) {
+                        if (typeArg is INamedTypeSymbol namedTypeArg) {
+                            foreach (var subTypeArg in GetTypes(namedTypeArg)) {
+                                yield return subTypeArg;
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }
