@@ -93,7 +93,8 @@ namespace Kinetix.SpaServiceGenerator {
                 Type = model.GetSymbolInfo(parameter.Type).Symbol as INamedTypeSymbol,
                 Name = parameter.Identifier.ToString(),
                 IsOptional = parameter.Default != null,
-                IsFromBody = parameter.AttributeLists.FirstOrDefault()?.Attributes.Where(attr => attr.ToString() == "FromBody").Any()
+                IsFromBody = parameter.AttributeLists.FirstOrDefault() != null ? parameter.AttributeLists.FirstOrDefault().Attributes.Where(attr => attr.ToString() == "FromBody").Any() : false,
+                IsFromUri = parameter.AttributeLists.FirstOrDefault() != null ? parameter.AttributeLists.FirstOrDefault().Attributes.Where(attr => attr.ToString() == "FromUri").Any() : false,
             }).ToList();
 
             IList<string> routeParameters = new List<string>();
@@ -105,18 +106,23 @@ namespace Kinetix.SpaServiceGenerator {
             }
 
             var uriParameters = parameterList
-                .Where(param => !param.IsFromBody.GetValueOrDefault(false) && routeParameters.Contains(param.Name))
+                .Where(param => !param.IsFromBody && routeParameters.Contains(param.Name))
                 .ToList();
             var queryParameters = parameterList
-                .Where(param => !param.IsFromBody.GetValueOrDefault(false) && !routeParameters.Contains(param.Name))
+                .Where(param => !param.IsFromBody && !routeParameters.Contains(param.Name))
                 .ToList();
 
             ICollection<Parameter> bodyParameters = new List<Parameter>();
-            if ((verb == "HttpPost" || verb == "HttpPut" || verb == "HttpDelete") && parameterList.Except(uriParameters).Any()) {
+            if ((verb == "HttpPost" || verb == "HttpPut") && parameterList.Except(uriParameters).Any()) {
                 var bodyParams = parameterList
                     .Except(uriParameters)
-                    .Where(param => param.IsFromBody.GetValueOrDefault(false));
-                bodyParameters.Add(bodyParams.Any() ? bodyParams.First() : parameterList.FirstOrDefault());
+                    .Where(param => param.IsFromBody)
+                    // Concat here as a fallback (use of first below)
+                    .Concat(parameterList.Where(param => !param.IsFromUri));
+
+                if (bodyParams.Any()) {
+                    bodyParameters.Add(bodyParams.First());
+                }
 
                 queryParameters = queryParameters
                     .Where(param => !bodyParameters.Select(body => body.Name).Contains(param.Name))
@@ -132,7 +138,8 @@ namespace Kinetix.SpaServiceGenerator {
                 UriParameters = uriParameters,
                 QueryParameters = queryParameters,
                 BodyParameters = bodyParameters,
-                Documentation = new Documentation { Summary = summary, Parameters = parameters.ToList() }
+                Documentation = new Documentation { Summary = summary, Parameters = parameters.ToList() },
+                IsPostPutMethod = verb == "HttpPost" || verb == "HttpPut"
             };
         }
     }

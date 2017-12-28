@@ -52,5 +52,10 @@ namespace Kinetix.SpaServiceGenerator.Model {
         /// La documentation du service.
         /// </summary>
         public Documentation Documentation { get; set; }
+
+        /// <summary>
+        /// Si la méthode est de type Post, Put ou non.
+        /// </summary>
+        public bool IsPostPutMethod { get; set; }
     }
 }

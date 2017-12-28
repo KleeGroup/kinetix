@@ -53,6 +53,10 @@ export function <#= Utils.ToFirstLower(service.Name) #>(<#
         if (service.BodyParameters.Any()) {
             #>, <#= service.BodyParameters.First().Name #><#
         }
+        #><# 
+        if (!service.BodyParameters.Any() && service.IsPostPutMethod) {
+            #>, {} <#
+        }
         #>, options);
 }
 <# } #>

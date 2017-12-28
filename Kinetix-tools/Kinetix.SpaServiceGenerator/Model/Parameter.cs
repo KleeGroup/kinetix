@@ -25,7 +25,12 @@ namespace Kinetix.SpaServiceGenerator.Model {
         /// <summary>
         /// Avec attribut FromBody ou non.
         /// </summary>
-        public bool? IsFromBody { get; set; }
+        public bool IsFromBody { get; set; }
+
+        /// <summary>
+        /// Avec attribut FromBody ou non.
+        /// </summary>
+        public bool IsFromUri { get; set; }
 
     }
 }
