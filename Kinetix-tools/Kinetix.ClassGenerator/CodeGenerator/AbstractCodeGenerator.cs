@@ -746,8 +746,15 @@ namespace Kinetix.ClassGenerator.CodeGenerator {
                 WriteSummary(1, "DbContext généré pour Entity Framework.");
                 WriteLine(1, "public partial class " + strippedProjectName + "DbContext : DbContext {");
                 WriteEmptyLine();
+
                 WriteSummary(2, "Constructeur par défaut.");
                 WriteLine(2, "public " + strippedProjectName + "DbContext(TransactionScope scope)");
+                WriteLine(3, ": this() {");
+                WriteLine(2, "}");
+                WriteEmptyLine();
+
+                WriteSummary(2, "Constructeur par défaut.");
+                WriteLine(2, "public " + strippedProjectName + "DbContext()");
                 WriteLine(3, ": base(SqlServerManager.Instance.ObtainConnection(\"default\"), false) {");
                 WriteLine(2, "}");
 
