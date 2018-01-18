@@ -107,10 +107,32 @@ namespace Kinetix.Search.Elastic {
         /// <param name="subQueries">Sous-requêtes.</param>
         /// <returns>Requête.</returns>
         public string BuildAndQuery(params string[] subQueries) {
-            var andQuery = string.Join(" AND ", subQueries
-                .Where(x => !string.IsNullOrEmpty(x))
-                .Select(x => "(" + x + ")"));
-            return andQuery;
+            if (subQueries == null) {
+                return null;
+            }
+
+            return string.Join(
+                " AND ",
+                subQueries
+                    .Where(x => !string.IsNullOrEmpty(x))
+                    .Select(x => "(" + x + ")"));
+        }
+
+        /// <summary>
+        /// Construit une requête avec des OR sur des sous-requêtes.
+        /// </summary>
+        /// <param name="subQueries">Sous-requêtes.</param>
+        /// <returns>Requête.</returns>
+        public string BuildOrQuery(params string[] subQueries) {
+            if (subQueries == null) {
+                return null;
+            }
+
+            return string.Join(
+                " OR ",
+                subQueries
+                    .Where(x => !string.IsNullOrEmpty(x))
+                    .Select(x => "(" + x + ")"));
         }
 
         /// <summary>

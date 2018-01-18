@@ -66,7 +66,7 @@ namespace Kinetix.Search.Test.SearchBrokerTest {
         public void Check_FacetSelection() {
 
             var facetsInput = new FacetListInput();
-            facetsInput[GenreFacet] = "F";
+            facetsInput[GenreFacet] = new[] { "F" };
 
             var output = CheckFacets(facetsInput);
 
@@ -79,7 +79,7 @@ namespace Kinetix.Search.Test.SearchBrokerTest {
         public void Check_FacetNullSelection() {
 
             var facetsInput = new FacetListInput();
-            facetsInput[GenreFacet] = FacetConst.NullValue;
+            facetsInput[GenreFacet] = new[] { FacetConst.NullValue };
 
             var output = CheckFacets(facetsInput);
 
@@ -128,12 +128,12 @@ namespace Kinetix.Search.Test.SearchBrokerTest {
 
         [TestMethod]
         public void Check_SortAsc() {
-            Check_Sort(false, new List<string> { "BUCHE", "D'ALEMBERT", "MARCHAND", "RAY", "RODRIGEZ", "TOUTLEMONDE" });
+            Check_Sort(false, new List<string> { "BUCHE", "d'ALEMBERT", "MARCHAND", "RAY", "RODRIGEZ", "TOUTLEMONDE" });
         }
 
         [TestMethod]
         public void Check_SortDesc() {
-            Check_Sort(true, new List<string> { "TOUTLEMONDE", "RODRIGEZ", "RAY", "MARCHAND", "D'ALEMBERT", "BUCHE" });
+            Check_Sort(true, new List<string> { "TOUTLEMONDE", "RODRIGEZ", "RAY", "MARCHAND", "d'ALEMBERT", "BUCHE" });
         }
 
         [TestMethod]

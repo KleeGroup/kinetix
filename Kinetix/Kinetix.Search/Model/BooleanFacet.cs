@@ -14,6 +14,9 @@
         /// <inheritdoc />
         public string FieldName { get; set; }
 
+        /// <inheritdoc />
+        public bool IsMultiSelectable => false;
+
         /// <inheritdoc cref="IFacetDefinition.ResolveLabel" />
         public string ResolveLabel(object primaryKey) {
             return (string)primaryKey == "1" || (string)primaryKey == "true" ? "focus.search.results.yes" : "focus.search.results.no";

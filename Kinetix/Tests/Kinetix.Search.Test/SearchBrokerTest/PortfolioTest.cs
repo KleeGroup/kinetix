@@ -61,7 +61,7 @@ namespace Kinetix.Search.Test.SearchBrokerTest {
         public void Check_PortfolioFacetSelectionOui() {
 
             var facetsInput = new FacetListInput();
-            facetsInput[DepartementFacet] = "1";
+            facetsInput[DepartementFacet] = new[] { "1" };
 
             var output = CheckFacets(facetsInput, portfolio: "02 03");
 
@@ -86,7 +86,7 @@ namespace Kinetix.Search.Test.SearchBrokerTest {
         public void Check_PortfolioFacetSelectionNon() {
 
             var facetsInput = new FacetListInput();
-            facetsInput[DepartementFacet] = "0";
+            facetsInput[DepartementFacet] = new[] { "0" };
 
             var output = CheckFacets(facetsInput, portfolio: "02 03");
 
@@ -99,7 +99,7 @@ namespace Kinetix.Search.Test.SearchBrokerTest {
         public void Check_PortfolioFacetSelectionNonPortfolioNull() {
 
             var facetsInput = new FacetListInput();
-            facetsInput[DepartementFacet] = "0";
+            facetsInput[DepartementFacet] = new[] { "0" };
 
             CheckWithNoPortfolio(facetsInput, string.Empty);
         }

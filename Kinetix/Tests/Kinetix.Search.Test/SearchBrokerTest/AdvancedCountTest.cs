@@ -26,7 +26,7 @@ namespace Kinetix.Search.Test.SearchBrokerTest {
         public void Check_FacetSelection() {
 
             var facetsInput = new FacetListInput();
-            facetsInput[GenreFacet] = "F";
+            facetsInput[GenreFacet] = new[] { "F" };
 
             CheckFacets(2, facetsInput);
         }
@@ -35,7 +35,7 @@ namespace Kinetix.Search.Test.SearchBrokerTest {
         public void Check_FacetNullSelection() {
 
             var facetsInput = new FacetListInput();
-            facetsInput[GenreFacet] = FacetConst.NullValue;
+            facetsInput[GenreFacet] = new[] { FacetConst.NullValue };
 
             CheckFacets(1, facetsInput);
         }

@@ -24,6 +24,14 @@ namespace Kinetix.Search.ComponentModel {
         }
 
         /// <summary>
+        /// Facettes multi sélectionnable.
+        /// </summary>
+        public bool? IsMultiSelectable {
+            get;
+            set;
+        }
+
+        /// <summary>
         /// Valeurs possibles des facettes.
         /// </summary>
         public ICollection<FacetItem> Values {
