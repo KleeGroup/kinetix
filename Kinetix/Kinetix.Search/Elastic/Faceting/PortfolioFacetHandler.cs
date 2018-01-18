@@ -26,7 +26,7 @@ namespace Kinetix.Search.Elastic.Faceting {
         }
 
         /// <inheritdoc/>
-        public void DefineAggregation(Nest.AggregationContainerDescriptor<TDocument> agg, IFacetDefinition facet, string portfolio) {
+        public void DefineAggregation(Nest.AggregationContainerDescriptor<TDocument> agg, IFacetDefinition facet, ICollection<IFacetDefinition> facetList, FacetListInput selectedFacets, string portfolio) {
             if (string.IsNullOrEmpty(portfolio)) {
                 /* Portefeuille de l'utilisateur vide : on ne définit pas d'agregations. */
                 return;
@@ -34,15 +34,19 @@ namespace Kinetix.Search.Elastic.Faceting {
 
             /* Récupère le nom du champ. */
             string fieldName = _document.Fields[facet.FieldName].FieldName;
+
+            /* On construit la requête de filtrage sur les autres facettes multi-sélectionnables. */
+            var filterQuery = FacetingUtil.BuildMultiSelectableFacetFilter(_builder, facet, facetList, selectedFacets, CreateFacetSubQuery);
+
             /* Créé une agrégation avec deux buckets. */
-            var inQuery = _builder.BuildInclusiveInclude(fieldName, portfolio);
-            var outQuery = _builder.BuildExcludeQuery(fieldName, portfolio);
-            agg.Filters(facet.Code, st => st.NamedFilters(
-                 x => x
-                    /* Une pour les documents dans le portefeuille */
-                    .Filter(InValue, d => d.QueryString(query => query.Query(inQuery)))
-                    /* Une pour les documents absents du portefeuille */
-                    .Filter(OutValue, d => d.QueryString(query => query.Query(outQuery)))));
+            var inQuery = _builder.BuildAndQuery(_builder.BuildInclusiveInclude(fieldName, portfolio), filterQuery);
+            var outQuery = _builder.BuildAndQuery(_builder.BuildExcludeQuery(fieldName, portfolio), filterQuery);
+
+            agg.Filters(facet.Code, st => st.NamedFilters(x => x
+                /* Une pour les documents dans le portefeuille */
+                .Filter(InValue, d => d.QueryString(query => query.Query(inQuery)))
+                /* Une pour les documents absents du portefeuille */
+                .Filter(OutValue, d => d.QueryString(query => query.Query(outQuery)))));
         }
 
         /// <inheritdoc />

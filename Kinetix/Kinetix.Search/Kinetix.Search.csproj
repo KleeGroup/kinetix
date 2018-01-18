@@ -36,7 +36,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <CodeAnalysisRuleSet>..\RuleSet.Fmk.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>..\RuleSet.Kinetix.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Elasticsearch.Net, Version=5.0.0.0, Culture=neutral, PublicKeyToken=96c599bbe3e70f5d, processorArchitecture=MSIL">
@@ -69,6 +69,7 @@
     <Compile Include="Contract\ISearchStore.cs" />
     <Compile Include="Elastic\ElasticException.cs" />
     <Compile Include="Elastic\ElasticExtensions.cs" />
+    <Compile Include="Elastic\Faceting\FacetingUtil.cs" />
     <Compile Include="Elastic\Faceting\IFacetHandler.cs" />
     <Compile Include="Elastic\Faceting\StandardFacetHandler.cs" />
     <Compile Include="Elastic\ElasticMappingFactory.cs" />

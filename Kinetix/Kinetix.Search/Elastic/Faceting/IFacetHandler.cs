@@ -32,8 +32,10 @@ namespace Kinetix.Search.Elastic.Faceting {
         /// </summary>
         /// <param name="agg">Descripteur d'agrégation.</param>
         /// <param name="facet">Définition de la facet.</param>
+        /// <param name="facetList">Définitions de toutes les facettes.</param>
+        /// <param name="selectedFacets">Facettes sélectionnées, pour filtrer.</param>
         /// <param name="portfolio">Portefeuille de l'utilisateur.</param>
-        void DefineAggregation(AggregationContainerDescriptor<TDocument> agg, IFacetDefinition facet, string portfolio);
+        void DefineAggregation(AggregationContainerDescriptor<TDocument> agg, IFacetDefinition facet, ICollection<IFacetDefinition> facetList, FacetListInput selectedFacets, string portfolio);
 
         /// <summary>
         /// Extrait les facets du résultat d'une requête.
