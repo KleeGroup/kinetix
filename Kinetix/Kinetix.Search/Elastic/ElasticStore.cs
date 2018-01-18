@@ -296,16 +296,19 @@ namespace Kinetix.Search.Elastic {
                 }
             }
 
-            /* Ajout des facettes manquantes */
+            /* Ajout des valeurs de facettes manquantes (cas d'une valeur demandée par le client non trouvée par la recherche.) */
             if (input.ApiInput.Facets != null) {
                 foreach (var facet in input.ApiInput.Facets) {
-                    var facetItems = facetListOutput.First(f => f.Code == facet.Key).Values;
-                    if (!facetItems.Any(f => f.Code == facet.Value[0])) {
-                        facetItems.Add(new FacetItem {
-                            Code = facet.Value[0],
-                            Label = facetDefList.FirstOrDefault(fct => fct.Code == facet.Key)?.ResolveLabel(facet.Value[0]),
-                            Count = 0
-                        });
+                    var facetItems = facetListOutput.Single(f => f.Code == facet.Key).Values;
+                    /* On ajoute un FacetItem par valeur non trouvée, avec un compte de 0. */
+                    foreach (var value in facet.Value) {
+                        if (!facetItems.Any(f => f.Code == value)) {
+                            facetItems.Add(new FacetItem {
+                                Code = value,
+                                Label = facetDefList.FirstOrDefault(fct => fct.Code == facet.Key)?.ResolveLabel(value),
+                                Count = 0
+                            });
+                        }
                     }
                 }
             }
