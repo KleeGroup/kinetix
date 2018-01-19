@@ -152,9 +152,9 @@ namespace Kinetix.SpaServiceGenerator {
             }).Distinct().ToList();
 
             if (returnTypes.Any(type => type?.Name == "QueryOutput")) {
-                imports.Add(Tuple.Create("QueryInput, QueryOutput", "focus4", "search/types"));
+                imports.Add(Tuple.Create("QueryInput, QueryOutput", "focus4", "collections"));
             } else if (parameterTypes.Any(type => type?.Name == "QueryInput")) {
-                imports.Add(Tuple.Create("QueryInput", "focus4", "search/types"));
+                imports.Add(Tuple.Create("QueryInput", "focus4", "collections"));
             }
 
             if (referenceTypes.Any()) {
