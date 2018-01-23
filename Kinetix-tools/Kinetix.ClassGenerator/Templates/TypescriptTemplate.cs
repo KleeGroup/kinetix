@@ -533,6 +533,47 @@ namespace Kinetix.ClassGenerator.Templates
             #line default
             #line hidden
             this.Write("    }\r\n};\r\n");
+            
+            #line 79 "D:\Projets\kinetix\Kinetix-tools\Kinetix.ClassGenerator\Templates\TypescriptTemplate.tt"
+ if (Model.IsReference) { 
+            
+            #line default
+            #line hidden
+            this.Write("\r\nexport const ");
+            
+            #line 81 "D:\Projets\kinetix\Kinetix-tools\Kinetix.ClassGenerator\Templates\TypescriptTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(Utils.ToFirstLower(Model.Name)));
+            
+            #line default
+            #line hidden
+            this.Write(" = {type: {} as ");
+            
+            #line 81 "D:\Projets\kinetix\Kinetix-tools\Kinetix.ClassGenerator\Templates\TypescriptTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(Model.Name));
+            
+            #line default
+            #line hidden
+            this.Write(", valueKey: \"");
+            
+            #line 81 "D:\Projets\kinetix\Kinetix-tools\Kinetix.ClassGenerator\Templates\TypescriptTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(Utils.ToFirstLower(Model.PrimaryKey.First().Name)));
+            
+            #line default
+            #line hidden
+            this.Write("\", labelKey: \"");
+            
+            #line 81 "D:\Projets\kinetix\Kinetix-tools\Kinetix.ClassGenerator\Templates\TypescriptTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(Utils.ToFirstLower(Model.DefaultProperty ?? "Libelle")));
+            
+            #line default
+            #line hidden
+            this.Write("\"};\r\n");
+            
+            #line 82 "D:\Projets\kinetix\Kinetix-tools\Kinetix.ClassGenerator\Templates\TypescriptTemplate.tt"
+ } 
+            
+            #line default
+            #line hidden
             return this.GenerationEnvironment.ToString();
         }
     }

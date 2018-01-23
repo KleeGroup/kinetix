@@ -76,3 +76,7 @@ export const <#= Model.Name #>Entity = {
 } #>
     }
 };
+<# if (Model.IsReference) { #>
+
+export const <#= Utils.ToFirstLower(Model.Name) #> = {type: {} as <#= Model.Name #>, valueKey: "<#= Utils.ToFirstLower(Model.PrimaryKey.First().Name) #>", labelKey: "<#= Utils.ToFirstLower(Model.DefaultProperty ?? "Libelle") #>"};
+<# } #>
