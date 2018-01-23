@@ -130,7 +130,7 @@ namespace Kinetix.ClassGenerator.Templates
             #line hidden
             
             #line 25 "D:\Projets\kinetix\Kinetix-tools\Kinetix.ClassGenerator\Templates\TypescriptTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(property.DataMember.IsRequired || property.IsPrimaryKey || IsArray(property) || property.IsFromComposition ? string.Empty : "?"));
+            this.Write(this.ToStringHelper.ToStringWithCulture(property.DataMember.IsRequired && !property.IsPrimaryKey || property.DataType != "int" && property.IsPrimaryKey || IsArray(property) || property.IsFromComposition ? string.Empty : "?"));
             
             #line default
             #line hidden
@@ -463,7 +463,7 @@ namespace Kinetix.ClassGenerator.Templates
             this.Write("isRequired: ");
             
             #line 69 "D:\Projets\kinetix\Kinetix-tools\Kinetix.ClassGenerator\Templates\TypescriptTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(Utils.ToFirstLower(property.DataMember.IsRequired.ToString())));
+            this.Write(this.ToStringHelper.ToStringWithCulture(Utils.ToFirstLower((property.DataMember.IsRequired && (!property.IsPrimaryKey || property.DataType != "int")).ToString())));
             
             #line default
             #line hidden
@@ -481,7 +481,7 @@ namespace Kinetix.ClassGenerator.Templates
             
             #line default
             #line hidden
-            this.Write("translationKey: \"");
+            this.Write("label: \"");
             
             #line 71 "D:\Projets\kinetix\Kinetix-tools\Kinetix.ClassGenerator\Templates\TypescriptTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Utils.ToNamespace(Model.Namespace.Name)));

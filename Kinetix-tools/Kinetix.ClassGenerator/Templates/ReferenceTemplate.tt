@@ -15,4 +15,5 @@ export interface <#= reference.Name #> {
     <#= Utils.ToFirstLower(property.Name) #><#= property.DataMember.IsRequired || property.IsPrimaryKey ? string.Empty : "?" #>: <#= ToTSType(property) #>;
 <# } #>
 }
+export const <#= Utils.ToFirstLower(reference.Name) #> = {type: {} as <#= reference.Name #>, valueKey: "<#= Utils.ToFirstLower(reference.PrimaryKey.First().Name) #>", labelKey: "<#= Utils.ToFirstLower(reference.DefaultProperty ?? "Libelle") #>"};
 <# } #>

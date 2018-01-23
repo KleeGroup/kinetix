@@ -91,9 +91,37 @@ namespace Kinetix.ClassGenerator.Templates
             
             #line default
             #line hidden
-            this.Write("}\r\n");
+            this.Write("}\r\nexport const ");
             
             #line 18 "D:\Projets\kinetix\Kinetix-tools\Kinetix.ClassGenerator\Templates\ReferenceTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(Utils.ToFirstLower(reference.Name)));
+            
+            #line default
+            #line hidden
+            this.Write(" = {type: {} as ");
+            
+            #line 18 "D:\Projets\kinetix\Kinetix-tools\Kinetix.ClassGenerator\Templates\ReferenceTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(reference.Name));
+            
+            #line default
+            #line hidden
+            this.Write(", valueKey: \"");
+            
+            #line 18 "D:\Projets\kinetix\Kinetix-tools\Kinetix.ClassGenerator\Templates\ReferenceTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(Utils.ToFirstLower(reference.PrimaryKey.First().Name)));
+            
+            #line default
+            #line hidden
+            this.Write("\", labelKey: \"");
+            
+            #line 18 "D:\Projets\kinetix\Kinetix-tools\Kinetix.ClassGenerator\Templates\ReferenceTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(Utils.ToFirstLower(reference.DefaultProperty ?? "Libelle")));
+            
+            #line default
+            #line hidden
+            this.Write("\"};\r\n");
+            
+            #line 19 "D:\Projets\kinetix\Kinetix-tools\Kinetix.ClassGenerator\Templates\ReferenceTemplate.tt"
  } 
             
             #line default
