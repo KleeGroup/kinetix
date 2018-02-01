@@ -9,10 +9,10 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Fmk.MsBuildCop</RootNamespace>
     <AssemblyName>Fmk.MsBuildCop</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
-    <SccProjectName>%24/FranceActive_PEPS_Budget/Main/Sources/Kinetix/Kinetix-tools/Quality/Fmk.RoslynCop/Fmk.MsBuildCop</SccProjectName>
+    <SccProjectName>Fmk.RoslynCop/Fmk.MsBuildCop</SccProjectName>
     <SccLocalPath>.</SccLocalPath>
     <SccAuxPath>http://tfs12-part:8080/tfs/pgc</SccAuxPath>
     <SccProvider>{4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}</SccProvider>
@@ -34,6 +34,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>..\..\..\..\Kinetix\RuleSet.Kinetix.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Build" />
