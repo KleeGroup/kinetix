@@ -12,7 +12,7 @@ namespace Kinetix.Search.Test {
 
         /* Config */
         private const string DataSourceName = "default";
-        private const string NodeUri = "http://fa-peps-elk.dev.klee.lan.net:9200";
+        private const string NodeUri = "http://docker-vertigo.part.klee.lan.net:9200/";
         private const string IndexName = "kinetix_search_test";
 
         [AssemblyInitialize]
