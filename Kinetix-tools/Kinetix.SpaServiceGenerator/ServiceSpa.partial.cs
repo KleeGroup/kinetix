@@ -8,7 +8,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 namespace Kinetix.SpaServiceGenerator {
 
     /// <summary>
-    /// Template de contrôlleur.
+    /// Template de controler.
     /// </summary>
     public partial class ServiceSpa {
 
