@@ -28,8 +28,14 @@ namespace Kinetix.SpaServiceGenerator {
         /// </param>
         public static void Main(string[] args) {
             var msWorkspace = MSBuildWorkspace.Create();
+            msWorkspace.WorkspaceFailed += MsWorkspace_WorkspaceFailed;
+
             var solution = msWorkspace.OpenSolutionAsync(args[0]).Result;
             Generate(solution, args[1], args[2]).Wait();
+        }
+
+        private static void MsWorkspace_WorkspaceFailed(object sender, WorkspaceDiagnosticEventArgs e) {
+            Console.WriteLine(e.Diagnostic.Message);
         }
 
         private static async Task Generate(Solution solution, string spaRoot, string projectName) {
