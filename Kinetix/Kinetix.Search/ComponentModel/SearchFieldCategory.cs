@@ -1,14 +1,11 @@
-﻿namespace Kinetix.Search.ComponentModel {
+﻿namespace Kinetix.Search.ComponentModel
+{
 
     /// <summary>
     /// Catégorie de champ pour le moteur de recherche.
     /// </summary>
-    public enum SearchFieldCategory {
-
-        /// <summary>
-        /// Champ ID : indexé et stocké tel quel.
-        /// </summary>
-        Id,
+    public enum SearchFieldCategory
+    {
 
         /// <summary>
         /// Champ de résultat, destiné à l'affichage : non indexé, stocké.
@@ -18,12 +15,7 @@
         /// <summary>
         /// Champ de recherche : indexé tokenisé en minuscule, non stocké.
         /// </summary>
-        Search,
-
-        /// <summary>
-        /// Champ de filtrage de sécurité : indexé tokenisé en minuscule, non stocké.
-        /// </summary>
-        Security,
+        TextSearch,
 
         /// <summary>
         /// Champ de tri : indexé en minuscule, non stocké.
@@ -31,18 +23,18 @@
         Sort,
 
         /// <summary>
-        /// Champ de facette : indexé tel quel, non stocké.
+        /// Champ de Facette ou Filtre : indexé tel quel, non stocké.
         /// </summary>
-        Facet,
+        Term,
 
         /// <summary>
-        /// Champ de facette contenant une liste de valeurs : indexé tel quel, non stocké.
+        /// Champ de Facette ou Fitlre contenant une liste de valeurs : indexé tel quel, non stocké.
         /// </summary>
-        ListFacet,
+        ListTerm,
 
         /// <summary>
-        /// Champ utilisé pour filtrer les résultats de recherche.
+        /// Champ laissé par défaut.
         /// </summary>
-        Filter
+        None,
     }
 }

@@ -57,14 +57,17 @@ namespace Kinetix.Search.MetaModel {
                     throw new NotSupportedException("Missing SearchFieldAttribute on property " + beanType + "." + property.Name);
                 }
 
-                var category = fieldAttr.Category;
+                DocumentFieldAttribute docAttr = (DocumentFieldAttribute)property.Attributes[typeof(DocumentFieldAttribute)];
+
+                var fieldCategory = fieldAttr.Category;
 
                 string fieldName = ToCamelCase(property.Name);
                 DocumentFieldDescriptor description = new DocumentFieldDescriptor(
                             property.Name,
                             fieldName,
                             property.PropertyType,
-                            category);
+                            docAttr?.Category,
+                            fieldCategory);
 
                 coll[description.PropertyName] = description;
             }

@@ -1,13 +1,16 @@
-﻿using System;
-using Kinetix.Search.ComponentModel;
+﻿using Kinetix.Search.ComponentModel;
+using System;
+using System.Linq;
 
-namespace Kinetix.Search.MetaModel {
+namespace Kinetix.Search.MetaModel
+{
 
     /// <summary>
     /// Définition d'un bean.
     /// </summary>
     [Serializable]
-    public class DocumentDefinition {
+    public class DocumentDefinition
+    {
 
         /// <summary>
         /// Constructeur.
@@ -15,19 +18,22 @@ namespace Kinetix.Search.MetaModel {
         /// <param name="beanType">Type du bean.</param>
         /// <param name="properties">Collection de propriétés.</param>
         /// <param name="documentTypeName">Nom du contrat (table).</param>
-        internal DocumentDefinition(Type beanType, DocumentFieldDescriptorCollection properties, string documentTypeName) {
+        internal DocumentDefinition(Type beanType, DocumentFieldDescriptorCollection properties, string documentTypeName)
+        {
             this.BeanType = beanType;
             this.Fields = properties;
             this.DocumentTypeName = documentTypeName;
-            foreach (DocumentFieldDescriptor property in properties) {
-                switch (property.Category) {
-                    case SearchFieldCategory.Id:
+            foreach (DocumentFieldDescriptor property in properties)
+            {
+                switch (property.DocumentCategory)
+                {
+                    case DocumentFieldCategory.Id:
                         this.PrimaryKey = property;
                         break;
-                    case SearchFieldCategory.Search:
+                    case DocumentFieldCategory.Search:
                         this.TextField = property;
                         break;
-                    case SearchFieldCategory.Security:
+                    case DocumentFieldCategory.Security:
                         this.SecurityField = property;
                         break;
                     default:
@@ -35,7 +41,23 @@ namespace Kinetix.Search.MetaModel {
                 }
             }
 
-            if (this.PrimaryKey == null) {
+            if (properties.Where(prop => DocumentFieldCategory.Search.Equals(prop.DocumentCategory)).Count() > 1)
+            {
+                throw new NotSupportedException($"{beanType} has multiple Search fields");
+            }
+
+            if (properties.Where(prop => DocumentFieldCategory.Id.Equals(prop.DocumentCategory)).Count() > 1)
+            {
+                throw new NotSupportedException($"{beanType} has multiple Id fields");
+            }
+
+            if (properties.Where(prop => DocumentFieldCategory.Security.Equals(prop.DocumentCategory)).Count() > 1)
+            {
+                throw new NotSupportedException($"{beanType} has multiple Security fields");
+            }
+
+            if (this.PrimaryKey == null)
+            {
                 throw new NotSupportedException(beanType + " has no primary key defined.");
             }
         }
@@ -43,7 +65,8 @@ namespace Kinetix.Search.MetaModel {
         /// <summary>
         /// Retourne le type du bean.
         /// </summary>
-        public Type BeanType {
+        public Type BeanType
+        {
             get;
             private set;
         }
@@ -51,7 +74,8 @@ namespace Kinetix.Search.MetaModel {
         /// <summary>
         /// Retourne le nom du contrat.
         /// </summary>
-        public string DocumentTypeName {
+        public string DocumentTypeName
+        {
             get;
             private set;
         }
@@ -59,7 +83,8 @@ namespace Kinetix.Search.MetaModel {
         /// <summary>
         /// Retourne la clef primaire si elle existe.
         /// </summary>
-        public DocumentFieldDescriptor PrimaryKey {
+        public DocumentFieldDescriptor PrimaryKey
+        {
             get;
             private set;
         }
@@ -67,7 +92,8 @@ namespace Kinetix.Search.MetaModel {
         /// <summary>
         /// Retourne la propriété de recherche textuelle.
         /// </summary>
-        public DocumentFieldDescriptor TextField {
+        public DocumentFieldDescriptor TextField
+        {
             get;
             private set;
         }
@@ -75,7 +101,8 @@ namespace Kinetix.Search.MetaModel {
         /// <summary>
         /// Retourne la propriété de filtrage de sécurité.
         /// </summary>
-        public DocumentFieldDescriptor SecurityField {
+        public DocumentFieldDescriptor SecurityField
+        {
             get;
             private set;
         }
@@ -83,7 +110,8 @@ namespace Kinetix.Search.MetaModel {
         /// <summary>
         /// Retourne la liste des propriétés d'un bean.
         /// </summary>
-        public DocumentFieldDescriptorCollection Fields {
+        public DocumentFieldDescriptorCollection Fields
+        {
             get;
             private set;
         }
