@@ -60,6 +60,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Broker\MonitoredBroker.cs" />
+    <Compile Include="ComponentModel\DocumentFieldAttribute.cs" />
+    <Compile Include="ComponentModel\DocumentFieldCategory.cs" />
     <Compile Include="Config\SearchDataSourceCollection.cs" />
     <Compile Include="Config\SearchDataSourceElement.cs" />
     <Compile Include="Config\SearchSettings.cs" />
