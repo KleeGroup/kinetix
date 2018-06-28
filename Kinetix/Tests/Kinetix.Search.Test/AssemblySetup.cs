@@ -45,6 +45,7 @@ namespace Kinetix.Search.Test {
                 NomSort = "TOUTLEMONDE",
                 Prenom = "Robert",
                 Text = "Robert TOUTLEMONDE",
+                TextSearch = "Robert TOUTLEMONDE",
                 DepartementList = "92 75",
                 Genre = "M"
             };
@@ -55,6 +56,7 @@ namespace Kinetix.Search.Test {
                 NomSort = "MARCHAND",
                 Prenom = "Camille",
                 Text = "Camille MARCHAND",
+                TextSearch = "Camille MARCHAND",
                 DepartementList = "01 02",
                 Genre = "F"
             };
@@ -65,6 +67,7 @@ namespace Kinetix.Search.Test {
                 NomSort = "RODRIGEZ",
                 Prenom = "Clémentine",
                 Text = "Clémentine RODRIGEZ",
+                TextSearch = "Clémentine RODRIGEZ",
                 DepartementList = "03 04",
                 Genre = "F"
             };
@@ -75,6 +78,7 @@ namespace Kinetix.Search.Test {
                 NomSort = "BUCHE",
                 Prenom = "Géraldine",
                 Text = "Géraldine BUCHE",
+                TextSearch = "Géraldine BUCHE",
                 DepartementList = "99 98",
                 Genre = null
             };
@@ -85,6 +89,7 @@ namespace Kinetix.Search.Test {
                 NomSort = "RAY",
                 Prenom = "Jean-Baptiste",
                 Text = "Jean-Baptiste RAY",
+                TextSearch = "Jean-Baptiste RAY",
                 DepartementList = "92 75",
                 Genre = "M"
             };
@@ -95,6 +100,7 @@ namespace Kinetix.Search.Test {
                 NomSort = "D'ALEMBERT",
                 Prenom = "Roger",
                 Text = "Roger D'ALEMBERT",
+                TextSearch = "Roger D'ALEMBERT",
                 DepartementList = "92 75",
                 Genre = "M"
             };

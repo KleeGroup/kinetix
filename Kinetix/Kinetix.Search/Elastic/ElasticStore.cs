@@ -416,8 +416,18 @@ namespace Kinetix.Search.Elastic {
 
             var filterList = new List<string>();
             foreach (KeyValuePair<string, string> entry in input.FilterList) {
-                var field = _definition.Fields[entry.Key].FieldName;
-                filterList.Add(_builder.BuildFilter(field, entry.Value));
+
+                DocumentFieldDescriptor field = _definition.Fields[entry.Key];
+                switch (field.Category)
+                {
+                    case SearchFieldCategory.Facet:
+                    case SearchFieldCategory.ListFacet:
+                        filterList.Add(_builder.BuildFilter(field.FieldName, entry.Value));
+                        break;
+                    case SearchFieldCategory.TextSearch:
+                        filterList.Add(_builder.BuildFullTextSearch(field.FieldName, entry.Value));
+                        break;
+                }
             }
 
             return _builder.BuildAndQuery(filterList.ToArray());

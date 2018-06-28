@@ -27,6 +27,16 @@ namespace Kinetix.Search.Test.Dum {
         }
 
         /// <summary>
+        /// Champ de recherche secondaire.
+        /// </summary>
+        [SearchField(SearchFieldCategory.TextSearch)]
+        public string TextSearch
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
         /// Nom de la personne.
         /// </summary>
         [SearchField(SearchFieldCategory.Result)]

@@ -181,6 +181,22 @@ namespace Kinetix.Search.Test.SearchBrokerTest {
             }
         }
 
+        [TestMethod]
+        public void Check_FullTextSearch()
+        {
+
+            var facetsInput = new FacetListInput();
+            facetsInput[GenreFacet] = new[] { "F" };
+
+            var filterList = new Dictionary<string, string>() { { "TextSearch", "Clémentine" } };
+
+            var output = CheckFacets(facetsInput, null, filterList);
+
+            /* Total. */
+            Assert.AreEqual(1, output.List.Count, "Nombre de résultats attendu incorrect.");
+            Assert.AreEqual(1, output.TotalCount, "Nombre total de résultats attendu incorrect.");
+        }
+
         private static void Check_Sort(bool sortDescending, IEnumerable<string> expectedNomList) {
 
             var input = new AdvancedQueryInput {
@@ -205,7 +221,7 @@ namespace Kinetix.Search.Test.SearchBrokerTest {
                 "Tri attendu : " + string.Join(",", expectedNomList) + Environment.NewLine + " | Tri constaté : " + string.Join(",", nomList));
         }
 
-        private static QueryOutput<PersonneDocument> CheckFacets(FacetListInput facetsInput, string query = null) {
+        private static QueryOutput<PersonneDocument> CheckFacets(FacetListInput facetsInput, string query = null, IDictionary<string, string> filterList = null) {
 
             var facetQueryDefinition = new FacetQueryDefinition(new BooleanFacet {
                 Code = GenreFacet,
@@ -218,10 +234,12 @@ namespace Kinetix.Search.Test.SearchBrokerTest {
                     Top = 10,
                     Facets = facetsInput,
                 },
-                FacetQueryDefinition = facetQueryDefinition
+                FacetQueryDefinition = facetQueryDefinition,
+                FilterList = filterList
             };
             var broker = SearchBrokerManager.GetBroker<PersonneDocument>();
             return broker.AdvancedQuery(input);
         }
+
     }
 }

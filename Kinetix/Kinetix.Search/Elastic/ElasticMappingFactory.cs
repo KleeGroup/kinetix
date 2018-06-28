@@ -59,6 +59,13 @@ namespace Kinetix.Search.Elastic {
                         .Index(true)
                         .Store(false)
                         .Analyzer("text_fr"));
+                case SearchFieldCategory.TextSearch:
+                    /* Champ de recherche auxiliaire full-text. */
+                    return selector.Text(x => x
+                        .Name(fieldName)
+                        .Index(true)
+                        .Store(false)
+                        .Analyzer("text_fr"));
                 case SearchFieldCategory.Security:
                     /* Champ de filtrage de sécurité : listes de code. */
                     /* TODO : faire un mapping plus spécifique ? */

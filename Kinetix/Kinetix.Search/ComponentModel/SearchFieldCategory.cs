@@ -21,6 +21,11 @@
         Search,
 
         /// <summary>
+        /// Champ de recherche : indexé tokenisé en minuscule, non stocké.
+        /// </summary>
+        TextSearch,
+
+        /// <summary>
         /// Champ de filtrage de sécurité : indexé tokenisé en minuscule, non stocké.
         /// </summary>
         Security,
