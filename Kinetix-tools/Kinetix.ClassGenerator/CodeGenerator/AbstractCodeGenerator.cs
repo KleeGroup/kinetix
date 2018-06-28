@@ -689,6 +689,7 @@ namespace Kinetix.ClassGenerator.CodeGenerator {
                 WriteEmptyLine();
 
                 WriteLine(2, $"public static explicit operator {item.Name}Code(string value) {{");
+                WriteLine(3, $"System.Runtime.CompilerServices.RuntimeHelpers.RunClassConstructor(typeof({item.Name}).TypeHandle);");
                 WriteLine(3, "if (Instance.TryGetValue(value, out var result)) {");
                 WriteLine(4, "return result;");
                 WriteLine(3, "} else {");
@@ -730,6 +731,7 @@ namespace Kinetix.ClassGenerator.CodeGenerator {
             var csprojFileName = Path.Combine(destDirectory, $"{projectName}.csproj");
             using (_currentWriter = new CsharpFileWriter(targetFileName, csprojFileName)) {
                 WriteLine("using System.Data.Entity;");
+                WriteLine("using System.Transactions;");
                 WriteLine("using Kinetix.Data.SqlClient;");
 
                 List<string> listNs = new List<string>();
@@ -744,6 +746,13 @@ namespace Kinetix.ClassGenerator.CodeGenerator {
                 WriteSummary(1, "DbContext généré pour Entity Framework.");
                 WriteLine(1, "public partial class " + strippedProjectName + "DbContext : DbContext {");
                 WriteEmptyLine();
+
+                WriteSummary(2, "Constructeur par défaut.");
+                WriteLine(2, "public " + strippedProjectName + "DbContext(TransactionScope scope)");
+                WriteLine(3, ": this() {");
+                WriteLine(2, "}");
+                WriteEmptyLine();
+
                 WriteSummary(2, "Constructeur par défaut.");
                 WriteLine(2, "public " + strippedProjectName + "DbContext()");
                 WriteLine(3, ": base(SqlServerManager.Instance.ObtainConnection(\"default\"), false) {");

@@ -16,7 +16,7 @@ namespace Kinetix.SpaServiceGenerator.Model {
         /// <summary>
         /// Le verbe du service (get ou post).
         /// </summary>
-        public Verb Verb { get; set; }
+        public string Verb { get; set; }
 
         /// <summary>
         /// Le nom du service.
@@ -34,8 +34,28 @@ namespace Kinetix.SpaServiceGenerator.Model {
         public ICollection<Parameter> Parameters { get; set; }
 
         /// <summary>
+        /// Les URI paramètres du service.
+        /// </summary>
+        public ICollection<Parameter> UriParameters { get; set; }
+
+        /// <summary>
+        /// Les query params du service.
+        /// </summary>
+        public ICollection<Parameter> QueryParameters { get; set; }
+
+        /// <summary>
+        /// Les body params du service.
+        /// </summary>
+        public ICollection<Parameter> BodyParameters { get; set; }
+
+        /// <summary>
         /// La documentation du service.
         /// </summary>
         public Documentation Documentation { get; set; }
+
+        /// <summary>
+        /// Si la méthode est de type Post, Put ou non.
+        /// </summary>
+        public bool IsPostPutMethod { get; set; }
     }
 }

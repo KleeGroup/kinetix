@@ -17,6 +17,9 @@ namespace Kinetix.Search.Model {
         /// <inheritdoc />
         public string FieldName { get; set; }
 
+        /// <inheritdoc />
+        public bool IsMultiSelectable { get; set; } = false;
+
         /// <inheritdoc cref="IFacetDefinition.ResolveLabel" />
         public string ResolveLabel(object primaryKey) {
             return ReferenceManager.Instance.GetReferenceValueByPrimaryKey<T>(primaryKey);

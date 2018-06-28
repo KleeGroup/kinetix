@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Kinetix.SpaServiceGenerator.Model;
 using Microsoft.CodeAnalysis;
@@ -67,7 +69,7 @@ namespace Kinetix.SpaServiceGenerator {
 
                 var template = new ServiceSpa { ProjectName = projectName, DefinitionPath = definitionPath, Services = serviceList };
                 var output = template.TransformText();
-                File.WriteAllText(fileName, output, Encoding.UTF8);
+                File.WriteAllText(fileName, output, new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
             }
         }
 
@@ -85,18 +87,59 @@ namespace Kinetix.SpaServiceGenerator {
                     ((param as XmlElementSyntax).StartTag.Attributes.First() as XmlNameAttributeSyntax).Identifier.ToString(),
                     (param as XmlElementSyntax).Content.ToString()));
 
+            var verb = method.AttributeLists.First().Attributes.First().ToString();
+
+            ICollection<Parameter> parameterList = method.ParameterList.ChildNodes().OfType<ParameterSyntax>().Select(parameter => new Parameter {
+                Type = model.GetSymbolInfo(parameter.Type).Symbol as INamedTypeSymbol,
+                Name = parameter.Identifier.ToString(),
+                IsOptional = parameter.Default != null,
+                IsFromBody = parameter.AttributeLists.FirstOrDefault() != null ? parameter.AttributeLists.FirstOrDefault().Attributes.Where(attr => attr.ToString() == "FromBody").Any() : false,
+                IsFromUri = parameter.AttributeLists.FirstOrDefault() != null ? parameter.AttributeLists.FirstOrDefault().Attributes.Where(attr => attr.ToString() == "FromUri").Any() : false,
+            }).ToList();
+
+            IList<string> routeParameters = new List<string>();
+            string route = ((method.AttributeLists.Last().Attributes.First().ArgumentList.ChildNodes().First() as AttributeArgumentSyntax)
+                    .Expression as LiteralExpressionSyntax).Token.ValueText;
+            MatchCollection matches = Regex.Matches(route, "(?s){.+?}");
+            foreach (Match match in matches) {
+                routeParameters.Add(match.Value.Replace("{", "").Replace("}", ""));
+            }
+
+            var uriParameters = parameterList
+                .Where(param => !param.IsFromBody && routeParameters.Contains(param.Name))
+                .ToList();
+            var queryParameters = parameterList
+                .Where(param => !param.IsFromBody && !routeParameters.Contains(param.Name))
+                .ToList();
+
+            ICollection<Parameter> bodyParameters = new List<Parameter>();
+            if ((verb == "HttpPost" || verb == "HttpPut") && parameterList.Except(uriParameters).Any()) {
+                var bodyParams = parameterList
+                    .Except(uriParameters)
+                    .Where(param => param.IsFromBody)
+                    // Concat here as a fallback (use of first below)
+                    .Concat(parameterList.Where(param => !param.IsFromUri));
+
+                if (bodyParams.Any()) {
+                    bodyParameters.Add(bodyParams.First());
+                }
+
+                queryParameters = queryParameters
+                    .Where(param => !bodyParameters.Select(body => body.Name).Contains(param.Name))
+                    .ToList();
+            }
+
             return new ServiceDeclaration {
-                Verb = method.AttributeLists.First().Attributes.First().ToString() == "HttpGet" ? Verb.Get : Verb.Post,
-                Route = ((method.AttributeLists.Last().Attributes.First().ArgumentList.ChildNodes().First() as AttributeArgumentSyntax)
-                    .Expression as LiteralExpressionSyntax).Token.ValueText,
+                Verb = verb,
+                Route = route,
                 Name = method.Identifier.ToString(),
                 ReturnType = model.GetSymbolInfo(method.ReturnType).Symbol as INamedTypeSymbol,
-                Parameters = method.ParameterList.ChildNodes().OfType<ParameterSyntax>().Select(parameter => new Parameter {
-                    Type = model.GetSymbolInfo(parameter.Type).Symbol as INamedTypeSymbol,
-                    Name = parameter.Identifier.ToString(),
-                    IsOptional = parameter.Default != null
-                }).ToList(),
-                Documentation = new Documentation { Summary = summary, Parameters = parameters.ToList() }
+                Parameters = parameterList,
+                UriParameters = uriParameters,
+                QueryParameters = queryParameters,
+                BodyParameters = bodyParameters,
+                Documentation = new Documentation { Summary = summary, Parameters = parameters.ToList() },
+                IsPostPutMethod = verb == "HttpPost" || verb == "HttpPut"
             };
         }
     }

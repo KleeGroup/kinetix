@@ -72,6 +72,7 @@
     <Compile Include="Contract\ISearchStore.cs" />
     <Compile Include="Elastic\ElasticException.cs" />
     <Compile Include="Elastic\ElasticExtensions.cs" />
+    <Compile Include="Elastic\Faceting\FacetingUtil.cs" />
     <Compile Include="Elastic\Faceting\IFacetHandler.cs" />
     <Compile Include="Elastic\Faceting\StandardFacetHandler.cs" />
     <Compile Include="Elastic\ElasticMappingFactory.cs" />

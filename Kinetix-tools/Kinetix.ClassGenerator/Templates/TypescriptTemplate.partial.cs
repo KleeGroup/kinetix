@@ -21,6 +21,26 @@ namespace Kinetix.ClassGenerator.Templates {
         /// </summary>
         public string RootNamespace { get; set; }
 
+
+        private string FocusImport {
+            get {
+                var list = new List<string>();
+                if (!Model.PropertyList.All(p => IsArray(p) || p.IsFromComposition)) {
+                    list.Add("EntityField");
+                }
+
+                if (Model.PropertyList.Any(p => IsArray(p))) {
+                    list.Add("StoreListNode");
+                }
+
+                if (Model.ParentClass == null) {
+                    list.Add("StoreNode");
+                }
+
+                return string.Join(", ", list);
+            }
+        }
+
         private string GetDomain(ModelProperty property) {
             return property?.DataDescription?.Domain?.Code;
         }
@@ -43,6 +63,12 @@ namespace Kinetix.ClassGenerator.Templates {
                  && property.DataType != "string" && property.DataType != "int")
                 .Select(property => property.DataDescription?.ReferenceClass?.FullyQualifiedName);
 
+            string parentClassName = null;
+            if (Model.ParentClass != null) {
+                parentClassName = Model.ParentClass.FullyQualifiedName;
+                types = types.Concat(new[] { parentClassName });
+            }
+
             var currentModule = GetModuleName(Model.FullyQualifiedName);
 
             var imports = types.Select(type => {
@@ -55,7 +81,7 @@ namespace Kinetix.ClassGenerator.Templates {
                     module = $"../{module}";
                 }
 
-                return Tuple.Create($"{name}, {name}Node", module, name.ToDashCase());
+                return Tuple.Create($"{name}, {name}Node" + (type == parentClassName ? $", {name}Entity" : string.Empty), module, name.ToDashCase());
             }).Distinct().OrderBy(type => type.Item1).ToList();
 
             var references = Model.PropertyList

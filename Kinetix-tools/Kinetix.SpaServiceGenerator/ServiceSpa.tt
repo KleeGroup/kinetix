@@ -20,30 +20,43 @@ import {<#= import.Item1 #>} from "<#= import.Item2 #>/<#= import.Item3 #>";
  * <#= service.Documentation.Summary #>
 <# foreach (var param in service.Documentation.Parameters) { #> * @param <#= param.Item1 #> <#= param.Item2 #>
 <# } #>
+ * @param options Options to service call.
  */
 export function <#= Utils.ToFirstLower(service.Name) #>(<# 
-    foreach (var parameter in service.Parameters) { #><#= parameter.Name #><#= parameter.IsOptional ? "?" : "" #>: <#= GetTSType(parameter.Type) #><#
-        if (parameter.Name != service.Parameters.Last().Name) {
+    if (service.BodyParameters.Any()) {
+        var parameter = service.BodyParameters.First();
+        #><#= parameter.Name #><#= parameter.IsOptional ? "?" : "" #>: <#= GetTSType(parameter.Type) #>, <#
+    }
+    foreach (var parameter in service.UriParameters) { #><#= parameter.Name #><#= parameter.IsOptional ? "?" : "" #>: <#= GetTSType(parameter.Type) #><#
+        if (parameter.Name != service.UriParameters.Last().Name) {
             #>, <#
         }
-    }#>) {
-    return server.<#= Utils.ToFirstLower(service.Verb.ToString()) #><#= IsArray(service.ReturnType) && service.Verb == Verb.Get ? "List" : ""  #><<#= GetTSType(service.ReturnType, service.Verb != Verb.Get) #>>(`./<#= service.Route.Replace("{", "${").Replace("?", "") #>`<#
-        if (service.Parameters.Any() && service.Verb == Verb.Post) {
-            #>, <#= service.Parameters.First().Name #><#
+    }
+    if (service.UriParameters.Count() > 0) { 
+        #>, <#
+    } #>options: server.RequestInitExtended<{<# 
+        foreach (var queryParameter in service.QueryParameters) { 
+            #><#= queryParameter.Name #><#= queryParameter.IsOptional ? "?" : "" #>: <#= GetTSType(queryParameter.Type) #><#
+            if (queryParameter.Name != service.QueryParameters.Last().Name) {
+                #>, <#
+            }	
         }
-        var mandatoryParameters = service.Parameters.Where(param => !param.IsOptional);
-        if (service.Verb == Verb.Get && mandatoryParameters.Any()) {
-            #>, [<#
-            foreach (var parameter in mandatoryParameters) {
-                if (!parameter.IsOptional) {
-                    #><#= parameter.Name #><#
-                    if (parameter.Name != mandatoryParameters.Last().Name) {
-                        #>, <#
-                    }
-                }
+    #>}> = {}) {
+    return server.<#= Utils.ToFirstLower(service.Verb) #><<#= GetTSType(service.ReturnType) #>, {<# 
+            foreach (var queryParameter in service.QueryParameters) { 
+                #><#= queryParameter.Name #><#= queryParameter.IsOptional ? "?" : "" #>: <#= GetTSType(queryParameter.Type) #><#
+                if (queryParameter.Name != service.QueryParameters.Last().Name) {
+                    #>, <#
+                }	
             }
-            #>]<#
+        #>}>(`./<#= service.Route.Replace("{", "${").Replace("?", "") #>`<#
+        if (service.BodyParameters.Any()) {
+            #>, <#= service.BodyParameters.First().Name #><#
         }
-        #>);
+        #><# 
+        if (!service.BodyParameters.Any() && service.IsPostPutMethod) {
+            #>, {} <#
+        }
+        #>, options);
 }
 <# } #>
