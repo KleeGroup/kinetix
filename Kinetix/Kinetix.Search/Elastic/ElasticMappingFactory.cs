@@ -74,7 +74,7 @@ namespace Kinetix.Search.Elastic {
                         .Index(true)
                         .Store(true)
                         .Analyzer("text_fr"));
-                case SearchFieldCategory.Facet:
+                case SearchFieldCategory.Term:
                     /* Champ de facette. */
                     if (field.PropertyType == typeof(DateTime?)) {
                         throw new ElasticException("Le type DateTime n'est pas supporté pour le champ de facette " + field.FieldName);
@@ -91,7 +91,7 @@ namespace Kinetix.Search.Elastic {
                         .Name(fieldName)
                         .Index(true)
                         .Store(false));
-                case SearchFieldCategory.ListFacet:
+                case SearchFieldCategory.ListTerm:
                     return selector.Text(x => x
                         .Name(fieldName)
                         .Index(true)

@@ -420,8 +420,8 @@ namespace Kinetix.Search.Elastic {
                 DocumentFieldDescriptor field = _definition.Fields[entry.Key];
                 switch (field.Category)
                 {
-                    case SearchFieldCategory.Facet:
-                    case SearchFieldCategory.ListFacet:
+                    case SearchFieldCategory.Term:
+                    case SearchFieldCategory.ListTerm:
                         filterList.Add(_builder.BuildFilter(field.FieldName, entry.Value));
                         break;
                     case SearchFieldCategory.TextSearch:

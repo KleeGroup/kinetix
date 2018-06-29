@@ -197,6 +197,24 @@ namespace Kinetix.Search.Test.SearchBrokerTest {
             Assert.AreEqual(1, output.TotalCount, "Nombre total de résultats attendu incorrect.");
         }
 
+
+        [TestMethod]
+        public void Check_TextSearchWithFilter()
+        {
+
+            var facetsInput = new FacetListInput();
+
+            var filterList = new Dictionary<string, string>() {
+                { "Genre", "F" }
+            };
+
+            var output = CheckFacets(facetsInput, "Clémentine", filterList);
+
+            /* Total. */
+            Assert.AreEqual(1, output.List.Count, "Nombre de résultats attendu incorrect.");
+            Assert.AreEqual(1, output.TotalCount, "Nombre total de résultats attendu incorrect.");
+        }
+
         private static void Check_Sort(bool sortDescending, IEnumerable<string> expectedNomList) {
 
             var input = new AdvancedQueryInput {

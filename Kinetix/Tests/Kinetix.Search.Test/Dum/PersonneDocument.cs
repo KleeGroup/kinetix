@@ -66,7 +66,7 @@ namespace Kinetix.Search.Test.Dum {
         /// <summary>
         /// Genre de la personne (M ou F).
         /// </summary>
-        [SearchField(SearchFieldCategory.Facet)]
+        [SearchField(SearchFieldCategory.Term)]
         public string Genre {
             get;
             set;

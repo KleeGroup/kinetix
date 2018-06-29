@@ -38,12 +38,12 @@
         /// <summary>
         /// Champ de facette : indexé tel quel, non stocké.
         /// </summary>
-        Facet,
+        Term,
 
         /// <summary>
         /// Champ de facette contenant une liste de valeurs : indexé tel quel, non stocké.
         /// </summary>
-        ListFacet,
+        ListTerm,
 
         /// <summary>
         /// Champ utilisé pour filtrer les résultats de recherche.
