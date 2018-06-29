@@ -199,13 +199,14 @@ namespace Kinetix.Search.Test.SearchBrokerTest {
 
 
         [TestMethod]
-        public void Check_TextSearchWithFilter()
+        public void Check_TextSearchWithTermAndTextSearchFilter()
         {
 
             var facetsInput = new FacetListInput();
 
             var filterList = new Dictionary<string, string>() {
-                { "Genre", "F" }
+                { "Genre", "F" }, // Term search
+                { "TextSearch", "RODRIGEZ" }, // Text Search
             };
 
             var output = CheckFacets(facetsInput, "Clémentine", filterList);
