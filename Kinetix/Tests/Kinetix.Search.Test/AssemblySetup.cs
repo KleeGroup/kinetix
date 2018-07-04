@@ -105,12 +105,52 @@ namespace Kinetix.Search.Test {
                 Genre = "M"
             };
 
+            var doc7 = new PersonneDocument
+            {
+                Id = 13,
+                Nom = "ROBERT",
+                NomSort = "ROBERT",
+                Prenom = "Martin",
+                Text = "Martin ROBERT",
+                TextSearch = "Martin ROBERT",
+                DepartementList = "92 75",
+                Genre = "M"
+            };
+
+            var doc8 = new PersonneDocument
+            {
+                Id = 14,
+                Nom = "SANCHEZ",
+                NomSort = "SANCHEZ",
+                Prenom = "Roberto",
+                Text = "Roberto SANCHEZ",
+                TextSearch = "Roberto SANCHEZ",
+                DepartementList = "92 75",
+                Genre = "M"
+            };
+
+            var doc9 = new PersonneDocument
+            {
+                Id = 15,
+                Nom = "ROBERTO",
+                NomSort = "ROBERTO",
+                Prenom = "Jean",
+                Text = "Jean ROBERTO",
+                TextSearch = "Jean ROBERTO",
+                DepartementList = "92 75",
+                Genre = "M"
+            };
+
             broker.Put(doc1);
             broker.Put(doc2);
             broker.Put(doc3);
             broker.Put(doc4);
             broker.Put(doc5);
             broker.Put(doc6);
+            broker.Put(doc7);
+            broker.Put(doc8);
+            broker.Put(doc9);
+
 
             /* Attends que les documents soit disponibles. */
             Thread.Sleep(1000);

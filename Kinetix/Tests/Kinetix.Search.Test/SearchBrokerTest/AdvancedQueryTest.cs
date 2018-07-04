@@ -216,6 +216,29 @@ namespace Kinetix.Search.Test.SearchBrokerTest {
             Assert.AreEqual(1, output.TotalCount, "Nombre total de résultats attendu incorrect.");
         }
 
+        [TestMethod]
+        public void Check_TextSearchWithBoosts()
+        {
+            var facetsInput = new FacetListInput();
+
+            
+            IList<Boost> boosts = new List<Boost>() {
+                new Boost() { Field = "Nom", BoostValue = 10.0M },
+            };
+
+            // Les personnes dont le nom match avec "Robert" doivent arriver avant les personnes ayant le prénom "Robert"
+            var output = CheckFacets(facetsInput, "Robert", null, boosts);
+
+            /* Total. */
+            Assert.AreEqual(4, output.List.Count, "Nombre de résultats attendu incorrect.");
+            Assert.AreEqual(4, output.TotalCount, "Nombre total de résultats attendu incorrect.");
+
+            Assert.AreEqual("ROBERTO", output.List.ElementAt(0).Nom, "Nom de famille");
+            Assert.AreEqual("ROBERT", output.List.ElementAt(1).Nom, "Nom de famille");
+            Assert.AreEqual("Roberto", output.List.ElementAt(2).Prenom, "Nom de famille");
+            Assert.AreEqual("Robert", output.List.ElementAt(3).Prenom, "Nom de famille");
+        }
+
         private static void Check_Sort(bool sortDescending, IEnumerable<string> expectedNomList) {
 
             var input = new AdvancedQueryInput {
@@ -240,7 +263,7 @@ namespace Kinetix.Search.Test.SearchBrokerTest {
                 "Tri attendu : " + string.Join(",", expectedNomList) + Environment.NewLine + " | Tri constaté : " + string.Join(",", nomList));
         }
 
-        private static QueryOutput<PersonneDocument> CheckFacets(FacetListInput facetsInput, string query = null, IDictionary<string, string> filterList = null) {
+        private static QueryOutput<PersonneDocument> CheckFacets(FacetListInput facetsInput, string query = null, IDictionary<string, string> filterList = null, IList<Boost> boosts = null) {
 
             var facetQueryDefinition = new FacetQueryDefinition(new BooleanFacet {
                 Code = GenreFacet,
@@ -252,9 +275,10 @@ namespace Kinetix.Search.Test.SearchBrokerTest {
                     Skip = 0,
                     Top = 10,
                     Facets = facetsInput,
+                    Boosts = boosts
                 },
                 FacetQueryDefinition = facetQueryDefinition,
-                FilterList = filterList
+                FilterList = filterList,
             };
             var broker = SearchBrokerManager.GetBroker<PersonneDocument>();
             return broker.AdvancedQuery(input);

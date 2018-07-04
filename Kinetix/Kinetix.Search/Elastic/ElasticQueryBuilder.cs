@@ -19,8 +19,9 @@ namespace Kinetix.Search.Elastic {
         /// </summary>
         /// <param name="field">Champ de recherche.</param>
         /// <param name="text">Texte de recherche.</param>
+        /// <param name="boost">Boost sur le champ.</param>
         /// <returns>Requête.</returns>
-        public string BuildFullTextSearch(string field, string text) {
+        public string BuildFullTextSearch(string field, string text, decimal? boost = null) {
             if (string.IsNullOrEmpty(text)) {
                 return string.Empty;
             }
@@ -38,7 +39,13 @@ namespace Kinetix.Search.Elastic {
             /* Rajoute le joker à la fin. */
             /* Concatène en AND : tous les termes doivent matcher. */
             var andQuery = string.Join(" AND ", subWords.Select(x => x + "*"));
-            var query = string.Format("{0}:({1})", field, andQuery);
+            string query;
+            if (boost.HasValue) {
+                query = string.Format("{0}:({1})^{2}", field, andQuery, boost.Value);
+            } else {
+                query = string.Format("{0}:({1})", field, andQuery);
+            }
+
             return query;
         }
 

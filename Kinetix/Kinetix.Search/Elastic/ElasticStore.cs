@@ -398,10 +398,14 @@ namespace Kinetix.Search.Elastic {
         /// <returns>Requête de filtrage.</returns>
         private string GetFilterQuery(AdvancedQueryInput input) {
             var textSubQuery = GetTextSubQuery(input);
+            var textSubQueryBoost = GetTextSubQueryBoost(input);
             var securitySubQuery = GetSecuritySubQuery(input);
             var filterSubQuery = GetFilterSubQuery(input);
             var monoValuedFacetsSubQuery = GetFacetSelectionSubQuery(input);
-            return _builder.BuildAndQuery(textSubQuery, securitySubQuery, filterSubQuery, monoValuedFacetsSubQuery);
+
+            var queryWithBoost = "(" + textSubQuery + " " + textSubQueryBoost + ")";
+
+            return _builder.BuildAndQuery(queryWithBoost, securitySubQuery, filterSubQuery, monoValuedFacetsSubQuery);
         }
 
         /// <summary>
@@ -454,7 +458,37 @@ namespace Kinetix.Search.Elastic {
             }
 
             /* Constuit la sous requête. */
-            return _builder.BuildFullTextSearch(fieldDesc.FieldName, value);
+            return "+" + _builder.BuildFullTextSearch(fieldDesc.FieldName, value);
+        }
+
+        /// <summary>
+        /// Créé la sous-requête pour le champ textuel.
+        /// </summary>
+        /// <param name="input">Entrée.</param>
+        /// <returns>Sous-requête.</returns>
+        private string GetTextSubQueryBoost(AdvancedQueryInput input)
+        {
+            var criteria = input.ApiInput.Criteria;
+            var value = criteria?.Query;
+
+            if ((input.ApiInput.Boosts == null || !input.ApiInput.Boosts.Any()) ||
+                (string.IsNullOrEmpty(value) || value == "*"))
+            {
+                return string.Empty;
+            }
+            else
+            {
+                IList<string> boosts = new List<string>();
+                foreach (Boost boost in input.ApiInput.Boosts)
+                {
+                    DocumentFieldDescriptor field = _definition.Fields[boost.Field];
+                    boosts.Add(_builder.BuildFullTextSearch(field.FieldName, value, boost.BoostValue));
+                }
+
+                /* Concatène en OR : les boosts ne doivent pas filtrer les résultats de recherche. */
+                return string.Join(" ", boosts);
+            }
+
         }
 
         /// <summary>
