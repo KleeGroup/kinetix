@@ -59,7 +59,7 @@ namespace Kinetix.Search.Broker {
         }
 
         /// <inheritdoc cref="ISearchBroker{TDocument}.Query" />
-        public IEnumerable<TDocument> Query(string text, string security = null) {
+        public IEnumerable<TDocument> Query(string text, string security = null, IDictionary<string, string> filterList = null) {
             if (string.IsNullOrEmpty(text)) {
                 return new List<TDocument>();
             }
@@ -72,7 +72,8 @@ namespace Kinetix.Search.Broker {
                     Skip = 0,
                     Top = QueryDefaultSize
                 },
-                Security = security
+                Security = security,
+                FilterList = filterList
             };
             var output = _store.AdvancedQuery(input);
             return output.List;

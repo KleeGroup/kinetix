@@ -55,9 +55,10 @@ namespace Kinetix.Search.Contract {
         /// Effectue une requête sur le champ text.
         /// </summary>
         /// <param name="text">Texte à chercher.</param>
+        /// <param name="filterList">Filtrage sur des critères métiers</param>
         /// <param name="security">Filtrage de périmètre de sécurité.</param>
         /// <returns>Documents trouvés.</returns>
-        IEnumerable<TDocument> Query(string text, string security = null);
+        IEnumerable<TDocument> Query(string text, string security = null, IDictionary<string, string> filterList = null);
 
         /// <summary>
         /// Effectue une recherche avancé.

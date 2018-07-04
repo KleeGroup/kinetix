@@ -88,10 +88,10 @@ namespace Kinetix.Search.Broker {
         }
 
         /// <inheritdoc cref="ISearchBroker{TDocument}.Query" />
-        public IEnumerable<TDocument> Query(string text, string security = null) {
+        public IEnumerable<TDocument> Query(string text, string security = null, IDictionary<string, string> filterList = null) {
             StartProcess(nameof(Query));
             try {
-                return _broker.Query(text, security);
+                return _broker.Query(text, security, filterList);
             } finally {
                 StopProcess();
             }
