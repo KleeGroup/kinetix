@@ -1,4 +1,6 @@
-﻿namespace Kinetix.Search.ComponentModel {
+﻿using System.Collections.Generic;
+
+namespace Kinetix.Search.ComponentModel {
 
     /// <summary>
     /// Entrée d'une recherche avancée.
@@ -17,6 +19,14 @@
         /// Critères de recherche.
         /// </summary>
         public Criteria Criteria {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Critères de boost.
+        /// </summary>
+        public IList<Boost> Boosts {
             get;
             set;
         }

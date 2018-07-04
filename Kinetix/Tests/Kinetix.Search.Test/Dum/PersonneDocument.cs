@@ -39,7 +39,7 @@ namespace Kinetix.Search.Test.Dum {
         /// <summary>
         /// Nom de la personne.
         /// </summary>
-        [SearchField(SearchFieldCategory.Result)]
+        [SearchField(SearchFieldCategory.TextSearch)]
         public string Nom {
             get;
             set;
