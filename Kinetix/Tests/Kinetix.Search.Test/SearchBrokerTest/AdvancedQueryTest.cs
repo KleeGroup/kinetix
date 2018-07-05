@@ -27,8 +27,8 @@ namespace Kinetix.Search.Test.SearchBrokerTest {
             Assert.IsNotNull(output);
 
             /* Total. */
-            Assert.AreEqual(6, output.List.Count, "Nombre de résultats attendu incorrect.");
-            Assert.AreEqual(6, output.TotalCount, "Nombre de résultats attendu incorrect.");
+            Assert.AreEqual(9, output.List.Count, "Nombre de résultats attendu incorrect.");
+            Assert.AreEqual(9, output.TotalCount, "Nombre de résultats attendu incorrect.");
 
             /* Facettes */
             var facetsOutput = output.Facets;
@@ -47,7 +47,7 @@ namespace Kinetix.Search.Test.SearchBrokerTest {
                 var v = value.Count;
                 switch (s) {
                     case "M":
-                        Assert.AreEqual(3, v);
+                        Assert.AreEqual(6, v);
                         break;
                     case "F":
                         Assert.AreEqual(2, v);
@@ -128,12 +128,12 @@ namespace Kinetix.Search.Test.SearchBrokerTest {
 
         [TestMethod]
         public void Check_SortAsc() {
-            Check_Sort(false, new List<string> { "BUCHE", "D'ALEMBERT", "MARCHAND", "RAY", "RODRIGEZ", "TOUTLEMONDE" });
+            Check_Sort(false, new List<string> { "BUCHE", "CARLOS", "D'ALEMBERT", "MARCHAND", "RAY", "ROBERT", "ROBERTO", "RODRIGEZ", "TOUTLEMONDE" });
         }
 
         [TestMethod]
         public void Check_SortDesc() {
-            Check_Sort(true, new List<string> { "TOUTLEMONDE", "RODRIGEZ", "RAY", "MARCHAND", "D'ALEMBERT", "BUCHE" });
+            Check_Sort(true, new List<string> { "TOUTLEMONDE", "RODRIGEZ", "ROBERTO", "ROBERT", "RAY", "MARCHAND", "D'ALEMBERT", "CARLOS", "BUCHE" });
         }
 
         [TestMethod]
@@ -155,7 +155,7 @@ namespace Kinetix.Search.Test.SearchBrokerTest {
             var output = broker.AdvancedQuery(input);
 
             /* Total. */
-            Assert.AreEqual(6, output.TotalCount, "Nombre total de résultats attendu incorrect.");
+            Assert.AreEqual(9, output.TotalCount, "Nombre total de résultats attendu incorrect.");
 
             /* Groupes */
             var groups = output.Groups;
@@ -166,7 +166,7 @@ namespace Kinetix.Search.Test.SearchBrokerTest {
                 var bucket = group.List;
                 switch (group.Code) {
                     case "M":
-                        Assert.AreEqual(3, bucket.Count);
+                        Assert.AreEqual(6, bucket.Count);
                         break;
                     case "F":
                         Assert.AreEqual(2, bucket.Count);
@@ -254,8 +254,8 @@ namespace Kinetix.Search.Test.SearchBrokerTest {
             var output = broker.AdvancedQuery(input);
 
             /* Total. */
-            Assert.AreEqual(6, output.List.Count, "Nombre de résultats attendu incorrect.");
-            Assert.AreEqual(6, output.TotalCount, "Nombre total de résultats attendu incorrect.");
+            Assert.AreEqual(9, output.List.Count, "Nombre de résultats attendu incorrect.");
+            Assert.AreEqual(9, output.TotalCount, "Nombre total de résultats attendu incorrect.");
 
             var nomList = output.List.Select(x => x.Nom);
             Assert.IsTrue(

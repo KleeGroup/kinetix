@@ -18,7 +18,7 @@ namespace Kinetix.Search.Test.SearchBrokerTest {
 
         [TestMethod]
         public void Check_Prenom_Ok() {
-            CheckQuery("Robert", 1);
+            CheckQuery("Camille", 1);
         }
 
         [TestMethod]
@@ -48,7 +48,7 @@ namespace Kinetix.Search.Test.SearchBrokerTest {
 
         [TestMethod]
         public void Check_PrenomDeb_Ok() {
-            CheckQuery("Rob", 1);
+            CheckQuery("Cam", 1);
         }
 
         [TestMethod]

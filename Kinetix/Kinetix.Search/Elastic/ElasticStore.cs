@@ -403,8 +403,13 @@ namespace Kinetix.Search.Elastic {
             var filterSubQuery = GetFilterSubQuery(input);
             var monoValuedFacetsSubQuery = GetFacetSelectionSubQuery(input);
 
-            var queryWithBoost = "(" + textSubQuery + " " + textSubQueryBoost + ")";
-
+            string queryWithBoost;
+            if (!string.IsNullOrEmpty(textSubQuery) && !string.IsNullOrEmpty(textSubQueryBoost)) {
+                queryWithBoost = "(" + textSubQuery + " " + textSubQueryBoost + ")";
+            } else {
+                queryWithBoost = textSubQuery;
+            }
+    
             return _builder.BuildAndQuery(queryWithBoost, securitySubQuery, filterSubQuery, monoValuedFacetsSubQuery);
         }
 

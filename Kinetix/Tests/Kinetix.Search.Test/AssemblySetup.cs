@@ -120,11 +120,11 @@ namespace Kinetix.Search.Test {
             var doc8 = new PersonneDocument
             {
                 Id = 14,
-                Nom = "SANCHEZ",
-                NomSort = "SANCHEZ",
+                Nom = "CARLOS",
+                NomSort = "CARLOS",
                 Prenom = "Roberto",
-                Text = "Roberto SANCHEZ",
-                TextSearch = "Roberto SANCHEZ",
+                Text = "Roberto CARLOS",
+                TextSearch = "Roberto CARLOS",
                 DepartementList = "92 75",
                 Genre = "M"
             };
@@ -134,9 +134,9 @@ namespace Kinetix.Search.Test {
                 Id = 15,
                 Nom = "ROBERTO",
                 NomSort = "ROBERTO",
-                Prenom = "Jean",
-                Text = "Jean ROBERTO",
-                TextSearch = "Jean ROBERTO",
+                Prenom = "Juan",
+                Text = "Juan ROBERTO",
+                TextSearch = "Juan ROBERTO",
                 DepartementList = "92 75",
                 Genre = "M"
             };

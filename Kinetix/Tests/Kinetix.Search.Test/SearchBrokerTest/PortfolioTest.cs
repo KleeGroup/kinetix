@@ -25,8 +25,8 @@ namespace Kinetix.Search.Test.SearchBrokerTest {
             Assert.IsNotNull(output);
 
             /* Total. */
-            Assert.AreEqual(6, output.List.Count, "Nombre de résultats attendu incorrect.");
-            Assert.AreEqual(6, output.TotalCount, "Nombre de résultats attendu incorrect.");
+            Assert.AreEqual(9, output.List.Count, "Nombre de résultats attendu incorrect.");
+            Assert.AreEqual(9, output.TotalCount, "Nombre de résultats attendu incorrect.");
 
             /* Facettes */
             var facetsOutput = output.Facets;
@@ -45,7 +45,7 @@ namespace Kinetix.Search.Test.SearchBrokerTest {
                 var v = value.Count;
                 switch (s) {
                     case "0":
-                        Assert.AreEqual(4, v);
+                        Assert.AreEqual(7, v);
                         break;
                     case "1":
                         Assert.AreEqual(2, v);
@@ -91,8 +91,8 @@ namespace Kinetix.Search.Test.SearchBrokerTest {
             var output = CheckFacets(facetsInput, portfolio: "02 03");
 
             /* Total. */
-            Assert.AreEqual(4, output.List.Count, "Nombre de résultats attendu incorrect.");
-            Assert.AreEqual(4, output.TotalCount, "Nombre total de résultats attendu incorrect.");
+            Assert.AreEqual(7, output.List.Count, "Nombre de résultats attendu incorrect.");
+            Assert.AreEqual(7, output.TotalCount, "Nombre total de résultats attendu incorrect.");
         }
 
         [TestMethod]
@@ -147,8 +147,8 @@ namespace Kinetix.Search.Test.SearchBrokerTest {
             var output = CheckFacets(facetsInput, portfolio: portfolio);
 
             /* Total. */
-            Assert.AreEqual(6, output.List.Count, "Nombre de résultats attendu incorrect.");
-            Assert.AreEqual(6, output.TotalCount, "Nombre total de résultats attendu incorrect.");
+            Assert.AreEqual(9, output.List.Count, "Nombre de résultats attendu incorrect.");
+            Assert.AreEqual(9, output.TotalCount, "Nombre total de résultats attendu incorrect.");
 
             /* Facettes */
             var facetsOutput = output.Facets;
@@ -167,7 +167,7 @@ namespace Kinetix.Search.Test.SearchBrokerTest {
                 var v = value.Count;
                 switch (s) {
                     case "0":
-                        Assert.AreEqual(6, v);
+                        Assert.AreEqual(9, v);
                         break;
                     default:
                         Assert.Fail("Clée inattendue : " + v);

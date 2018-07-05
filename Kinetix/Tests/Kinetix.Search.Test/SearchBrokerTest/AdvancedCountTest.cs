@@ -19,7 +19,7 @@ namespace Kinetix.Search.Test.SearchBrokerTest {
         public void Check_InitialQueryFacet() {
             var facetsInput = new FacetListInput();
 
-            CheckFacets(6, facetsInput);
+            CheckFacets(9, facetsInput);
         }
 
         [TestMethod]
