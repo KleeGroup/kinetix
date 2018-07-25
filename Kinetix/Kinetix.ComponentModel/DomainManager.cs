@@ -159,6 +159,7 @@ namespace Kinetix.ComponentModel {
             return list;
         }
 
+
         /// <summary>
         /// Retourne le domaine associé à une propriété.
         /// </summary>

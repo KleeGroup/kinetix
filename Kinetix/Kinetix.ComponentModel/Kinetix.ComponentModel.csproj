@@ -97,6 +97,7 @@
     <Compile Include="DomainAttribute.cs" />
     <Compile Include="DomainManager.cs" />
     <Compile Include="DomainMetadataTypeAttribute.cs" />
+    <Compile Include="DomainTypeChecker.cs" />
     <Compile Include="EntityException.cs" />
     <Compile Include="FileSystemFile.cs" />
     <Compile Include="DownloadedFile.cs" />
