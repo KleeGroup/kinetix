@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using System.Data.Entity.Spatial;
 using System.Globalization;
 using System.Reflection;
 using Kinetix.ComponentModel.DataAnnotations;
@@ -72,27 +71,7 @@ namespace Kinetix.ComponentModel {
             }
 
             Type dataType = typeof(T);
-            
-            
-            //dataType = DomainTypeChecker.Instance.CheckTypeAndExtractNullable(dataType);
-            if (dataType.IsGenericType && typeof(Nullable<>).Equals(dataType.GetGenericTypeDefinition()))
-            {
-                dataType = dataType.GetGenericArguments()[0];
-                if (!dataType.IsPrimitive && !typeof(decimal).Equals(dataType)
-                        && !typeof(DateTime).Equals(dataType) && !typeof(Guid).Equals(dataType) && !typeof(TimeSpan).Equals(dataType))
-                {
-                    throw new ArgumentException(dataType + "? is not a primitive Type");
-                }
-            }
-            else if (!typeof(string).Equals(dataType) && !typeof(byte[]).Equals(dataType)
-              //&& !_whiteListComplexType.Contains(dataType)
-              && !typeof(System.Collections.Generic.ICollection<string>).Equals(dataType)
-              && !typeof(System.Collections.Generic.ICollection<int>).Equals(dataType))
-            {
-                throw new ArgumentException(dataType + " is not a nullable Type");
-            }
-
-
+            dataType = DomainTypeChecker.Instance.CheckTypeAndExtractNullable(dataType);
 
             this.Name = name;
             this.DataType = dataType;
