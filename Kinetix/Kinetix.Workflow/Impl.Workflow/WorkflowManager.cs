@@ -1090,8 +1090,6 @@ namespace Kinetix.Workflow {
                     isLastPreviousCurrentActivityReached = true;
                 }
 
-                bool isCurrentActivityAuto = false;
-
                 if (isRuleValid) {
                     //This activity need a validation
 
@@ -1118,7 +1116,7 @@ namespace Kinetix.Workflow {
                         }
 
                         // No new activity. The previous activity was manual too.
-                        if (activity.IsValid == false) {
+                        if (activity.IsValid == false || isLastPreviousCurrentActivityReached) {
                             // This activity must be revalidated
                             wf.WfaId2 = activity.WfaId;
                             output.AddWorkflowsUpdateCurrentActivity(wf);
@@ -1129,7 +1127,6 @@ namespace Kinetix.Workflow {
                     } else {
                         // There is no users allowed to validate.
                         // This activity is now auto.
-                        isCurrentActivityAuto = true;
                         if (activity == null) {
                             // No activity linked to this definition was found. 
                             // 2 possibilities : 
@@ -1143,7 +1140,6 @@ namespace Kinetix.Workflow {
                         }
                     }
                 } else {
-                    isCurrentActivityAuto = true;
                     if (activity == null) {
                         // No activity linked to this definition was found. 
                         // 2 possibilities : 
@@ -1157,12 +1153,6 @@ namespace Kinetix.Workflow {
                         activity.IsAuto = true;
                         output.AddActivitiesUpdateIsAuto(activity);
                     }
-                }
-
-                if (isLastPreviousCurrentActivityReached && isCurrentActivityAuto == false) {
-                    // The last activity has been reached.
-                    newCurrentActivityFound = true;
-                    break;
                 }
             }
 
