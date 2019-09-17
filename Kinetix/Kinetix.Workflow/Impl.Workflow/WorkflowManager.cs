@@ -1090,26 +1090,21 @@ namespace Kinetix.Workflow {
                     isLastPreviousCurrentActivityReached = true;
                 }
 
-                if (isRuleValid) {
-                    //This activity need a validation
+                if (isRuleValid && _ruleManager.SelectAccounts(actDefId, ruleContext, dicSelectors, dicFilters).Any()) {
+                    //This activity need a validation and there is at least one user allowed to validate.
+                    if (activity == null) {
+                        // No activity linked to this definition was found. 
+                        // 2 possibilities : 
+                        // - A new activity definition has been inserted in the workflow.
+                        // - The previous current activity has been switched to auto.
 
-                    //We need to check if there is at least one user allowed to validate
-                    IList<AccountUser> accounts = _ruleManager.SelectAccounts(actDefId, ruleContext, dicSelectors, dicFilters);
+                        WfActivity wfActivity = GetNewActivity(activityDefinition, wf, false, false);
+                        output.AddActivitiesCreateUpdateCurrentActivity(wfActivity);
 
-                    if (accounts.Count > 0) {
-                        //There is at least one user allowed to validate.
-                        if (activity == null) {
-                            // No activity linked to this definition was found. 
-                            // 2 possibilities : 
-                            // - A new activity definition has been inserted in the workflow.
-                            // - The previous current activity has been switched to auto.
-
-                            WfActivity wfActivity = GetNewActivity(activityDefinition, wf, false, false);
-                            output.AddActivitiesCreateUpdateCurrentActivity(wfActivity);
-
-                            newCurrentActivityFound = true;
-                            break;
-                        } else if (activity.IsAuto) {
+                        newCurrentActivityFound = true;
+                        break;
+                    } else {
+                        if (activity.IsAuto) {
                             //The previous validation was auto. This activity should be manually validated.
                             activity.IsAuto = false;
                             output.AddActivitiesUpdateIsAuto(activity);
@@ -1122,21 +1117,6 @@ namespace Kinetix.Workflow {
                             output.AddWorkflowsUpdateCurrentActivity(wf);
                             newCurrentActivityFound = true;
                             break;
-                        }
-
-                    } else {
-                        // There is no users allowed to validate.
-                        // This activity is now auto.
-                        if (activity == null) {
-                            // No activity linked to this definition was found. 
-                            // 2 possibilities : 
-                            // - A new activity definition has been inserted in the workflow.
-                            // - The previous current activity has been switched to auto.
-                            WfActivity wfActivity = GetNewActivity(activityDefinition, wf, true, false);
-                            output.AddActivitiesCreate(wfActivity);
-                        } else {
-                            activity.IsAuto = true;
-                            output.AddActivitiesUpdateIsAuto(activity);
                         }
                     }
                 } else {
