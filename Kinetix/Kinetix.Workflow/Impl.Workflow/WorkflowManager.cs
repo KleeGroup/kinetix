@@ -1075,8 +1075,6 @@ namespace Kinetix.Workflow {
                 currentActivity = allActivities.Where(a => a.WfaId.Equals(wf.WfaId2.Value)).First();
             }
 
-            bool newCurrentActivityFound = false;
-
             RuleContext ruleContext = new RuleContext(obj, ruleConstants);
 
             foreach (WfActivityDefinition activityDefinition in activityDefinitions) {
@@ -1101,7 +1099,6 @@ namespace Kinetix.Workflow {
                         WfActivity wfActivity = GetNewActivity(activityDefinition, wf, false, false);
                         output.AddActivitiesCreateUpdateCurrentActivity(wfActivity);
 
-                        newCurrentActivityFound = true;
                         break;
                     } else {
                         if (activity.IsAuto) {
@@ -1115,7 +1112,6 @@ namespace Kinetix.Workflow {
                             // This activity must be revalidated
                             wf.WfaId2 = activity.WfaId;
                             output.AddWorkflowsUpdateCurrentActivity(wf);
-                            newCurrentActivityFound = true;
                             break;
                         }
                     }
@@ -1136,14 +1132,6 @@ namespace Kinetix.Workflow {
                 }
             }
 
-            if (newCurrentActivityFound == false) {
-                // All the definitions have been iterated until the end.
-                // The workflow must be ended.
-
-                // Stepping back : No Automatic ending. 
-                // TODO: Remove the commented code when the behavior will be validated
-                //EndInstance(wf);
-            }
         }
 
         private IDictionary<int, List<RuleDefinition>> constructDicRulesForWorkflowDefinition(int wfwdId) {
