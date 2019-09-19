@@ -1075,8 +1075,6 @@ namespace Kinetix.Workflow {
                 currentActivity = allActivities.Where(a => a.WfaId.Equals(wf.WfaId2.Value)).First();
             }
 
-            bool newCurrentActivityFound = false;
-
             RuleContext ruleContext = new RuleContext(obj, ruleConstants);
 
             foreach (WfActivityDefinition activityDefinition in activityDefinitions) {
@@ -1090,60 +1088,34 @@ namespace Kinetix.Workflow {
                     isLastPreviousCurrentActivityReached = true;
                 }
 
-                bool isCurrentActivityAuto = false;
+                if (isRuleValid && _ruleManager.SelectAccounts(actDefId, ruleContext, dicSelectors, dicFilters).Any()) {
+                    //This activity need a validation and there is at least one user allowed to validate.
+                    if (activity == null) {
+                        // No activity linked to this definition was found. 
+                        // 2 possibilities : 
+                        // - A new activity definition has been inserted in the workflow.
+                        // - The previous current activity has been switched to auto.
 
-                if (isRuleValid) {
-                    //This activity need a validation
+                        WfActivity wfActivity = GetNewActivity(activityDefinition, wf, false, false);
+                        output.AddActivitiesCreateUpdateCurrentActivity(wfActivity);
 
-                    //We need to check if there is at least one user allowed to validate
-                    IList<AccountUser> accounts = _ruleManager.SelectAccounts(actDefId, ruleContext, dicSelectors, dicFilters);
-
-                    if (accounts.Count > 0) {
-                        //There is at least one user allowed to validate.
-                        if (activity == null) {
-                            // No activity linked to this definition was found. 
-                            // 2 possibilities : 
-                            // - A new activity definition has been inserted in the workflow.
-                            // - The previous current activity has been switched to auto.
-
-                            WfActivity wfActivity = GetNewActivity(activityDefinition, wf, false, false);
-                            output.AddActivitiesCreateUpdateCurrentActivity(wfActivity);
-
-                            newCurrentActivityFound = true;
-                            break;
-                        } else if (activity.IsAuto) {
+                        break;
+                    } else {
+                        if (activity.IsAuto) {
                             //The previous validation was auto. This activity should be manually validated.
                             activity.IsAuto = false;
                             output.AddActivitiesUpdateIsAuto(activity);
                         }
 
                         // No new activity. The previous activity was manual too.
-                        if (activity.IsValid == false) {
+                        if (activity.IsValid == false || isLastPreviousCurrentActivityReached) {
                             // This activity must be revalidated
                             wf.WfaId2 = activity.WfaId;
                             output.AddWorkflowsUpdateCurrentActivity(wf);
-                            newCurrentActivityFound = true;
                             break;
-                        }
-
-                    } else {
-                        // There is no users allowed to validate.
-                        // This activity is now auto.
-                        isCurrentActivityAuto = true;
-                        if (activity == null) {
-                            // No activity linked to this definition was found. 
-                            // 2 possibilities : 
-                            // - A new activity definition has been inserted in the workflow.
-                            // - The previous current activity has been switched to auto.
-                            WfActivity wfActivity = GetNewActivity(activityDefinition, wf, true, false);
-                            output.AddActivitiesCreate(wfActivity);
-                        } else {
-                            activity.IsAuto = true;
-                            output.AddActivitiesUpdateIsAuto(activity);
                         }
                     }
                 } else {
-                    isCurrentActivityAuto = true;
                     if (activity == null) {
                         // No activity linked to this definition was found. 
                         // 2 possibilities : 
@@ -1158,22 +1130,8 @@ namespace Kinetix.Workflow {
                         output.AddActivitiesUpdateIsAuto(activity);
                     }
                 }
-
-                if (isLastPreviousCurrentActivityReached && isCurrentActivityAuto == false) {
-                    // The last activity has been reached.
-                    newCurrentActivityFound = true;
-                    break;
-                }
             }
 
-            if (newCurrentActivityFound == false) {
-                // All the definitions have been iterated until the end.
-                // The workflow must be ended.
-
-                // Stepping back : No Automatic ending. 
-                // TODO: Remove the commented code when the behavior will be validated
-                //EndInstance(wf);
-            }
         }
 
         private IDictionary<int, List<RuleDefinition>> constructDicRulesForWorkflowDefinition(int wfwdId) {
