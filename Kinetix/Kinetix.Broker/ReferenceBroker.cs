@@ -61,31 +61,20 @@ namespace Kinetix.Broker {
         /// <returns>Clé primaire de l'objet.</returns>
         public override object Save(T bean, ColumnSelector columnSelector) {
             BeanDefinition definition = BeanDescriptor.GetDefinition(typeof(T));
-            ICollection<BeanPropertyDescriptor> propList = definition.Properties.Where(x => !x.PropertyType.Name.Equals(typeof(ChangeAction).Name)
-                && x.MemberName != null).ToList();
-            T beanToSave = new T();
 
-            /* Mise à jour du bean : on ne sauvegarde que les labels en anglais ou les champs hors chaînes de caractères */
+            /* Mise à jour du bean : on ne sauvegarde que les labels en langue par défaut ou les champs hors chaînes de caractères */
             string defaultLanguage = _resourceLoader.LoadLangueCodeDefaut();
             string lanCode = _resourceLoader.LoadCurrentLangueCode();
 
+            ColumnSelector filteredColumnSelector = columnSelector;
             if (definition.PrimaryKey.GetValue(bean) != null && lanCode != defaultLanguage && definition.IsTranslatable) {
-                T beanOld = ReferenceManager.Instance.GetReferenceObjectByPrimaryKey<T>(definition.PrimaryKey.GetValue(bean));
-                foreach (BeanPropertyDescriptor property in propList) {
-                    if (property.IsTranslatable) {
-                        /* la propriété est traduisible : on garde la valeur courante sur la table du bean
-                         * et sauvegardera la valeur dans la table Traductionreference. */
-                        property.SetValue(beanToSave, property.GetValue(beanOld));
-                    } else {
-                        /* La propriété est non traduisible : on sauvegarde la valeur normalement sur la table du bean. */
-                        property.SetValue(beanToSave, property.GetValue(bean));
-                    }
-                }
-            } else {
-                beanToSave = bean;
+                string[] notTranslatablePropertyList = definition.Properties.Where(x => !x.PropertyType.Name.Equals(typeof(ChangeAction).Name)
+                        && x.MemberName != null && !x.IsTranslatable).Select(p => p.PropertyName).ToArray();
+                string[] filteredPropertyList = columnSelector == null ? notTranslatablePropertyList : notTranslatablePropertyList.Intersect(columnSelector.ColumnList).ToArray();
+                filteredColumnSelector = new ColumnSelector(filteredPropertyList);
             }
 
-            object o = base.Save(beanToSave, columnSelector);
+            object o = base.Save(bean, filteredColumnSelector);
             definition.PrimaryKey.SetValue(bean, o);
 
             _resourceWriter.SaveTraductionReference(typeof(T), bean, lanCode);
