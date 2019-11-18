@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Transactions;
+using Kinetix.ComponentModel;
 using Kinetix.Data.SqlClient;
 
 namespace Kinetix.Broker.Test {
@@ -16,6 +17,7 @@ namespace Kinetix.Broker.Test {
         private static bool _callWithTransactionScope;
         private static bool _exceptionOnCall;
         private string _name;
+        private static int _nextId = 1;
 
         /// <summary>
         /// Crée un nouveau store.
@@ -152,8 +154,21 @@ namespace Kinetix.Broker.Test {
             if (_exceptionOnCall) {
                 throw new Exception();
             }
-            _putList.Add(bean);
-            return 1;
+
+            if (columnSelector != null) {
+                BeanDefinition definition = BeanDescriptor.GetDefinition(typeof(T));
+                T puttingBean = new T();
+                foreach (BeanPropertyDescriptor property in definition.Properties) {
+                    if (columnSelector.ColumnList.Contains(property.PropertyName)) {
+                        property.SetValue(puttingBean, property.GetValue(bean));
+                    }
+                }
+                _putList.Add(puttingBean);
+            } else {
+                _putList.Add(bean);
+            }
+
+            return _nextId++;
         }
 
         /// <summary>
@@ -229,8 +244,7 @@ namespace Kinetix.Broker.Test {
         /// <param name="criteria">Les critères de recherche.</param>
         /// <param name="returnNullIfZeroRow">Null if Zero.</param>
         /// <returns>Bean.</returns>
-        public T LoadByCriteria(T destination, FilterCriteria criteria, bool returnNullIfZeroRow = false)
-        {
+        public T LoadByCriteria(T destination, FilterCriteria criteria, bool returnNullIfZeroRow = false) {
             return new T();
         }
     }
