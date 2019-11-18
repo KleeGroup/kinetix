@@ -69,7 +69,7 @@ namespace Kinetix.Broker {
             ColumnSelector filteredColumnSelector = columnSelector;
             if (definition.PrimaryKey.GetValue(bean) != null && lanCode != defaultLanguage && definition.IsTranslatable) {
                 string[] notTranslatablePropertyList = definition.Properties.Where(x => !x.PropertyType.Name.Equals(typeof(ChangeAction).Name)
-                        && x.MemberName != null && !x.IsTranslatable).Select(p => p.PropertyName).ToArray();
+                        && x.MemberName != null && !x.IsTranslatable).Select(p => p.MemberName).ToArray();
                 string[] filteredPropertyList = columnSelector == null ? notTranslatablePropertyList : notTranslatablePropertyList.Intersect(columnSelector.ColumnList).ToArray();
                 filteredColumnSelector = new ColumnSelector(filteredPropertyList);
             }
